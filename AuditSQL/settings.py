@@ -126,5 +126,3 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
-AUTH_LDAP_SERVER_URI = "ldap://HNA.NET"
