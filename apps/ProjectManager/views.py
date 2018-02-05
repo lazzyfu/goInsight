@@ -3,14 +3,15 @@ import re
 
 import sqlparse
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
-from django.views.generic import FormView
+from django.views.generic import FormView, ListView
+from pure_pagination import PaginationMixin
 
 from ProjectManager.forms import InceptionSqlOperateForm
-from apps.ProjectManager.inception.inception_api import GetDatabaseApi, InceptionApi
+from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi
 from utils.tools import format_request
-from .models import InceptionHostConfig
+from .models import InceptionHostConfig, InceptionSqlOperateRecord
 
 
 class ProjectListView(View):
@@ -93,14 +94,65 @@ class BeautifySQLView(View):
 
 
 class GetInceptionHostConfigView(View):
+    """获取inception审核的目标数据库配置"""
     def get(self, request):
         envResult = InceptionHostConfig.objects.all().values('host', 'comment')
         return JsonResponse(list(envResult), safe=False)
 
 
 class GetDatabaseListView(View):
+    """列出选中环境的数据库库名"""
     def post(self, request):
         data = format_request(request)
         host = data['host']
-        dbResult = GetDatabaseApi(host).get_dbname()
+        dbResult = GetDatabaseListApi(host).get_dbname()
         return HttpResponse(json.dumps(dbResult))
+
+class InceptionSqlRecords(PaginationMixin, ListView):
+    """查看用户的工单记录"""
+    paginate_by = 8
+    context_object_name = 'sqlRecord'
+    template_name = 'inception_sql_records.html'
+
+    def get_queryset(self):
+        workidQuery = "select workid,id,op_user,dst_host,op_time from sqlaudit_inception_sql_operate_record group by workid order by op_time desc"
+        sqlRecord = []
+        for row in InceptionSqlOperateRecord.objects.raw(workidQuery):
+            workid = row.workid
+            op_user = row.op_user
+            dst_host = row.dst_host
+            op_time = row.op_time
+            singleRecord = InceptionSqlOperateRecord.objects.filter(op_uid=self.request.user.uid).filter(workid=workid).order_by(
+                'op_time')
+            sqlRecord.append({'workid': workid, 'op_user': op_user, 'dst_host': dst_host, 'op_time': op_time,
+                              'record': singleRecord})
+        return sqlRecord
+
+
+class InceptionAllSqlDetailView(View):
+    """查看当前用户会话执行的所有sql的详情"""
+    def get(self, request, workid):
+        sequenceResult = []
+        originalSql = ''
+        originalSqlQuery = InceptionSqlOperateRecord.objects.raw(
+            f"select id,group_concat(`op_sql` separator '\n') as `op_sql` from sqlaudit_inception_sql_operate_record where workid={workid} group by workid")
+        for i in originalSqlQuery:
+            originalSql = i.op_sql
+
+        sqlDetail = InceptionSqlOperateRecord.objects.filter(workid=workid)
+        for row in sqlDetail:
+            sequenceResult.append({'backupdbName': row.backup_dbname, 'sequence': row.sequence})
+        rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+
+        return render(request, 'offline_all_sql_detail.html',
+                      {'originalSql': originalSql, 'rollbackSql': rollbackSql})
+
+
+class InceptionSingleSqlDetailView(View):
+    """查看当前用户会话执行的每条sql的详情"""
+    def get(self, request, sequence):
+        sqlDetail = get_object_or_404(InceptionSqlOperateRecord, sequence=sequence)
+        sequenceResult = [{'backupdbName': sqlDetail.backup_dbname, 'sequence': sqlDetail.sequence}]
+        rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+        return render(request, 'offline_single_sql_detail.html',
+                      {'sqlDetail': sqlDetail, 'rollbackSql': rollbackSql})

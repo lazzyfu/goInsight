@@ -227,7 +227,7 @@
             var csrftoken = $.cookie('csrftoken');
 
             $.ajax({
-                url: "{% url 'p_sql_operate' %}",
+                url: "{% url 'p_inception_sql_operate' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {

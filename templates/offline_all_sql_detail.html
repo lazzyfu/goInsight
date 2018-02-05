@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            font-family: monospace;
+            height: 280px;
+            border: 1px solid #ccc; /*add by jackqqxu*/
+            font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">数据变更记录汇总详情</h3>
+                </div>
+                <div class="box-body">
+                    <dl>
+                        <dt>原始SQL</dt>
+                        <dd>
+                            <textarea class="myTextareaClass">{{ originalSql }}</textarea>
+                        </dd>
+                        <br>
+                        <dt>回滚SQL</dt>
+                        <dd>
+                            <textarea class="myTextareaClass">{{ rollbackSql }}</textarea>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var areas = document.getElementsByClassName("myTextareaClass");
+        for (var i = 0; i < areas.length; i++) {
+            CodeMirror.fromTextArea(areas.item(i), {
+                lineNumbers: true,
+                mode: "text/x-mysql",
+                readOnly: true,
+                matchBrackets: true,
+                tabMode: "indent"
+            })
+        }
+    </script>
+{% endblock %}

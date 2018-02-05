@@ -28,6 +28,10 @@
     {#    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/select2/dist/css/select2.min.css' %}">#}
     <!-- pnotify -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/pnotify/pnotify.custom.css' %}">
+    <!-- jquery-treetable -->
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.2/bower_components/ludo-jquery-treetable/css/jquery.treetable.css' %}">
+
 
     <!-- 定义 css block -->
     {% block link_css %}
@@ -118,9 +122,9 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-list-ol"></i>我的工单</a>
+                        <li><a href="{% url 'p_inception_sql_records' %}"><i class="fa fa-list-ol"></i>我的工单</a>
                         </li>
-                        <li><a href="{% url 'p_sql_operate' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
+                        <li><a href="{% url 'p_inception_sql_operate' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
                     </ul>
                 </li>
             </ul>
@@ -177,6 +181,9 @@
 <script src="{% static 'jquery.cookie.js' %}"></script>
 <!-- pnotify -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/pnotify/pnotify.custom.js' %}"></script>
+<!-- jquery-treetable -->
+<script src="{% static 'AdminLTE-2.4.2/bower_components/ludo-jquery-treetable/jquery.treetable.js' %}"></script>
+
 
 <!-- general js file -->
 <script src="{% static 'self_public.js' %}"></script>

@@ -90,7 +90,7 @@ class GetBackupApi(object):
         return '\n'.join(rollbackResult)
 
 
-class GetDatabaseApi(object):
+class GetDatabaseListApi(object):
     """获取目标主机的所有库"""
 
     def __init__(self, host):
