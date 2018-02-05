@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            font-family: monospace;
+            height: 600px;
+            border: 1px solid #ccc;
+            font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <section class="content-header">
+        <h1>
+            SQL语法审核
+            <small id="info_append"></small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <form class="form-horizontal">
+                <div class="col-md-9">
+                    <div class="box box-primary">
+                        <div class="box-body no-padding">
+                            <div class="mailbox-read-info">
+                                <h5>填写SQL语句
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="box-body no-padding">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <textarea id="select_sql" name="sql_content"
+                                              class="form-control"
+                                              required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <!-- Profile Image -->
+                    <div class="box box-success">
+                        <div class="box-body no-padding">
+                            <div class="mailbox-read-info">
+                                <h5>选择环境</h5>
+                            </div>
+                        </div>
+                        <div class="box-body box-profile">
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">操作</label>
+                                <div class="col-sm-9">
+                                    <select id="select_op" name="op_action" onchange="infoChange()" style="width: 100%"
+                                            required
+                                            class="selectpicker form-control" title="请选择...">
+                                        <option selected value="op_schema">表结构修改</option>
+                                        <option value="op_data">数据修改</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">主机</label>
+                                <div class="col-sm-9">
+                                    <select id="select_env" name="host" onchange="getDatabase()" style="width: 100%"
+                                            required
+                                            class="form-control selectpicker" title="选择主机...">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">库名</label>
+                                <div class="col-sm-9">
+                                    <select id="select_db" name="database" style="width: 100%" required
+                                            class="form-control selectpicker" title="选择库名...">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    <button type="button" onclick="beautifySQL()" class="btn bg-info">美化SQL</button>
+                                    <button type="button" onclick="sqlOperateForm('check')" class="btn bg-info">语法检测
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    <button type="reset" class="btn bg-info">清除SQL</button>
+                                    <button type="button" onclick="sqlOperateForm('commit')" class="btn bg-info">执行SQL
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+
+                    <div class="box box-warning">
+                        <div class="box-header with-border">
+                            <h5 class="box-title">支持的语句类型</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="text-muted">
+                                <p>SET NAMES CHARSET</p>
+                                <p>创建数据库语句</p>
+                                <p>插入语句（包括多值插入）</p>
+                                <p>删除语句（包括多表删除）</p>
+                                <p>更新语句（包括多表更新）</p>
+                                <p>创建表语句</p>
+                                <p>删除表语句</p>
+                                <p>修改表语句</p>
+                                <p>Truncate表语句</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- /.col -->
+            <div class="col-md-12">
+                <div class="box box-gray">
+                    <div class="box-body no-padding">
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="col-sm-1">ID</th>
+                                <th class="col-sm-1">阶段</th>
+                                <th class="col-sm-1">阶段状态</th>
+                                <th class="col-sm-1">错误级别</th>
+                                <th class="col-sm-2">错误信息</th>
+                                <th class="col-sm-4">被检查的SQL</th>
+                                <th class="col-sm-1">预计影响行数</th>
+                                <th class="col-sm-1">执行时间(s)</th>
+                            </tr>
+                            </thead>
+                            <tbody id="td_append">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var myTextarea = document.getElementById('select_sql');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            matchBrackets: true,
+            tabMode: "indent",
+            value: 'dsdsads'
+        });
+
+
+        function beautifySQL() {
+            var sql_content = myCodeMirror.getValue();
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_beautify_sql' %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {'sql_content': sql_content, 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, sql) {
+                        myCodeMirror.setValue(sql);
+                    })
+                }
+            })
+        }
+
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_inception_hostconfig' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, row) {
+                        var host = row.host;
+                        var comment = row.comment;
+                        html += "<option value=" + host + ">" + comment + "</option>"
+                    });
+                    $('#select_env').append(html);
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            })
+        });
+
+        function getDatabase() {
+            $("#select_db").empty();
+            var host = $("#select_env").val();
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_get_database' %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, db) {
+                        html += "<option value=" + db + ">" + db + "</option>"
+                    });
+                    $('#select_db').append(html);
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            })
+        }
+
+        function sqlOperateForm(op_type) {
+            var sql_content = myCodeMirror.getValue();
+            var database = $("#select_db").val();
+            var host = $("#select_env").val();
+            var op_action = $("#select_op").val();
+            var csrftoken = $.cookie('csrftoken');
+
+            if (op_action == 'op_schema') {
+                var dst_url = '{% url 'p_sql_operate_ddl' %}'
+            }
+            else if (op_action == 'op_data') {
+                var dst_url = '{% url 'p_sql_operate_dml' %}'
+            }
+
+            $.ajax({
+                url: dst_url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'sql_content': sql_content,
+                    'database': database,
+                    'host': host,
+                    'op_type': op_type,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    if (result.errCode == 400) {
+                        displayPNotify(result.errCode, result.errMsg)
+                    }
+                    else {
+                        $('#td_append').empty();
+                        var html = '';
+                        $.each(result.data, function (index, content) {
+                            var SQL = content.SQL;
+                            var ID = content.ID;
+                            var stage = content.stage;
+                            if (content.errlevel == 0) {
+                                var errlevel = '成功'
+                            }
+                            else if (content.errlevel == 1) {
+                                var errlevel = '警告'
+                            }
+                            else if (content.errlevel == 2) {
+                                var errlevel = '错误'
+                            }
+                            var stagestatus = content.stagestatus;
+                            var errormessage = content.errormessage.replace(/\./g, '\.' + '<br>');
+                            var Affected_rows = content.Affected_rows;
+                            var execute_time = content.execute_time
+                            html += "<tr>" +
+                                "<td>" + ID + "</td>" +
+                                "<td>" + stage + "</td>" +
+                                "<td>" + stagestatus + "</td>" +
+                                "<td>" + errlevel + "</td>" +
+                                "<td>" + errormessage + "</td>" +
+                                "<td>" + SQL + "</td>" +
+                                "<td>" + Affected_rows + "</td>" +
+                                "<td>" + execute_time + "</td>" +
+                                "</tr>";
+                        });
+                        $('#td_append').append(html);
+                    }
+                }
+            })
+        }
+
+        $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>");
+
+        function infoChange() {
+            var op_info = $('select option:selected').val();
+            $("#info_append").empty();
+            if (op_info == 'op_schema') {
+                $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>")
+            }
+            else if (op_info == 'op_data') {
+                $("#info_append").append("<small>支持UPDATE|DELETE|INSERT语句，以及自动生成备份</small>")
+            }
+        }
+
+    </script>
+{% endblock %}
