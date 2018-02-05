@@ -116,7 +116,22 @@
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-files-o"></i>
-                        <span>工单</span>
+                        <span>线上工单</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'p_inception_sql_records' %}"><i class="fa fa-list-ol"></i>工单记录</a>
+                        </li>
+                        <li><a href="{% url 'p_online_sql_commit' %}"><i class="fa fa-edit"></i>数据变更</a></li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-files-o"></i>
+                        <span>线下工单</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>

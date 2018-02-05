@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 from .views import ProjectListView, BeautifySQLView, GetInceptionHostConfigView, \
     GetDatabaseListView, InceptionSqlOperateView, InceptionSqlRecords, InceptionSingleSqlDetailView, \
-    InceptionAllSqlDetailView
+    InceptionAllSqlDetailView, OnlineSqlCommitView, GetRemarkInfo
 
 urlpatterns = [
     path(r'index/', ProjectListView.as_view(), name='p_project'),
@@ -18,4 +18,8 @@ urlpatterns = [
     path(r'inception_sql_records/', login_required(InceptionSqlRecords.as_view()), name='p_inception_sql_records'),
     re_path(r'inception_all_sql_detail/(?P<workid>.*)/', login_required(InceptionAllSqlDetailView.as_view())),
     re_path(r'inception_single_sql_detail/(?P<sequence>.*)/', login_required(InceptionSingleSqlDetailView.as_view())),
+
+    # 线上工单
+    path(r'online_sql_commit/', login_required(OnlineSqlCommitView.as_view()), name='p_online_sql_commit'),
+    path(r'get_remark_info/', login_required(GetRemarkInfo.as_view()), name='p_remark_info'),
 ]

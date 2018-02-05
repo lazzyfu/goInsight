@@ -68,7 +68,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">主机</label>
                                 <div class="col-sm-9">
-                                    <select id="select_env" name="host" onchange="getDatabase()" style="width: 100%"
+                                    <select id="select_env" name="host" onchange="getDatabaseList()" style="width: 100%"
                                             required
                                             class="form-control selectpicker" title="选择主机...">
                                     </select>
@@ -197,7 +197,7 @@
             })
         });
 
-        function getDatabase() {
+        function getDatabaseList() {
             $("#select_db").empty();
             var host = $("#select_env").val();
             var csrftoken = $.cookie('csrftoken');

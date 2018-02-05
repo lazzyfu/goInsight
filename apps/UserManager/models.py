@@ -64,7 +64,7 @@ class RolesDetail(models.Model):
 
 class Groups(models.Model):
     """
-    用户组表
+    用户项目组表
     """
     group_id = models.AutoField(primary_key=True, verbose_name=u'主键')
     group_name = models.CharField(max_length=30, default='', verbose_name=u'组名')
@@ -83,7 +83,7 @@ class Groups(models.Model):
 
 
 class GroupsDetail(models.Model):
-    """用户组详情表"""
+    """用户项目组详情表"""
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, null=False)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=False)
@@ -96,8 +96,6 @@ class GroupsDetail(models.Model):
 
         default_permissions = ()
         db_table = 'auditsql_groups_detail'
-
-        unique_together = ('user',)
 
 
 class Contacts(models.Model):

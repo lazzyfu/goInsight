@@ -54,3 +54,12 @@ class InceptionSqlOperateForm(forms.Form):
             )
         context = {'data': result, 'errMsg': '执行完成', 'errCode': 200}
         return context
+
+
+class OnlineAuditCommitForm(forms.Form):
+    title = forms.CharField(max_length=100, required=True, label=u'标题')
+    group = forms.CharField(required=True, label=u'项目组id')
+    verifier = forms.CharField(required=True, label=u'批准的leader的id')
+    operate_dba = forms.CharField(required=True, label=u'执行dba的id')
+    email_cc = forms.CharField(required=True, label=u'抄送联系人的id，以逗号分隔')
+    contents = forms.CharField(widget=forms.Textarea)

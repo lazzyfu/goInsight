@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .CodeMirror {
+            font-family: monospace;
+            height: 520px;
+            border: 1px solid #ccc;
+            font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">数据变更->填写</h3>
+        </div>
+
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <form role="form" id="auditCommitForm" action="#"
+                          class="form-horizontal"
+                          method="post"
+                          data-toggle="validator">
+                        <div class="form-group has-feedback">
+                            <label class="control-label col-md-1">标题</label>
+                            <div class="col-md-8">
+                                <input type="text" name="title" class="form-control"
+                                       placeholder="最少5个字符，最多100个字符" required data-minlength="5" autofocus="autofocus">
+                                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                            </div>
+                            <div class="help-block with-errors col-md-2"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1">备注</label>
+                            <div class="col-md-8">
+                                <select id="select_remark" name="remark" style="width: 100%" title="请选择合适的备注"
+                                        class="selectpicker form-control dropup"
+                                        multiple required>
+                                </select>
+                            </div>
+                            <div class="help-block with-errors col-md-2"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1">项目</label>
+                            <div class="col-md-8">
+                                <select id="select_project" name="project" style="width: 100%" required
+                                        class="selectpicker form-control" title="请选择一个可用的项目...">
+                                </select>
+                            </div>
+                            <div class="help-block with-errors col-md-2"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1">执行DBA</label>
+                            <div class="col-md-8">
+                                <select id="select_dba" name="operate_dba" style="width: 100%" required
+                                        class="selectpicker form-control" data-validate="false">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1">批准人</label>
+                            <div class="col-md-8">
+                                <select id="select_leader" name="verifier" style="width: 100%" required
+                                        class="selectpicker form-control" data-validate="false">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1">抄送</label>
+                            <div class="col-md-8">
+                                <select id="select_contact" name="email_cc" data-live-search="true"
+                                        title="选择需要抄送的联系人..."
+                                        data-actions-box="true"
+                                        style="width: 100%" class="selectpicker form-control dropup"
+                                        multiple required>
+                                </select>
+                            </div>
+                            <div class="help-block with-errors col-md-2"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1">审核内容</label>
+                            <div class="col-md-10 col-sm-10 col-xs-12">
+                                <textarea id="select_sql" name="sql_content"
+                                          class="form-control"
+                                          required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-1"></label>
+                            <div class="col-md-8">
+                                <button type="submit" class="btn bg-olive">提交</button>
+                                <button type="reset" class="btn bg-olive">重置</button>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var myTextarea = document.getElementById('select_sql');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            matchBrackets: true,
+            tabMode: "indent"
+        });
+        {#        /**#}
+        {#         * 富文本编辑器summernote#}
+        {#         */#}
+        {#        $(document).ready(function () {#}
+        {#            $('#summernote').summernote({#}
+        {#                theme: 'slate',#}
+        {#                height: 400,                 // set editor height#}
+        {#                minHeight: null,             // set minimum height of editor#}
+        {#                maxHeight: null,             // set maximum height of editor#}
+        {#                lang: 'zh-CN',#}
+        {#                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],#}
+        {#                toolbar: [#}
+        {#                    // [groupName, [list of button]]#}
+        {#                    ['style', ['bold', 'italic', 'underline', 'clear']],#}
+        {#                    ['font', ['strikethrough']],#}
+        {#                    ['fontsize', ['fontsize']],#}
+        {#                    ['color', ['color']],#}
+        {#                    ['para', ['ul', 'ol', 'paragraph']],#}
+        {#                    ['height', ['height']],#}
+        {#                    ['Insert', ['link']],#}
+        {#                    ['Misc', ['fullscreen', 'undo', 'help']]#}
+        {#                ]#}
+        {#            });#}
+        {#        });#}
+        {##}
+        // 获取备注信息
+        $(function () {
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_remark_info' %}',
+                type: 'POST',
+                dataType: 'json',
+                timeout: 1000,
+                data: {
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, data) {
+                        $("#select_remark").append(  //此处向select中循环绑定数据
+                            "<option data-icon='fa fa-tag' value=" + data.id + ">" + data.remark + "</option>");
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            })
+        });
+        {##}
+        {#        // 获取用户所在的项目的可用DBA和leader信息#}
+        {#        $(function () {#}
+        {#            $("#select_project").change(function () {#}
+        {#                var items_id = $(this).val();#}
+        {#                var csrftoken = $.cookie('csrftoken');#}
+        {#                $.ajax({#}
+        {#                    url: '{% url 'page_get_verifier_by_items' %}',#}
+        {#                    type: 'POST',#}
+        {#                    dataType: 'json',#}
+        {#                    timeout: 1000,#}
+        {#                    data: {#}
+        {#                        'items_id': items_id,#}
+        {#                        'csrfmiddlewaretoken': csrftoken#}
+        {#                    },#}
+        {#                    cache: false,#}
+        {#                    success: function (data) {#}
+        {#                        $("#select_dba").empty();#}
+        {#                        $("#select_leader").empty();#}
+        {#                        $.each(data, function (index, data) {#}
+        {#                            if (data.user_role == 'DBA') {#}
+        {#                                $("#select_dba").append(  //此处向select中循环绑定数据#}
+        {#                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.uid + ">" + data.username + "</option>");#}
+        {#                            }#}
+        {#                            if (data.user_role == 'LEADER') {#}
+        {#                                $("#select_leader").append(  //此处向select中循环绑定数据#}
+        {#                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.uid + ">" + data.username + "</option>");#}
+        {#                            }#}
+        {#                        });#}
+        {#                        $('.selectpicker').selectpicker('refresh');#}
+        {#                    }#}
+        {#                })#}
+        {#            });#}
+        {#            $("select_project").validator('update');#}
+        {#        });#}
+        {##}
+        {#        // 获取用户所在的项目信息#}
+        {#        $(function () {#}
+        {#            var csrftoken = $.cookie('csrftoken');#}
+        {#            $.ajax({#}
+        {#                url: '{% url 'page_get_items_by_user' %}',#}
+        {#                type: 'GET',#}
+        {#                dataType: 'json',#}
+        {#                timeout: 1000,#}
+        {#                cache: false,#}
+        {#                success: function (data) {#}
+        {#                    $.each(data, function (index, data) {#}
+        {#                        $("#select_project").append(  //此处向select中循环绑定数据#}
+        {#                            "<option data-icon='fa fa-th-large' value=" + data.items_id + ">" + data.items_name + "</option>");#}
+        {#                    });#}
+        {#                    $('.selectpicker').selectpicker('refresh');#}
+        {#                }#}
+        {#            })#}
+        {#        });#}
+        {##}
+        {#        <!-- 获取用户选择的项目的所有组的联系人 -->#}
+        {#        $(function () {#}
+        {#            $("#select_project").change(function () {#}
+        {#                var items_id = $(this).val();#}
+        {#                var csrftoken = $.cookie('csrftoken');#}
+        {#                $.ajax({#}
+        {#                    url: '{% url 'page_get_group_by_items' %}',#}
+        {#                    type: 'POST',#}
+        {#                    dataType: 'json',#}
+        {#                    timeout: 1000,#}
+        {#                    data: {#}
+        {#                        'items_id': items_id,#}
+        {#                        'csrfmiddlewaretoken': csrftoken#}
+        {#                    },#}
+        {#                    cache: false,#}
+        {#                    success: function (data) {#}
+        {#                        $("#select_contact").empty();#}
+        {#                        $.each(data, function (index, data) {#}
+        {#                            var html = '';#}
+        {#                            for (var i = 0; i < data.contact_info.split(",").length; i++) {#}
+        {#                                var result = data.contact_info.split(",")[i];#}
+        {#                                var username = result.split(":")[0];#}
+        {#                                var contact_id = result.split(":")[1];#}
+        {#                                var email = result.split(":")[2];#}
+        {#                                html += "<option data-icon='fa fa-user' data-subtext=" + email + " value=" + contact_id + ">" + username + "</option>";#}
+        {#                            }#}
+        {#                            $("#select_contact").append(  //此处向select中循环绑定数据#}
+        {#                                "<optgroup label=" + data.group_name + "> " + html +#}
+        {#                                "</optgroup>"#}
+        {#                            )#}
+        {#                        });#}
+        {#                        $('.selectpicker').selectpicker('refresh');#}
+        {#                    }#}
+        {#                })#}
+        {#            })#}
+        {#        });#}
+        {##}
+        {#        /**#}
+        {#         * 提交表单内容#}
+        {#         */#}
+        {#        <!-- 返回项目首页 -->#}
+        {#        var previousPage = function () {#}
+        {#            window.parent.location.href = "/audits/projects/index/"#}
+        {#        };#}
+        {##}
+        {#        <!-- 有效性验证 -->#}
+        {#        $('#auditCommitForm').validator().on('submit', function (e) {#}
+        {#            if ($('#summernote').summernote('isEmpty')) {#}
+        {#                displayPNotify('400', '审核内容不能为空，请重新填写');#}
+        {#                // 如果审核内容为空，退出该函数#}
+        {#                return false;#}
+        {#            }#}
+        {#            if (e.isDefaultPrevented()) {#}
+        {#                // 验证不通过#}
+        {#                displayPNotify('400', '表单无效，请重新填写');#}
+        {#            } else {#}
+        {#                // 验证通过#}
+        {#                var contents = $('#summernote').summernote('code');#}
+        {#                $('#auditCommitForm').ajaxSubmit({#}
+        {#                    data: {contents: contents},#}
+        {#                    dataType: 'json',#}
+        {#                    success: function (result) {#}
+        {#                        if (result.status == '200') {#}
+        {#                            displayPNotify(result.status, result.msg, previousPage);#}
+        {#                        }#}
+        {#                        else {#}
+        {#                            displayPNotify(result.status, result.msg);#}
+        {#                        }#}
+        {#                    }#}
+        {#                });#}
+        {#                return false;#}
+        {#            }#}
+        {#        });#}
+        {##}
+    </script>
+{% endblock %}
+

@@ -70,6 +70,7 @@ class GetBackupApi(object):
         conn = pymysql.connect(host=self.inception_backup_host, user=self.inception_backup_user,
                                password=self.inception_backup_password,
                                port=self.inception_backup_port, use_unicode=True, charset="utf8")
+
         cur = conn.cursor()
 
         rollbackResult = []
@@ -105,21 +106,24 @@ class GetDatabaseListApi(object):
         masterPassword = master.password
         masterPort = master.port
 
-        conn = pymysql.connect(host=masterHost, user=masterUser,
-                               password=masterPassword,
-                               port=masterPort, use_unicode=True, charset="utf8")
-        cur = conn.cursor()
-        dbQuery = "select schema_name from information_schema.schemata"
-        cur.execute(dbQuery)
-        dbResult = []
-        for i in cur.fetchall():
-            dbResult.append(i[0])
+        try:
+            conn = pymysql.connect(host=masterHost, user=masterUser,
+                                   password=masterPassword,
+                                   port=masterPort, use_unicode=True, charset="utf8")
+            cur = conn.cursor()
+            dbQuery = "select schema_name from information_schema.schemata"
+            cur.execute(dbQuery)
+            dbList = []
+            for i in cur.fetchall():
+                dbList.append(i[0])
 
-        for i in self.IGNORED_PARAMS:
-            if i in dbResult:
-                dbResult.remove(i)
+            for i in self.IGNORED_PARAMS:
+                if i in dbList:
+                    dbList.remove(i)
 
-        cur.close()
-        conn.close()
+            cur.close()
+            conn.close()
+            return dbList
+        except Exception as err:
+            raise
 
-        return dbResult
