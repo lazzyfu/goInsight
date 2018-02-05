@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             font-family: monospace;
-            height: 600px;
+            height: 520px;
             border: 1px solid #ccc;
             font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
             font-size: 12px;
@@ -114,10 +114,7 @@
                                 <p>插入语句（包括多值插入）</p>
                                 <p>删除语句（包括多表删除）</p>
                                 <p>更新语句（包括多表更新）</p>
-                                <p>创建表语句</p>
-                                <p>删除表语句</p>
-                                <p>修改表语句</p>
-                                <p>Truncate表语句</p>
+                                <p>创建、删除、修改、Truncate表语句</p>
                             </div>
                         </div>
                     </div>
@@ -127,7 +124,7 @@
             <div class="col-md-12">
                 <div class="box box-gray">
                     <div class="box-body no-padding">
-                        <table class="table table-responsive table-bordered">
+                        <table class="table table-responsive table-bordered" id="scroll_table">
                             <thead>
                             <tr>
                                 <th class="col-sm-1">ID</th>
@@ -159,7 +156,6 @@
             mode: "text/x-mysql",
             matchBrackets: true,
             tabMode: "indent",
-            value: 'dsdsads'
         });
 
 
@@ -230,15 +226,8 @@
             var op_action = $("#select_op").val();
             var csrftoken = $.cookie('csrftoken');
 
-            if (op_action == 'op_schema') {
-                var dst_url = '{% url 'p_sql_operate_ddl' %}'
-            }
-            else if (op_action == 'op_data') {
-                var dst_url = '{% url 'p_sql_operate_dml' %}'
-            }
-
             $.ajax({
-                url: dst_url,
+                url: "{% url 'p_sql_operate' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -246,6 +235,7 @@
                     'database': database,
                     'host': host,
                     'op_type': op_type,
+                    'op_action': op_action,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,

@@ -1,17 +1,16 @@
 import json
 import re
-from ast import literal_eval
 
 import sqlparse
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
-from datetime import datetime
+from django.views.generic import FormView
 
 from ProjectManager.forms import InceptionSqlOperateForm
 from apps.ProjectManager.inception.inception_api import GetDatabaseApi, InceptionApi
-from .models import InceptionHostConfig, InceptionSqlOperateRecord
 from utils.tools import format_request
+from .models import InceptionHostConfig
 
 
 class ProjectListView(View):
@@ -19,90 +18,66 @@ class ProjectListView(View):
         return render(request, 'index.html')
 
 
-class InceptionSqlOperateView(View):
-    def get(self, request):
-        return render(request, 'inception_sql_operate.html')
+class InceptionSqlOperateView(FormView):
+    """inception处理DML语句"""
 
-class InceptionSqlOperateDDLView(View):
-    """inception处理DDL语句"""
+    form_class = InceptionSqlOperateForm
+    template_name = 'inception_sql_operate.html'
 
-    def post(self, request):
-        data = format_request(request)
-        form = InceptionSqlOperateForm(data)
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        host = cleaned_data['host']
+        database = cleaned_data['database']
+        op_action = cleaned_data.get('op_action')
+        op_type = cleaned_data['op_type']
+        sql_content = cleaned_data['sql_content']
 
-        if form.is_valid():
-            cleaned_data = form.cleaned_data
+        DDL_FILTER = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
+        DML_FILTER = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
 
-            host = cleaned_data['host']
-            database = cleaned_data['database']
-            op_type = cleaned_data['op_type']
-            sql_content = cleaned_data['sql_content'].rstrip()
-            op_user = request.user.username
-            op_uid = request.user.uid
-            workid = datetime.now().strftime("%Y%m%d%H%M%S%f")
+        checkData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host, database=database,
+                                              action='check')
 
-            sql_filter = sql_content.replace('\n', '')
-            DML_FILTER = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
-
-            if sql_content[-1] != ';':
-                context = {'errMsg': 'SQL语句没用以;结尾, 请重新输入', 'errCode': 400}
+        # 修改表结构
+        if op_action == 'op_schema':
+            if re.search(DML_FILTER, sql_content, re.I):
+                context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
             else:
-                if re.search(DML_FILTER, sql_filter, re.I):
-                    context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
-                else:
-                    data = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host, database=database,
-                                                     action='check')
-                    if op_type == 'check':
-                        context = {'data': data, 'errCode': 200}
-                    elif op_type == 'commit':
-                        if 1 in [x['errlevel'] for x in data] or 2 in [x['errlevel'] for x in data]:
-                            context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
-                        else:
-                            checkData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host,
-                                                                  database=database,
-                                                                  action='execute')
-                            for line in checkData:
-                                sql = line['SQL']
-                                step_id = line['ID']
-                                stage = line['stage']
-                                stagestatus = line['stagestatus']
-                                errlevel = line['errlevel']
-                                errormessage = line['errormessage']
-                                Affected_rows = line['Affected_rows']
-                                sequence = line['sequence']
-                                backup_dbname = line['backup_dbname']
-                                execute_time = line['execute_time']
+                if op_type == 'check':
+                    context = {'data': checkData, 'errCode': 200}
+                if op_type == 'commit':
+                    if 1 in [x['errlevel'] for x in checkData] or 2 in [x['errlevel'] for x in checkData]:
+                        context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
+                    else:
+                        executeData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host,
+                                                                database=database,
+                                                                action='execute')
+                        context = form.is_save(self.request, executeData)
 
-                                InceptionSqlOperateRecord.objects.create(
-                                    op_user=op_user,
-                                    op_uid=op_uid,
-                                    workid=workid,
-                                    dst_host=host,
-                                    dst_database=database,
-                                    stagestatus=stagestatus,
-                                    sql=sql,
-                                    step_id=step_id,
-                                    stage=stage,
-                                    errlevel=errlevel,
-                                    errormessage=errormessage,
-                                    affected_rows=Affected_rows,
-                                    sequence=literal_eval(sequence),
-                                    backup_dbname=backup_dbname,
-                                    execute_time=execute_time
-                                )
-                            context = {'data': checkData, 'errMsg': '执行完成', 'errCode': 200}
-        else:
-            # error = form.errors.as_text()
-            error = "请选择主机或库名"
-            context = {'errCode': '400', 'errMsg': error}
+        # 修改数据
+        if op_action == 'op_data':
+            if re.search(DDL_FILTER, sql_content, re.I):
+                context = {'errMsg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句', 'errCode': 400}
+            else:
+                if op_type == 'check':
+                    context = {'data': checkData, 'errCode': 200}
+                if op_type == 'commit':
+                    if 1 in [x['errlevel'] for x in checkData] or 2 in [x['errlevel'] for x in checkData]:
+                        context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
+                    else:
+                        executeData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host,
+                                                                database=database,
+                                                                action='execute')
+                        context = form.is_save(self.request, executeData)
+
         return HttpResponse(json.dumps(context))
 
+    def form_invalid(self, form):
+        # error = form.errors.as_text()
+        error = "请选择主机或库名"
+        context = {'errCode': '400', 'errMsg': error}
 
-class InceptionSqlOperateDMLView(View):
-    """inception DML check and output"""
-
-    def get(self, request):
-        return render(request, 'inception_sql_operate.html')
+        return HttpResponse(json.dumps(context))
 
 
 class BeautifySQLView(View):

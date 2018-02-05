@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 
+
 def format_request(request):
     data = {}
     if request.method == 'GET':
