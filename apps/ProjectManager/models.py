@@ -68,6 +68,13 @@ class OnlineAuditContents(models.Model):
     email_cc = models.CharField(max_length=1024, default='', verbose_name=u'抄送人')
     progress_status = models.CharField(max_length=10, default='0', choices=progress_status_choices, verbose_name=u'进度')
     contents = models.TextField(default='', verbose_name=u'提交的内容')
+    fact_verifier = models.CharField(max_length=30, default='', verbose_name=u'实际审批人')
+    verifier_time = models.DateTimeField(auto_now_add=True, verbose_name=u'leader审批时间')
+    fact_operate_dba = models.CharField(max_length=30, default='', verbose_name=u'实际执行dba')
+    operate_time = models.DateTimeField(auto_now_add=True, verbose_name=u'DBA处理的时间')
+    close_user = models.CharField(max_length=30, default='', verbose_name=u'关闭记录的用户')
+    close_reason = models.CharField(max_length=1024, default='', verbose_name=u'关闭原因')
+    close_time = models.DateTimeField(auto_now_add=True, verbose_name=u'关闭时间')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 

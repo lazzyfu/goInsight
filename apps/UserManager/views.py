@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views.generic import FormView, RedirectView
 
+from UserManager.models import UserAccount
 from .forms import LoginForm
 
 
@@ -20,6 +21,10 @@ class LoginView(FormView):
         user = form.is_verify()
         if user is not None:
             login(self.request, user)
+            # 将用户所属的组id写入到session中
+            groups = UserAccount.objects.get(uid=self.request.user.uid).groupsdetail_set.all().values_list(
+                'group__group_id', flat=True)
+            self.request.session['groups'] = list(groups)
             return super(LoginView, self).form_valid(form)
         else:
             return render(self.request, self.template_name, {'msg': '用户名或密码错误'})

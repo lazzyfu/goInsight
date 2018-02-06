@@ -3,16 +3,20 @@ import re
 from datetime import datetime
 
 import sqlparse
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, When, Value, CharField, Case
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import FormView, ListView
 from pure_pagination import PaginationMixin
 
-from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm
-from UserManager.models import GroupsDetail, UserAccount, ContactsDetail, Contacts
+from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm
+from ProjectManager.group_permissions import check_group_permission
+from UserManager.models import GroupsDetail, UserAccount, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi
 from utils.tools import format_request
 from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents
@@ -194,6 +198,8 @@ class OnlineSqlCommitView(FormView):
                 email_cc=email_cc,
                 contents=contents
             )
+        context = {'errCode': '200', 'errMsg': '提交成功'}
+        return HttpResponse(json.dumps(context))
 
     # def post(self, request):
     #     data = format_request(request)
@@ -304,3 +310,220 @@ class GetContactsView(View):
                 result.append(row.contact_info)
 
         return JsonResponse(result, safe=False)
+
+
+class OnlineAuditRecordsView(PaginationMixin, ListView):
+    paginate_by = 8
+    context_object_name = 'audit_records'
+    template_name = 'online_sql_records.html'
+
+    obj = OnlineAuditContents.objects.all().annotate(
+        progress_value=Case(
+            When(progress_status='0', then=Value('待批准')),
+            When(progress_status='1', then=Value('未批准')),
+            When(progress_status='2', then=Value('已批准')),
+            When(progress_status='3', then=Value('处理中')),
+            When(progress_status='4', then=Value('已完成')),
+            When(progress_status='5', then=Value('已关闭')),
+            output_field=CharField(),
+        ),
+        progress_color=Case(
+            When(progress_status__in=('0',), then=Value('btn-primary')),
+            When(progress_status__in=('2',), then=Value('btn-warning')),
+            When(progress_status__in=('1', '5'), then=Value('btn-danger')),
+            When(progress_status__in=('3',), then=Value('btn-info')),
+            When(progress_status__in=('4',), then=Value('btn-success')),
+            output_field=CharField(),
+        ),
+        group_name=F('group__group_name'),
+        group_id=F('group__group_id'),
+    )
+
+    def get_queryset(self):
+        # 返回用户所在项目组的记录
+        # 如果用户不属于任何项目组, 返回没有权限查询记录
+        user_in_group = self.request.session['groups']
+        if len(user_in_group) == 0:
+            raise PermissionDenied
+        else:
+            contents = self.request.GET.get('search_contents')
+
+            if contents:
+                audit_records = self.obj.filter(
+                    contents__contains=contents
+                ).filter(group_id__in=user_in_group). \
+                    values('group_name',
+                           'progress_color',
+                           'progress_value', 'id', 'group_id',
+                           'title',
+                           'proposer', 'operate_dba', 'verifier',
+                           'created_at').order_by('-created_at')
+            else:
+                audit_records = self.obj.filter(group_id__in=user_in_group). \
+                    values('group_name', 'progress_color',
+                           'progress_value', 'id', 'group_id',
+                           'title',
+                           'proposer', 'operate_dba', 'verifier',
+                           'created_at').order_by('-created_at')
+
+            return audit_records
+
+
+class OnlineClickVerifyView(FormView):
+    form_class = VerifyCommitForm
+
+    @method_decorator(check_group_permission)
+    def dispatch(self, request, *args, **kwargs):
+        return super(OnlineClickVerifyView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        id = cleaned_data.get('id')
+        status = cleaned_data.get('status')
+        addition_info = cleaned_data.get('addition_info')
+
+        data = OnlineAuditContents.objects.get(pk=id)
+        # 当记录关闭时
+        if data.progress_status == '5':
+            context = {'errCode': '400', 'errMsg': '该记录已被关闭、请不要重复提交'}
+        # 当记录未关闭时
+        else:
+            # 角色为Leader的用户可以审批
+            if self.request.user.user_role() == 'Leader':
+                if data.progress_status == '0' or data.progress_status == '1':
+                    # 当用户点击的是通过, 状态变为：已批准
+                    with transaction.atomic():
+                        if status == u'通过':
+                            data.progress_status = '2'
+                            data.fact_operate_dba = self.request.user.username
+                            data.verifier_time = timezone.now()
+                            data.save()
+                            context = {'errCode': '200', 'errMsg': '操作成功、审核通过'}
+                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
+                            #                        user_role=request.user.user_role())
+                        # 当用户点击的是不通过, 状态变为：未批准
+                        elif status == u'不通过':
+                            data.progress_status = '1'
+                            data.fact_operate_dba = self.request.user.username
+                            data.verifier_time = timezone.now()
+                            data.save()
+                            context = {'errCode': '200', 'errMsg': '操作成功、审核未通过'}
+                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
+                            #                        user_role=request.user.user_role())
+                # 其他情况
+                else:
+                    context = {'errCode': '400', 'errMsg': '操作失败、请不要重复提交'}
+            else:
+                context = {'errCode': '403', 'errMsg': '权限拒绝, 您没有权限操作'}
+        return HttpResponse(json.dumps(context))
+
+    def form_invalid(self, form):
+        error = form.errors.as_text()
+        context = {'errCode': '400', 'errMsg': error}
+
+        return HttpResponse(json.dumps(context))
+
+
+class OnlineClickFinishView(FormView):
+    form_class = VerifyCommitForm
+
+    @method_decorator(check_group_permission)
+    def dispatch(self, request, *args, **kwargs):
+        return super(OnlineClickFinishView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        id = cleaned_data.get('id')
+        status = cleaned_data.get('status')
+        addition_info = cleaned_data.get('addition_info')
+
+        data = OnlineAuditContents.objects.get(pk=id)
+        # 当记录关闭时
+        if data.progress_status == '5':
+            context = {'errCode': '400', 'errMsg': '该记录已被关闭、请不要重复提交'}
+        # 当记录未关闭时
+        else:
+            # 角色为DBA的才能进行操作
+            if self.request.user.user_role() == 'DBA':
+                # 当进度状态为：已批准或处理中时
+                if data.progress_status == '2' or data.progress_status == '3':
+                    # 当用户点击的是处理中, 状态变为：处理中
+                    with transaction.atomic():
+                        if status == u'处理中':
+                            data.progress_status = '3'
+                            data.save()
+                            context = {'errCode': '200', 'errMsg': '操作成功、正在处理中'}
+                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
+                            #                        user_role=request.user.user_role())
+                        # 当用户点击的是已完成, 状态变为：已完成
+                        elif status == u'已完成':
+                            data.progress_status = '4'
+                            data.fact_operate_dba = self.request.user.username
+                            data.operate_time = timezone.now()
+                            data.save()
+                            context = {'errCode': '200', 'errMsg': '操作成功、处理完成'}
+                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
+                            #                        user_role=request.user.user_role())
+                # 未批准
+                elif data.progress_status == '1' or data.progress_status == '0':
+                    context = {'errCode': '400', 'errMsg': '操作失败、审核未通过'}
+                # 其他情况
+                else:
+                    context = {'errCode': '400', 'errMsg': '操作失败、请不要重复提交'}
+            else:
+                context = {'errCode': '403', 'errMsg': '权限拒绝、只有DBA角色可以操作'}
+        return HttpResponse(json.dumps(context))
+
+    def form_invalid(self, form):
+        error = form.errors.as_text()
+        context = {'errCode': '400', 'errMsg': error}
+
+        return HttpResponse(json.dumps(context))
+
+
+class OnlineClickCloseView(FormView):
+    form_class = VerifyCommitForm
+
+    @method_decorator(check_group_permission)
+    def dispatch(self, request, *args, **kwargs):
+        return super(OnlineClickCloseView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        id = cleaned_data.get('id')
+        status = cleaned_data.get('status')
+        addition_info = cleaned_data.get('addition_info')
+
+        data = OnlineAuditContents.objects.get(pk=id)
+        # 当记录关闭时
+        if data.progress_status == '5':
+            context = {'errCode': '400', 'errMsg': '该记录已被关闭、请不要重复提交'}
+        # 当记录未关闭时
+        else:
+            if len(addition_info) >= 5:
+                # 当进度为：处理中或已完成时
+                if status == u'提交':
+                    if data.progress_status == '3' or data.progress_status == '4':
+                        context = {'errCode': '400', 'errMsg': '操作失败、数据正在处理中或已完成'}
+                    else:
+                        with transaction.atomic():
+                            data.progress_status = '5'
+                            data.close_user = self.request.user.username
+                            data.close_reason = addition_info
+                            data.close_time = timezone.now()
+                            data.save()
+                            context = {'errCode': '200', 'errMsg': '操作成功、记录关闭成功'}
+                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
+                            #                        user_role=request.user.user_role())
+                elif status == u'结束':
+                    context = {'errCode': '400', 'errMsg': '操作失败、关闭窗口'}
+            else:
+                context = {'errCode': '400', 'errMsg': '操作失败、<关闭原因>不能少于5个字符'}
+
+        return HttpResponse(json.dumps(context))
+
+    def form_invalid(self, form):
+        error = form.errors.as_text()
+        context = {'errCode': '400', 'errMsg': error}
+
+        return HttpResponse(json.dumps(context))

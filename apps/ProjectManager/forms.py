@@ -64,3 +64,8 @@ class OnlineAuditCommitForm(forms.Form):
     group_id = forms.CharField(required=True, label=u'项目组id')
     email_cc_id = forms.CharField(required=True, label=u'抄送联系人的id，以逗号分隔')
     contents = forms.CharField(widget=forms.Textarea)
+
+class VerifyCommitForm(forms.Form):
+    id = forms.IntegerField(required=True)
+    status = forms.CharField(max_length=10, required=True)
+    addition_info = forms.CharField(required=False)

@@ -264,12 +264,7 @@
                     data: {contents: contents},
                     dataType: 'json',
                     success: function (result) {
-                        if (result.status == '200') {
-                            displayPNotify(result.status, result.msg, previousPage);
-                        }
-                        else {
-                            displayPNotify(result.status, result.msg);
-                        }
+                        displayPNotify(result.errCode, result.errMsg, refresh_page);
                     }
                 });
                 return false;

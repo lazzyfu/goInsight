@@ -124,7 +124,7 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_inception_sql_records' %}"><i class="fa fa-list-ol"></i>工单记录</a>
+                        <li><a href="{% url 'p_online_sql_records' %}"><i class="fa fa-list-ol"></i>工单记录</a>
                         </li>
                         <li><a href="{% url 'p_online_sql_commit' %}"><i class="fa fa-edit"></i>数据变更</a></li>
                     </ul>
@@ -205,7 +205,8 @@
 <!-- summernote -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/summernote/summernote.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/summernote/summernote-zh-CN.min.js' %}"></script>
-
+<!-- layer -->
+<script src="{% static 'AdminLTE-2.4.2/bower_components/layer/layui.js' %}"></script>
 <!-- general js file -->
 <script src="{% static 'self_public.js' %}"></script>
 

@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 
 from .views import ProjectListView, BeautifySQLView, GetInceptionHostConfigView, \
     GetDatabaseListView, InceptionSqlOperateView, InceptionSqlRecords, InceptionSingleSqlDetailView, \
-    InceptionAllSqlDetailView, OnlineSqlCommitView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView
+    InceptionAllSqlDetailView, OnlineSqlCommitView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
+    OnlineAuditRecordsView, OnlineClickVerifyView, OnlineClickFinishView, OnlineClickCloseView
 
 urlpatterns = [
     path(r'index/', ProjectListView.as_view(), name='p_project'),
@@ -19,10 +20,16 @@ urlpatterns = [
     re_path(r'inception_all_sql_detail/(?P<workid>.*)/', login_required(InceptionAllSqlDetailView.as_view())),
     re_path(r'inception_single_sql_detail/(?P<sequence>.*)/', login_required(InceptionSingleSqlDetailView.as_view())),
 
-    # 线上工单
+    # 线上工单提交
     path(r'online_sql_commit/', login_required(OnlineSqlCommitView.as_view()), name='p_online_sql_commit'),
     path(r'get_remark_info/', login_required(GetRemarkInfo.as_view()), name='p_remark_info'),
     path(r'get_group_info/', login_required(GetGroupView.as_view()), name='p_get_group'),
     path(r'get_dba_leader/', login_required(GetDbaLeaderView.as_view()), name='p_get_dba_leader'),
     path(r'get_contacts/', login_required(GetContactsView.as_view()), name='p_get_contacts'),
+
+    # 线上工单记录
+    path(r'online_sql_records/', login_required(OnlineAuditRecordsView.as_view()), name='p_online_sql_records'),
+    path(r'online_click_verify/', login_required(OnlineClickVerifyView.as_view()), name='p_online_click_verify'),
+    path(r'online_click_finish/', login_required(OnlineClickFinishView.as_view()), name='p_online_click_finish'),
+    path(r'online_click_close/', login_required(OnlineClickCloseView.as_view()), name='p_online_click_close'),
 ]
