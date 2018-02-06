@@ -62,18 +62,6 @@ function displayPNotify(status, msg, init_fun) {
 }
 
 /**
- * 上传文件
- */
-$("#input-id").fileinput({
-    language: 'zh',
-    showUpload: false,
-    maxFileSize: 15360,
-    maxFilePreviewSize: 1024,
-    maxFileCount: 8,
-    allowedFileExtensions: ["txt", "csv", "xlsx", "sql", "tar.gz", "zip"]
-});
-
-/**
  * 生成随机字符串
  */
 function random_str(len) {

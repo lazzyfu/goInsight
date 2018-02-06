@@ -110,7 +110,7 @@ class Remark(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'审计备注表'
+        verbose_name = u'线上审计备注表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()

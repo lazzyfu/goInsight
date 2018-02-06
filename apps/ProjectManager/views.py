@@ -2,6 +2,7 @@ import json
 import re
 
 import sqlparse
+from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views import View
@@ -9,6 +10,7 @@ from django.views.generic import FormView, ListView
 from pure_pagination import PaginationMixin
 
 from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm
+from UserManager.models import GroupsDetail, UserAccount, ContactsDetail, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi
 from utils.tools import format_request
 from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark
@@ -226,7 +228,59 @@ class OnlineSqlCommitView(FormView):
     #         result = {'status': '400', 'msg': error}
     #     return HttpResponse(json.dumps(result))
 
+
 class GetRemarkInfo(View):
     def post(self, request):
         obj = Remark.objects.all().values('id', 'remark')
         return JsonResponse(list(obj), safe=False)
+
+
+class GetGroupView(View):
+    def get(self, request):
+        groups = GroupsDetail.objects.filter(
+            user__uid=request.user.uid).annotate(
+            group_id=F('group__group_id'), group_name=F('group__group_name')) \
+            .values('group_id', 'group_name')
+
+        return JsonResponse(list(groups), safe=False)
+
+
+class GetDbaLeaderView(View):
+    def post(self, request):
+        """
+        获取指定项目可用的dba和leader信息
+        """
+        group_id = request.POST.get('group_id')
+        result = []
+        if group_id:
+            data = GroupsDetail.objects.annotate(
+                uid=F('user__uid'),
+                username=F('user__username'),
+                email=F('user__email'),
+            ).filter(group__group_id=group_id).values('uid', 'username', 'email')
+
+            for i in data:
+                uid = i['uid']
+                user_role = UserAccount.objects.get(uid=uid).user_role()
+                i['user_role'] = user_role
+                result.append(i)
+
+        return JsonResponse(result, safe=False)
+
+
+class GetContactsView(View):
+    def post(self, request):
+        """ 获取指定项目的联系人"""
+        group_id = request.POST.get('group_id')
+
+        result = []
+        if group_id:
+
+            query = f"select ac.contact_id, group_concat(concat_ws(':', ac.contact_name, ac.contact_id, ac.contact_email)) as contact_info " \
+                    f"from auditsql_contacts as ac JOIN auditsql_contacts_detail a ON ac.contact_id = a.contact_id JOIN  auditsql_groups a2 " \
+                    f"ON a.group_id = a2.group_id where a.group_id = {group_id} group by ac.contact_id;"
+
+            for row in Contacts.objects.raw(query):
+                result.append(row.contact_info)
+
+        return JsonResponse(result, safe=False)

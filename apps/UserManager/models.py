@@ -16,7 +16,7 @@ class UserAccount(AbstractUser):
 
     def user_role(self):
         # 返回用户角色名
-        return RolesDetail.objects.annotate(role_name=F('role__role_name')).get(user__uid=1).role_name
+        return RolesDetail.objects.annotate(role_name=F('role__role_name')).get(user__uid=self.uid).role_name
 
     class Meta:
         verbose_name = u'用户表'
@@ -45,7 +45,10 @@ class Roles(models.Model):
 
 
 class RolesDetail(models.Model):
-    """用户角色详情表"""
+    """
+    用户角色详情表
+    对应用户角色分组
+    """
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, null=False)
     role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=False)
@@ -53,7 +56,7 @@ class RolesDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'用户角色详情表'
+        verbose_name = u'用户角色分组详情表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -75,7 +78,7 @@ class Groups(models.Model):
         return self.group_name
 
     class Meta:
-        verbose_name = u'用户组表'
+        verbose_name = u'项目组表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -83,7 +86,10 @@ class Groups(models.Model):
 
 
 class GroupsDetail(models.Model):
-    """用户项目组详情表"""
+    """
+    用户项目组详情表
+    对应用户项目分组
+    """
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, null=False)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=False)
@@ -91,7 +97,7 @@ class GroupsDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'用户组详情表'
+        verbose_name = u'项目分组详情表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -117,3 +123,21 @@ class Contacts(models.Model):
         db_table = 'auditsql_contacts'
 
         unique_together = ('contact_name', 'contact_email')
+
+class ContactsDetail(models.Model):
+    """
+    联系人详情表
+    对应联系人分组
+    """
+    id = models.AutoField(primary_key=True, verbose_name=u'主键')
+    contact = models.ForeignKey(Contacts, on_delete=models.CASCADE, null=False)
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
+
+    class Meta:
+        verbose_name = u'联系人分组详情表'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'auditsql_contacts_detail'

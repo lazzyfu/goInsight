@@ -97,8 +97,9 @@
                             <div class="col-md-10 col-sm-10 col-xs-12">
                                 <textarea id="select_sql" name="sql_content"
                                           class="form-control"
-                                          required></textarea>
+                                          required data-minlength="5"></textarea>
                             </div>
+                            <div class="help-block with-errors col-md-2"></div>
                         </div>
 
                         <div class="form-group">
@@ -118,6 +119,8 @@
 {% endblock %}
 
 {% block link_javascripts %}
+    <!-- bootstrap-validator -->
+    <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-validation/validator.min.js' %}"></script>
     <script>
         var myTextarea = document.getElementById('select_sql');
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
@@ -126,31 +129,7 @@
             matchBrackets: true,
             tabMode: "indent"
         });
-        {#        /**#}
-        {#         * 富文本编辑器summernote#}
-        {#         */#}
-        {#        $(document).ready(function () {#}
-        {#            $('#summernote').summernote({#}
-        {#                theme: 'slate',#}
-        {#                height: 400,                 // set editor height#}
-        {#                minHeight: null,             // set minimum height of editor#}
-        {#                maxHeight: null,             // set maximum height of editor#}
-        {#                lang: 'zh-CN',#}
-        {#                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],#}
-        {#                toolbar: [#}
-        {#                    // [groupName, [list of button]]#}
-        {#                    ['style', ['bold', 'italic', 'underline', 'clear']],#}
-        {#                    ['font', ['strikethrough']],#}
-        {#                    ['fontsize', ['fontsize']],#}
-        {#                    ['color', ['color']],#}
-        {#                    ['para', ['ul', 'ol', 'paragraph']],#}
-        {#                    ['height', ['height']],#}
-        {#                    ['Insert', ['link']],#}
-        {#                    ['Misc', ['fullscreen', 'undo', 'help']]#}
-        {#                ]#}
-        {#            });#}
-        {#        });#}
-        {##}
+
         // 获取备注信息
         $(function () {
             var csrftoken = $.cookie('csrftoken');
@@ -158,7 +137,7 @@
                 url: '{% url 'p_remark_info' %}',
                 type: 'POST',
                 dataType: 'json',
-                timeout: 1000,
+                timeout: 5000,
                 data: {
                     'csrfmiddlewaretoken': csrftoken
                 },
@@ -172,98 +151,94 @@
                 }
             })
         });
-        {##}
-        {#        // 获取用户所在的项目的可用DBA和leader信息#}
-        {#        $(function () {#}
-        {#            $("#select_project").change(function () {#}
-        {#                var items_id = $(this).val();#}
-        {#                var csrftoken = $.cookie('csrftoken');#}
-        {#                $.ajax({#}
-        {#                    url: '{% url 'page_get_verifier_by_items' %}',#}
-        {#                    type: 'POST',#}
-        {#                    dataType: 'json',#}
-        {#                    timeout: 1000,#}
-        {#                    data: {#}
-        {#                        'items_id': items_id,#}
-        {#                        'csrfmiddlewaretoken': csrftoken#}
-        {#                    },#}
-        {#                    cache: false,#}
-        {#                    success: function (data) {#}
-        {#                        $("#select_dba").empty();#}
-        {#                        $("#select_leader").empty();#}
-        {#                        $.each(data, function (index, data) {#}
-        {#                            if (data.user_role == 'DBA') {#}
-        {#                                $("#select_dba").append(  //此处向select中循环绑定数据#}
-        {#                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.uid + ">" + data.username + "</option>");#}
-        {#                            }#}
-        {#                            if (data.user_role == 'LEADER') {#}
-        {#                                $("#select_leader").append(  //此处向select中循环绑定数据#}
-        {#                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.uid + ">" + data.username + "</option>");#}
-        {#                            }#}
-        {#                        });#}
-        {#                        $('.selectpicker').selectpicker('refresh');#}
-        {#                    }#}
-        {#                })#}
-        {#            });#}
-        {#            $("select_project").validator('update');#}
-        {#        });#}
-        {##}
-        {#        // 获取用户所在的项目信息#}
-        {#        $(function () {#}
-        {#            var csrftoken = $.cookie('csrftoken');#}
-        {#            $.ajax({#}
-        {#                url: '{% url 'page_get_items_by_user' %}',#}
-        {#                type: 'GET',#}
-        {#                dataType: 'json',#}
-        {#                timeout: 1000,#}
-        {#                cache: false,#}
-        {#                success: function (data) {#}
-        {#                    $.each(data, function (index, data) {#}
-        {#                        $("#select_project").append(  //此处向select中循环绑定数据#}
-        {#                            "<option data-icon='fa fa-th-large' value=" + data.items_id + ">" + data.items_name + "</option>");#}
-        {#                    });#}
-        {#                    $('.selectpicker').selectpicker('refresh');#}
-        {#                }#}
-        {#            })#}
-        {#        });#}
-        {##}
-        {#        <!-- 获取用户选择的项目的所有组的联系人 -->#}
-        {#        $(function () {#}
-        {#            $("#select_project").change(function () {#}
-        {#                var items_id = $(this).val();#}
-        {#                var csrftoken = $.cookie('csrftoken');#}
-        {#                $.ajax({#}
-        {#                    url: '{% url 'page_get_group_by_items' %}',#}
-        {#                    type: 'POST',#}
-        {#                    dataType: 'json',#}
-        {#                    timeout: 1000,#}
-        {#                    data: {#}
-        {#                        'items_id': items_id,#}
-        {#                        'csrfmiddlewaretoken': csrftoken#}
-        {#                    },#}
-        {#                    cache: false,#}
-        {#                    success: function (data) {#}
-        {#                        $("#select_contact").empty();#}
-        {#                        $.each(data, function (index, data) {#}
-        {#                            var html = '';#}
-        {#                            for (var i = 0; i < data.contact_info.split(",").length; i++) {#}
-        {#                                var result = data.contact_info.split(",")[i];#}
-        {#                                var username = result.split(":")[0];#}
-        {#                                var contact_id = result.split(":")[1];#}
-        {#                                var email = result.split(":")[2];#}
-        {#                                html += "<option data-icon='fa fa-user' data-subtext=" + email + " value=" + contact_id + ">" + username + "</option>";#}
-        {#                            }#}
-        {#                            $("#select_contact").append(  //此处向select中循环绑定数据#}
-        {#                                "<optgroup label=" + data.group_name + "> " + html +#}
-        {#                                "</optgroup>"#}
-        {#                            )#}
-        {#                        });#}
-        {#                        $('.selectpicker').selectpicker('refresh');#}
-        {#                    }#}
-        {#                })#}
-        {#            })#}
-        {#        });#}
-        {##}
+
+        // 获取当前用户所属的项目组
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_get_group' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, data) {
+                        $("#select_project").append(  //此处向select中循环绑定数据
+                            "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            })
+        });
+
+        // 获取被选中项目的的DBA和Leader
+        $(function () {
+            $("#select_project").change(function () {
+                var group_id = $(this).val();
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: '{% url 'p_get_dba_leader' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 5000,
+                    data: {
+                        'group_id': group_id,
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    cache: false,
+                    success: function (data) {
+                        $("#select_dba").empty();
+                        $("#select_leader").empty();
+                        $.each(data, function (index, data) {
+                            if (data.user_role == 'DBA') {
+                                $("#select_dba").append(  //此处向select中循环绑定数据
+                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.uid + ">" + data.username + "</option>");
+                            }
+                            if (data.user_role == 'Leader') {
+                                $("#select_leader").append(  //此处向select中循环绑定数据
+                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.uid + ">" + data.username + "</option>");
+                            }
+                        });
+                        $('.selectpicker').selectpicker('refresh');
+                    }
+                })
+            });
+            $("select_project").validator('update');
+        });
+
+        <!-- 获取用户选择的项目的联系人 -->
+        $(function () {
+            $("#select_project").change(function () {
+                var group_id = $(this).val();
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: '{% url 'p_get_contacts' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 5000,
+                    data: {
+                        'group_id': group_id,
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    cache: false,
+                    success: function (data) {
+                        $("#select_contact").empty();
+                        $.each(data, function (index, row) {
+                            var html = '';
+                            for (var i = 0; i < row.split(",").length; i++) {
+                                var result = row.split(",")[i];
+                                var username = result.split(":")[0];
+                                var contact_id = result.split(":")[1];
+                                var email = result.split(":")[2];
+                                html += "<option data-icon='fa fa-user' data-subtext=" + email + " value=" + contact_id + ">" + username + "</option>";
+                            }
+                            $("#select_contact").append(html)
+                        });
+                        $('.selectpicker').selectpicker('refresh');
+                    }
+                })
+            })
+        });
+
         {#        /**#}
         {#         * 提交表单内容#}
         {#         */#}
@@ -272,35 +247,41 @@
         {#            window.parent.location.href = "/audits/projects/index/"#}
         {#        };#}
         {##}
-        {#        <!-- 有效性验证 -->#}
-        {#        $('#auditCommitForm').validator().on('submit', function (e) {#}
-        {#            if ($('#summernote').summernote('isEmpty')) {#}
-        {#                displayPNotify('400', '审核内容不能为空，请重新填写');#}
-        {#                // 如果审核内容为空，退出该函数#}
-        {#                return false;#}
-        {#            }#}
-        {#            if (e.isDefaultPrevented()) {#}
-        {#                // 验证不通过#}
-        {#                displayPNotify('400', '表单无效，请重新填写');#}
-        {#            } else {#}
-        {#                // 验证通过#}
-        {#                var contents = $('#summernote').summernote('code');#}
-        {#                $('#auditCommitForm').ajaxSubmit({#}
-        {#                    data: {contents: contents},#}
-        {#                    dataType: 'json',#}
-        {#                    success: function (result) {#}
-        {#                        if (result.status == '200') {#}
-        {#                            displayPNotify(result.status, result.msg, previousPage);#}
-        {#                        }#}
-        {#                        else {#}
-        {#                            displayPNotify(result.status, result.msg);#}
-        {#                        }#}
-        {#                    }#}
-        {#                });#}
-        {#                return false;#}
+
+        $('#auditCommitForm').validator();
+        <!-- 有效性验证 -->
+        {#$('#auditCommitForm').validator().on('submit', function (e) {#}
+        {#    var sql_content = myCodeMirror.getValue();#}
+        {#    alert(sql_content);#}
+        {#    if (sql_content.length < 10) {#}
+        {#        displayPNotify('400', '审核内容不能为空，请重新填写');#}
+        {#        // 如果审核内容长度小于10个字符，返回无效#}
+        {#        return false;#}
+        {#    }#}
+        {#    if (e.isDefaultPrevented()) {#}
+        {#        // 验证不通过#}
+        {#        displayPNotify('400', '表单无效，请重新填写');#}
+        {#    } else {#}
+        {#        // 验证通过#}
+        {#        var contents = $('#summernote').summernote('code');#}
+        {#        $('#auditCommitForm').ajaxSubmit({#}
+        {#            data: {contents: contents},#}
+        {#            dataType: 'json',#}
+        {#            success: function (result) {#}
+        {#                if (result.status == '200') {#}
+        {#                    displayPNotify(result.status, result.msg, previousPage);#}
+        {#                }#}
+        {#                else {#}
+        {#                    displayPNotify(result.status, result.msg);#}
+        {#                }#}
         {#            }#}
         {#        });#}
-        {##}
+        {#        return false;#}
+        {#    }#}
+        {#});#}
+
     </script>
 {% endblock %}
+
+
 

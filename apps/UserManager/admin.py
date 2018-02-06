@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
-from .models import UserAccount, Groups, GroupsDetail, Contacts, Roles, RolesDetail
+from .models import UserAccount, Groups, GroupsDetail, Contacts, Roles, RolesDetail, ContactsDetail
 
 # Register your models here.
 
@@ -46,3 +46,6 @@ class ContactsAdmin(admin.ModelAdmin):
     list_display = ('contact_id', 'contact_name', 'contact_email', 'created_at', 'updated_at')
     ordering = ('-created_at',)
 
+@admin.register(ContactsDetail)
+class ContactsDetailAdmin(admin.ModelAdmin):
+    list_display = ('id', 'contact', 'group', 'created_at', 'updated_at')
