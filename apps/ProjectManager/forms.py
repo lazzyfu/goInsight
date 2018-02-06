@@ -58,8 +58,9 @@ class InceptionSqlOperateForm(forms.Form):
 
 class OnlineAuditCommitForm(forms.Form):
     title = forms.CharField(max_length=100, required=True, label=u'标题')
-    group = forms.CharField(required=True, label=u'项目组id')
-    verifier = forms.CharField(required=True, label=u'批准的leader的id')
-    operate_dba = forms.CharField(required=True, label=u'执行dba的id')
-    email_cc = forms.CharField(required=True, label=u'抄送联系人的id，以逗号分隔')
+    remark = forms.CharField(required=True, label=u'备注的id，以逗号分隔')
+    verifier = forms.CharField(required=True, label=u'批准的leader的uid')
+    operate_dba = forms.CharField(required=True, label=u'执行dba的uid')
+    group_id = forms.CharField(required=True, label=u'项目组id')
+    email_cc_id = forms.CharField(required=True, label=u'抄送联系人的id，以逗号分隔')
     contents = forms.CharField(widget=forms.Textarea)

@@ -1,7 +1,9 @@
 import json
 import re
+from datetime import datetime
 
 import sqlparse
+from django.db import transaction
 from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -13,7 +15,7 @@ from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm
 from UserManager.models import GroupsDetail, UserAccount, ContactsDetail, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi
 from utils.tools import format_request
-from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark
+from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents
 
 
 class ProjectListView(View):
@@ -168,13 +170,31 @@ class OnlineSqlCommitView(FormView):
     """
     处理用户提交的审核内容
     """
+    form_class = OnlineAuditCommitForm
+    template_name = 'online_sql_commit.html'
 
-    def get(self, request):
-        return render(request, 'online_sql_commit.html')
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        title = cleaned_data.get('title') + '__[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']'
+        remark = cleaned_data.get('remark')
+        verifier = cleaned_data.get('verifier')
+        operate_dba = cleaned_data.get('operate_dba')
+        group_id = cleaned_data.get('group_id')
+        email_cc = cleaned_data.get('email_cc_id')
+        contents = cleaned_data.get('contents')
 
-    def post(self, request):
-        data = format_request(request)
-        form = OnlineAuditCommitForm(data)
+        with transaction.atomic():
+            OnlineAuditContents.objects.create(
+                title=title,
+                group_id=group_id,
+                remark=remark,
+                proposer=self.request.user.username,
+                operate_dba=operate_dba,
+                verifier=verifier,
+                email_cc=email_cc,
+                contents=contents
+            )
+
     # def post(self, request):
     #     data = format_request(request)
     #     upload_files = request.FILES.getlist('files')
@@ -223,10 +243,10 @@ class OnlineSqlCommitView(FormView):
     #                 send_commit_mail.delay(latest_id=latest_id)
     #
     #                 result = {'status': '200', 'msg': '提交成功, 正在跳转到首页'}
-    #     else:
-    #         error = form.errors.as_text()
-    #         result = {'status': '400', 'msg': error}
-    #     return HttpResponse(json.dumps(result))
+    def form_invalid(self, form):
+        error = form.errors.as_text()
+        context = {'errCode': '400', 'errMsg': error}
+        return HttpResponse(json.dumps(context))
 
 
 class GetRemarkInfo(View):
