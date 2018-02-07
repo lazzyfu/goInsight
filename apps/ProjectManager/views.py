@@ -23,11 +23,6 @@ from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, Onli
     OnlineAuditContentsReply
 
 
-class ProjectListView(View):
-    def get(self, request):
-        return render(request, 'index.html')
-
-
 class InceptionSqlOperateView(FormView):
     form_class = InceptionSqlOperateForm
     template_name = 'inception_sql_operate.html'

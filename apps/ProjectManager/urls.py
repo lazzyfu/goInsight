@@ -4,14 +4,13 @@
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 
-from .views import ProjectListView, BeautifySQLView, GetInceptionHostConfigView, \
+from .views import BeautifySQLView, GetInceptionHostConfigView, \
     GetDatabaseListView, InceptionSqlOperateView, InceptionSqlRecords, InceptionSingleSqlDetailView, \
     InceptionAllSqlDetailView, OnlineSqlCommitView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
     OnlineAuditRecordsView, OnlineClickVerifyView, OnlineClickFinishView, OnlineClickCloseView, OnlineAuditDetailView, \
     OnlineSqlReplyView
 
 urlpatterns = [
-    path(r'index/', ProjectListView.as_view(), name='p_project'),
     path(r'beautify_sql/', login_required(BeautifySQLView.as_view()), name='p_beautify_sql'),
     path(r'inception_sql_operate/', login_required(InceptionSqlOperateView.as_view()), name='p_inception_sql_operate'),
     path(r'get_inception_hostconfig/', login_required(GetInceptionHostConfigView.as_view()),
