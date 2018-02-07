@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+import re
 
 import pymysql
 
@@ -16,7 +17,7 @@ class InceptionApi(object):
             raise ValueError(err)
 
     def sqlprepare(self, sqlcontent, host, database, action='check'):
-        master = InceptionHostConfig.objects.get(host=host)
+        master = InceptionHostConfig.objects.get(host=host, is_enable=0)
         masterHost = master.host
         masterUser = master.user
         masterPassword = master.password
@@ -100,7 +101,7 @@ class GetDatabaseListApi(object):
     IGNORED_PARAMS = ['information_schema', 'mysql', 'percona']
 
     def get_dbname(self):
-        master = InceptionHostConfig.objects.get(host=self.host)
+        master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
         masterHost = master.host
         masterUser = master.user
         masterPassword = master.password
@@ -127,3 +128,61 @@ class GetDatabaseListApi(object):
         except Exception as err:
             raise
 
+
+class IncepSqlOperate(object):
+    def __init__(self, sql_content, host, database):
+        self.sql_content = sql_content
+        self.host = host
+        self.database = database
+
+    DDL_FILTER = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
+    DML_FILTER = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
+
+    def run_check(self, op_action):
+        if op_action == 'op_schema':
+            if re.search(self.DML_FILTER, self.sql_content, re.I):
+                context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
+            else:
+                checkData = InceptionApi().sqlprepare(sqlcontent=self.sql_content,
+                                                      host=self.host,
+                                                      database=self.database,
+                                                      action='check')
+                context = {'data': checkData, 'errCode': 200}
+            return context
+
+        elif op_action == 'op_data':
+            if re.search(self.DDL_FILTER, self.sql_content, re.I):
+                context = {'errMsg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句', 'errCode': 400}
+            else:
+                checkData = InceptionApi().sqlprepare(sqlcontent=self.sql_content,
+                                                      host=self.host,
+                                                      database=self.database,
+                                                      action='check')
+                context = {'data': checkData, 'errCode': 200}
+
+            return context
+
+    def run_execute(self, op_action, form, request):
+        checkResult = self.run_check(op_action)
+        if checkResult.get('errCode') == 200:
+            if 1 in [x['errlevel'] for x in checkResult.get('data')] or 2 in [x['errlevel'] for x in
+                                                                              checkResult.get('data')]:
+                context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
+                return context
+            else:
+                executeData = InceptionApi().sqlprepare(sqlcontent=self.sql_content,
+                                                        host=self.host,
+                                                        database=self.database,
+                                                        action='execute')
+                context = form.is_save(request, executeData)
+                return context
+
+    def check_valid(self, op_action, form, request):
+        checkResult = self.run_check(op_action)
+        if checkResult.get('errCode') == 200:
+            if 1 in [x['errlevel'] for x in checkResult.get('data')] or 2 in [x['errlevel'] for x in
+                                                                              checkResult.get('data')]:
+                context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
+            else:
+                context = {'errMsg': '', 'errCode': 200}
+            return context

@@ -54,7 +54,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><a href="inception_all_sql_detail/{{ row.workid }}"><i
+                                <td><a href="allsql_detail/{{ row.workid }}"><i
                                         class="fa fa-sliders"></i></a></td>
                             </tr>
                             {% for i in row.record %}
@@ -70,7 +70,7 @@
                                     </td>
                                     <td>{{ i.affected_rows }}</td>
                                     <td>{{ i.execute_time }}</td>
-                                    <td><a href="inception_single_sql_detail/{{ i.sequence }}"><i
+                                    <td><a href="singlesql_detail/{{ i.sequence }}"><i
                                             class="fa fa-sliders"></i></a></td>
                                 </tr>
                             {% endfor %}

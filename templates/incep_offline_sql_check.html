@@ -85,7 +85,7 @@
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info">美化SQL</button>
-                                    <button type="button" onclick="sqlOperateForm('check')" class="btn bg-info">语法检测
+                                    <button type="button" onclick="IncepSqlCheckForm('check')" class="btn bg-info">语法检测
                                     </button>
                                 </div>
                             </div>
@@ -93,7 +93,7 @@
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <button type="reset" class="btn bg-info">清除SQL</button>
-                                    <button type="button" onclick="sqlOperateForm('commit')" class="btn bg-info">执行SQL
+                                    <button type="button" onclick="IncepSqlCheckForm('execute')" class="btn bg-info">执行SQL
                                     </button>
                                 </div>
                             </div>
@@ -157,6 +157,9 @@
         });
 
 
+        /**
+         * 美化SQL
+         */
         function beautifySQL() {
             var sql_content = myCodeMirror.getValue();
             var csrftoken = $.cookie('csrftoken');
@@ -175,12 +178,17 @@
             })
         }
 
+        /**
+         * 获取线下环境主机信息
+         * type=1
+         */
         $(function () {
             $.ajax({
                 url: '{% url 'p_inception_hostconfig' %}',
                 type: 'GET',
                 dataType: 'json',
                 timeout: 5000,
+                data: {'type': 0},
                 cache: false,
                 success: function (data) {
                     var html = '';
@@ -195,6 +203,9 @@
             })
         });
 
+        /**
+         * 获取指定主机的数据库库名列表
+         */
         function getDatabaseList() {
             $("#select_db").empty();
             var host = $("#select_env").val();
@@ -217,7 +228,11 @@
             })
         }
 
-        function sqlOperateForm(op_type) {
+        /**
+         * 执行inception语法检查
+         * @param op_type
+         */
+        function IncepSqlCheckForm(op_type) {
             var sql_content = myCodeMirror.getValue();
             var database = $("#select_db").val();
             var host = $("#select_env").val();
@@ -225,7 +240,7 @@
             var csrftoken = $.cookie('csrftoken');
 
             $.ajax({
-                url: "{% url 'p_inception_sql_operate' %}",
+                url: "{% url 'p_incep_offline_sql_check' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {

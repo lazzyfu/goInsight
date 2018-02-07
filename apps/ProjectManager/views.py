@@ -17,15 +17,15 @@ from pure_pagination import PaginationMixin
 from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
 from ProjectManager.group_permissions import check_group_permission, check_sql_detail_permission
 from UserManager.models import GroupsDetail, UserAccount, Contacts
-from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi
+from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi, IncepSqlOperate
 from utils.tools import format_request
 from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
     OnlineAuditContentsReply
 
 
-class InceptionSqlOperateView(FormView):
+class IncepOfflineSqlCheckView(FormView):
     form_class = InceptionSqlOperateForm
-    template_name = 'inception_sql_operate.html'
+    template_name = 'incep_offline_sql_check.html'
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -35,48 +35,15 @@ class InceptionSqlOperateView(FormView):
         op_type = cleaned_data['op_type']
         sql_content = cleaned_data['sql_content']
 
-        DDL_FILTER = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
-        DML_FILTER = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
+        context = {}
+        if op_type == 'check':
+            context = IncepSqlOperate(sql_content, host, database).run_check(op_action)
 
-        checkData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host, database=database,
-                                              action='check')
-
-        # 修改表结构
-        if op_action == 'op_schema':
-            if re.search(DML_FILTER, sql_content, re.I):
-                context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
-            else:
-                if op_type == 'check':
-                    context = {'data': checkData, 'errCode': 200}
-                if op_type == 'commit':
-                    if 1 in [x['errlevel'] for x in checkData] or 2 in [x['errlevel'] for x in checkData]:
-                        context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
-                    else:
-                        executeData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host,
-                                                                database=database,
-                                                                action='execute')
-                        context = form.is_save(self.request, executeData)
-
-        # 修改数据
-        if op_action == 'op_data':
-            if re.search(DDL_FILTER, sql_content, re.I):
-                context = {'errMsg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句', 'errCode': 400}
-            else:
-                if op_type == 'check':
-                    context = {'data': checkData, 'errCode': 200}
-                if op_type == 'commit':
-                    if 1 in [x['errlevel'] for x in checkData] or 2 in [x['errlevel'] for x in checkData]:
-                        context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
-                    else:
-                        executeData = InceptionApi().sqlprepare(sqlcontent=sql_content, host=host,
-                                                                database=database,
-                                                                action='execute')
-                        context = form.is_save(self.request, executeData)
-
+        elif op_type == 'execute':
+            context = IncepSqlOperate(sql_content, host, database).run_execute(op_action, form, self.request)
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
-        # error = form.errors.as_text()
         error = "请选择主机或库名"
         context = {'errCode': '400', 'errMsg': error}
 
@@ -96,10 +63,11 @@ class BeautifySQLView(View):
 
 
 class GetInceptionHostConfigView(View):
-    """获取inception审核的目标数据库配置"""
+    """获取inception指定的目标数据库配置"""
 
     def get(self, request):
-        envResult = InceptionHostConfig.objects.all().values('host', 'comment')
+        type = request.GET.get('type')
+        envResult = InceptionHostConfig.objects.filter(type=type).values('host', 'comment')
         return JsonResponse(list(envResult), safe=False)
 
 
@@ -113,7 +81,7 @@ class GetDatabaseListView(View):
         return HttpResponse(json.dumps(dbList))
 
 
-class InceptionSqlRecords(PaginationMixin, ListView):
+class IncepOfflineSqlRecords(PaginationMixin, ListView):
     """查看用户的工单记录"""
     paginate_by = 8
     context_object_name = 'sqlRecord'
@@ -135,7 +103,7 @@ class InceptionSqlRecords(PaginationMixin, ListView):
         return sqlRecord
 
 
-class InceptionAllSqlDetailView(View):
+class IncepOfflineAllSqlDetailView(View):
     """查看当前用户会话执行的所有sql的详情"""
 
     def get(self, request, workid):
@@ -151,27 +119,27 @@ class InceptionAllSqlDetailView(View):
             sequenceResult.append({'backupdbName': row.backup_dbname, 'sequence': row.sequence})
         rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
 
-        return render(request, 'inception_all_sql_detail.html',
+        return render(request, 'allsql_detail.html',
                       {'originalSql': originalSql, 'rollbackSql': rollbackSql})
 
 
-class InceptionSingleSqlDetailView(View):
+class IncepOfflineSingleSqlDetailView(View):
     """查看当前用户会话执行的每条sql的详情"""
 
     def get(self, request, sequence):
         sqlDetail = get_object_or_404(InceptionSqlOperateRecord, sequence=sequence)
         sequenceResult = [{'backupdbName': sqlDetail.backup_dbname, 'sequence': sqlDetail.sequence}]
         rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
-        return render(request, 'inception_single_sql_detail.html',
+        return render(request, 'singlesql_detail.html',
                       {'sqlDetail': sqlDetail, 'rollbackSql': rollbackSql})
 
 
-class OnlineSqlCommitView(FormView):
+class IncepOnlineSqlCheckView(FormView):
     """
     处理用户提交的审核内容
     """
     form_class = OnlineAuditCommitForm
-    template_name = 'online_sql_commit.html'
+    template_name = 'incep_online_sql_commit.html'
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -181,70 +149,33 @@ class OnlineSqlCommitView(FormView):
         operate_dba = cleaned_data.get('operate_dba')
         group_id = cleaned_data.get('group_id')
         email_cc = cleaned_data.get('email_cc_id')
-        contents = cleaned_data.get('contents')
+        host = cleaned_data['host']
+        database = cleaned_data['database']
+        op_action = cleaned_data.get('op_action')
+        sql_content = cleaned_data['sql_content']
 
-        with transaction.atomic():
-            OnlineAuditContents.objects.create(
-                title=title,
-                group_id=group_id,
-                remark=remark,
-                proposer=self.request.user.username,
-                operate_dba=operate_dba,
-                verifier=verifier,
-                email_cc=email_cc,
-                contents=contents
-            )
-        context = {'errCode': '200', 'errMsg': '提交成功'}
+        result = IncepSqlOperate(sql_content, host, database).check_valid(op_action, form, self.request)
+        if result.get('errCode') == 400:
+            context = result
+        elif result.get('errCode') == 200:
+            with transaction.atomic():
+                OnlineAuditContents.objects.create(
+                    title=title,
+                    group_id=group_id,
+                    remark=remark,
+                    proposer=self.request.user.username,
+                    operate_dba=operate_dba,
+                    verifier=verifier,
+                    email_cc=email_cc,
+                    contents=sql_content
+                )
+
+                # 发送通知邮件
+                # latest_id = AuditContents.objects.latest('id').id
+                #                 send_commit_mail.delay(latest_id=latest_id)
+            context = {'errCode': '200', 'errMsg': '提交成功'}
         return HttpResponse(json.dumps(context))
 
-    # def post(self, request):
-    #     data = format_request(request)
-    #     upload_files = request.FILES.getlist('files')
-    #     form = AuditCommitForm(data)
-    #     if form.is_valid():
-    #         cleaned_data = form.cleaned_data
-    #         title = cleaned_data['title'] + '__[' + datetime.now().strftime("%Y%m%d%H%M") + ']'
-    #         remark = ','.join(
-    #             Remark.objects.filter(id__in=cleaned_data['remark'].split(',')).values_list("remark", flat=True))
-    #         verifier = UserAccount.objects.get(uid=cleaned_data['verifier'])
-    #         operate_dba = UserAccount.objects.get(uid=cleaned_data['operate_dba'])
-    #         with transaction.atomic():
-    #             check_title_unique = AuditContents.objects.filter(title=title).first()
-    #             if check_title_unique:
-    #                 result = {'status': '400', 'msg': '标题名重复, 请更换, 谢谢'}
-    #             else:
-    #                 # 插入提交的数据
-    #                 AuditContents.objects.create(
-    #                     title=title,
-    #                     items_id=cleaned_data['project'],
-    #                     remark=remark,
-    #                     proposer=request.user.username,
-    #                     verifier=verifier,
-    #                     operate_dba=operate_dba,
-    #                     email_cc=cleaned_data['email_cc'],
-    #                     environment=cleaned_data['environment'],
-    #                     contents=cleaned_data['contents']
-    #                 )
-    #
-    #                 # 生成一条详情记录
-    #                 latest_id = AuditContents.objects.latest('id').id
-    #                 AuditContentsDetail.objects.create(content_id=latest_id)
-    #
-    #                 # 处理上传文件
-    #                 if upload_files:
-    #                     for file in upload_files:
-    #                         file_instance = UploadFiles(file_name=file.name, files=file, file_size=file.size,
-    #                                                     content_id=latest_id,
-    #                                                     content_type=file.content_type)
-    #                         file_instance.save()
-    #
-    #                 # 分配权限：只有verifier才能执行批准操作
-    #                 assign_perm('leader_verify', verifier, AuditContents.objects.get(id=latest_id))
-    #
-    #                 # 发送通知邮件
-    #                 send_commit_mail.delay(latest_id=latest_id)
-    #
-    #                 result = {'status': '200', 'msg': '提交成功, 正在跳转到首页'}
     def form_invalid(self, form):
         error = form.errors.as_text()
         context = {'errCode': '400', 'errMsg': error}
@@ -308,10 +239,10 @@ class GetContactsView(View):
         return JsonResponse(result, safe=False)
 
 
-class OnlineAuditRecordsView(PaginationMixin, ListView):
+class IncepOnlineAuditRecordsView(PaginationMixin, ListView):
     paginate_by = 8
     context_object_name = 'audit_records'
-    template_name = 'online_sql_records.html'
+    template_name = 'incep_online_sql_records.html'
 
     obj = OnlineAuditContents.objects.all().annotate(
         progress_value=Case(
@@ -365,12 +296,12 @@ class OnlineAuditRecordsView(PaginationMixin, ListView):
             return audit_records
 
 
-class OnlineClickVerifyView(FormView):
+class IncepOnlineClickVerifyView(FormView):
     form_class = VerifyCommitForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
-        return super(OnlineClickVerifyView, self).dispatch(request, *args, **kwargs)
+        return super(IncepOnlineClickVerifyView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -420,12 +351,12 @@ class OnlineClickVerifyView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class OnlineClickFinishView(FormView):
+class IncepOnlineClickFinishView(FormView):
     form_class = VerifyCommitForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
-        return super(OnlineClickFinishView, self).dispatch(request, *args, **kwargs)
+        return super(IncepOnlineClickFinishView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -477,12 +408,12 @@ class OnlineClickFinishView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class OnlineClickCloseView(FormView):
+class IncepOnlineClickCloseView(FormView):
     form_class = VerifyCommitForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
-        return super(OnlineClickCloseView, self).dispatch(request, *args, **kwargs)
+        return super(IncepOnlineClickCloseView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -524,6 +455,7 @@ class OnlineClickCloseView(FormView):
 
         return HttpResponse(json.dumps(context))
 
+
 class OnlineAuditDetailView(View):
     @method_decorator(check_sql_detail_permission)
     def get(self, request, id, group_id):
@@ -546,7 +478,9 @@ class OnlineAuditDetailView(View):
             username=F('user__username'),
             avatar_file=F('user__avatar_file'),
         ).filter(reply__id=id).values('username', 'avatar_file', 'reply_contents', 'created_at')
-        return render(request, 'online_sql_detail.html', {'contents': contents, 'group': group, 'reply_contents':reply_contents})
+        return render(request, 'incep_online_sql_detail.html',
+                      {'contents': contents, 'group': group, 'reply_contents': reply_contents})
+
 
 class OnlineSqlReplyView(FormView):
     """处理用户的回复信息"""

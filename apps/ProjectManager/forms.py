@@ -8,6 +8,14 @@ from django import forms
 from ProjectManager.models import InceptionSqlOperateRecord
 
 
+class IncepSqlCheckForm(forms.Form):
+    host = forms.CharField(required=True)
+    database = forms.CharField(required=True, max_length=64)
+    op_action = forms.CharField(required=True)
+    op_type = forms.CharField(required=True)
+    sql_content = forms.CharField(widget=forms.Textarea)
+
+
 class InceptionSqlOperateForm(forms.Form):
     host = forms.CharField(required=True)
     database = forms.CharField(required=True, max_length=64)
@@ -52,7 +60,7 @@ class InceptionSqlOperateForm(forms.Form):
                 backup_dbname=backup_dbname,
                 execute_time=execute_time
             )
-        context = {'data': result, 'errMsg': '执行完成', 'errCode': 200}
+        context = {'data': result, 'errCode': 200}
         return context
 
 
@@ -63,7 +71,10 @@ class OnlineAuditCommitForm(forms.Form):
     operate_dba = forms.CharField(required=True, label=u'执行dba的uid')
     group_id = forms.CharField(required=True, label=u'项目组id')
     email_cc_id = forms.CharField(required=True, label=u'抄送联系人的id，以逗号分隔')
-    contents = forms.CharField(widget=forms.Textarea)
+    host = forms.CharField(required=True)
+    database = forms.CharField(required=True, max_length=64)
+    op_action = forms.CharField(required=True)
+    sql_content = forms.CharField(widget=forms.Textarea)
 
 class VerifyCommitForm(forms.Form):
     id = forms.IntegerField(required=True)

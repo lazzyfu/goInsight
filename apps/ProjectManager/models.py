@@ -10,6 +10,8 @@ class InceptionHostConfig(models.Model):
     password = models.CharField(max_length=128, null=False, verbose_name=u'密码')
     host = models.CharField(max_length=32, null=False, verbose_name=u'ip地址')
     port = models.IntegerField(null=False, verbose_name=u'端口')
+    type = models.IntegerField(null=False, default=0, verbose_name=u'0:线下数据库，1:线上数据库')
+    is_enable = models.IntegerField(null=False, default=0, verbose_name=u'0:启用，1：禁用')
     comment = models.CharField(max_length=128, verbose_name=u'主机描述')
 
     class Meta:
