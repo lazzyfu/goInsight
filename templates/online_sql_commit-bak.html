@@ -6,14 +6,6 @@
         .form-group {
             margin-bottom: 20px;
         }
-
-        .CodeMirror {
-            font-family: monospace;
-            height: 600px;
-            border: 1px solid #ccc;
-            font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
-            font-size: 12px;
-        }
     </style>
 {% endblock %}
 
@@ -26,14 +18,15 @@
         <div class="box-body">
             <div class="row">
                 <div class="col-md-12">
-                    <form role="form" id="auditCommitForm" action="{% url 'p_online_sql_commit' %}" method="post"
+                    <form role="form" id="auditCommitForm" action="{% url 'p_online_sql_commit' %}"
                           class="form-horizontal"
+                          method="post"
                           data-toggle="validator">
                         <div class="form-group has-feedback">
                             <label class="control-label col-md-1">标题</label>
                             <div class="col-md-8">
                                 <input type="text" id="select_title" name="title" data-minlength="5"
-                                       class="form-control" foc
+                                       class="form-control"
                                        placeholder="描述操作的目的, 最少5个字符" required>
                             </div>
                             <div class="help-block with-errors col-md-2"></div>
@@ -91,12 +84,15 @@
                             </div>
                             <div class="help-block with-errors col-md-2"></div>
                         </div>
+
                         <div class="form-group">
                             <label class="control-label col-md-1">审核内容</label>
                             <div class="col-md-10 col-sm-10 col-xs-12">
-                                <textarea id="select_sql" class="form-control"></textarea>
+                                <div id="summernote"></div>
                             </div>
+
                         </div>
+
                         <div class="form-group">
                             <label class="control-label col-md-1"></label>
                             <div class="col-md-8">
@@ -114,12 +110,29 @@
 
 {% block link_javascripts %}
     <script>
-        var myTextarea = document.getElementById('select_sql');
-        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
-            lineNumbers: true,
-            mode: "text/x-mysql",
-            matchBrackets: true,
-            tabMode: "indent"
+        /**
+         * 富文本编辑器summernote
+         */
+        $(document).ready(function () {
+            $('#summernote').summernote({
+                theme: 'slate',
+                height: 400,                 // set editor height
+                minHeight: null,             // set minimum height of editor
+                maxHeight: null,             // set maximum height of editor
+                lang: 'zh-CN',
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+                toolbar: [
+                    // [groupName, [list of button]]
+                    {#['style', ['bold', 'italic', 'underline', 'clear']],#}
+                    {#['font', ['strikethrough']],#}
+                    ['fontsize', ['fontsize']],
+                    {#['color', ['color']],#}
+                    {#['para', ['ul', 'ol', 'paragraph']],#}
+                    {#['height', ['height']],#}
+                    {#['Insert', ['link']],#}
+                    ['Misc', ['fullscreen', 'undo', 'help']]
+                ]
+            });
         });
 
         // 获取备注信息
@@ -236,18 +249,19 @@
          */
         <!-- 有效性验证 -->
         $('#auditCommitForm').validator().on('submit', function (e) {
-            var sql_content = myCodeMirror.getValue();
-            if (sql_content.length < 10) {
-                displayPNotify('400', '审核内容不能为空或小于10个字符');
+            if ($('#summernote').summernote('isEmpty')) {
+                displayPNotify('400', '审核内容不能为空，请重新填写');
+                // 如果审核内容为空，退出该函数
                 return false;
             }
             if (e.isDefaultPrevented()) {
                 // 验证不通过
-                displayPNotify('400', '表单无效，请完成填写');
+                displayPNotify('400', '表单无效，请重新填写');
             } else {
                 // 验证通过
+                var contents = $('#summernote').summernote('code');
                 $('#auditCommitForm').ajaxSubmit({
-                    data: {contents: sql_content},
+                    data: {contents: contents},
                     dataType: 'json',
                     success: function (result) {
                         displayPNotify(result.errCode, result.errMsg, refresh_page);

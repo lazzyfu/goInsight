@@ -83,7 +83,7 @@ class OnlineAuditContents(models.Model):
 
     def email_cc_list(self):
         return '\n'.join(
-            Contacts.objects.filter(contact_id__in=self.email_cc.split(',')).values_list('email', flat=True))
+            Contacts.objects.filter(contact_id__in=self.email_cc.split(',')).values_list('contact_email', flat=True))
 
     def items_id(self):
         """
@@ -122,3 +122,23 @@ class Remark(models.Model):
 
         default_permissions = ()
         db_table = 'sqlaudit_audit_remark'
+
+class OnlineAuditContentsReply(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键')
+    reply = models.ForeignKey(OnlineAuditContents, on_delete=models.CASCADE, null=False, default='')
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, null=False, default='')
+    reply_contents = models.TextField(default='', verbose_name=u'回复内容')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'回复时间')
+
+    class Meta:
+        verbose_name = u'回复表'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_audit_contents_reply'
+
+    def reply_id(self):
+        return self.reply.id
+
+    def user_id(self):
+        return self.user.uid

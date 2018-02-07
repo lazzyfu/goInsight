@@ -69,3 +69,7 @@ class VerifyCommitForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
+
+class ReplyContentForm(forms.Form):
+    reply_id = forms.IntegerField(required=True)
+    reply_contents = forms.CharField(widget=forms.Textarea, min_length=5)

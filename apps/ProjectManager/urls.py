@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .views import ProjectListView, BeautifySQLView, GetInceptionHostConfigView, \
     GetDatabaseListView, InceptionSqlOperateView, InceptionSqlRecords, InceptionSingleSqlDetailView, \
     InceptionAllSqlDetailView, OnlineSqlCommitView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
-    OnlineAuditRecordsView, OnlineClickVerifyView, OnlineClickFinishView, OnlineClickCloseView
+    OnlineAuditRecordsView, OnlineClickVerifyView, OnlineClickFinishView, OnlineClickCloseView, OnlineAuditDetailView, \
+    OnlineSqlReplyView
 
 urlpatterns = [
     path(r'index/', ProjectListView.as_view(), name='p_project'),
@@ -32,4 +33,9 @@ urlpatterns = [
     path(r'online_click_verify/', login_required(OnlineClickVerifyView.as_view()), name='p_online_click_verify'),
     path(r'online_click_finish/', login_required(OnlineClickFinishView.as_view()), name='p_online_click_finish'),
     path(r'online_click_close/', login_required(OnlineClickCloseView.as_view()), name='p_online_click_close'),
+
+    # 线上工单记录详情
+    re_path(r'online_sql_detail/(?P<id>\d+)/(?P<group_id>\d+)/', login_required(OnlineAuditDetailView.as_view()),
+            name='p_online_sql_detail'),
+    path(r'online_sql_reply/', login_required(OnlineSqlReplyView.as_view()), name='p_online_reply'),
 ]

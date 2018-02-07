@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            font-family: Menlo;
+            height: 600px;
+            border: 1px solid #ccc;
+            font-family: Monaco, Menlo, Consolas;
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img class="profile-user-img img-responsive img-circle"
+                         src="/media/{{ contents.proposer_info.avatar_file }}"
+                         alt="User profile picture">
+
+                    <h3 class="profile-username text-center">{{ contents.proposer }}</h3>
+
+                    <p class="text-muted text-center">{{ contents.proposer_info.user_role }}</p>
+
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            <b>项目</b> <a class="pull-right">{{ group.group_name }}</a>
+                        </li>
+                        {% if contents.fact_verifier %}
+                            <li class="list-group-item">
+                                <b>审批用户</b> <a class="pull-right">{{ contents.fact_verifier }}</a>
+                            <li class="list-group-item">
+                                <b>审批时间</b> <a class="pull-right">{{ contents.verifier_time }}</a>
+                            </li>
+                        {% endif %}
+
+
+                        {% if contents.fact_operate_dba %}
+                            <li class="list-group-item">
+                                <b>执行DBA</b> <a class="pull-right">{{ contents.fact_operate_dba }}</a>
+                            <li class="list-group-item">
+                                <b>执行时间</b> <a class="pull-right">{{ contents.operate_time }}</a>
+                            </li>
+                        {% endif %}
+                        <li class="list-group-item">
+                            <b>进度</b> <a class="pull-right">{{ contents.progress_value }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+            <!-- About Me Box -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h4 class="box-title">详情</h4>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <strong><i class="fa fa-tag margin-r-5"></i> 备注</strong>
+                    <p>
+                        {% for i in contents.remark_list %}
+                            <span class="label label-info">{{ i }}</span>
+                        {% endfor %}
+
+                    </p>
+                    <hr>
+
+                    <strong><i class="fa fa-pencil margin-r-5"></i> 抄送</strong>
+                    <p class="text-muted">
+                        {{ contents.email_cc_list }}
+                    </p>
+                    <hr>
+
+                    {% if contents.close_user %}
+                        <strong><i class="fa fa-user margin-r-5"></i> 记录关闭用户</strong>
+                        <p class="text-muted">
+                            {{ contents.close_user }}
+                        </p>
+                        <hr>
+
+                        <strong><i class="fa fa-calendar-times-o margin-r-5"></i> 关闭时间</strong>
+                        <p class="text-muted">
+                            {{ contents.close_time }}
+                        </p>
+                        <hr>
+
+                        <strong><i class="fa fa-file-text-o margin-r-5"></i> 关闭原因</strong>
+                        <p class="text-muted">
+                            {{ contents.close_reason|safe }}
+                        </p>
+                    {% endif %}
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ contents.title }}</h3>
+                    <!-- 隐藏项目id，下面ajax调用 -->
+                    <h3 id="id" style="display: none">{{ contents.id }}</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <div class="mailbox-read-info">
+                        <h5>来自：{{ contents.proposer }}
+                            <span class="mailbox-read-time pull-right">{{ contents.created_at }}</span></h5>
+                    </div>
+
+                    <!-- /.mailbox-controls -->
+                    <div class="mailbox-read-message">
+                        <textarea id="select_sql">{{ contents.contents|safe }}</textarea>
+                    </div>
+                    <!-- /.mailbox-read-message -->
+                </div>
+                <!-- /.box-body -->
+                {% if upload_files %}
+                    <div class="box-footer">
+                        <!-- 附件 -->
+                        <ul class="mailbox-attachments clearfix">
+                            {% for file in upload_files %}
+                                <li>
+                                    <span class="mailbox-attachment-icon"><i class="fa  fa-file-text"></i></span>
+
+                                    <div class="mailbox-attachment-info">
+                                        <a href="#" class="mailbox-attachment-name"><i
+                                                class="fa fa-paperclip"></i>
+                                            {{ file.file_name }}</a>
+                                        <span class="mailbox-attachment-size">
+                                        {{ file.size }}
+                                        <a href="/media/{{ file.files }}" class="btn btn-default btn-xs pull-right">
+                                            <i class="fa fa-cloud-download"></i>
+                                        </a>
+                                    </span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <!-- /.box-footer -->
+                <div class="box-footer">
+                    <form class="form-horizontal" id="replyCommitForm" action="{% url 'p_online_reply' %}"
+                          method="post">
+                        <div class="form-group margin-bottom-none">
+                            <div class="col-sm-10">
+                                <textarea row="3" class="form-control input-sm" name="reply_contents"
+                                          placeholder="请输入回复内容..."></textarea>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit" class="btn btn-danger pull-right btn-block btn-sm">回复</button>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+
+
+                <div class="box-footer box-comments">
+                    <!-- 回复内容 -->
+                    {% for row in reply_contents %}
+                        <div class="post">
+                            <div class="user-block">
+                                <img class="img-circle img-bordered-sm" src="/media/{{ row.avatar_file }}"
+                                     alt="user image">
+                                <span class="username">
+                          <a href="#">{{ row.username }}</a>
+                        </span>
+                                <span class="description">{{ row.created_at }}</span>
+                            </div>
+                            <!-- /.user-block -->
+                            <p>
+                                {{ row.reply_contents|safe }}
+                            </p>
+
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- /.post -->
+                <!-- /.box-footer -->
+            </div>
+            <!-- /. box -->
+        </div>
+        <!-- /.col -->
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var myTextarea = document.getElementById('select_sql');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            matchBrackets: true,
+            tabMode: "indent"
+        });
+
+        <!-- 提交内容 -->
+        $(function () {
+            $('#replyCommitForm').submit(function () {
+                var reply_id = $('#id').text();
+
+                $('#replyCommitForm').ajaxSubmit({
+                    data: {'reply_id': reply_id},
+                    clearForm: true,
+                    dataType: 'json',
+                    success: function (result) {
+                        displayPNotify(result.status, result.msg, refresh_page)
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

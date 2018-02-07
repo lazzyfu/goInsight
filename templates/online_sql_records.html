@@ -34,7 +34,7 @@
                 <div class="box-body">
                     <table class="table table-hover table-responsive">
                         <tr>
-                            <th>状态</th>
+                            <th>进度</th>
                             <th>项目</th>
                             <th>标题</th>
                             <th>申请人</th>
@@ -82,10 +82,10 @@
                                        onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_online_click_close' %}', '提交', '结束')"><i
                                             class="fa fa-close fa-lg"></i></a>
                                 </td>
-{#                                <td>#}
-{#                                    <a href="projects_detail/{{ row.id }}/{{ row.items_id }}"><i#}
-{#                                            class="fa fa-sliders"></i></a>#}
-{#                                </td>#}
+                                <td>
+                                    <a href="online_sql_detail/{{ row.id }}/{{ row.group_id }}"><i
+                                            class="fa fa-sliders"></i></a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </table>

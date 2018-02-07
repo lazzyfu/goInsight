@@ -14,12 +14,13 @@ from django.views import View
 from django.views.generic import FormView, ListView
 from pure_pagination import PaginationMixin
 
-from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm
-from ProjectManager.group_permissions import check_group_permission
+from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
+from ProjectManager.group_permissions import check_group_permission, check_sql_detail_permission
 from UserManager.models import GroupsDetail, UserAccount, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi
 from utils.tools import format_request
-from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents
+from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
+    OnlineAuditContentsReply
 
 
 class ProjectListView(View):
@@ -395,7 +396,7 @@ class OnlineClickVerifyView(FormView):
                     with transaction.atomic():
                         if status == u'通过':
                             data.progress_status = '2'
-                            data.fact_operate_dba = self.request.user.username
+                            data.fact_verifier = self.request.user.username
                             data.verifier_time = timezone.now()
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核通过'}
@@ -404,7 +405,7 @@ class OnlineClickVerifyView(FormView):
                         # 当用户点击的是不通过, 状态变为：未批准
                         elif status == u'不通过':
                             data.progress_status = '1'
-                            data.fact_operate_dba = self.request.user.username
+                            data.fact_verifier = self.request.user.username
                             data.verifier_time = timezone.now()
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核未通过'}
@@ -525,5 +526,54 @@ class OnlineClickCloseView(FormView):
     def form_invalid(self, form):
         error = form.errors.as_text()
         context = {'errCode': '400', 'errMsg': error}
+
+        return HttpResponse(json.dumps(context))
+
+class OnlineAuditDetailView(View):
+    @method_decorator(check_sql_detail_permission)
+    def get(self, request, id, group_id):
+        obj = OnlineAuditContents.objects.annotate(
+            progress_value=Case(
+                When(progress_status='0', then=Value('待批准')),
+                When(progress_status='1', then=Value('未批准')),
+                When(progress_status='2', then=Value('已批准')),
+                When(progress_status='3', then=Value('处理中')),
+                When(progress_status='4', then=Value('已完成')),
+                When(progress_status='5', then=Value('已关闭')),
+                output_field=CharField(),
+            )
+        )
+
+        contents = obj.get(id=id)
+        group = OnlineAuditContents.objects.filter(id=id).annotate(group_name=F('group__group_name')).values(
+            'group_name').first()
+        reply_contents = OnlineAuditContentsReply.objects.annotate(
+            username=F('user__username'),
+            avatar_file=F('user__avatar_file'),
+        ).filter(reply__id=id).values('username', 'avatar_file', 'reply_contents', 'created_at')
+        return render(request, 'online_sql_detail.html', {'contents': contents, 'group': group, 'reply_contents':reply_contents})
+
+class OnlineSqlReplyView(FormView):
+    """处理用户的回复信息"""
+
+    form_class = ReplyContentForm
+
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        reply_id = cleaned_data['reply_id']
+        reply_contents = cleaned_data['reply_contents']
+        OnlineAuditContentsReply.objects.create(
+            reply_id=reply_id,
+            user_id=self.request.user.uid,
+            reply_contents=reply_contents)
+        context = {'status': '200', 'msg': '回复成功'}
+        return HttpResponse(json.dumps(context))
+        latest_id = OnlineAuditContentsReply.objects.latest('id').id
+        # send_reply_mail.delay(latest_id=latest_id, reply_id=reply_id, username=request.user.username,
+        #                       email=request.user.email)
+
+    def form_invalid(self, form):
+        error = form.errors.as_text()
+        context = {'status': '400', 'msg': error}
 
         return HttpResponse(json.dumps(context))
