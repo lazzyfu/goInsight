@@ -18,6 +18,12 @@ class UserAccount(AbstractUser):
         # 返回用户角色名
         return RolesDetail.objects.annotate(role_name=F('role__role_name')).get(user__uid=self.uid).role_name
 
+    def user_group(self):
+        group = GroupsDetail.objects.annotate(group_name=F('group__group_name')).filter(user__uid=self.uid).values_list(
+            'group_name',
+            flat=True)
+        return ' '.join(group)
+
     class Meta:
         verbose_name = u'用户表'
         verbose_name_plural = verbose_name
@@ -123,6 +129,7 @@ class Contacts(models.Model):
         db_table = 'auditsql_contacts'
 
         unique_together = ('contact_name', 'contact_email')
+
 
 class ContactsDetail(models.Model):
     """

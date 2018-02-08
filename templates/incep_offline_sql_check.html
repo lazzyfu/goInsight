@@ -119,20 +119,20 @@
                 </div>
             </form>
             <!-- /.col -->
-            <div class="col-md-12">
+            <div class="col-md-12" id="typediv1" style="visibility: hidden">
                 <div class="box box-gray">
                     <div class="box-body no-padding">
                         <table class="table table-responsive table-bordered" id="scroll_table">
                             <thead>
                             <tr>
-                                <th class="col-sm-1">ID</th>
-                                <th class="col-sm-1">阶段</th>
-                                <th class="col-sm-1">阶段状态</th>
-                                <th class="col-sm-1">错误级别</th>
-                                <th class="col-sm-2">错误信息</th>
-                                <th class="col-sm-4">被检查的SQL</th>
-                                <th class="col-sm-1">预计影响行数</th>
-                                <th class="col-sm-1">执行时间(s)</th>
+                                <th class="col-sm-1 text-red">ID</th>
+                                <th class="col-sm-1 text-red">阶段</th>
+                                <th class="col-sm-1 text-red">阶段状态</th>
+                                <th class="col-sm-1 text-red">错误级别</th>
+                                <th class="col-sm-2 text-red">错误信息</th>
+                                <th class="col-sm-4 text-red">被检查的SQL</th>
+                                <th class="col-sm-1 text-red">预计影响行数</th>
+                                <th class="col-sm-1 text-red">执行时间(s)</th>
                             </tr>
                             </thead>
                             <tbody id="td_append">
@@ -259,6 +259,7 @@
                     }
                     else {
                         $('#td_append').empty();
+                        document.getElementById('typediv1').style.visibility="visible";
                         var html = '';
                         $.each(result.data, function (index, content) {
                             var SQL = content.SQL;

@@ -16,3 +16,9 @@ class LoginForm(forms.Form):
 
         user = authenticate(username=username, password=password)
         return user
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(max_length=30, required=True)
+    new_password = forms.CharField(max_length=30, min_length=7, required=True)
+    verify_password = forms.CharField(max_length=30, min_length=7, required=True)

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block right_content %}
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Profile Image -->
+                <div class="box box-primary">
+                    <div class="box-body box-profile">
+                        <img class="profile-user-img img-responsive img-circle"
+                             src="/media/{{ request.user.avatar_file }}" alt="User profile picture">
+
+                        <h3 class="profile-username text-center">{{ request.user.username }}</h3>
+
+                        <p class="text-muted text-center">{{ request.user.user_role }}</p>
+
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b>项目组</b> <a class="pull-right">{% if request.user.user_group  %}{{ request.user.user_group }}{% else %}无{% endif %}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>邮箱</b> <a class="pull-right">{{ request.user.email }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>注册时间</b> <a class="pull-right">{{ request.user.date_joined }}</a>
+                            </li>
+                        </ul>
+                        <a href="{% url 'p_change_pic' %}" class="btn btn-primary btn-block"><b>更换头像</b></a>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-8">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#settings" data-toggle="tab">修改密码</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="settings">
+                            <form class="form-horizontal" id="userChangePassForm"
+                                  action="{% url 'p_change_password' %}" method="post">
+                                <div class="form-group">
+                                    <label class="col-sm-2  control-label">原密码</label>
+                                    <div class="col-sm-8">
+                                        <input type="password" placeholder="原密码" name="old_password" required
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">新密码</label>
+                                    <div class="col-sm-8">
+                                        <input type="password" placeholder="新密码" name="new_password"
+                                               class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">确认密码</label>
+                                    <div class="col-sm-8">
+                                        <input type="password" placeholder="确认密码" name="verify_password"
+                                               class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <button type="submit" class="btn btn-danger">提交</button>
+                                    </div>
+                                </div>
+                                {% csrf_token %}
+                            </form>
+                        </div>
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
+                <!-- /.nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        <!-- 提交内容 -->
+        $(function () {
+            $('#userChangePassForm').submit(function () {
+                $('#userChangePassForm').ajaxSubmit({
+                    clearForm: true,
+                    dataType: 'json',
+                    success: function (result) {
+                        displayPNotify(result.errCode, result.errMsg, refresh_page);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}
