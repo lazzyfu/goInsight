@@ -259,11 +259,11 @@ class IncepOnlineAuditRecordsView(PaginationMixin, ListView):
         if len(user_in_group) == 0:
             raise PermissionDenied
         else:
-            contents = self.request.GET.get('search_contents')
+            search_content = self.request.GET.get('search_content')
 
-            if contents:
+            if search_content:
                 audit_records = self.obj.filter(
-                    contents__contains=contents
+                    contents__contains=search_content
                 ).filter(group_id__in=user_in_group). \
                     values('group_name',
                            'progress_color',

@@ -18,7 +18,6 @@
         .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
         }
-
     </style>
 {% endblock %}
 
@@ -198,7 +197,7 @@
             mode: "text/x-mysql",
             matchBrackets: true,
             tabMode: "indent",
-            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
+            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);\n\n注释:\n# 或 /* */"
         });
 
         /**
@@ -428,7 +427,7 @@
                         $('#td_append').empty();
                         var html = '';
                         {#当执行检查动作时，才显示#}
-                        document.getElementById('typediv1').style.visibility="visible";
+                        document.getElementById('typediv1').style.visibility = "visible";
                         $.each(result.data, function (index, content) {
                             var SQL = content.SQL;
                             var ID = content.ID;
