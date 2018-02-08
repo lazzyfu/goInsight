@@ -6,7 +6,7 @@
         .CodeMirror {
             font-family: monospace;
             height: 280px;
-            border: 1px solid #ccc; /*add by jackqqxu*/
+            border: 1px solid #ccc;
             font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
             font-size: 12px;
         }
@@ -16,10 +16,42 @@
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-primary">
+            <div class="box box-info">
                 <div class="box-header">
                     <h3 class="box-title">数据变更记录汇总详情</h3>
                 </div>
+                <div class="box-body">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>sql语句</th>
+                            <th>阶段</th>
+                            <th>阶段状态</th>
+                            <th>错误级别</th>
+                            <th>错误信息</th>
+                            <th>影响行数</th>
+                            <th>执行耗时(s)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for row in sqldetail %}
+                            <tr>
+                                <td>
+                                    <a href="#" data-toggle="tooltip"
+                                       title="{{ row.op_sql }}">{{ row.op_sql|slice:"64"|add:'...' }}</a>
+                                </td>
+                                <td>{{ row.stage }}</td>
+                                <td>{{ row.stagestatus }}</td>
+                                <td>{{ row.errlevel }}</td>
+                                <td>{{ row.errormessage }}</td>
+                                <td>{{ row.affected_rows }}</td>
+                                <td>{{ row.op_time }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
                 <div class="box-body">
                     <dl>
                         <dt>原始SQL</dt>

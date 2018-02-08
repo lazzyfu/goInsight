@@ -5,8 +5,8 @@ from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 
 from .views import BeautifySQLView, GetInceptionHostConfigView, \
-    GetDatabaseListView, IncepOfflineSqlRecords, IncepOfflineSingleSqlDetailView, \
-    IncepOfflineAllSqlDetailView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
+    GetDatabaseListView, IncepOfflineSqlRecords, \
+    IncepOfflineSqlDetailView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
     IncepOnlineAuditRecordsView, IncepOnlineClickVerifyView, IncepOnlineClickFinishView, IncepOnlineClickCloseView, \
     OnlineAuditDetailView, \
     OnlineSqlReplyView, IncepOfflineSqlCheckView, IncepOnlineSqlCheckView
@@ -22,8 +22,7 @@ urlpatterns = [
          name='p_incep_offline_sql_check'),
     path(r'incep_offline_sql_records/', login_required(IncepOfflineSqlRecords.as_view()),
          name='p_incep_offline_sql_records'),
-    re_path(r'allsql_detail/(?P<workid>.*)/', login_required(IncepOfflineAllSqlDetailView.as_view())),
-    re_path(r'singlesql_detail/(?P<sequence>.*)/', login_required(IncepOfflineSingleSqlDetailView.as_view())),
+    re_path(r'sql_detail/(?P<workid>.*)/', login_required(IncepOfflineSqlDetailView.as_view())),
 
     # 线上工单
     path(r'incep_online_sql_commit/', login_required(IncepOnlineSqlCheckView.as_view()),

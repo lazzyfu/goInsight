@@ -82,28 +82,25 @@ class GetDatabaseListView(View):
 
 
 class IncepOfflineSqlRecords(PaginationMixin, ListView):
-    """查看用户的工单记录"""
+    """查看线下工单记录"""
     paginate_by = 8
     context_object_name = 'sqlRecord'
-    template_name = 'inception_offline_sql_records.html'
+    template_name = 'incep_offline_sql_records.html'
 
     def get_queryset(self):
-        workidQuery = "select workid,id,op_user,dst_host,op_time from sqlaudit_inception_sql_operate_record group by workid order by op_time desc"
+        workidQuery = "select workid,id,op_user,dst_host,dst_database,op_time,group_concat(op_sql separator ';') as op_sql from sqlaudit_inception_sql_operate_record group by workid order by op_time desc"
         sqlRecord = []
         for row in InceptionSqlOperateRecord.objects.raw(workidQuery):
-            workid = row.workid
-            op_user = row.op_user
-            dst_host = row.dst_host
-            op_time = row.op_time
-            singleRecord = InceptionSqlOperateRecord.objects.filter(op_uid=self.request.user.uid).filter(
-                workid=workid).order_by(
-                'op_time')
-            sqlRecord.append({'workid': workid, 'op_user': op_user, 'dst_host': dst_host, 'op_time': op_time,
-                              'record': singleRecord})
+            sqlRecord.append({'workid': row.workid,
+                              'op_user': row.op_user,
+                              'dst_host': row.dst_host,
+                              'dst_database': row.dst_database,
+                              'op_time': row.op_time,
+                              'op_sql': row.op_sql})
         return sqlRecord
 
 
-class IncepOfflineAllSqlDetailView(View):
+class IncepOfflineSqlDetailView(View):
     """查看当前用户会话执行的所有sql的详情"""
 
     def get(self, request, workid):
@@ -119,19 +116,8 @@ class IncepOfflineAllSqlDetailView(View):
             sequenceResult.append({'backupdbName': row.backup_dbname, 'sequence': row.sequence})
         rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
 
-        return render(request, 'incep_offline_allsql_detail.html',
-                      {'originalSql': originalSql, 'rollbackSql': rollbackSql})
-
-
-class IncepOfflineSingleSqlDetailView(View):
-    """查看当前用户会话执行的每条sql的详情"""
-
-    def get(self, request, sequence):
-        sqlDetail = get_object_or_404(InceptionSqlOperateRecord, sequence=sequence)
-        sequenceResult = [{'backupdbName': sqlDetail.backup_dbname, 'sequence': sqlDetail.sequence}]
-        rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
-        return render(request, 'incep_offline_singlesql_detail.html',
-                      {'sqlDetail': sqlDetail, 'rollbackSql': rollbackSql})
+        return render(request, 'incep_offline_sql_detail.html',
+                      {'originalSql': originalSql, 'rollbackSql': rollbackSql, 'sqldetail': sqlDetail})
 
 
 class IncepOnlineSqlCheckView(FormView):
