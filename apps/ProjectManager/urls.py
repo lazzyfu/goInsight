@@ -22,7 +22,7 @@ urlpatterns = [
          name='p_incep_offline_sql_check'),
     path(r'incep_offline_sql_records/', login_required(IncepOfflineSqlRecords.as_view()),
          name='p_incep_offline_sql_records'),
-    re_path(r'sql_detail/(?P<workid>.*)/', login_required(IncepOfflineSqlDetailView.as_view())),
+    re_path(r'offline_sql_detail/(?P<workid>.*)/', login_required(IncepOfflineSqlDetailView.as_view())),
 
     # 线上工单
     path(r'incep_online_sql_commit/', login_required(IncepOnlineSqlCheckView.as_view()),
@@ -34,16 +34,15 @@ urlpatterns = [
 
     # 线上工单记录
     path(r'incep_online_sql_records/', login_required(IncepOnlineAuditRecordsView.as_view()),
-         name='p_incep_incep_online_sql_records'),
+         name='p_incep_online_sql_records'),
     path(r'incep_online_click_verify/', login_required(IncepOnlineClickVerifyView.as_view()),
-         name='p_incept_incep_online_click_verify'),
+         name='p_incept_online_click_verify'),
     path(r'incep_online_click_finish/', login_required(IncepOnlineClickFinishView.as_view()),
-         name='p_incep_incep_online_click_finish'),
+         name='p_incep_online_click_finish'),
     path(r'incep_online_click_close/', login_required(IncepOnlineClickCloseView.as_view()),
-         name='p_incep_incep_online_click_close'),
+         name='p_incep_online_click_close'),
 
     # 线上工单记录详情
-    re_path(r'online_sql_detail/(?P<id>\d+)/(?P<group_id>\d+)/', login_required(OnlineAuditDetailView.as_view()),
-            name='p_online_sql_detail'),
+    re_path(r'online_sql_detail/(?P<id>\d+)/(?P<group_id>\d+)/', login_required(OnlineAuditDetailView.as_view())),
     path(r'online_sql_reply/', login_required(OnlineSqlReplyView.as_view()), name='p_online_reply'),
 ]

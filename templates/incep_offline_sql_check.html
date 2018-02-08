@@ -24,24 +24,6 @@
     <section class="content">
         <div class="row">
             <form class="form-horizontal">
-                <div class="col-md-9">
-                    <div class="box box-primary">
-                        <div class="box-body no-padding">
-                            <div class="mailbox-read-info">
-                                <h5>填写SQL语句
-                                </h5>
-                            </div>
-                        </div>
-                        <div class="box-body no-padding">
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <textarea id="select_sql" class="form-control"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-md-3">
                     <!-- Profile Image -->
                     <div class="box box-success">
@@ -93,7 +75,8 @@
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <button type="reset" class="btn bg-info">清除SQL</button>
-                                    <button type="button" onclick="IncepSqlCheckForm('execute')" class="btn bg-info">执行SQL
+                                    <button type="button" onclick="IncepSqlCheckForm('execute')" class="btn bg-info">
+                                        执行SQL
                                     </button>
                                 </div>
                             </div>
@@ -113,6 +96,23 @@
                                 <p>删除语句（包括多表删除）</p>
                                 <p>更新语句（包括多表更新）</p>
                                 <p>创建、删除、修改、Truncate表语句</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="box box-primary">
+                        <div class="box-body no-padding">
+                            <div class="mailbox-read-info">
+                                <h5>填写SQL语句
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="box-body no-padding">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <textarea id="select_sql" class="form-control"></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -259,7 +259,7 @@
                     }
                     else {
                         $('#td_append').empty();
-                        document.getElementById('typediv1').style.visibility="visible";
+                        document.getElementById('typediv1').style.visibility = "visible";
                         var html = '';
                         $.each(result.data, function (index, content) {
                             var SQL = content.SQL;
