@@ -174,7 +174,10 @@ class IncepSqlOperate(object):
                                                         host=self.host,
                                                         database=self.database,
                                                         action='execute')
-                context = form.is_save(request, executeData)
+                if 1 in [x['errlevel'] for x in executeData] or 2 in [x['errlevel'] for x in executeData]:
+                    context = {'data': executeData, 'errCode': 200, 'errMsg': '执行失败，发现错误'}
+                else:
+                    context = form.is_save(request, executeData)
                 return context
 
     def check_valid(self, op_action, form, request):

@@ -85,7 +85,7 @@ class IncepOfflineSqlRecords(PaginationMixin, ListView):
     """查看用户的工单记录"""
     paginate_by = 8
     context_object_name = 'sqlRecord'
-    template_name = 'inception_sql_records.html'
+    template_name = 'inception_offline_sql_records.html'
 
     def get_queryset(self):
         workidQuery = "select workid,id,op_user,dst_host,op_time from sqlaudit_inception_sql_operate_record group by workid order by op_time desc"
@@ -119,7 +119,7 @@ class IncepOfflineAllSqlDetailView(View):
             sequenceResult.append({'backupdbName': row.backup_dbname, 'sequence': row.sequence})
         rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
 
-        return render(request, 'allsql_detail.html',
+        return render(request, 'incep_offline_allsql_detail.html',
                       {'originalSql': originalSql, 'rollbackSql': rollbackSql})
 
 
@@ -130,7 +130,7 @@ class IncepOfflineSingleSqlDetailView(View):
         sqlDetail = get_object_or_404(InceptionSqlOperateRecord, sequence=sequence)
         sequenceResult = [{'backupdbName': sqlDetail.backup_dbname, 'sequence': sqlDetail.sequence}]
         rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
-        return render(request, 'singlesql_detail.html',
+        return render(request, 'incep_offline_singlesql_detail.html',
                       {'sqlDetail': sqlDetail, 'rollbackSql': rollbackSql})
 
 

@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .views import BeautifySQLView, GetInceptionHostConfigView, \
     GetDatabaseListView, IncepOfflineSqlRecords, IncepOfflineSingleSqlDetailView, \
     IncepOfflineAllSqlDetailView, GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
-    IncepOnlineAuditRecordsView, IncepOnlineClickVerifyView, IncepOnlineClickFinishView, IncepOnlineClickCloseView, OnlineAuditDetailView, \
+    IncepOnlineAuditRecordsView, IncepOnlineClickVerifyView, IncepOnlineClickFinishView, IncepOnlineClickCloseView, \
+    OnlineAuditDetailView, \
     OnlineSqlReplyView, IncepOfflineSqlCheckView, IncepOnlineSqlCheckView
 
 urlpatterns = [
@@ -19,8 +20,8 @@ urlpatterns = [
     # 线下工单
     path(r'incep_offline_sql_check/', login_required(IncepOfflineSqlCheckView.as_view()),
          name='p_incep_offline_sql_check'),
-
-    path(r'incep_offline_sql_records/', login_required(IncepOfflineSqlRecords.as_view()), name='p_incep_offline_sql_records'),
+    path(r'incep_offline_sql_records/', login_required(IncepOfflineSqlRecords.as_view()),
+         name='p_incep_offline_sql_records'),
     re_path(r'allsql_detail/(?P<workid>.*)/', login_required(IncepOfflineAllSqlDetailView.as_view())),
     re_path(r'singlesql_detail/(?P<sequence>.*)/', login_required(IncepOfflineSingleSqlDetailView.as_view())),
 
@@ -33,10 +34,14 @@ urlpatterns = [
     path(r'get_contacts/', login_required(GetContactsView.as_view()), name='p_get_contacts'),
 
     # 线上工单记录
-    path(r'incep_online_sql_records/', login_required(IncepOnlineAuditRecordsView.as_view()), name='p_incep_incep_online_sql_records'),
-    path(r'incep_online_click_verify/', login_required(IncepOnlineClickVerifyView.as_view()), name='p_incept_incep_online_click_verify'),
-    path(r'incep_online_click_finish/', login_required(IncepOnlineClickFinishView.as_view()), name='p_incep_incep_online_click_finish'),
-    path(r'incep_online_click_close/', login_required(IncepOnlineClickCloseView.as_view()), name='p_incep_incep_online_click_close'),
+    path(r'incep_online_sql_records/', login_required(IncepOnlineAuditRecordsView.as_view()),
+         name='p_incep_incep_online_sql_records'),
+    path(r'incep_online_click_verify/', login_required(IncepOnlineClickVerifyView.as_view()),
+         name='p_incept_incep_online_click_verify'),
+    path(r'incep_online_click_finish/', login_required(IncepOnlineClickFinishView.as_view()),
+         name='p_incep_incep_online_click_finish'),
+    path(r'incep_online_click_close/', login_required(IncepOnlineClickCloseView.as_view()),
+         name='p_incep_incep_online_click_close'),
 
     # 线上工单记录详情
     re_path(r'online_sql_detail/(?P<id>\d+)/(?P<group_id>\d+)/', login_required(OnlineAuditDetailView.as_view()),
