@@ -103,7 +103,7 @@ class GroupsDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'项目分组详情表'
+        verbose_name = u'用户项目分组详情表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -144,7 +144,7 @@ class ContactsDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'联系人分组详情表'
+        verbose_name = u'联系人项目分组详情表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()

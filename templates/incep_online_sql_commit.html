@@ -380,8 +380,9 @@
                     data: {'sql_content': sql_content},
                     dataType: 'json',
                     success: function (result) {
+                        {#提交成功，将textarea设置为空#}
+                        myCodeMirror.setValue('');
                         displayPNotify(result.errCode, result.errMsg);
-                        myCodeMirror.setValue();
                     }
                 });
                 return false;
