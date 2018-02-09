@@ -30,10 +30,12 @@ class GroupsDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'group', 'created_at', 'updated_at')
     ordering = ('-created_at',)
 
+
 @admin.register(Roles)
 class RolesAdmin(admin.ModelAdmin):
     list_display = ('role_id', 'role_name', 'created_at', 'updated_at')
     ordering = ('-created_at',)
+
 
 @admin.register(RolesDetail)
 class RolesDetailAdmin(admin.ModelAdmin):
@@ -45,6 +47,7 @@ class RolesDetailAdmin(admin.ModelAdmin):
 class ContactsAdmin(admin.ModelAdmin):
     list_display = ('contact_id', 'contact_name', 'contact_email', 'created_at', 'updated_at')
     ordering = ('-created_at',)
+
 
 @admin.register(ContactsDetail)
 class ContactsDetailAdmin(admin.ModelAdmin):

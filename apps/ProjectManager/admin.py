@@ -5,12 +5,11 @@ from ProjectManager.models import InceptionHostConfig, Remark
 
 
 @admin.register(InceptionHostConfig)
-class UserAccountAdmin(admin.ModelAdmin):
+class InceptionHostConfigAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'password', 'host', 'port', 'type', 'is_enable', 'comment')
     list_display_links = ('user',)
     search_fields = ('user',)
     ordering = ('id',)
-
 
 @admin.register(Remark)
 class RemarkAdmin(admin.ModelAdmin):
