@@ -5,7 +5,7 @@ import sqlparse
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F, When, Value, CharField, Case
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, request
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -20,7 +20,7 @@ from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetB
 from utils.tools import format_request
 from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
     OnlineAuditContentsReply
-from .tasks import send_commit_mail
+from .tasks import send_commit_mail, send_verify_mail, send_reply_mail
 
 
 class IncepOfflineSqlCheckView(FormView):
@@ -299,6 +299,7 @@ class IncepOnlineClickVerifyView(FormView):
         addition_info = cleaned_data.get('addition_info')
 
         data = OnlineAuditContents.objects.get(pk=id)
+        context = {}
         # 当记录关闭时
         if data.progress_status == '5':
             context = {'errCode': '400', 'errMsg': '该记录已被关闭、请不要重复提交'}
@@ -315,8 +316,10 @@ class IncepOnlineClickVerifyView(FormView):
                             data.verifier_time = timezone.now()
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核通过'}
-                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
-                            #                        user_role=request.user.user_role())
+                            send_verify_mail.delay(latest_id=id,
+                                                   username=self.request.user.username,
+                                                   user_role=self.request.user.user_role(),
+                                                   addition_info=addition_info)
                         # 当用户点击的是不通过, 状态变为：未批准
                         elif status == u'不通过':
                             data.progress_status = '1'
@@ -324,8 +327,10 @@ class IncepOnlineClickVerifyView(FormView):
                             data.verifier_time = timezone.now()
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核未通过'}
-                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
-                            #                        user_role=request.user.user_role())
+                            send_verify_mail.delay(latest_id=id,
+                                                   username=self.request.user.username,
+                                                   user_role=self.request.user.user_role(),
+                                                   addition_info=addition_info)
                 # 其他情况
                 else:
                     context = {'errCode': '400', 'errMsg': '操作失败、请不要重复提交'}
@@ -354,6 +359,7 @@ class IncepOnlineClickFinishView(FormView):
         addition_info = cleaned_data.get('addition_info')
 
         data = OnlineAuditContents.objects.get(pk=id)
+        context = {}
         # 当记录关闭时
         if data.progress_status == '5':
             context = {'errCode': '400', 'errMsg': '该记录已被关闭、请不要重复提交'}
@@ -369,8 +375,10 @@ class IncepOnlineClickFinishView(FormView):
                             data.progress_status = '3'
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、正在处理中'}
-                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
-                            #                        user_role=request.user.user_role())
+                            send_verify_mail.delay(latest_id=id,
+                                                   username=self.request.user.username,
+                                                   user_role=self.request.user.user_role(),
+                                                   addition_info=addition_info)
                         # 当用户点击的是已完成, 状态变为：已完成
                         elif status == u'已完成':
                             data.progress_status = '4'
@@ -378,8 +386,10 @@ class IncepOnlineClickFinishView(FormView):
                             data.operate_time = timezone.now()
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、处理完成'}
-                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
-                            #                        user_role=request.user.user_role())
+                            send_verify_mail.delay(latest_id=id,
+                                                   username=self.request.user.username,
+                                                   user_role=self.request.user.user_role(),
+                                                   addition_info=addition_info)
                 # 未批准
                 elif data.progress_status == '1' or data.progress_status == '0':
                     context = {'errCode': '400', 'errMsg': '操作失败、审核未通过'}
@@ -411,6 +421,7 @@ class IncepOnlineClickCloseView(FormView):
         addition_info = cleaned_data.get('addition_info')
 
         data = OnlineAuditContents.objects.get(pk=id)
+        context = {}
         # 当记录关闭时
         if data.progress_status == '5':
             context = {'errCode': '400', 'errMsg': '该记录已被关闭、请不要重复提交'}
@@ -429,8 +440,10 @@ class IncepOnlineClickCloseView(FormView):
                             data.close_time = timezone.now()
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、记录关闭成功'}
-                            # send_verify_mail.delay(latest_id=id, username=request.user.username,
-                            #                        user_role=request.user.user_role())
+                            send_verify_mail.delay(latest_id=id,
+                                                   username=self.request.user.username,
+                                                   user_role=self.request.user.user_role(),
+                                                   addition_info=addition_info)
                 elif status == u'结束':
                     context = {'errCode': '400', 'errMsg': '操作失败、关闭窗口'}
             else:
@@ -485,10 +498,12 @@ class OnlineSqlReplyView(FormView):
             user_id=self.request.user.uid,
             reply_contents=reply_contents)
         context = {'status': '200', 'msg': '回复成功'}
-        return HttpResponse(json.dumps(context))
         latest_id = OnlineAuditContentsReply.objects.latest('id').id
-        # send_reply_mail.delay(latest_id=latest_id, reply_id=reply_id, username=request.user.username,
-        #                       email=request.user.email)
+        send_reply_mail.delay(latest_id=latest_id,
+                              reply_id=reply_id,
+                              username=self.request.user.username,
+                              email=self.request.user.email)
+        return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
         error = form.errors.as_text()

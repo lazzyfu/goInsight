@@ -7,7 +7,7 @@ from django.core.mail import EmailMessage
 from django.db.models import F
 from django.template.loader import render_to_string
 
-from ProjectManager.models import OnlineAuditContents
+from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply
 from UserManager.models import ContactsDetail, UserAccount, Contacts
 
 
@@ -65,79 +65,65 @@ def send_commit_mail(**kwargs):
     #         msg.attach_file(r'media/{}'.format(i.files))
     msg.send()
 
+@shared_task
+def send_verify_mail(**kwargs):
+    latest_id = kwargs['latest_id']
+    userinfo = GetUserInfo(latest_id)
 
-# @shared_task
-# def send_verify_mail(**kwargs):
-#     latest_id = kwargs['latest_id']
-#     proposer = get_user_email(latest_id, 'proposer')
-#     leader = get_user_email(latest_id, 'verifier')
-#     dba = get_user_email(latest_id, 'operate_dba')
-#     mail_cc = get_contact_email(latest_id)
-#     bcc = get_bcc_email(latest_id)
-#
-#     # 收件人, 为申请人、dba、leader
-#     mail_receiver = list(set(proposer + dba + leader))
-#
-#     # 抄送人，为leader和申请人
-#     mail_cc = mail_cc
-#
-#     # 向mail_template.html渲染data数据
-#     record = AuditContents.objects.get(pk=latest_id)
-#     detail = AuditContentsDetail.objects.get(content_id=latest_id)
-#     email_html_body = render_to_string('_audits_verify_mail.html', {
-#         'data': record,
-#         'detail': detail,
-#         'user_role': kwargs['user_role'],
-#         'username': kwargs['username']
-#     })
-#
-#     # 发送邮件
-#     headers = {'Reply: ': mail_receiver}
-#     title = 'Re: ' + record.title
-#     msg = EmailMessage(subject=title,
-#                        body=email_html_body,
-#                        from_email=EMAIL_FROM,
-#                        to=mail_receiver,
-#                        cc=mail_cc,
-#                        bcc=bcc,
-#                        headers=headers)
-#     msg.content_subtype = "html"
-#     msg.send()
-#
-# @shared_task
-# def send_reply_mail(**kwargs):
-#     latest_id = kwargs['latest_id']
-#     reply_id = kwargs['reply_id']
-#     proposer = get_user_email(reply_id, 'proposer')
-#     leader = get_user_email(reply_id, 'verifier')
-#     dba = get_user_email(reply_id, 'operate_dba')
-#     mail_cc = get_contact_email(reply_id)
-#     bcc = get_bcc_email(latest_id)
-#
-#     # 收件人, 为申请人、dba、leader
-#     mail_receiver = list(set(proposer + dba + leader))
-#
-#     # 抄送人，为leader和申请人
-#     mail_cc.append(kwargs['email'])
-#
-#     title = AuditContents.objects.get(pk=reply_id).title
-#     reply_record = AuditContentsReply.objects.get(pk=latest_id)
-#
-#     # 向mail_template.html渲染data数据
-#     email_html_body = render_to_string('_audits_reply_mail.html', {
-#         'reply_record': reply_record,
-#         'username': kwargs['username'],
-#     })
-#
-#     # 发送邮件
-#     headers = {'Reply: ': mail_cc}
-#     title = 'Re: ' + title
-#     msg = EmailMessage(subject=title,
-#                        body=email_html_body,
-#                        from_email=EMAIL_FROM,
-#                        to=mail_receiver,
-#                        cc=mail_cc,
-#                        bcc=bcc,
-#                        headers=headers)
-#     msg.content_subtype = "html"
-#     msg.send()
+    receiver = userinfo.get_user_email()
+    cc = userinfo.get_contact_email()
+    bcc = userinfo.get_bcc_email()
+
+    # 向mail_template.html渲染data数据
+    record = OnlineAuditContents.objects.get(pk=latest_id)
+    email_html_body = render_to_string('_send_verify_mail.html', {
+        'data': record,
+        'user_role': kwargs['user_role'],
+        'username': kwargs['username'],
+        'addition_info': kwargs['addition_info']
+    })
+
+    # 发送邮件
+    headers = {'Reply: ': receiver}
+    title = 'Re: ' + record.title
+    msg = EmailMessage(subject=title,
+                       body=email_html_body,
+                       from_email=EMAIL_FROM,
+                       to=receiver,
+                       cc=cc,
+                       bcc=bcc,
+                       headers=headers)
+    msg.content_subtype = "html"
+    msg.send()
+
+@shared_task
+def send_reply_mail(**kwargs):
+    latest_id = kwargs['latest_id']
+    reply_id = kwargs['reply_id']
+    userinfo = GetUserInfo(latest_id)
+
+    receiver = userinfo.get_user_email()
+    cc = userinfo.get_contact_email()
+    bcc = userinfo.get_bcc_email()
+
+    title = OnlineAuditContents.objects.get(pk=reply_id).title
+    reply_record = OnlineAuditContentsReply.objects.get(pk=latest_id)
+
+    # 向mail_template.html渲染data数据
+    email_html_body = render_to_string('_send_reply_mail.html', {
+        'reply_record': reply_record,
+        'username': kwargs['username'],
+    })
+
+    # 发送邮件
+    headers = {'Reply: ': receiver}
+    title = 'Re: ' + title
+    msg = EmailMessage(subject=title,
+                       body=email_html_body,
+                       from_email=EMAIL_FROM,
+                       to=receiver,
+                       cc=cc,
+                       bcc=bcc,
+                       headers=headers)
+    msg.content_subtype = "html"
+    msg.send()
