@@ -3,13 +3,9 @@
 
 {% block link_css %}
     <style>
-        .form-group {
-            margin-bottom: 25px;
-        }
-
         .CodeMirror {
             border: 1px solid #eee;
-            height: 580px;
+            height: 500px;
             font-size: 13px;
         }
 
@@ -385,6 +381,7 @@
                     dataType: 'json',
                     success: function (result) {
                         displayPNotify(result.errCode, result.errMsg);
+                        myCodeMirror.setValue();
                     }
                 });
                 return false;
@@ -394,6 +391,7 @@
         /**
          * 执行inception语法检查
          * @param op_type
+         * @return {boolean}
          */
 
         function IncepSqlOperateForm(op_type) {
@@ -402,6 +400,12 @@
             var host = $("#select_env").val();
             var op_action = $("#select_op").val();
             var csrftoken = $.cookie('csrftoken');
+
+            {#判断输入的SQL内容是否存在#}
+            if (sql_content == '') {
+                displayPNotify('400', '请输入要检测的SQL语句');
+                return false
+            }
 
             $.ajax({
                 url: "{% url 'p_incep_offline_sql_check' %}",
@@ -440,7 +444,7 @@
                                 var errlevel = '错误'
                             }
                             var stagestatus = content.stagestatus;
-                            var errormessage = content.errormessage.replace(/\./g, '\.' + '<br>');
+                            var errormessage = content.errormessage;
                             var Affected_rows = content.Affected_rows;
                             var execute_time = content.execute_time
                             html += "<tr>" +

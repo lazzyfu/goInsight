@@ -69,6 +69,9 @@
             border-collapse: collapse;
         }
 
+        .text-green {
+            color: #00a65a !important;
+        }
     </style>
 </head>
 {#    发送邮件的html模板 #}
@@ -84,6 +87,18 @@
             <tr>
                 <td>项目:</td>
                 <td>{{ data.group_name }}</td>
+            </tr>
+            <tr>
+                <td>类型:</td>
+                <td>{{ data.op_action }}</td>
+            </tr>
+            <tr>
+                <td>主机:</td>
+                <td>{{ data.dst_host }}</td>
+            </tr>
+            <tr>
+                <td>库名:</td>
+                <td>{{ data.dst_database }}</td>
             </tr>
             <tr>
                 <td>备注：</td>
@@ -109,7 +124,7 @@
         </table>
     </div>
     <div class="box-body">
-        <pre>{{ data.contents|safe }}</pre>
+        <pre class="text-green">{{ data.contents|safe }}</pre>
     </div>
 </div>
 </body>

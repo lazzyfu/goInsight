@@ -232,6 +232,7 @@
         /**
          * 执行inception语法检查
          * @param op_type
+         * @return {boolean}
          */
         function IncepSqlCheckForm(op_type) {
             var sql_content = myCodeMirror.getValue();
@@ -239,6 +240,12 @@
             var host = $("#select_env").val();
             var op_action = $("#select_op").val();
             var csrftoken = $.cookie('csrftoken');
+
+            {#判断输入的SQL内容是否存在#}
+            if (sql_content == '') {
+                displayPNotify('400', '请输入要检测的SQL语句');
+                return false
+            }
 
             $.ajax({
                 url: "{% url 'p_incep_offline_sql_check' %}",

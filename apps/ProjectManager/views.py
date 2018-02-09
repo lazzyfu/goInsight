@@ -147,6 +147,9 @@ class IncepOnlineSqlCheckView(FormView):
             with transaction.atomic():
                 OnlineAuditContents.objects.create(
                     title=title,
+                    op_action='数据修改' if op_action == 'op_data' else '表结构变更',
+                    dst_host=host,
+                    dst_database=database,
                     group_id=group_id,
                     remark=remark,
                     proposer=self.request.user.username,
@@ -156,7 +159,7 @@ class IncepOnlineSqlCheckView(FormView):
                     contents=sql_content
                 )
 
-                # 发送通知邮件
+            # 发送通知邮件
             latest_id = OnlineAuditContents.objects.latest('id').id
             send_commit_mail.delay(latest_id=latest_id)
             context = {'errCode': '200', 'errMsg': '提交成功'}
