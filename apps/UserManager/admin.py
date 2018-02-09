@@ -48,4 +48,4 @@ class ContactsAdmin(admin.ModelAdmin):
 
 @admin.register(ContactsDetail)
 class ContactsDetailAdmin(admin.ModelAdmin):
-    list_display = ('id', 'contact', 'group', 'created_at', 'updated_at')
+    list_display = ('id', 'contact', 'group', 'bcc', 'created_at', 'updated_at')

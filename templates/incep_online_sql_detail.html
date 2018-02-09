@@ -104,7 +104,7 @@
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ contents.title }}</h3>
-                    <!-- 隐藏项目id，下面ajax调用 -->
+                    <!-- 隐藏id，下面ajax调用 -->
                     <h3 id="id" style="display: none">{{ contents.id }}</h3>
                 </div>
                 <!-- /.box-header -->
@@ -121,30 +121,30 @@
                     <!-- /.mailbox-read-message -->
                 </div>
                 <!-- /.box-body -->
-                {% if upload_files %}
-                    <div class="box-footer">
-                        <!-- 附件 -->
-                        <ul class="mailbox-attachments clearfix">
-                            {% for file in upload_files %}
-                                <li>
-                                    <span class="mailbox-attachment-icon"><i class="fa  fa-file-text"></i></span>
-
-                                    <div class="mailbox-attachment-info">
-                                        <a href="#" class="mailbox-attachment-name"><i
-                                                class="fa fa-paperclip"></i>
-                                            {{ file.file_name }}</a>
-                                        <span class="mailbox-attachment-size">
-                                        {{ file.size }}
-                                        <a href="/media/{{ file.files }}" class="btn btn-default btn-xs pull-right">
-                                            <i class="fa fa-cloud-download"></i>
-                                        </a>
-                                    </span>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
+{#                {% if upload_files %}#}
+{#                    <div class="box-footer">#}
+{#                        <!-- 附件 -->#}
+{#                        <ul class="mailbox-attachments clearfix">#}
+{#                            {% for file in upload_files %}#}
+{#                                <li>#}
+{#                                    <span class="mailbox-attachment-icon"><i class="fa  fa-file-text"></i></span>#}
+{##}
+{#                                    <div class="mailbox-attachment-info">#}
+{#                                        <a href="#" class="mailbox-attachment-name"><i#}
+{#                                                class="fa fa-paperclip"></i>#}
+{#                                            {{ file.file_name }}</a>#}
+{#                                        <span class="mailbox-attachment-size">#}
+{#                                        {{ file.size }}#}
+{#                                        <a href="/media/{{ file.files }}" class="btn btn-default btn-xs pull-right">#}
+{#                                            <i class="fa fa-cloud-download"></i>#}
+{#                                        </a>#}
+{#                                    </span>#}
+{#                                    </div>#}
+{#                                </li>#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                    </div>#}
+{#                {% endif %}#}
                 <!-- /.box-footer -->
                 <div class="box-footer">
                     <form class="form-horizontal" id="replyCommitForm" action="{% url 'p_online_reply' %}"

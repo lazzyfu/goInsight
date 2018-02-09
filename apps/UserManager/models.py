@@ -139,6 +139,7 @@ class ContactsDetail(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
     contact = models.ForeignKey(Contacts, on_delete=models.CASCADE, null=False)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=False)
+    bcc = models.IntegerField(null=False, default=0, verbose_name=u'0:不密送，1:密送')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 

@@ -1,0 +1,116 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .box {
+            position: relative;
+            border-radius: 3px;
+            background: #ffffff;
+            border-top: 3px solid #d2d6de;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .box-header {
+            color: #444;
+            display: block;
+            padding: 10px;
+            position: relative;
+        }
+
+        .box-header.with-border {
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .no-padding {
+            padding: 0 !important;
+        }
+
+        .box-body {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 3px;
+            border-bottom-left-radius: 3px;
+            padding: 10px;
+        }
+
+        .table > tbody > tr > td {
+            padding: 8px;
+            line-height: 1.42857143;
+            vertical-align: top;
+            border-top: 1px solid #ddd;
+        }
+
+        td, th {
+            display: table-cell;
+            vertical-align: inherit;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        table {
+            white-space: normal;
+            font-weight: inherit;
+            font-size: inherit;
+            font-style: inherit;
+            text-align: start;
+            border-collapse: collapse;
+        }
+
+    </style>
+</head>
+{#    发送邮件的html模板 #}
+<body>
+<div class="box">
+    <div class="box-header with-border">
+        <table class="table">
+            <tbody>
+            <tr>
+                <td>标题:</td>
+                <td>{{ data.title }}</td>
+            </tr>
+            <tr>
+                <td>项目:</td>
+                <td>{{ data.group_name }}</td>
+            </tr>
+            <tr>
+                <td>备注：</td>
+                <td>{{ data.remark }}</td>
+            </tr>
+            <tr>
+                <td>申请人:</td>
+                <td>{{ data.proposer }}</td>
+            </tr>
+            <tr>
+                <td>批准人:</td>
+                <td>{{ data.verifier }}，请访问：http://sqlaudit.public.jbh.com/ 进行审批</td>
+            </tr>
+            <tr>
+                <td>执行DBA:</td>
+                <td>{{ data.operate_dba }}</td>
+            </tr>
+            <tr>
+                <td>提交时间:</td>
+                <td>{{ data.created_at|date:"Y-m-d H:i:s" }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="box-body">
+        <pre>{{ data.contents|safe }}</pre>
+    </div>
+</div>
+</body>
+</html>

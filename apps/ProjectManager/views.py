@@ -1,5 +1,4 @@
 import json
-import re
 from datetime import datetime
 
 import sqlparse
@@ -7,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F, When, Value, CharField, Case
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -17,10 +16,11 @@ from pure_pagination import PaginationMixin
 from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
 from ProjectManager.group_permissions import check_group_permission, check_sql_detail_permission
 from UserManager.models import GroupsDetail, UserAccount, Contacts
-from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, InceptionApi, GetBackupApi, IncepSqlOperate
+from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlOperate
 from utils.tools import format_request
 from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
     OnlineAuditContentsReply
+from .tasks import send_commit_mail
 
 
 class IncepOfflineSqlCheckView(FormView):
@@ -157,8 +157,8 @@ class IncepOnlineSqlCheckView(FormView):
                 )
 
                 # 发送通知邮件
-                # latest_id = AuditContents.objects.latest('id').id
-                #                 send_commit_mail.delay(latest_id=latest_id)
+            latest_id = OnlineAuditContents.objects.latest('id').id
+            send_commit_mail.delay(latest_id=latest_id)
             context = {'errCode': '200', 'errMsg': '提交成功'}
         return HttpResponse(json.dumps(context))
 
