@@ -4,13 +4,10 @@
 {% block link_css %}
     <style>
         .CodeMirror {
-            font-family: monospace;
+            border: 1px solid #eee;
             height: 520px;
-            border: 1px solid #ccc;
-            font-family: Monaco, Menlo, Consolas, 'COURIER NEW', monospace;
-            font-size: 12px;
+            font-size: 13px;
         }
-
         .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
         }
@@ -160,7 +157,6 @@
             tabMode: "indent",
             placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);\n\n注释:\n# 或 /* */"
         });
-
 
         /**
          * 美化SQL
