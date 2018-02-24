@@ -312,7 +312,7 @@ class IncepOnlineClickVerifyView(FormView):
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核通过'}
                             send_verify_mail.delay(latest_id=id,
-                                                   username=self.request.user.username,
+                                                   displayname=self.request.user.displayname,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                         # 当用户点击的是不通过, 状态变为：未批准
@@ -323,7 +323,7 @@ class IncepOnlineClickVerifyView(FormView):
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核未通过'}
                             send_verify_mail.delay(latest_id=id,
-                                                   username=self.request.user.username,
+                                                   displayname=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                 # 其他情况

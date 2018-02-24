@@ -11,9 +11,7 @@ class UserAccount(AbstractUser):
     avatar_file = models.ImageField(upload_to='img/%Y/%m/%d/', default=u'img/avatar1.png',
                                     verbose_name=u'用户头像')
     displayname = models.CharField(max_length=128, default='', verbose_name=u'用户显示名')
-    is_active = models.BooleanField(
-        default=False,
-    )
+    is_active = models.BooleanField(default=False, verbose_name=u'是否激活')
 
     def __str__(self):
         return self.username

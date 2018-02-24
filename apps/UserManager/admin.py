@@ -20,18 +20,20 @@ class RolesDetailInline(admin.StackedInline):
 
 class GroupsDetailInline(admin.StackedInline):
     model = GroupsDetail
-    max_num = 1
+    extra = 1
 
 
 class ContactsDetailInline(admin.StackedInline):
     model = ContactsDetail
     max_num = 1
 
+
 class UserAccountAdmin(admin.ModelAdmin):
     list_display = (
-        'uid', 'username', 'displayname', 'is_superuser', 'is_active', 'email', 'avatar_file', 'user_role', 'user_group',
+        'uid', 'username', 'displayname', 'is_superuser', 'is_active', 'email', 'avatar_file', 'user_role',
+        'user_group',
         'date_joined')
-    list_display_links = ('username', )
+    list_display_links = ('username',)
     search_fields = ('username', 'email', 'displayname', 'user_group')
     fieldsets = (
         ('个人信息', {'fields': ['username', 'displayname', 'email', 'is_superuser', 'is_active', 'avatar_file']}),
@@ -62,7 +64,6 @@ class RolesAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 
-# @admin.register(Contacts)
 class ContactsAdmin(admin.ModelAdmin):
     list_display = ('contact_id', 'contact_name', 'contact_email', 'created_at', 'updated_at')
     ordering = ('-created_at',)

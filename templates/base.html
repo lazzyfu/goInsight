@@ -61,7 +61,7 @@
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="/media/{{ request.user.avatar_file }}" class="user-image" alt="User Image">
-                            <span class="hidden-xs">{{ request.user.username }}</span>
+                            <span class="hidden-xs">{{ request.user.displayname }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
@@ -69,7 +69,7 @@
                                 <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="User Image">
 
                                 <p>
-                                    {{ request.user.username }}
+                                    {{ request.user.displayname }}
                                     <small>{{ request.user.user_role }}</small>
                                 </p>
                             </li>
@@ -98,7 +98,7 @@
                     <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>{{ request.user.username }}</p>
+                    <p>{{ request.user.displayname }}</p>
                     <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
                 </div>
             </div>
