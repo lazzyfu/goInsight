@@ -5,7 +5,7 @@ import sqlparse
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F, When, Value, CharField, Case
-from django.http import JsonResponse, HttpResponse, request
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -256,33 +256,28 @@ class IncepOnlineAuditRecordsView(PaginationMixin, ListView):
     )
 
     def get_queryset(self):
-        # 返回用户所在项目组的记录
-        # 如果用户不属于任何项目组, 返回没有权限查询记录
         user_in_group = self.request.session['groups']
-        if len(user_in_group) == 0:
-            raise PermissionDenied
+        search_content = self.request.GET.get('search_content')
+
+        if search_content:
+            audit_records = self.obj.filter(
+                contents__contains=search_content
+            ).filter(group_id__in=user_in_group). \
+                values('group_name',
+                       'progress_color',
+                       'progress_value', 'id', 'group_id',
+                       'title',
+                       'proposer', 'operate_dba', 'verifier',
+                       'created_at').order_by('-created_at')
         else:
-            search_content = self.request.GET.get('search_content')
+            audit_records = self.obj.filter(group_id__in=user_in_group). \
+                values('group_name', 'progress_color',
+                       'progress_value', 'id', 'group_id',
+                       'title',
+                       'proposer', 'operate_dba', 'verifier',
+                       'created_at').order_by('-created_at')
 
-            if search_content:
-                audit_records = self.obj.filter(
-                    contents__contains=search_content
-                ).filter(group_id__in=user_in_group). \
-                    values('group_name',
-                           'progress_color',
-                           'progress_value', 'id', 'group_id',
-                           'title',
-                           'proposer', 'operate_dba', 'verifier',
-                           'created_at').order_by('-created_at')
-            else:
-                audit_records = self.obj.filter(group_id__in=user_in_group). \
-                    values('group_name', 'progress_color',
-                           'progress_value', 'id', 'group_id',
-                           'title',
-                           'proposer', 'operate_dba', 'verifier',
-                           'created_at').order_by('-created_at')
-
-            return audit_records
+        return audit_records
 
 
 class IncepOnlineClickVerifyView(FormView):

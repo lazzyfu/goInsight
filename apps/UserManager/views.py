@@ -29,9 +29,17 @@ class LoginView(FormView):
             groups = UserAccount.objects.get(uid=self.request.user.uid).groupsdetail_set.all().values_list(
                 'group__group_id', flat=True)
             self.request.session['groups'] = list(groups)
-            return super(LoginView, self).form_valid(form)
+            # 判断用户是否激活
+            if self.request.user.is_active is True:
+                # 判断用户是否属于任何一个组
+                if len(list(groups)) > 0:
+                    return super(LoginView, self).form_valid(form)
+                else:
+                    return render(self.request, self.template_name, {'msg': '用户未被分配项目组，请联系管理员'})
+            else:
+                return render(self.request, self.template_name, {'msg': '用户未被激活，请联系管理员'})
         else:
-            return render(self.request, self.template_name, {'msg': '用户名或密码错误'})
+            return render(self.request, self.template_name, {'msg': '用户名或密码错误，请重新输入'})
 
 
 class LogoutView(RedirectView):
@@ -50,22 +58,11 @@ class IndexView(View):
     def get(self, request):
         return HttpResponseRedirect(reverse('p_incep_online_sql_records'))
 
+
 class UserProfileView(View):
     def get(self, request):
         return render(request, 'profile.html')
 
-
-# class UserProfileView(PaginationMixin, ListView):
-#     """
-#     用户详情
-#     """
-#     paginate_by = 6
-#     context_object_name = 'user_record'
-#     template_name = 'profile.html'
-#
-#     def get_queryset(self):
-#         audit_records = UserAccount.objects.filter(proposer=self.request.user.username).order_by('-created_at')
-#         return audit_records
 
 class ChangePasswordView(View):
     def post(self, request):

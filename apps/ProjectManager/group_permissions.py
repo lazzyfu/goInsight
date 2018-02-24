@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404
 
 from ProjectManager.models import OnlineAuditContents
 
-
 def check_group_permission(fun):
     """
     验证用户是否属于指定的项目组
@@ -16,15 +15,20 @@ def check_group_permission(fun):
     """
 
     def wapper(request, *args, **kwargs):
+        user_in_group = request.session['groups']
         group_id = request.POST.get('group_id')
 
-        if int(group_id) in request.session['groups']:
-            return fun(request, *args, **kwargs)
+        if len(user_in_group) > 0:
+            if int(group_id) in request.session['groups']:
+                return fun(request, *args, **kwargs)
+            else:
+                context = {'errCode': '403', 'errMsg': '权限拒绝，您不属于该项目组的成员'}
         else:
-            context = {'errCode': '403', 'errMsg': '权限拒绝，您不属于该项目组的成员'}
+            raise PermissionDenied
         return HttpResponse(json.dumps(context))
 
     return wapper
+
 
 def check_sql_detail_permission(fun):
     """
