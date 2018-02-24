@@ -11,6 +11,9 @@ class UserAccount(AbstractUser):
     avatar_file = models.ImageField(upload_to='img/%Y/%m/%d/', default=u'img/avatar1.png',
                                     verbose_name=u'用户头像')
     displayname = models.CharField(max_length=128, default='', verbose_name=u'用户显示名')
+    is_active = models.BooleanField(
+        default=False,
+    )
 
     def __str__(self):
         return self.username
@@ -23,10 +26,10 @@ class UserAccount(AbstractUser):
         group = GroupsDetail.objects.annotate(group_name=F('group__group_name')).filter(user__uid=self.uid).values_list(
             'group_name',
             flat=True)
-        return ' '.join(group)
+        return ', '.join(group)
 
     class Meta:
-        verbose_name = u'用户表'
+        verbose_name = u'用户账户'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -44,7 +47,7 @@ class Roles(models.Model):
         return self.role_name
 
     class Meta:
-        verbose_name = u'用户角色表'
+        verbose_name = u'用户角色'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -85,7 +88,7 @@ class Groups(models.Model):
         return self.group_name
 
     class Meta:
-        verbose_name = u'项目组表'
+        verbose_name = u'项目分组'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -123,7 +126,7 @@ class Contacts(models.Model):
         return self.contact_name
 
     class Meta:
-        verbose_name = u'联系人表'
+        verbose_name = u'联系人'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
