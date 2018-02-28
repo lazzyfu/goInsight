@@ -1,0 +1,1918 @@
+2018-02-26 10:40:53,684 [uWSGIWorker2Core1:140502201816832] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_check/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/edit.py", line 142, in post
+    return self.form_valid(form)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 40, in form_valid
+    context = IncepSqlOperate(sql_content, host, database).run_check(op_action)
+  File "./apps/ProjectManager/inception/inception_api.py", line 149, in run_check
+    action='check')
+  File "./apps/ProjectManager/inception/inception_api.py", line 44, in sqlprepare
+    port=self.inception_port, use_unicode=True, charset="utf8")
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/__init__.py", line 90, in Connect
+    return Connection(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 699, in __init__
+    self.connect()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 936, in connect
+    self._request_authentication()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1113, in _request_authentication
+    if int(self.server_version.split('.', 1)[0]) >= 5:
+ValueError: invalid literal for int() with base 10: 'Inception2'
+2018-02-26 10:42:10,037 [uWSGIWorker4Core1:140502201816832] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_commit/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/edit.py", line 142, in post
+    return self.form_valid(form)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 143, in form_valid
+    result = IncepSqlOperate(sql_content, host, database).check_valid(op_action, form, self.request)
+  File "./apps/ProjectManager/inception/inception_api.py", line 184, in check_valid
+    checkResult = self.run_check(op_action)
+  File "./apps/ProjectManager/inception/inception_api.py", line 149, in run_check
+    action='check')
+  File "./apps/ProjectManager/inception/inception_api.py", line 44, in sqlprepare
+    port=self.inception_port, use_unicode=True, charset="utf8")
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/__init__.py", line 90, in Connect
+    return Connection(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 699, in __init__
+    self.connect()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 936, in connect
+    self._request_authentication()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1113, in _request_authentication
+    if int(self.server_version.split('.', 1)[0]) >= 5:
+ValueError: invalid literal for int() with base 10: 'Inception2'
+2018-02-26 10:42:35,780 [uWSGIWorker1Core1:140502201816832] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_commit/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/edit.py", line 142, in post
+    return self.form_valid(form)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 143, in form_valid
+    result = IncepSqlOperate(sql_content, host, database).check_valid(op_action, form, self.request)
+  File "./apps/ProjectManager/inception/inception_api.py", line 184, in check_valid
+    checkResult = self.run_check(op_action)
+  File "./apps/ProjectManager/inception/inception_api.py", line 149, in run_check
+    action='check')
+  File "./apps/ProjectManager/inception/inception_api.py", line 44, in sqlprepare
+    port=self.inception_port, use_unicode=True, charset="utf8")
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/__init__.py", line 90, in Connect
+    return Connection(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 699, in __init__
+    self.connect()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 936, in connect
+    self._request_authentication()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1113, in _request_authentication
+    if int(self.server_version.split('.', 1)[0]) >= 5:
+ValueError: invalid literal for int() with base 10: 'Inception2'
+2018-02-26 11:05:19,889 [uWSGIWorker4Core1:139998143043328] [django.request:93] [base:get_response] [WARNING]- Not Found: /favicon.ico
+2018-02-26 11:16:40,771 [uWSGIWorker3Core0:140124656412608] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:17:01,366 [uWSGIWorker3Core1:140124351678208] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:29:09,229 [uWSGIWorker1Core0:140124656412608] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:29:18,552 [uWSGIWorker4Core1:140124351678208] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:29:27,832 [uWSGIWorker1Core1:140124351678208] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:29:29,442 [uWSGIWorker1Core0:140124656412608] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:30:20,076 [uWSGIWorker1Core0:140124656412608] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 11:30:21,023 [uWSGIWorker1Core1:140124351678208] [django.request:93] [base:get_response] [WARNING]- Not Found: /favicon.ico
+2018-02-26 14:32:57,440 [uWSGIWorker4Core0:140344182585280] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 259, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'
+2018-02-26 14:32:58,913 [uWSGIWorker3Core0:140344182585280] [django.request:93] [base:get_response] [WARNING]- Not Found: /favicon.ico
+2018-02-26 15:16:35,486 [uWSGIWorker1Core0:140424466266048] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/get_database/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 80, in post
+    dbList = GetDatabaseListApi(host).get_dbname()
+  File "./apps/ProjectManager/inception/inception_api.py", line 104, in get_dbname
+    master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num)
+ProjectManager.models.MultipleObjectsReturned: get() returned more than one InceptionHostConfig -- it returned 2!
+2018-02-26 15:17:58,664 [uWSGIWorker1Core1:140424161531648] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/get_database/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 80, in post
+    dbList = GetDatabaseListApi(host).get_dbname()
+  File "./apps/ProjectManager/inception/inception_api.py", line 104, in get_dbname
+    master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num)
+ProjectManager.models.MultipleObjectsReturned: get() returned more than one InceptionHostConfig -- it returned 2!
+2018-02-26 15:28:32,384 [uWSGIWorker2Core0:140424466266048] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/get_database/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 80, in post
+    dbList = GetDatabaseListApi(host).get_dbname()
+  File "./apps/ProjectManager/inception/inception_api.py", line 104, in get_dbname
+    master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num)
+ProjectManager.models.MultipleObjectsReturned: get() returned more than one InceptionHostConfig -- it returned 2!
+2018-02-26 15:28:53,550 [uWSGIWorker4Core1:140424161531648] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/get_database/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 80, in post
+    dbList = GetDatabaseListApi(host).get_dbname()
+  File "./apps/ProjectManager/inception/inception_api.py", line 104, in get_dbname
+    master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num)
+ProjectManager.models.MultipleObjectsReturned: get() returned more than one InceptionHostConfig -- it returned 2!
+2018-02-26 15:29:23,003 [uWSGIWorker2Core0:140424466266048] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/get_database/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 80, in post
+    dbList = GetDatabaseListApi(host).get_dbname()
+  File "./apps/ProjectManager/inception/inception_api.py", line 104, in get_dbname
+    master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num)
+ProjectManager.models.MultipleObjectsReturned: get() returned more than one InceptionHostConfig -- it returned 2!
+2018-02-26 15:30:19,065 [uWSGIWorker4Core0:140565107550144] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/get_database/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 80, in post
+    dbList = GetDatabaseListApi(host).get_dbname()
+  File "./apps/ProjectManager/inception/inception_api.py", line 104, in get_dbname
+    master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 407, in get
+    (self.model._meta.object_name, num)
+ProjectManager.models.MultipleObjectsReturned: get() returned more than one InceptionHostConfig -- it returned 2!
+2018-02-26 15:32:07,287 [uWSGIWorker4Core1:140564802815744] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /user/login/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'user/login/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 15:33:16,940 [uWSGIWorker3Core0:140565107550144] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_records/offline_sql_detail/20180226153252755919/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 920, in connect
+    **kwargs)
+  File "/usr/lib/python3.6/socket.py", line 722, in create_connection
+    raise err
+  File "/usr/lib/python3.6/socket.py", line 713, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 117, in get
+    rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+  File "./apps/ProjectManager/inception/inception_api.py", line 73, in get_backupinfo
+    port=self.inception_backup_port, use_unicode=True, charset="utf8")
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/__init__.py", line 90, in Connect
+    return Connection(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 699, in __init__
+    self.connect()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 967, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 111] Connection refused)")
+2018-02-26 15:33:23,377 [uWSGIWorker1Core0:140565107550144] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_records/offline_sql_detail/20180226153223543454/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 920, in connect
+    **kwargs)
+  File "/usr/lib/python3.6/socket.py", line 722, in create_connection
+    raise err
+  File "/usr/lib/python3.6/socket.py", line 713, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 117, in get
+    rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+  File "./apps/ProjectManager/inception/inception_api.py", line 73, in get_backupinfo
+    port=self.inception_backup_port, use_unicode=True, charset="utf8")
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/__init__.py", line 90, in Connect
+    return Connection(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 699, in __init__
+    self.connect()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 967, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 111] Connection refused)")
+2018-02-26 15:35:06,131 [uWSGIWorker1Core1:140564802815744] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_records/offline_sql_detail/20180226153223543454/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 920, in connect
+    **kwargs)
+  File "/usr/lib/python3.6/socket.py", line 722, in create_connection
+    raise err
+  File "/usr/lib/python3.6/socket.py", line 713, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 117, in get
+    rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+  File "./apps/ProjectManager/inception/inception_api.py", line 73, in get_backupinfo
+    port=self.inception_backup_port, use_unicode=True, charset="utf8")
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/__init__.py", line 90, in Connect
+    return Connection(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 699, in __init__
+    self.connect()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 967, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 111] Connection refused)")
+2018-02-26 15:36:40,018 [uWSGIWorker2Core0:140497451431872] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_records/offline_sql_detail/20180226153223543454/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 117, in get
+    rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+  File "./apps/ProjectManager/inception/inception_api.py", line 82, in get_backupinfo
+    cur.execute(dstTableQuery)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/cursors.py", line 165, in execute
+    result = self._query(query)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/cursors.py", line 321, in _query
+    conn.query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 860, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1061, in _read_query_result
+    result.read()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1350, in read
+    first_packet = self.connection._read_packet()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1018, in _read_packet
+    packet.check_error()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 384, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/err.py", line 107, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table '10_72_63_128_3306_test.$_$inception_backup_information$_$' doesn't exist")
+2018-02-26 15:36:41,922 [uWSGIWorker2Core1:140497146697472] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_records/offline_sql_detail/20180226153223543454/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 117, in get
+    rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+  File "./apps/ProjectManager/inception/inception_api.py", line 82, in get_backupinfo
+    cur.execute(dstTableQuery)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/cursors.py", line 165, in execute
+    result = self._query(query)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/cursors.py", line 321, in _query
+    conn.query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 860, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1061, in _read_query_result
+    result.read()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1350, in read
+    first_packet = self.connection._read_packet()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1018, in _read_packet
+    packet.check_error()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 384, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/err.py", line 107, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table '10_72_63_128_3306_test.$_$inception_backup_information$_$' doesn't exist")
+2018-02-26 15:37:26,072 [uWSGIWorker3Core1:140497146697472] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_offline_sql_records/offline_sql_detail/20180226153719773259/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 117, in get
+    rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
+  File "./apps/ProjectManager/inception/inception_api.py", line 82, in get_backupinfo
+    cur.execute(dstTableQuery)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/cursors.py", line 165, in execute
+    result = self._query(query)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/cursors.py", line 321, in _query
+    conn.query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 860, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1061, in _read_query_result
+    result.read()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1350, in read
+    first_packet = self.connection._read_packet()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 1018, in _read_packet
+    packet.check_error()
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/connections.py", line 384, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/root/venv_py36/lib/python3.6/site-packages/pymysql/err.py", line 107, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table '10_72_63_128_3306_test.$_$inception_backup_information$_$' doesn't exist")
+2018-02-26 15:58:15,454 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /audits/projects/index/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'audits/projects/index/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 15:58:19,601 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 15:58:21,305 [uWSGIWorker3Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 15:58:22,810 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:15:58,399 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /audits/projects/project_commit/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'audits/projects/project_commit/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:17:56,754 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:18:02,950 [uWSGIWorker1Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /audits/projects/project_commit/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'audits/projects/project_commit/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:18:51,965 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /audits/projects/project_commit/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'audits/projects/project_commit/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:18:58,181 [uWSGIWorker2Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:19:23,979 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:19:30,698 [uWSGIWorker1Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:20:15,604 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:20:42,599 [uWSGIWorker3Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:22:42,391 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:22:42,420 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:27:38,697 [uWSGIWorker2Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:27:51,099 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:28:10,296 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:28:22,508 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:34:27,956 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:34:44,627 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:34:48,451 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:35:50,994 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:36:13,209 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:37:24,972 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:38:03,159 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /users/home/wiki/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'login/' [name='p_login']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'logout/' [name='p_logout']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'profile/' [name='p_user_profile']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_password/' [name='p_change_password']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_pic/' [name='p_change_pic']>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'users/home/wiki/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:38:10,294 [uWSGIWorker3Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:38:12,932 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:38:16,664 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 16:51:21,385 [uWSGIWorker2Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:00:19,923 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:20:37,329 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /users/home/wiki/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'login/' [name='p_login']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'logout/' [name='p_logout']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'profile/' [name='p_user_profile']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_password/' [name='p_change_password']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_pic/' [name='p_change_pic']>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'users/home/wiki/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:20:40,135 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:20:48,479 [uWSGIWorker3Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:22:10,080 [uWSGIWorker2Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:22:20,407 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:06,879 [uWSGIWorker1Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /user/login/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'user/login/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:07,187 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:10,913 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:12,503 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:24,104 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /audit/projects/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'audit/projects/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:27,010 [uWSGIWorker3Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:33,982 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:23:39,129 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:26,528 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /user/login/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'user/login/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:31,865 [uWSGIWorker2Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:35,403 [uWSGIWorker3Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:37,625 [uWSGIWorker2Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:41,484 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:52,695 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:24:59,601 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:28:23,011 [uWSGIWorker4Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /analysisdb/backup/index/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'analysisdb/backup/index/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:28:27,433 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:28:29,349 [uWSGIWorker1Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:34:37,065 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:34:48,439 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:35:14,651 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:39:09,194 [uWSGIWorker1Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:40:56,304 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:41:11,738 [uWSGIWorker2Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:45:30,321 [uWSGIWorker1Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-26 17:45:49,291 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 08:56:35,622 [uWSGIWorker4Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 08:56:50,693 [uWSGIWorker3Core1:140719414363904] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 09:00:25,216 [uWSGIWorker1Core0:140719719098304] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /users/home/wiki/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'login/' [name='p_login']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'logout/' [name='p_logout']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'profile/' [name='p_user_profile']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_password/' [name='p_change_password']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_pic/' [name='p_change_pic']>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'users/home/wiki/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:18:19,880 [uWSGIWorker2Core0:139686083782592] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /users/home/login/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'login/' [name='p_login']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'logout/' [name='p_logout']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'profile/' [name='p_user_profile']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_password/' [name='p_change_password']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_pic/' [name='p_change_pic']>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'users/home/login/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:18:27,043 [uWSGIWorker1Core0:139686083782592] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:18:35,990 [uWSGIWorker2Core0:139686083782592] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /favicon.ico
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:41:53,391 [uWSGIWorker3Core1:140397500430080] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /users/home/wiki/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'login/' [name='p_login']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'logout/' [name='p_logout']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'profile/' [name='p_user_profile']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_password/' [name='p_change_password']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_pic/' [name='p_change_pic']>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'users/home/wiki/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:41:53,541 [uWSGIWorker1Core0:140397805164480] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /apple-touch-icon-precomposed.png
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'apple-touch-icon-precomposed.png'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:41:53,713 [uWSGIWorker2Core0:140397805164480] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /apple-touch-icon.png
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'apple-touch-icon.png'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:41:53,839 [uWSGIWorker1Core1:140397500430080] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /users/home/wiki/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'login/' [name='p_login']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'logout/' [name='p_logout']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'profile/' [name='p_user_profile']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_password/' [name='p_change_password']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>, <URLPattern 'change_pic/' [name='p_change_pic']>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'users/home/wiki/'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:41:53,871 [uWSGIWorker4Core1:140397500430080] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /apple-touch-icon-precomposed.png
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'apple-touch-icon-precomposed.png'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:41:53,913 [uWSGIWorker2Core1:140397500430080] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /apple-touch-icon.png
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/urls/resolvers.py", line 523, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLPattern '' [name='p_index']>], [<URLResolver <module 'UserManager.urls' from '/data/web/AuditSQL/apps/UserManager/urls.py'> (None:None) 'users/'>], [<URLResolver <module 'ProjectManager.urls' from '/data/web/AuditSQL/apps/ProjectManager/urls.py'> (None:None) 'projects/'>]], 'path': 'apple-touch-icon.png'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 99, in get_exception_response
+    response = callback(request, **dict(param_dict, exception=exception))
+TypeError: page_not_found() got an unexpected keyword argument 'exception'
+2018-02-27 10:42:40,974 [uWSGIWorker1Core0:140397805164480] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /admin/ProjectManager/inceptionhostconfig/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/connections.py", line 277, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.OperationalError: (1054, "Unknown column 'sqlaudit_inception_hostconfig.group_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/admin/options.py", line 574, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/utils/decorators.py", line 142, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/decorators/cache.py", line 44, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/admin/sites.py", line 223, in inner
+    return view(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/utils/decorators.py", line 62, in _wrapper
+    return bound_func(*args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/utils/decorators.py", line 142, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/utils/decorators.py", line 58, in bound_func
+    return func.__get__(self, type(self))(*args2, **kwargs2)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/admin/options.py", line 1685, in changelist_view
+    selection_note=_('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 254, in __len__
+    self._fetch_all()
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 1179, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/query.py", line 53, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1064, in execute_sql
+    cursor.execute(sql, params)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/utils.py", line 68, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/utils.py", line 77, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/root/venv_py36/lib/python3.6/site-packages/MySQLdb/connections.py", line 277, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'sqlaudit_inception_hostconfig.group_id' in 'field list'")
+2018-02-27 10:44:23,058 [uWSGIWorker3Core0:140397805164480] [django.request:118] [exception:handle_uncaught_exception] [ERROR]- Internal Server Error: /projects/incep_online_sql_records/
+Traceback (most recent call last):
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/base.py", line 89, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/root/venv_py36/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/data/web/AuditSQL/apps/ProjectManager/views.py", line 262, in get_queryset
+    user_in_group = self.request.session['groups']
+  File "/root/venv_py36/lib/python3.6/site-packages/django/contrib/sessions/backends/base.py", line 55, in __getitem__
+    return self._session[key]
+KeyError: 'groups'

@@ -4,7 +4,7 @@
     <style>
         body {
             font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 12px;
+            font-size: 13px;
             line-height: 1.42857143;
             color: #333;
             background-color: #fff;
@@ -13,22 +13,24 @@
 </head>
 <body>
 {% if data.progress_status == '5' %}
-    <p>您好，用户({{ displayname }})关闭了该记录。</p>
+    <p>您好，用户({{ username }})关闭了该记录。</p>
     {% if data.close_reason %}
-        <p>#附加信息[{{ displayname }}]:</p>
+        <p>#附加信息[{{ username }}]:</p>
         <p>{{ data.close_reason|safe }}</p>
         <p>== END ==</p>
     {% endif %}
-{% else %}
+{% endif %}
+
+{% if user_role == 'Leader' %}
     {% if data.progress_status == '2' %}
-        <p>您好，Leader({{ displayname }})已批准，请DBA({{ data.operate_dba }})处理。</p>
+        <p>您好，Leader({{ username }})已批准，请DBA({{ data.operate_dba }})处理。</p>
         {% if addition_info %}
             <p>#附加信息[Leader]:</p>
             <p>{{ addition_info|safe }}</p>
             <p>== END ==</p>
         {% endif %}
     {% elif data.progress_status == '1' %}
-        <p>您好，Leader({{ displayname }})批准未通过。</p>
+        <p>您好，Leader({{ username }})批准未通过。</p>
         {% if addition_info %}
             <p>#附加信息[Leader]:</p>
             <p>{{ addition_info|safe }}</p>
@@ -39,14 +41,14 @@
 
 {% if user_role == 'DBA' %}
     {% if data.progress_status == '4' %}
-        <p>您好，DBA({{ displayname }})已处理，请{{ data.proposer }}核对数据，谢谢。</p>
+        <p>您好，DBA({{ username }})已处理，请{{ data.proposer }}核对数据，谢谢。</p>
         {% if addition_info %}
             <p>#附加信息[DBA]:</p>
             <p>{{ addition_info|safe }}</p>
             <p>== END ==</p>
         {% endif %}
     {% elif data.progress_status == '3' %}
-        <p>您好，DBA({{ displayname }})正在处理中，请稍等，谢谢。</p>
+        <p>您好，DBA({{ username }})正在处理中，请稍等，谢谢。</p>
         {% if addition_info %}
             <p>#附加信息[DBA]:</p>
             <p>{{ addition_info|safe }}</p>

@@ -120,6 +120,11 @@ class Contacts(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
+    def contact_group(self):
+        group = ContactsDetail.objects.annotate(group_name=F('group__group_name')).filter(contact__contact_email=self.contact_email).values_list(
+            'group_name', flat=True)
+        return ', '.join(group)
+
     def __str__(self):
         return self.contact_name
 

@@ -25,7 +25,7 @@ class GroupsDetailInline(admin.StackedInline):
 
 class ContactsDetailInline(admin.StackedInline):
     model = ContactsDetail
-    max_num = 1
+    extra = 1
 
 
 class UserAccountAdmin(admin.ModelAdmin):
@@ -65,8 +65,9 @@ class RolesAdmin(admin.ModelAdmin):
 
 
 class ContactsAdmin(admin.ModelAdmin):
-    list_display = ('contact_id', 'contact_name', 'contact_email', 'created_at', 'updated_at')
+    list_display = ('contact_id', 'contact_name', 'contact_email', 'contact_group', 'created_at', 'updated_at')
     ordering = ('-created_at',)
+    list_display_links = ('contact_email', )
 
     inlines = [ContactsDetailInline, ]
 

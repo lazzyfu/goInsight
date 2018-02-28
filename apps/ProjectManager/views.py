@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 
 import sqlparse
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F, When, Value, CharField, Case
 from django.http import JsonResponse, HttpResponse
@@ -18,8 +17,8 @@ from ProjectManager.group_permissions import check_group_permission, check_sql_d
 from UserManager.models import GroupsDetail, UserAccount, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlOperate
 from utils.tools import format_request
-from .models import InceptionHostConfig, InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
-    OnlineAuditContentsReply
+from .models import InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
+    OnlineAuditContentsReply, InceptionHostConfigDetail
 from .tasks import send_commit_mail, send_verify_mail, send_reply_mail
 
 
@@ -51,14 +50,43 @@ class IncepOfflineSqlCheckView(FormView):
 
 
 class BeautifySQLView(View):
-    """美化SQL"""
+    """
+    美化SQL
+    判断SQL类型（DML还是DDL），并分别进行美化
+    最后合并返回
+    """
 
     def post(self, request):
         data = format_request(request)
-        sqlContent = data['sql_content'].rstrip()
-        sqlFormat = '\n'.join([line for line in sqlContent.split('\n') if line != ''])
-        beautifySQL = sqlparse.format(sqlFormat, keyword_case='upper')
-        context = {'data': beautifySQL}
+        sqlContent = data.get('sql_content').strip()
+
+        sqlSplit = []
+        for stmt in sqlparse.split(sqlContent):
+            sql = sqlparse.parse(stmt)[0]
+            sql_comment = sql.token_first()
+            if isinstance(sql_comment, sqlparse.sql.Comment):
+                sqlSplit.append({'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')})
+            else:
+                sqlSplit.append({'comment': '', 'sql': sql.value})
+
+        beautifySQL_list = []
+        try:
+            for row in sqlSplit:
+                comment = row['comment']
+                sql = row['sql']
+                res = sqlparse.parse(sql)
+                if res[0].tokens[0].ttype[1] == 'DML':
+                    sqlFormat = sqlparse.format(sql, keyword_case='upper', reindent=True)
+                    beautifySQL_list.append(comment + sqlFormat)
+                elif res[0].tokens[0].ttype[1] == 'DDL':
+                    sqlFormat = sqlparse.format(sql, keyword_case='upper')
+                    beautifySQL_list.append(comment + sqlFormat)
+            beautifySQL = '\n\n'.join(beautifySQL_list)
+            context = {'data': beautifySQL}
+        except Exception as err:
+            print(err)
+            context = {'errCode': 400, 'errMsg': "注释不合法, 请检查"}
+
         return HttpResponse(json.dumps(context))
 
 
@@ -67,7 +95,10 @@ class GetInceptionHostConfigView(View):
 
     def get(self, request):
         type = request.GET.get('type')
-        envResult = InceptionHostConfig.objects.filter(type=type).values('host', 'comment')
+        user_in_group = self.request.session.get('groups')
+        envResult = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
+                                                               comment=F('config__comment')).filter(
+            config__type=type).filter(group__group_id__in=user_in_group).values('host', 'comment')
         return JsonResponse(list(envResult), safe=False)
 
 
@@ -312,7 +343,7 @@ class IncepOnlineClickVerifyView(FormView):
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核通过'}
                             send_verify_mail.delay(latest_id=id,
-                                                   displayname=self.request.user.displayname,
+                                                   username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                         # 当用户点击的是不通过, 状态变为：未批准
@@ -323,7 +354,7 @@ class IncepOnlineClickVerifyView(FormView):
                             data.save()
                             context = {'errCode': '200', 'errMsg': '操作成功、审核未通过'}
                             send_verify_mail.delay(latest_id=id,
-                                                   displayname=self.request.user.username,
+                                                   username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                 # 其他情况

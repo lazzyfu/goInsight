@@ -8,8 +8,13 @@
             height: 520px;
             font-size: 13px;
         }
+
         .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
+        }
+
+        .box-size {
+            font-size: 12px;
         }
     </style>
 {% endblock %}
@@ -25,9 +30,9 @@
     <section class="content">
         <div class="row">
             <form class="form-horizontal">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <!-- Profile Image -->
-                    <div class="box box-success">
+                    <div class="box">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>选择环境</h5>
@@ -37,7 +42,8 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">操作</label>
                                 <div class="col-sm-9">
-                                    <select id="select_op" name="op_action" onchange="infoChange()" style="width: 100%"
+                                    <select id="select_op" name="op_action" onchange="infoChange()"
+                                            style="width: 100%"
                                             required
                                             class="selectpicker form-control" title="请选择...">
                                         <option selected value="op_schema">表结构修改</option>
@@ -49,7 +55,8 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">主机</label>
                                 <div class="col-sm-9">
-                                    <select id="select_env" name="host" onchange="getDatabaseList()" style="width: 100%"
+                                    <select id="select_env" name="host" onchange="getDatabaseList()"
+                                            style="width: 100%"
                                             required
                                             class="form-control selectpicker" title="选择主机...">
                                     </select>
@@ -64,19 +71,22 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <button type="button" onclick="beautifySQL()" class="btn bg-info">美化SQL</button>
-                                    <button type="button" onclick="IncepSqlCheckForm('check')" class="btn bg-info">语法检测
+                                    <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
+                                    </button>
+                                    <button type="button" onclick="IncepSqlCheckForm('check')"
+                                            class="btn bg-info btn-sm">语法检测
                                     </button>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <button type="reset" class="btn bg-info">清除SQL</button>
-                                    <button type="button" onclick="IncepSqlCheckForm('execute')" class="btn bg-info">
+                                    <button type="button" onclick="IncepSqlCheckForm('execute')"
+                                            class="btn bg-info btn-sm">
                                         执行SQL
                                     </button>
                                 </div>
@@ -85,7 +95,7 @@
                         <!-- /.box-body -->
                     </div>
 
-                    <div class="box box-warning">
+                    <div class="box">
                         <div class="box-header with-border">
                             <h5 class="box-title">支持的语句类型</h5>
                         </div>
@@ -101,11 +111,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-9">
-                    <div class="box box-primary">
+                <div class="col-md-8">
+                    <div class="box">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写SQL语句
+                                    <small class="text-danger">使用：/* 这是注释 */ 或 # 这是注释</small>
                                 </h5>
                             </div>
                         </div>
@@ -119,21 +130,23 @@
                     </div>
                 </div>
             </form>
-            <!-- /.col -->
-            <div class="col-md-12" id="typediv1" style="visibility: hidden">
-                <div class="box box-gray">
-                    <div class="box-body no-padding">
-                        <table class="table table-responsive table-bordered" id="scroll_table">
+        </div>
+        <!-- /.col -->
+        <div class="box-size" id="typediv1" style="visibility: hidden">
+            <div class="box box-gray">
+                <div class="box-body no-padding">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-condensed table-bordered">
                             <thead>
                             <tr>
                                 <th class="col-sm-1 text-red">ID</th>
                                 <th class="col-sm-1 text-red">阶段</th>
-                                <th class="col-sm-1 text-red">阶段状态</th>
-                                <th class="col-sm-1 text-red">错误级别</th>
-                                <th class="col-sm-2 text-red">错误信息</th>
-                                <th class="col-sm-4 text-red">被检查的SQL</th>
-                                <th class="col-sm-1 text-red">影响行数</th>
-                                <th class="col-sm-1 text-red">执行时间(s)</th>
+                                <th class="col-sm-1 text-red">状态</th>
+                                <th class="col-sm-1 text-red">级别</th>
+                                <th class="col-sm-2 text-red">信息</th>
+                                <th class="col-sm-4 text-red">SQL</th>
+                                <th class="col-sm-1 text-red">行数</th>
+                                <th class="col-sm-1 text-red">耗时</th>
                             </tr>
                             </thead>
                             <tbody id="td_append">
@@ -155,7 +168,7 @@
             mode: "text/x-mysql",
             matchBrackets: true,
             tabMode: "indent",
-            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);\n\n注释:\n# 或 /* */"
+            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
         });
 
         /**
@@ -172,9 +185,14 @@
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    $.each(data, function (index, sql) {
-                        myCodeMirror.setValue(sql);
-                    })
+                    if (data.errCode == 400) {
+                        displayPNotify('400', data.errMsg);
+                    }
+                    else {
+                        $.each(data, function (index, sql) {
+                            myCodeMirror.setValue(sql);
+                        })
+                    }
                 }
             })
         }

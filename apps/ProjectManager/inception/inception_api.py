@@ -78,7 +78,7 @@ class GetBackupApi(object):
         for row in self.sequence_result:
             # 如果备份的库记录为空，跳过
             if row['backupdbName'] != 'None':
-                dstTableQuery = f"select tablename from {row['backupdbName']}.$_$inception_backup_information$_$ where opid_time='{row['sequence']}'"
+                dstTableQuery = f"select tablename from {row['backupdbName']}.$_$Inception_backup_information$_$ where opid_time='{row['sequence']}'"
                 cur.execute(dstTableQuery)
                 dstTable = cur.fetchone()[0]
 

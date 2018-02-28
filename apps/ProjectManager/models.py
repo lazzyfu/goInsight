@@ -1,7 +1,9 @@
 from django.db import models
 
 # Create your models here.
-from UserManager.models import Groups, Contacts, UserAccount
+from django.db.models import F
+
+from UserManager.models import Groups, Contacts, UserAccount, GroupsDetail
 
 
 class InceptionHostConfig(models.Model):
@@ -14,12 +16,39 @@ class InceptionHostConfig(models.Model):
     is_enable = models.IntegerField(null=False, default=0, verbose_name=u'0:启用，1：禁用')
     comment = models.CharField(max_length=128, verbose_name=u'主机描述')
 
+    def group_name(self):
+        group = InceptionHostConfigDetail.objects.annotate(group_name=F('group__group_name')).filter(
+            config__id=self.id).values_list(
+            'group_name',
+            flat=True)
+        return ', '.join(group)
+
     class Meta:
         verbose_name = u'inception连接数据库配置'
         verbose_name_plural = verbose_name
 
+        unique_together = ('host',)
+
         default_permissions = ()
         db_table = 'sqlaudit_inception_hostconfig'
+
+
+class InceptionHostConfigDetail(models.Model):
+    """
+    inception主机分组
+    """
+    id = models.AutoField(primary_key=True, verbose_name=u'主键')
+    config = models.ForeignKey(InceptionHostConfig, on_delete=models.CASCADE, null=False)
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
+
+    class Meta:
+        verbose_name = u'inception主机分组'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'auditsql_inception_hostconfig_detail'
 
 
 class InceptionSqlOperateRecord(models.Model):
@@ -115,6 +144,7 @@ class OnlineAuditContents(models.Model):
             ('leader_verify', u'批准权限'),
         )
 
+
 class Remark(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
     remark = models.CharField(default='', max_length=30, verbose_name=u'备注')
@@ -127,6 +157,7 @@ class Remark(models.Model):
 
         default_permissions = ()
         db_table = 'sqlaudit_audit_remark'
+
 
 class OnlineAuditContentsReply(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
@@ -147,3 +178,16 @@ class OnlineAuditContentsReply(models.Model):
 
     def user_id(self):
         return self.user.uid
+
+
+class MonitorSchema(models.Model):
+    table_schema = models.CharField(null=False, max_length=512)
+    table_name = models.CharField(null=False, max_length=512)
+    table_stru = models.TextField(null=False, default='')
+    md5_sum = models.CharField(null=False, max_length=256)
+
+    class Meta:
+        verbose_name = u'监控表结构变更表'
+        verbose_name_plural = verbose_name
+        permissions = ()
+        db_table = "sqlaudit_monitor_schema"
