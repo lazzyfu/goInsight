@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from ProjectManager.models import OnlineAuditContents
 
+
 def check_group_permission(fun):
     """
     验证用户是否属于指定的项目组

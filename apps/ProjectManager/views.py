@@ -15,7 +15,7 @@ from django.views import View
 from django.views.generic import FormView, ListView
 from pure_pagination import PaginationMixin
 
-from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
+from ProjectManager.forms import InceptionSqlCheckForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
 from ProjectManager.group_permissions import check_group_permission, check_sql_detail_permission
 from ProjectManager.utils import update_tasks_status
 from UserManager.models import GroupsDetail, UserAccount, Contacts
@@ -31,7 +31,7 @@ channel_layer = get_channel_layer()
 
 
 class IncepSqlCheckView(FormView):
-    form_class = InceptionSqlOperateForm
+    form_class = InceptionSqlCheckForm
     template_name = 'incep_sql_check.html'
 
     def form_valid(self, form):

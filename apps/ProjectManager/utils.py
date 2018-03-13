@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-import json
 
 from ProjectManager.models import IncepMakeExecTask
 

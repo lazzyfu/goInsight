@@ -6,7 +6,7 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 520px;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .CodeMirror pre.CodeMirror-placeholder {
@@ -116,7 +116,7 @@
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写SQL语句
-                                    <small class="text-danger">使用：/* 这是注释 */ 或 # 这是注释</small>
+                                    <small class="text-danger">使用：/* 这是注释 */ 或 # 这是注释, 使用Alt + Space 组合键启用提示</small>
                                 </h5>
                             </div>
                         </div>
@@ -166,8 +166,8 @@
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
-            matchBrackets: true,
-            tabMode: "indent",
+            extraKeys: {"Alt-Space": "autocomplete"},
+            hint: CodeMirror.hint.sql,
             placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
         });
 

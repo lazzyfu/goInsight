@@ -6,7 +6,7 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 530px;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .CodeMirror pre.CodeMirror-placeholder {
@@ -208,8 +208,8 @@
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
-            matchBrackets: true,
-            tabMode: "indent",
+            extraKeys: {"Alt-Space": "autocomplete"},
+            hint: CodeMirror.hint.sql,
             placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
         });
 
