@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .table > tbody > tr > td {
+            padding: 12px;
+        }
+
+        .box-size {
+            font-size: 12px;
+        }
+
+        .log-ul {
+            width: auto;
+            height: 550px;
+            overflow: scroll;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 520px;
+            font-size: 13px;
+        }
+
+        .CodeMirror pre.CodeMirror-placeholder {
+            color: #999;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务--> 执行</h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th class="col-md-1">ID</th>
+                                <th class="col-md-1">用户</th>
+                                <th class="col-md-3">sql语句</th>
+                                <th class="col-md-3">sqlsha1</th>
+                                <th class="col-md-1">进度</th>
+                                <th class="col-md-1">执行</th>
+                                <th class="col-md-1">停止</th>
+                                <th class="col-md-1">结果</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for row in task_details %}
+                                <tr>
+                                    <td>{{ row.sid }}</td>
+                                    <td>{{ row.user }}</td>
+                                    <td>{{ row.sql_content }}</td>
+                                    <td>{{ row.sqlsha1 }}</td>
+                                    <td>{{ row.exec_status }}</td>
+                                    <td><a href="#" onclick="execTask({{ row.id }}, '{{ row.taskid }}', 'start')"><i
+                                            class="fa fa-check-square-o"></i></a></td>
+                                    <td><a href="#" onclick="execTask({{ row.id }}, '{{ row.taskid }}', 'stop')"><i
+                                            class="fa fa-power-off"></i></a></td>
+                                    <td><a href="#" onclick="getTasksResult({{ row.id }})"><i
+                                            class="fa fa-sliders"></i></a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-size" id="typediv1" style="visibility: hidden">
+                <div class="box">
+                    <div class="box-header">
+                        <div class="mailbox-read-info">
+                            <h3 class="box-title"><i class="fa fa-hand--right"></i> 结果输出</h3>
+                        </div>
+                    </div>
+
+                    <div class="box-body no-padding">
+                        <dl id="output_append" class="log-ul">
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-wide" id="rollbackupModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-hand-o-right"></i> 执行结果</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="box">
+                        <div class="box-body box-comments">
+                            <div class="box-comment">
+                                <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
+                                <textarea id="select_sql"></textarea>
+                            </div>
+                            <div class="box-comment">
+                                <h5><i class="fa  fa-info-circle"> 执行日志</i></h5>
+                                <hr>
+                                <dl id="execLog">
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var myTextarea = document.getElementById('select_sql');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            autoRefresh: true
+        });
+
+
+        <!-- 提交执行任务 -->
+        function execTask(id, taskid, action) {
+            var csrftoken = $.cookie('csrftoken');
+
+            $.ajax({
+                url: "{% url 'p_incep_exec_task' %}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'taskid': taskid,
+                    'action': action,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    displayPNotify(result.errCode, result.errMsg);
+                }
+            })
+        }
+
+        function renderIncepResult(data) {
+            var html = '';
+            $.each(data, function (index, row) {
+                var SQL = row.SQL;
+                var ID = row.ID;
+                var stage = row.stage;
+                if (row.errlevel == 0) {
+                    var errlevel = '成功'
+                }
+                else if (row.errlevel == 1) {
+                    var errlevel = '警告'
+                }
+                else if (row.errlevel == 2) {
+                    var errlevel = '错误'
+                }
+                var stagestatus = row.stagestatus;
+                var errormessage = row.errormessage;
+                var Affected_rows = row.Affected_rows;
+                var execute_time = row.execute_time;
+                html += "<dt> ID：</dt>" + "<dd>" + ID + "</dd>" +
+                    "<dt> 阶段：</dt>" + "<dd>" + stage + "</dd>" +
+                    "<dt> 状态：</dt>" + "<dd>" + stagestatus + "</dd>" +
+                    "<dt> 错误级别：</dt>" + "<dd>" + errlevel + "</dd>" +
+                    "<dt> 扫描/影响行数：</dt>" + "<dd>" + Affected_rows + "</dd>" +
+                    "<dt> 耗时：</dt>" + "<dd>" + execute_time + "</dd>" +
+                    "<dt> 错误信息：</dt>" + "<dd>" + errormessage + "</dd>" +
+                    "<dt> SQL语句：</dt>" + "<dd>" + SQL + "</dd>" + "<br>"
+            });
+            return html
+        }
+
+        function getTasksResult(id) {
+            $('#rollbackSql').empty();
+            $('#rollbackupModal').modal('hide');
+            $('#execLog').empty();
+            $.ajax({
+                url: "{% url 'p_incep_tasks_result' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'id': id},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    if (data.errCode == 200) {
+                        var log_html = renderIncepResult(data.exec_log);
+                        {#$('#rollbackSql').append(data.rollback_log);#}
+                        myCodeMirror.setValue(data.rollback_log);
+                        $('#execLog').append(log_html);
+                        $('#rollbackupModal').modal('show');
+                    }
+                    else if (data.errCode == 400) {
+                        displayPNotify(data.errCode, data.errMsg)
+                    }
+                }
+            })
+        }
+
+        {# 连接到websocket，接收channels消息 #}
+        var socket = new WebSocket('ws://' + window.location.host + '/longpoll/');
+        socket.onmessage = function (message) {
+            document.getElementById('typediv1').style.visibility = "visible";
+            var result = JSON.parse(message.data);
+
+            {# status=1 推送执行进度消息 #}
+            if (result.status == 1) {
+                $('#output_append').empty();
+                var osc_html = '';
+                $.each(result.data, function (index, row) {
+                    var TABLE = row.DBNAME + '.' + row.TABLENAME;
+                    var REMAINTIME = row.REMAINTIME;
+                    var SQLSHA1 = row.SQLSHA1;
+                    var PERCENT = row.PERCENT;
+                    var INFOMATION = row.INFOMATION.replace(/\n/g, '\.' + '<br>');
+
+                    osc_html += "<dt> 正在操作表：</dt>" + "<dd>" + TABLE + "</dd>" +
+                        "<dt> SQLSHA1：</dt>" + "<dd>" + SQLSHA1 + "</dd>" +
+                        "<dt> 预估剩余时间：</dt>" + "<dd class='text-red'>" + REMAINTIME + "</dd>" +
+                        "<dt> OSC执行进度：</dt>" + "<dd class='text-red'>" + PERCENT + "%" + "</dd>" +
+                        "<dt> OSC输出：</dt>" + "<dd>" + INFOMATION + "</dd>"
+                });
+                $("#output_append").append(osc_html);
+            }
+
+            else if (result.status == 0) {
+                {# status=0 推送执行结果消息 #}
+                $('#output_append').empty();
+                document.getElementById('typediv1').style.visibility = "visible";
+                var result_html = renderIncepResult(result.data);
+                $('#output_append').append(result_html);
+            }
+        };
+
+    </script>
+{% endblock %}

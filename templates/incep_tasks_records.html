@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .table > tr > td {
+            vertical-align: middle !important;
+        }
+
+        .table > tbody > tr > td {
+            padding: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">执行任务记录</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table class="table table-hover table-responsive">
+                        <thead>
+                        <tr>
+                            <th class="col-sm-1">任务工单号</th>
+                            <th class="col-sm-1">创建用户</th>
+                            <th class="col-sm-1">目标主机</th>
+                            <th class="col-sm-1">数据库</th>
+                            <th class="col-sm-2">生成时间</th>
+                            <th class="col-sm-1">执行</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for row in exec_tasks %}
+                            <tr data-tt-parent-id="1">
+                                <td>{{ row.taskid }}</td>
+                                <td>{{ row.user }}</td>
+                                <td>{{ row.dst_host }}</td>
+                                <td>{{ row.dst_database }}</td>
+                                <td>{{ row.make_time }}</td>
+                                <td><a href="incep_tasks_detail/{{ row.taskid }}"><i
+                                        class="fa fa-list-ol"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {# 分页 #}
+                    {% include 'pagination.html' %}
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+{% endblock %}

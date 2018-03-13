@@ -152,7 +152,7 @@ class Remark(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'线上审计备注表'
+        verbose_name = u'审核备注表'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -191,3 +191,32 @@ class MonitorSchema(models.Model):
         verbose_name_plural = verbose_name
         permissions = ()
         db_table = "sqlaudit_monitor_schema"
+
+
+exec_progress = (
+    ('0', u'未执行'),
+    ('1', u'已完成'),
+    ('2', u'处理中'),
+)
+
+class IncepMakeExecTask(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    uid = models.IntegerField(null=False, default=0, verbose_name=u'操作用户uid')
+    user = models.CharField(max_length=30, null=False, verbose_name=u'操作用户')
+    taskid = models.CharField(null=False, max_length=128, verbose_name=u'任务号')
+    dst_host = models.CharField(null=False, max_length=30, verbose_name=u'操作目标数据库主机')
+    dst_database = models.CharField(null=False, max_length=80, verbose_name=u'操作目标数据库')
+    sql_content = models.TextField(verbose_name=u'执行的SQL', default='')
+    sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
+    exec_status = models.CharField(max_length=10, default='0', choices=exec_progress, verbose_name=u'执行进度')
+    sequence = models.CharField(null=False, default='', max_length=1024, verbose_name=u'备份记录id，inception生成的sequence')
+    backup_dbname = models.CharField(null=False, max_length=1024, default='', verbose_name=u'inception生成的备份的库名')
+    exec_log = models.TextField(verbose_name=u'执行成功的记录', default='')
+    make_time = models.DateTimeField(auto_now_add=True, verbose_name=u'生成时间')
+
+    class Meta:
+        verbose_name = u'生成Inception执行任务'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_incep_make_exec_task'

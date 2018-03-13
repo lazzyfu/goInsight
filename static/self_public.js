@@ -27,7 +27,10 @@ function displayPNotify(status, msg, init_fun) {
     if (status == '200') {
         type = 'success';
         title = 'SUCCESS'
-    } else if (status == '400') {
+    } else if (status == '201') {
+        type = 'notice';
+        title = 'NOTICE'
+    }else if (status == '400') {
         type = 'error';
         title = 'ERROR'
     } else if (status == '403') {

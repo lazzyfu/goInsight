@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/dist/css/skins/_all-skins.min.css' %}">
     <!-- CodeMirror -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/lib/codemirror.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/theme/material.css' %}">
     <!-- bootstrap-select -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
@@ -107,7 +108,7 @@
                 <li class="header">MAIN NAVIGATION</li>
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
+                        <i class="fa fa-folder-open-o"></i>
                         <span>线上工单</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
@@ -116,7 +117,7 @@
                     <ul class="treeview-menu">
                         <li><a href="{% url 'p_incep_online_sql_records' %}"><i class="fa fa-list-ol"></i>工单记录</a>
                         </li>
-                        <li><a href="{% url 'p_incep_online_sql_commit' %}"><i class="fa fa-edit"></i>数据变更</a></li>
+                        <li><a href="{% url 'p_incep_online_sql_check' %}"><i class="fa fa-edit"></i>数据变更</a></li>
                     </ul>
                 </li>
 
@@ -129,9 +130,10 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_offline_sql_records' %}"><i class="fa fa-list-ol"></i>工单记录</a>
+                        <li><a href="{% url 'p_incep_tasks_records' %}"><i class="fa fa-tasks"></i>执行任务</a></li>
                         </li>
-                        <li><a href="{% url 'p_incep_offline_sql_check' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
+                        <li><a href="{% url 'p_incep_sql_check' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -179,6 +181,8 @@
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/lib/codemirror.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/mode/sql/sql.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/display/placeholder.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/display/autorefresh.js' %}"></script>
+
 <!-- bootstrap-select -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
 <!-- jquery-form -->

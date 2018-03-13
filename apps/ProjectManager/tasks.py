@@ -4,17 +4,28 @@
 import datetime
 import difflib
 import hashlib
+import json
+import time
+
 import mysql.connector as mdb
-
-
-from AuditSQL.settings import EMAIL_FROM
+import pymysql
+import sys
+from asgiref.sync import async_to_sync
 from celery import shared_task
+from channels.layers import get_channel_layer
 from django.core.mail import EmailMessage
 from django.db.models import F
 from django.template.loader import render_to_string
+from django.core.cache import cache
 
-from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema
+from AuditSQL import settings
+from AuditSQL.settings import EMAIL_FROM
+from ProjectManager.inception.inception_api import IncepSqlCheck
+from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, InceptionHostConfig
+from ProjectManager.utils import update_tasks_status
 from UserManager.models import ContactsDetail, UserAccount, Contacts
+
+channel_layer = get_channel_layer()
 
 
 class GetUserInfo(object):
@@ -253,7 +264,8 @@ def schema_modify_monitor(**kwargs):
 
         email_html_body = render_to_string('_monitor_table.html',
                                            {'html_data': html_data, 'table_change_data': table_change_data})
-        title = '{db}库表变更[来自:{host},检测时间:{check_time}]'.format(db=kwargs['schema'], host=kwargs['describle'], check_time=check_time)
+        title = '{db}库表变更[来自:{host},检测时间:{check_time}]'.format(db=kwargs['schema'], host=kwargs['describle'],
+                                                               check_time=check_time)
         msg = EmailMessage(subject=title,
                            body=email_html_body,
                            from_email=EMAIL_FROM,
@@ -263,3 +275,57 @@ def schema_modify_monitor(**kwargs):
         msg.send()
     cursor.close()
     conn.close()
+
+
+"""
+status = 0: 推送执行结果
+statu = 1: 推送执行进度
+"""
+
+@shared_task
+def get_osc_percent(user, sqlsha1, redis_key, host, database):
+    while True:
+        if redis_key in cache:
+            data = cache.get(redis_key)
+            if data == 'start':
+                sql = f"inception get osc_percent '{sqlsha1}'"
+                incep_sql_check = IncepSqlCheck(sql, host, database, user)
+
+                # 执行SQL
+                incep_sql_check.run_status(1)
+
+                # 每2s获取一次
+                time.sleep(2)
+
+            elif data == 'end':
+                # 删除key
+                cache.delete_pattern(redis_key)
+                break
+        else:
+            break
+
+
+@shared_task
+def incep_async_tasks(user, sql, host, database, redis_key, id, taskid):
+    incep_sql_check = IncepSqlCheck(sql, host, database, user)
+
+    # 执行SQL
+    exec_result = incep_sql_check.run_exec(0)
+
+    # 告诉获取进度的线程退出
+    cache.set(redis_key, 'end')
+
+    # 更新任务进度
+    update_tasks_status(id=id, taskid=taskid, exec_result=exec_result)
+
+
+@shared_task
+def stop_incep_osc(user, sqlsha1, redis_key, host, database):
+    sql = f"inception stop alter '{sqlsha1}'"
+
+    # 执行SQL
+    incep_sql_check = IncepSqlCheck(sql, host, database, user)
+    incep_sql_check.run_status(0)
+
+    # 告诉获取进度的线程退出
+    cache.set(redis_key, 'end')

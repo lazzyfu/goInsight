@@ -85,9 +85,9 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <button type="button" onclick="IncepSqlCheckForm('execute')"
+                                    <button type="button" onclick="IncepSqlCheckForm('make')"
                                             class="btn bg-info btn-sm">
-                                        执行SQL
+                                        生成执行任务
                                     </button>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@
                 </div>
             </form>
         </div>
-        <!-- /.col -->
+
         <div class="box-size" id="typediv1" style="visibility: hidden">
             <div class="box box-gray">
                 <div class="box-body no-padding">
@@ -145,7 +145,7 @@
                                 <th class="col-sm-1 text-red">级别</th>
                                 <th class="col-sm-2 text-red">信息</th>
                                 <th class="col-sm-4 text-red">SQL</th>
-                                <th class="col-sm-1 text-red">行数</th>
+                                <th class="col-sm-1 text-red">扫描/影响行数</th>
                                 <th class="col-sm-1 text-red">耗时</th>
                             </tr>
                             </thead>
@@ -252,6 +252,7 @@
          * @param op_type
          * @return {boolean}
          */
+
         function IncepSqlCheckForm(op_type) {
             var sql_content = myCodeMirror.getValue();
             var database = $("#select_db").val();
@@ -266,7 +267,7 @@
             }
 
             $.ajax({
-                url: "{% url 'p_incep_offline_sql_check' %}",
+                url: "{% url 'p_incep_sql_check' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -280,10 +281,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    if (result.errCode == 400) {
-                        displayPNotify(result.errCode, result.errMsg)
-                    }
-                    else {
+                    if (result.errCode == 200) {
                         $('#td_append').empty();
                         document.getElementById('typediv1').style.visibility = "visible";
                         var html = '';
@@ -317,9 +315,16 @@
                         });
                         $('#td_append').append(html);
                     }
+                    else if (result.errCode == 400) {
+                        displayPNotify(result.errCode, result.errMsg)
+                    }
+                    else {
+                        window.location.href = result.dst_url
+                    }
                 }
             })
         }
+
 
         $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>");
 

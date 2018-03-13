@@ -29,7 +29,7 @@
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal" id="auditCommitForm" action="{% url 'p_incep_online_sql_commit' %}"
+            <form class="form-horizontal" id="auditCommitForm" action="{% url 'p_incep_online_sql_check' %}"
                   method="post" data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
@@ -136,7 +136,7 @@
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
                                     </button>
 
-                                    <button type="button" onclick="IncepSqlOperateForm('check')"
+                                    <button type="button" onclick="IncepSqlCheckForm('check')"
                                             class="btn bg-info btn-sm">语法检测
                                     </button>
                                 </div>
@@ -409,6 +409,11 @@
         /**
          * 生成工单
          */
+
+        var project_main_page = function () {
+            window.parent.location.href = "/projects/incep_online_sql_records/"
+        };
+
         <!-- 有效性验证 -->
         $('#auditCommitForm').validator().on('submit', function (e) {
             var sql_content = myCodeMirror.getValue();
@@ -426,8 +431,8 @@
                     dataType: 'json',
                     success: function (result) {
                         {#提交成功，将textarea设置为空#}
-                        myCodeMirror.setValue('');
-                        displayPNotify(result.errCode, result.errMsg);
+
+                        displayPNotify(result.errCode, result.errMsg, project_main_page);
                     }
                 });
                 return false;
@@ -440,7 +445,7 @@
          * @return {boolean}
          */
 
-        function IncepSqlOperateForm(op_type) {
+        function IncepSqlCheckForm(op_type) {
             var sql_content = myCodeMirror.getValue();
             var database = $("#select_db").val();
             var host = $("#select_env").val();
@@ -454,7 +459,7 @@
             }
 
             $.ajax({
-                url: "{% url 'p_incep_offline_sql_check' %}",
+                url: "{% url 'p_incep_sql_check' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {

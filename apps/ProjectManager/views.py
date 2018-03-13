@@ -1,7 +1,10 @@
 import json
+from ast import literal_eval
 from datetime import datetime
 
 import sqlparse
+from channels.layers import get_channel_layer
+from django.core.cache import cache
 from django.db import transaction
 from django.db.models import F, When, Value, CharField, Case
 from django.http import JsonResponse, HttpResponse
@@ -14,17 +17,22 @@ from pure_pagination import PaginationMixin
 
 from ProjectManager.forms import InceptionSqlOperateForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
 from ProjectManager.group_permissions import check_group_permission, check_sql_detail_permission
+from ProjectManager.utils import update_tasks_status
 from UserManager.models import GroupsDetail, UserAccount, Contacts
-from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlOperate
+from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlCheck, \
+    sql_filter
 from utils.tools import format_request
-from .models import InceptionSqlOperateRecord, Remark, OnlineAuditContents, \
-    OnlineAuditContentsReply, InceptionHostConfigDetail
-from .tasks import send_commit_mail, send_verify_mail, send_reply_mail
+from .models import Remark, OnlineAuditContents, \
+    OnlineAuditContentsReply, InceptionHostConfigDetail, IncepMakeExecTask
+from .tasks import send_commit_mail, send_verify_mail, send_reply_mail, get_osc_percent, incep_async_tasks, \
+    stop_incep_osc
+
+channel_layer = get_channel_layer()
 
 
-class IncepOfflineSqlCheckView(FormView):
+class IncepSqlCheckView(FormView):
     form_class = InceptionSqlOperateForm
-    template_name = 'incep_offline_sql_check.html'
+    template_name = 'incep_sql_check.html'
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -34,17 +42,46 @@ class IncepOfflineSqlCheckView(FormView):
         op_type = cleaned_data['op_type']
         sql_content = cleaned_data['sql_content']
 
-        context = {}
-        if op_type == 'check':
-            context = IncepSqlOperate(sql_content, host, database).run_check(op_action)
+        # 对检测的SQL类型进行区分
+        filter_result = sql_filter(sql_content, op_action)
 
-        elif op_type == 'execute':
-            context = IncepSqlOperate(sql_content, host, database).run_execute(op_action, form, self.request)
+        # 实例化
+        incep_sql_check = IncepSqlCheck(sql_content, host, database, self.request.user.username)
+
+        if filter_result['errCode'] == 400:
+            context = filter_result
+        else:
+            # SQL语法检查
+            if op_type == 'check':
+                context = incep_sql_check.run_check()
+
+            # 生成执行任务
+            elif op_type == 'make':
+                # 生成执行任务之前，检测是否审核通过
+                check_result = incep_sql_check.is_check_pass()
+                if check_result['errCode'] == 400:
+                    context = check_result
+                else:
+                    # 对OSC执行的SQL生成sqlsha1
+                    result = incep_sql_check.make_sqksha1()
+                    taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
+                    # 生成执行任务记录
+                    for row in result:
+                        IncepMakeExecTask.objects.create(
+                            uid=self.request.user.uid,
+                            user=self.request.user.username,
+                            taskid=taskid,
+                            dst_host=host,
+                            dst_database=database,
+                            sql_content=row['SQL'],
+                            sqlsha1=row['sqlsha1']
+                        )
+                    context = {'errCode': 201, 'dst_url': f'/projects/incep_tasks_record/incep_tasks_detail/{taskid}'}
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
         error = "请选择主机或库名"
-        context = {'errCode': '400', 'errMsg': error}
+        context = {'errCode': 400, 'errMsg': error}
 
         return HttpResponse(json.dumps(context))
 
@@ -84,7 +121,7 @@ class BeautifySQLView(View):
             beautifySQL = '\n\n'.join(beautifySQL_list)
             context = {'data': beautifySQL}
         except Exception as err:
-            print(err)
+            raise OSError(err)
             context = {'errCode': 400, 'errMsg': "注释不合法, 请检查"}
 
         return HttpResponse(json.dumps(context))
@@ -112,43 +149,27 @@ class GetDatabaseListView(View):
         return HttpResponse(json.dumps(dbList))
 
 
-class IncepOfflineSqlRecords(PaginationMixin, ListView):
-    """查看线下工单记录"""
-    paginate_by = 8
-    context_object_name = 'sqlRecord'
-    template_name = 'incep_offline_sql_records.html'
+class IncepTasksResultView(View):
+    def get(self, request):
+        id = request.GET.get('id')
+        if IncepMakeExecTask.objects.get(id=id).exec_status == '1':
+            sqlDetail = IncepMakeExecTask.objects.get(id=id)
+            sequenceResult = {'backupdbName': sqlDetail.backup_dbname, 'sequence': sqlDetail.sequence}
+            rollback_sql = GetBackupApi(sequenceResult).get_rollback_statement()
+            if rollback_sql:
+                rollback_sql = GetBackupApi(sequenceResult).get_rollback_statement()
+                print(rollback_sql)
+            else:
+                rollback_sql = '无记录'
 
-    def get_queryset(self):
-        workidQuery = "select workid,id,op_user,dst_host,dst_database,op_time,group_concat(op_sql separator ';') as op_sql from sqlaudit_inception_sql_operate_record group by workid order by op_time desc"
-        sqlRecord = []
-        for row in InceptionSqlOperateRecord.objects.raw(workidQuery):
-            sqlRecord.append({'workid': row.workid,
-                              'op_user': row.op_user,
-                              'dst_host': row.dst_host,
-                              'dst_database': row.dst_database,
-                              'op_time': row.op_time,
-                              'op_sql': row.op_sql})
-        return sqlRecord
+            exec_log = sqlDetail.exec_log if sqlDetail.exec_log else '无记录'
 
+            # 此处要将exec_log去字符串处理，否则无法转换为json
+            context = {'rollback_log': rollback_sql, 'exec_log': literal_eval(exec_log), 'errCode': 200}
+        else:
+            context = {'errCode': 400, 'errMsg': '该SQL未被执行，无法查询状态信息'}
 
-class IncepOfflineSqlDetailView(View):
-    """查看当前用户会话执行的所有sql的详情"""
-
-    def get(self, request, workid):
-        sequenceResult = []
-        originalSql = ''
-        originalSqlQuery = InceptionSqlOperateRecord.objects.raw(
-            f"select id,group_concat(`op_sql` separator '\n') as `op_sql` from sqlaudit_inception_sql_operate_record where workid={workid} group by workid")
-        for i in originalSqlQuery:
-            originalSql = i.op_sql
-
-        sqlDetail = InceptionSqlOperateRecord.objects.filter(workid=workid)
-        for row in sqlDetail:
-            sequenceResult.append({'backupdbName': row.backup_dbname, 'sequence': row.sequence})
-        rollbackSql = GetBackupApi(sequenceResult).get_backupinfo()
-
-        return render(request, 'incep_offline_sql_detail.html',
-                      {'originalSql': originalSql, 'rollbackSql': rollbackSql, 'sqldetail': sqlDetail})
+        return HttpResponse(json.dumps(context))
 
 
 class IncepOnlineSqlCheckView(FormView):
@@ -156,7 +177,7 @@ class IncepOnlineSqlCheckView(FormView):
     处理用户提交的审核内容
     """
     form_class = OnlineAuditCommitForm
-    template_name = 'incep_online_sql_commit.html'
+    template_name = 'incep_online_sql_check.html'
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -171,7 +192,7 @@ class IncepOnlineSqlCheckView(FormView):
         op_action = cleaned_data.get('op_action')
         sql_content = cleaned_data['sql_content']
 
-        result = IncepSqlOperate(sql_content, host, database).check_valid(op_action, form, self.request)
+        result = IncepSqlCheck(sql_content, host, database, self.request.user.username).is_check_pass()
         if result.get('errCode') == 400:
             context = result
         elif result.get('errCode') == 200:
@@ -193,7 +214,7 @@ class IncepOnlineSqlCheckView(FormView):
             # 发送通知邮件
             latest_id = OnlineAuditContents.objects.latest('id').id
             send_commit_mail.delay(latest_id=latest_id)
-            context = {'errCode': '200', 'errMsg': '提交成功'}
+            context = {'errCode': '200', 'errMsg': '提交成功, 跳转到工单页面'}
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
@@ -259,7 +280,7 @@ class GetContactsView(View):
         return JsonResponse(result, safe=False)
 
 
-class IncepOnlineAuditRecordsView(PaginationMixin, ListView):
+class IncepOnlineSqlRecordsView(PaginationMixin, ListView):
     paginate_by = 8
     context_object_name = 'audit_records'
     template_name = 'incep_online_sql_records.html'
@@ -535,4 +556,103 @@ class OnlineSqlReplyView(FormView):
         error = form.errors.as_text()
         context = {'status': '400', 'msg': error}
 
+        return HttpResponse(json.dumps(context))
+
+
+class IncepTasksRecordsView(PaginationMixin, ListView):
+    paginate_by = 8
+    context_object_name = 'exec_tasks'
+    template_name = 'incep_tasks_records.html'
+
+    def get_queryset(self):
+        exec_tasks = []
+        query = "select id,user,taskid,dst_host,dst_database,make_time from sqlaudit_incep_make_exec_task group by taskid order by make_time  desc"
+        for row in IncepMakeExecTask.objects.raw(query):
+            exec_tasks.append({'user': row.user,
+                               'taskid': row.taskid,
+                               'dst_host': row.dst_host,
+                               'dst_database': row.dst_database,
+                               'make_time': row.make_time})
+        return exec_tasks
+
+
+class IncepTasksDetailView(View):
+    def get(self, request, taskid):
+        query = f"select id,user,sqlsha1,sql_content,taskid,case exec_status when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' end as exec_status from sqlaudit_incep_make_exec_task where taskid={taskid}"
+        i = 1
+        task_details = []
+        for row in IncepMakeExecTask.objects.raw(query):
+            task_details.append({
+                'sid': i,
+                'id': row.id,
+                'user': row.user,
+                'sqlsha1': row.sqlsha1,
+                'sql_content': row.sql_content,
+                'taskid': row.taskid,
+                'exec_status': row.exec_status
+            })
+            i += 1
+        return render(request, 'incep_tasks_details.html', {'task_details': task_details})
+
+
+class IncepExecTaskView(View):
+    def post(self, request):
+        id = request.POST.get('id')
+        taskid = request.POST.get('taskid')
+        action = request.POST.get('action')
+
+        data = IncepMakeExecTask.objects.get(id=id, taskid=taskid)
+        sqlsha1 = data.sqlsha1
+        sql = data.sql_content + ';'
+        host = data.dst_host
+        database = data.dst_database
+        exec_status = data.exec_status
+
+        key = '-'.join(('django', str(request.user.uid), sqlsha1))
+
+        query = f"select id,group_concat(exec_status) as exec_status from sqlaudit_incep_make_exec_task where taskid={taskid} group by taskid"
+        for row in IncepMakeExecTask.objects.raw(query):
+            status = row.exec_status.split(',')
+
+        if action == 'stop':
+            # 关闭正在执行的任务
+            stop_incep_osc.delay(user=request.user.username, sqlsha1=sqlsha1, redis_key=key, host=host,
+                                 database=database)
+            context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+        elif action == 'start':
+            # 每次只能执行一条任务，不可同时执行，避免数据库压力
+            if '2' in status:
+                context = {'errCode': 400, 'errMsg': '请等待当前其他任务执行完成'}
+            else:
+                # 避免任务重复点击执行
+                if exec_status in ('1', '2'):
+                    context = {'errCode': 400, 'errMsg': '任务已完成或处理中，请不要重复执行'}
+                else:
+                    # 如果sqlsha1存在，使用OSC执行
+                    if sqlsha1:
+                        # 在redis里面存储key，用于celery后台线程通信
+                        cache.set(key, 'start', timeout=None)
+
+                        # 将任务进度设置为：处理中
+                        data.exec_status = 2
+                        data.save()
+
+                        # 执行异步线程
+                        # 执行SQL任务
+                        incep_async_tasks.delay(user=request.user.username, sql=sql, host=host, database=database,
+                                                redis_key=key, id=id, taskid=taskid)
+                        # 执行获取进度任务
+                        get_osc_percent.delay(user=request.user.username, sqlsha1=sqlsha1, redis_key=key, host=host,
+                                              database=database)
+
+                        context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+
+                    # 如果sqlsha1不存在，直接执行
+                    else:
+                        incep_sql_check = IncepSqlCheck(sql, host, database, request.user.username)
+                        exec_result = incep_sql_check.run_exec(0)
+                        # 更新任务状态
+                        update_tasks_status(id=id, taskid=taskid, exec_result=exec_result)
+
+                        context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
         return HttpResponse(json.dumps(context))
