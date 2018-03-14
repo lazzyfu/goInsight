@@ -34,17 +34,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for row in exec_tasks %}
-                            <tr data-tt-parent-id="1">
-                                <td>{{ row.taskid }}</td>
-                                <td>{{ row.user }}</td>
-                                <td>{{ row.dst_host }}</td>
-                                <td>{{ row.dst_database }}</td>
-                                <td>{{ row.make_time }}</td>
-                                <td><a href="incep_tasks_detail/{{ row.taskid }}"><i
-                                        class="fa fa-list-ol"></i></a></td>
+                        {% if exec_tasks %}
+                            {% for row in exec_tasks %}
+                                <tr data-tt-parent-id="1">
+                                    <td>{{ row.taskid }}</td>
+                                    <td>{{ row.user }}</td>
+                                    <td>{{ row.dst_host }}</td>
+                                    <td>{{ row.dst_database }}</td>
+                                    <td>{{ row.make_time }}</td>
+                                    <td><a href="incep_tasks_detail/{{ row.taskid }}"><i
+                                            class="fa fa-list-ol"></i></a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>未找到记录 ...</td>
                             </tr>
-                        {% endfor %}
+                        {% endif %}
                         </tbody>
                     </table>
                     {# 分页 #}

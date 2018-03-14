@@ -22,7 +22,8 @@
                                 <input type="text" name="search_content" class="form-control pull-right"
                                        placeholder="Search">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
+                                    </button>
                                 </div>
                             </div>
                             {% csrf_token %}
@@ -47,51 +48,58 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for row in audit_records %}
+                        {% if audit_records %}
+                            {% for row in audit_records %}
+                                <tr>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-flat {{ row.progress_color }}">{{ row.progress_value }}</button>
+                                    </td>
+                                    <td>{{ row.group_name }}</td>
+                                    <td>
+                                        <a href="#" data-toggle="tooltip"
+                                           title="{{ row.title }}">{{ row.title|slice:"16"|add:'...' }}</a>
+                                        <br/>
+                                        <small class="byline">创建时间: {{ row.created_at }}</small>
+                                    </td>
+                                    <td>
+                                        {{ row.proposer }}
+                                    </td>
+                                    <td class="project_progress">
+                                        {{ row.verifier }}
+                                    </td>
+                                    <td>
+                                        {{ row.operate_dba }}
+                                    </td>
+                                    <td>
+                                        <a href="#"
+                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incept_online_click_verify' %}', '通过', '不通过')"><i
+                                                class="fa fa-pencil-square-o fa-lg"></i></a>
+                                    </td>
+                                    <td>
+                                        <a href="#"
+                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_online_click_finish' %}', '处理中', '已完成')"><i
+                                                class="fa fa-check-square-o fa-lg"></i></a>
+                                    </td>
+                                    <td>
+                                        <a href="#"
+                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_online_click_close' %}', '提交', '结束')"><i
+                                                class="fa fa-close fa-lg"></i></a>
+                                    </td>
+                                    <td>
+                                        <a href="online_sql_detail/{{ row.id }}/{{ row.group_id }}"><i
+                                                class="fa fa-sliders"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
                             <tr>
-                                <td>
-                                    <button type="button"
-                                            class="btn btn-flat {{ row.progress_color }}">{{ row.progress_value }}</button>
-                                </td>
-                                <td>{{ row.group_name }}</td>
-                                <td>
-                                    <a href="#" data-toggle="tooltip"
-                                       title="{{ row.title }}">{{ row.title|slice:"16"|add:'...' }}</a>
-                                    <br/>
-                                    <small class="byline">创建时间: {{ row.created_at }}</small>
-                                </td>
-                                <td>
-                                    {{ row.proposer }}
-                                </td>
-                                <td class="project_progress">
-                                    {{ row.verifier }}
-                                </td>
-                                <td>
-                                    {{ row.operate_dba }}
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incept_online_click_verify' %}', '通过', '不通过')"><i
-                                            class="fa fa-pencil-square-o fa-lg"></i></a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_online_click_finish' %}', '处理中', '已完成')"><i
-                                            class="fa fa-check-square-o fa-lg"></i></a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_online_click_close' %}', '提交', '结束')"><i
-                                            class="fa fa-close fa-lg"></i></a>
-                                </td>
-                                <td>
-                                    <a href="online_sql_detail/{{ row.id }}/{{ row.group_id }}"><i
-                                            class="fa fa-sliders"></i></a>
-                                </td>
+                                <td>未找到记录 ...</td>
                             </tr>
-                        {% endfor %}
+                        {% endif %}
                         </tbody>
                     </table>
+
                     {# 分页 #}
                     {% include 'pagination.html' %}
                 </div>
