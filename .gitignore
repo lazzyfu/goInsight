@@ -3,3 +3,4 @@ AuditSQL/settings.py
 AuditSQL/__pycache__/settings.cpython-36.pyc
 AuditSQL/settings.py
 logs/*.log
+.idea/workspace.xml
