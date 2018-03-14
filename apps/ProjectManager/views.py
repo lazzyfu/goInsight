@@ -186,7 +186,7 @@ class IncepOnlineSqlCheckView(FormView):
         verifier = cleaned_data.get('verifier')
         operate_dba = cleaned_data.get('operate_dba')
         group_id = cleaned_data.get('group_id')
-        email_cc = cleaned_data.get('email_cc_id')
+        email_cc = ','.join(self.request.POST.getlist('email_cc_id'))
         host = cleaned_data['host']
         database = cleaned_data['database']
         op_action = cleaned_data.get('op_action')

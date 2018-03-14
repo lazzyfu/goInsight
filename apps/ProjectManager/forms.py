@@ -25,7 +25,6 @@ class OnlineAuditCommitForm(forms.Form):
     verifier = forms.CharField(required=True, label=u'批准的leader的uid')
     operate_dba = forms.CharField(required=True, label=u'执行dba的uid')
     group_id = forms.CharField(required=True, label=u'项目组id')
-    email_cc_id = forms.CharField(required=True, label=u'抄送联系人的id，以逗号分隔')
     host = forms.CharField(required=True)
     database = forms.CharField(required=True, max_length=64)
     op_action = forms.CharField(required=True)
