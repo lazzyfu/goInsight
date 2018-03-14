@@ -134,9 +134,9 @@
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
-            autoRefresh: true
+            autoRefresh: true,
+            readOnly: true
         });
-
 
         <!-- 提交执行任务 -->
         function execTask(id, taskid, action) {
