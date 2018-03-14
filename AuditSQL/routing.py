@@ -9,8 +9,7 @@ from .consumers import EchoConsumer
 application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
-            path(r"longpoll/", EchoConsumer),
-            # path("notifications/(?P<stream>\w+)/$", EchoConsumer),
+            path(r"ws/", EchoConsumer),
         ])
     )
 })

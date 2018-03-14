@@ -107,7 +107,9 @@
                         <div class="box-body box-comments">
                             <div class="box-comment">
                                 <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
-                                <textarea id="select_sql"></textarea>
+                                <figure>
+                                    <textarea id="select_sql"></textarea>
+                                </figure>
                             </div>
                             <div class="box-comment">
                                 <h5><i class="fa  fa-info-circle"> 执行日志</i></h5>
@@ -216,7 +218,7 @@
         }
 
         {# 连接到websocket，接收channels消息 #}
-        var socket = new WebSocket('ws://' + window.location.host + '/longpoll/');
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/');
         socket.onmessage = function (message) {
             document.getElementById('typediv1').style.visibility = "visible";
             var result = JSON.parse(message.data);
