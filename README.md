@@ -231,6 +231,6 @@ nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 
 ## 联系方式
    
-   QQ: 1126227133
+   QQ群: 710797678
    
    E-mail: 1126227133@qq.com
