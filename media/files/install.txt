@@ -28,7 +28,7 @@ rm -fr  ..site-packages/kombu/transport/django/migrations/0001_initial.py
 queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name='messages')
 ```
 
-# 安装部署
+# 安装部署（如果不想在docker内部署，直接忽略启动docker的步骤即可）
 # 启动docker容器(初始化一个centos6.9容器)
 docker run -itd centos:6.9 /bin/bash
 
