@@ -2,6 +2,41 @@
 
 AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工作成本
 
+## 部署
+拉取docker镜像：
+```bash
+docker pull lazzyfu/auditsql
+```
+
+启动docker：
+```bash
+docker run -itd -p 80:8000 --name=auditsql 459ad0efb89d /bin/bash
+docker exec -it 459ad0efb89d /bin/bash
+```
+
+开启服务(麻烦，但是方便排查问题)：
+
+```bash
+chown -R mysql:mysql /var/lib/mysql
+service mysql start
+service redis start
+uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
+service nginx start
+/etc/init.d/celeryd start
+cd /data/web/AuditSQL
+```
+
+修改域名：
+
+vim /etc/nginx/conf.d/nginx.conf
+```bash
+# 改成自己的域名，然后重启nginx服务
+# 需要做域名解析或者自己本地hosts文件绑定宿主机IP
+server_name sqlaudit.public.jbh.com;
+```
+
+
 ## 开发组件
 - Python 3.6
 - Django 2.0 

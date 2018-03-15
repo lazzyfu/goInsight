@@ -83,11 +83,21 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="681">
-                <caret line="88" column="3" lean-forward="true" selection-start-line="88" selection-start-column="3" selection-end-line="88" selection-end-column="3" />
+              <first_editor relative-caret-position="-58">
+                <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
                 <folding />
               </first_editor>
               <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="415">
+              <caret line="128" column="0" lean-forward="false" selection-start-line="128" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -316,26 +326,6 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="gif" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
@@ -638,14 +628,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/incep_offline_sql_check.html" />
-    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/contrib/admin/sites.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="108" column="0" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/UserManager/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-43">
@@ -791,13 +773,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="455">
-          <caret line="226" column="0" lean-forward="true" selection-start-line="226" selection-start-column="0" selection-end-line="226" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -979,6 +954,34 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/djcelery/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3228">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/djcelery/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3670">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="415">
+          <caret line="128" column="0" lean-forward="false" selection-start-line="128" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider editor-type-id="text-editor">
         <state relative-caret-position="36">
@@ -988,8 +991,8 @@
       </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="681">
-            <caret line="88" column="3" lean-forward="true" selection-start-line="88" selection-start-column="3" selection-end-line="88" selection-end-column="3" />
+          <first_editor relative-caret-position="-58">
+            <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
             <folding />
           </first_editor>
           <second_editor />
