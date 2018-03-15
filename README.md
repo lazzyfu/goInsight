@@ -13,13 +13,15 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 
 ## 说明
 - 不提供注册功能，账号权限需要管理员后台手动添加，或者绑定ldap激活认证
-- 后台账号列表有个下拉框，有个reset password, 重置密码为：123.com
+- 后台地址：http://auditsql.example.com/admin，此处应修改为自己指定的域名
 - 后台超级管理员账号为：admin/123.com
+- 后台账号列表有个下拉框，有个reset password, 可用户重置密码为：123.com
 
-## 手动部署文档（不推荐）
-[手动部署<install.txt> 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)
+## 安装部署
+### 源码部署文档（不推荐，太费劲）
+[手动部署 install.txt 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)
 
-## docker部署
+### Docker部署（已封装成docker镜像，执行拉取，启动服务即可）
 拉取docker镜像：
 ```bash
 docker pull lazzyfu/auditsql
@@ -100,13 +102,33 @@ cd /data/web/AuditSQL
 nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
 service nginx start
 /etc/init.d/celeryd start
+nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 ```
+
+Inception配置文件：
+
+/etc/inception.cnf
+
+安装自己的需求修改完成后，重启inception服务
+nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 
 
 ## 已知的问题
-- 当执行线下任务时，使用OSC执行时，inception会自动产生一个僵尸进程，不知道为什么
+- 当使用OSC执行线下任务时，inception会自动产生一个僵尸进程，不知道为什么
 
   解决办法：隔段时间自己进入docker容器手动清理下僵尸进程，对目标数据库没任何影响
+
+## Inception配置
+登陆后台http://auditsql.example.com/admin --> 首页 --> Inception配置 -->  Inception数据库账号配置
+
+添加目标数据库的账号，该账号必须存在各个目标主机上，如图：
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/incep_1.png)
+
+
+权限设置：
+ - 线下：至少需要create/alter/update/insert/delete/select/replication client/replication slave权限
+ - 线上：需要select/insert/update/delete权限即可
 
 ## 开发组件
 - Python 3.6
