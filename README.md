@@ -213,6 +213,8 @@ nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 
 ## 配置表结构变更E-Mail通知
 
+只要监控库的表结构发生变动，就会触发E-Mail邮件通知
+
 如图：
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-1.png)
 
