@@ -61,7 +61,7 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 - 只要属于该项目的用户和联系人，才具有该项目的查看权限，用户权限继承项目权限
 
 ## 后台功能
-
+![后台列表页](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/houtai-1.png)
 
 
 
