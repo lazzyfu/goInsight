@@ -11,6 +11,10 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 
    开发 --> Inception审核SQL --> 生成执行任务 --> 执行任务 --> 实时显示进度 --> 查看结果
 
+## 说明
+- 不提供注册功能，账号权限需要管理员后台手动添加，或者绑定ldap激活认证
+- 后台账号列表有个下拉框，有个reset password, 重置密码为：123.com
+- 后台超级管理员账号为：admin/123.com
 
 ## 部署
 拉取docker镜像：
@@ -95,9 +99,6 @@ service nginx start
 /etc/init.d/celeryd start
 ```
 
-后台账号：
-
-admin/123.com
 
 ## 已知的问题
 - 当执行线下任务时，使用OSC执行时，inception会自动产生一个僵尸进程，不知道为什么
