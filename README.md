@@ -109,7 +109,7 @@ Inception配置文件：
 
 /etc/inception.cnf
 
-安装自己的需求修改完成后，重启inception服务
+根据自己的需求进行修改，完成后，重启inception服务
 nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 
 
