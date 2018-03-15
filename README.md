@@ -63,6 +63,15 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 ## 后台功能
 ![后台列表页](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/houtai-1.png)
 
+账号配置：
+
+配置用户账户、联系人、角色、项目组
+
+以用户账户配置举例，如图：
+
+![用户账户列表](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/user-1.png)
+
+![用户账户详情](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/user-2.png)
 
 
 ## 联系方式
