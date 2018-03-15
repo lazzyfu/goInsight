@@ -48,7 +48,7 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9000">
+            <state relative-caret-position="0">
               <caret line="527" column="47" lean-forward="false" selection-start-line="527" selection-start-column="47" selection-end-line="527" selection-end-column="47" />
               <folding>
                 <marker date="1521010427299" expanded="true" signature="23304:23433" ph="select id,us... sqlaudit_incep_make_exec_task" />
@@ -83,8 +83,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="601">
-                <caret line="79" column="0" lean-forward="true" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
+              <first_editor relative-caret-position="645">
+                <caret line="84" column="17" lean-forward="true" selection-start-line="84" selection-start-column="17" selection-end-line="84" selection-end-column="17" />
                 <folding />
               </first_editor>
               <second_editor />
@@ -638,8 +638,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/incep_offline_sql_detail.html" />
-    <entry file="file://$PROJECT_DIR$/templates/incep_offline_sql_records.html" />
     <entry file="file://$PROJECT_DIR$/templates/incep_offline_sql_check.html" />
     <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/contrib/admin/sites.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -946,7 +944,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9000">
+        <state relative-caret-position="0">
           <caret line="527" column="47" lean-forward="false" selection-start-line="527" selection-start-column="47" selection-end-line="527" selection-end-column="47" />
           <folding>
             <marker date="1521010427299" expanded="true" signature="23304:23433" ph="select id,us... sqlaudit_incep_make_exec_task" />
@@ -971,6 +969,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/media/gif/mail-1.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/gif/2.gif">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider editor-type-id="text-editor">
         <state relative-caret-position="36">
@@ -980,8 +988,8 @@
       </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="601">
-            <caret line="79" column="0" lean-forward="true" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
+          <first_editor relative-caret-position="645">
+            <caret line="84" column="17" lean-forward="true" selection-start-line="84" selection-start-column="17" selection-end-line="84" selection-end-column="17" />
             <folding />
           </first_editor>
           <second_editor />
