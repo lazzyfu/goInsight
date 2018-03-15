@@ -16,6 +16,8 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运
 - 后台地址：http://auditsql.example.com/admin，此处应修改为自己指定的域名
 - 后台超级管理员账号为：admin/123.com
 - 后台账号列表有个下拉框，有个reset password, 可用户重置密码为：123.com
+- 新建用户均无密码，可通过reset password设置为:123.com，用户登录后，可自行修改密码
+- 使用LDAP认证的用户，密码修改无效
 - 内置mysql账号：root/123.com
 
 ## 开发组件
