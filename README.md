@@ -95,6 +95,11 @@ service nginx start
 /etc/init.d/celeryd start
 ```
 
+## 已知的问题
+- 当执行线下任务时，使用OSC执行时，inception会自动产生一个僵尸进程，不知道为什么
+
+  解决办法：隔段时间自己进入docker容器手动清理下僵尸进程，对目标数据库没任何影响
+
 ## 开发组件
 - Python 3.6
 - Django 2.0 
