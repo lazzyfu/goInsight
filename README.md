@@ -1,6 +1,6 @@
 # AuditSQL
 
-AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工作成本
+AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本
 
 为了提高审核效率和保证生产数据安全，数据库审核分解成如下2种模式：
 - 线上审核
@@ -186,7 +186,7 @@ nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 
 
 权限设置：
- - 线下：至少需要create/alter/update/insert/delete/select/replication client/replication slave权限
+ - 线下：至少需要super/create/alter/update/insert/delete/select/replication client/replication slave权限
  - 线上：需要select/insert/update/delete权限即可
 
 ## 后台功能
