@@ -81,7 +81,7 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 ![审批流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2.gif)
 
 ## 线下SQL执行任务流程(点击查看GIF动态)
-![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/11.gif)
+![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/11.gif)
 
 ## 联系方式
    
