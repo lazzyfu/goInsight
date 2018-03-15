@@ -1,3 +1,34 @@
+部署后，需要解决如下几个问题：
+问题1：Pymysql在链接inception在判断版本时出现value error
+解决办法：
+修改Pymysql文件夹内的connections.py
+修改为如下：
+```
+self.server_version = '5.7.18-16-log'
+if int(self.server_version.split('.', 1)[0]) >= 5:
+   self.client_flag |= CLIENT.MULTI_RESULTS
+```
+
+问题2：Inception始终反馈"Must start as begin statement"的语法错误
+解决办法：
+修改Pymysql文件夹内的cursors.py
+修改为如下：
+```
+if not self._defer_warnings:
+    # self._show_warnings()
+    pass
+```
+
+问题3：kombu的外键兼容问题
+解决办法：
+vim ..site-packages/kombu/transport/django/models.py
+rm -fr  ..site-packages/kombu/transport/django/migrations/0001_initial.py
+修改为如下：
+```
+queue = models.ForeignKey(Queue, on_delete=models.CASCADE, related_name='messages')
+```
+
+# 安装部署
 # 启动docker容器(初始化一个centos6.9容器)
 docker run -itd centos:6.9 /bin/bash
 
