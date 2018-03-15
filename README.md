@@ -16,6 +16,7 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运
 - 后台地址：http://auditsql.example.com/admin，此处应修改为自己指定的域名
 - 后台超级管理员账号为：admin/123.com
 - 后台账号列表有个下拉框，有个reset password, 可用户重置密码为：123.com
+- 内置mysql账号：root/123.com
 
 ## 开发组件
 - Python 3.6
@@ -87,8 +88,10 @@ docker pull lazzyfu/auditsql
 
 启动docker：
 ```bash
+docker images
 docker run -itd -p 80:8000 --name=auditsql 459ad0efb89d /bin/bash
-docker exec -it 459ad0efb89d /bin/bash
+docker ps -a
+docker exec -it 2d91d72dd15f /bin/bash
 ```
 
 修改域名：
