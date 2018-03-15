@@ -95,6 +95,10 @@ service nginx start
 /etc/init.d/celeryd start
 ```
 
+后台账号：
+
+admin/123.com
+
 ## 已知的问题
 - 当执行线下任务时，使用OSC执行时，inception会自动产生一个僵尸进程，不知道为什么
 
