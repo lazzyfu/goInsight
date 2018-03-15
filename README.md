@@ -17,6 +17,64 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 - 后台超级管理员账号为：admin/123.com
 - 后台账号列表有个下拉框，有个reset password, 可用户重置密码为：123.com
 
+## 开发组件
+- Python 3.6
+- Django 2.0 
+- django-celery
+- django-channels
+- AdminLTE
+
+## 功能：
+- 线上审核
+    - 数据变更提交
+    - 工单记录
+       - 审批 （Leader角色有权限操作）
+       - 执行（DBA角色有权限操作）
+       - 关闭（告知DBA不执行） 
+    - 工单详情（显示当前工单的详情记录）
+
+- 线下审核
+    - SQL审核
+    - 生成执行任务
+    - 执行任务
+       - 显示当前任务SQL列表
+       - 执行，实时显示当前执行的OSC任务进度
+       - 停止，关闭当前正在执行的OSC任务
+       - 结果，显示回滚SQL，执行的日志（来自inception输出）
+       
+- SQL审核
+   - 流程化
+   - SQL美化
+   - SQL检测
+   - 审核历史记录
+   - 语法高亮
+   - 注释识别
+
+- 进度推送：
+   - 线上审核的每一步E-Mail实时推送
+   - 线下执行任务进度的实时推送
+  
+- 其他：
+   - 支持LDAP认证登陆
+   - 项目权限控制
+   - 角色权限控制
+   - 支持修改头像
+   - 支持修改密码
+  
+- 扩展功能：
+   - 支持数据库表结构变更自动E-Mail通知，并生成变更结果
+
+
+## 权限控制
+用户角色（默认的3个角色）：
+- Leader ：具有线上工单的审批权限
+- DBA：具有线上工单的执行权限
+- Developer
+
+项目组（需要自己创建）：
+- 联系人和用户可以属于多个项目
+- 只要属于该项目的用户和联系人，才具有该项目的查看权限，用户权限继承项目权限
+
 ## 安装部署
 ### 源码部署文档（不推荐，太费劲）
 [手动部署 install.txt 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)
@@ -130,64 +188,6 @@ nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 权限设置：
  - 线下：至少需要create/alter/update/insert/delete/select/replication client/replication slave权限
  - 线上：需要select/insert/update/delete权限即可
-
-## 开发组件
-- Python 3.6
-- Django 2.0 
-- django-celery
-- django-channels
-- AdminLTE
-
-## 功能：
-- 线上审核
-    - 数据变更提交
-    - 工单记录
-       - 审批 （Leader角色有权限操作）
-       - 执行（DBA角色有权限操作）
-       - 关闭（告知DBA不执行） 
-    - 工单详情（显示当前工单的详情记录）
-
-- 线下审核
-    - SQL审核
-    - 生成执行任务
-    - 执行任务
-       - 显示当前任务SQL列表
-       - 执行，实时显示当前执行的OSC任务进度
-       - 停止，关闭当前正在执行的OSC任务
-       - 结果，显示回滚SQL，执行的日志（来自inception输出）
-       
-- SQL审核
-   - 流程化
-   - SQL美化
-   - SQL检测
-   - 审核历史记录
-   - 语法高亮
-   - 注释识别
-
-- 进度推送：
-   - 线上审核的每一步E-Mail实时推送
-   - 线下执行任务进度的实时推送
-  
-- 其他：
-   - 支持LDAP认证登陆
-   - 项目权限控制
-   - 角色权限控制
-   - 支持修改头像
-   - 支持修改密码
-  
-- 扩展功能：
-   - 支持数据库表结构变更自动E-Mail通知，并生成变更结果
-
-
-## 权限控制
-用户角色（默认的3个角色）：
-- Leader ：具有线上工单的审批权限
-- DBA：具有线上工单的执行权限
-- Developer
-
-项目组（需要自己创建）：
-- 联系人和用户可以属于多个项目
-- 只要属于该项目的用户和联系人，才具有该项目的查看权限，用户权限继承项目权限
 
 ## 后台功能
 ![后台列表页](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/houtai-1.png)
