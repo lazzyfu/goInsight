@@ -97,6 +97,7 @@ vim inception_build.sh
 ./inception_build.sh debug
 
 # 拉取django项目代码
+# 拉取后，将settings_bak.py修改为settings.py
 # 创建web目录
 mkdir /data/web -p
 git clone https://github.com/lazzyfu/AuditSQL.git
