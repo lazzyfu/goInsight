@@ -86,6 +86,16 @@ yum -y install redis
 # 安装uwsgi：
 pip install uwsgi
 
+# 安装Inception
+unzip inception-master.zip
+cd inception-master
+vim inception_build.sh
+```
+# 修改为：
+-DCMAKE_INSTALL_PREFIX=/opt/inception
+```
+./inception_build.sh debug
+
 # 拉取django项目代码
 # 创建web目录
 mkdir /data/web -p

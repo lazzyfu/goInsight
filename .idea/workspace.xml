@@ -45,106 +45,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="73" column="31" lean-forward="false" selection-start-line="73" selection-start-column="31" selection-end-line="73" selection-end-column="31" />
-              <folding>
-                <marker date="1520911848304" expanded="true" signature="5317:5841" ph="select table... " />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="install.txt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="install.txt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/media/files/install.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="34" column="13" lean-forward="false" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/djcelery/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="connections.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/pymysql/connections.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="1114" column="52" lean-forward="false" selection-start-line="1114" selection-start-column="52" selection-end-line="1114" selection-end-column="52" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="cursors.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/pymysql/cursors.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="338" column="16" lean-forward="false" selection-start-line="338" selection-start-column="16" selection-end-line="338" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="_send_commit_mail.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/_send_commit_mail.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="127" column="17" lean-forward="false" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="289">
-                <caret line="156" column="7" lean-forward="true" selection-start-line="156" selection-start-column="7" selection-end-line="156" selection-end-column="7" />
-                <folding />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="382">
-              <caret line="186" column="32" lean-forward="true" selection-start-line="186" selection-start-column="32" selection-end-line="186" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+            <state relative-caret-position="601">
+              <caret line="96" column="26" lean-forward="true" selection-start-line="96" selection-start-column="26" selection-end-line="96" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -278,8 +183,8 @@
         <option value="$PROJECT_DIR$/AuditSQL/settings_bak.py" />
         <option value="$PROJECT_DIR$/logs/request.log" />
         <option value="$PROJECT_DIR$/logs/all.log" />
-        <option value="$PROJECT_DIR$/media/files/install.txt" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/media/files/install.txt" />
       </list>
     </option>
   </component>
@@ -338,6 +243,17 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="media" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="media" type="462c0819:PsiDirectoryNode" />
+              <item name="files" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
@@ -871,14 +787,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/media/gif/auditsql-1.gif" />
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/media/gif/mail-1.png">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -941,68 +849,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="73" column="31" lean-forward="false" selection-start-line="73" selection-start-column="31" selection-end-line="73" selection-end-column="31" />
-          <folding>
-            <marker date="1520911848304" expanded="true" signature="5317:5841" ph="select table... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/pymysql/cursors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="338" column="16" lean-forward="false" selection-start-line="338" selection-start-column="16" selection-end-line="338" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/files/install.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="34" column="13" lean-forward="false" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/djcelery/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-7">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/pymysql/connections.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="1114" column="52" lean-forward="false" selection-start-line="1114" selection-start-column="52" selection-end-line="1114" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/_send_commit_mail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="127" column="17" lean-forward="false" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="382">
-          <caret line="186" column="32" lean-forward="true" selection-start-line="186" selection-start-column="32" selection-end-line="186" selection-end-column="32" />
           <folding />
         </state>
       </provider>
@@ -1021,6 +871,72 @@
             <folding />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_send_commit_mail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="502">
+          <caret line="127" column="17" lean-forward="false" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/pymysql/cursors.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="338" column="16" lean-forward="false" selection-start-line="338" selection-start-column="16" selection-end-line="338" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/pymysql/connections.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="1114" column="52" lean-forward="false" selection-start-line="1114" selection-start-column="52" selection-end-line="1114" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="73" column="31" lean-forward="false" selection-start-line="73" selection-start-column="31" selection-end-line="73" selection-end-column="31" />
+          <folding>
+            <marker date="1520911848304" expanded="true" signature="5317:5841" ph="select table... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="382">
+          <caret line="186" column="32" lean-forward="true" selection-start-line="186" selection-start-column="32" selection-end-line="186" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/files/install.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="601">
+          <caret line="96" column="26" lean-forward="true" selection-start-line="96" selection-start-column="26" selection-end-line="96" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>
