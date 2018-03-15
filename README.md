@@ -152,7 +152,7 @@ AUTH_LDAP_USER_ATTR_MAP = {"username": "cn", 'email': 'mail', "displayname": 'di
 # logger.setLevel(logging.DEBUG)
 ```
 
-开启服务(麻烦，但是方便排查问题)：
+开启服务(请务必确保下面服务启动)：
 
 ```bash
 chown -R mysql:mysql /var/lib/mysql
