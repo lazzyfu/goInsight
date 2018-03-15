@@ -211,6 +211,16 @@ nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 ## 线下SQL执行任务流程(点击查看GIF动态)
 ![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/11.gif)
 
+## 配置表结构变更E-Mail通知
+
+如图：
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-1.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-3.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-4.png)
+
+
 ## 联系方式
    
    QQ: 1126227133
