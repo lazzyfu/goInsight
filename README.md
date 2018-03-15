@@ -16,7 +16,10 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的工
 - 后台账号列表有个下拉框，有个reset password, 重置密码为：123.com
 - 后台超级管理员账号为：admin/123.com
 
-## 部署
+## 手动部署文档（不推荐）
+[手动部署](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)
+
+## docker部署
 拉取docker镜像：
 ```bash
 docker pull lazzyfu/auditsql
