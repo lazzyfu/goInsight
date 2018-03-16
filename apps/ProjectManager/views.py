@@ -17,7 +17,7 @@ from pure_pagination import PaginationMixin
 
 from ProjectManager.forms import InceptionSqlCheckForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
 from ProjectManager.group_permissions import check_group_permission, check_sql_detail_permission
-from ProjectManager.utils import update_tasks_status
+from ProjectManager.utils import update_tasks_status, check_incep_alive
 from UserManager.models import GroupsDetail, UserAccount, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlCheck, \
     sql_filter
@@ -30,60 +30,63 @@ from .tasks import send_commit_mail, send_verify_mail, send_reply_mail, get_osc_
 channel_layer = get_channel_layer()
 
 
-class IncepSqlCheckView(FormView):
-    form_class = InceptionSqlCheckForm
-    template_name = 'incep_sql_check.html'
+class IncepSqlCheckView(View):
+    def get(self, request):
+        return render(request, 'incep_sql_check.html')
 
-    def form_valid(self, form):
-        cleaned_data = form.cleaned_data
-        host = cleaned_data['host']
-        database = cleaned_data['database']
-        op_action = cleaned_data.get('op_action')
-        op_type = cleaned_data['op_type']
-        sql_content = cleaned_data['sql_content']
+    @method_decorator(check_incep_alive)
+    def post(self, request):
+        form = InceptionSqlCheckForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            host = cleaned_data['host']
+            database = cleaned_data['database']
+            op_action = cleaned_data.get('op_action')
+            op_type = cleaned_data['op_type']
+            sql_content = cleaned_data['sql_content']
 
-        # 对检测的SQL类型进行区分
-        filter_result = sql_filter(sql_content, op_action)
+            # 对检测的SQL类型进行区分
+            filter_result = sql_filter(sql_content, op_action)
 
-        # 实例化
-        incep_sql_check = IncepSqlCheck(sql_content, host, database, self.request.user.username)
+            # 实例化
+            incep_sql_check = IncepSqlCheck(sql_content, host, database, self.request.user.username)
 
-        if filter_result['errCode'] == 400:
-            context = filter_result
+            if filter_result['errCode'] == 400:
+                context = filter_result
+            else:
+                # SQL语法检查
+                if op_type == 'check':
+                    context = incep_sql_check.run_check()
+
+                # 生成执行任务
+                elif op_type == 'make':
+                    # 生成执行任务之前，检测是否审核通过
+                    check_result = incep_sql_check.is_check_pass()
+                    if check_result['errCode'] == 400:
+                        context = check_result
+                    else:
+                        # 对OSC执行的SQL生成sqlsha1
+                        result = incep_sql_check.make_sqksha1()
+                        taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
+                        # 生成执行任务记录
+                        for row in result:
+                            IncepMakeExecTask.objects.create(
+                                uid=self.request.user.uid,
+                                user=self.request.user.username,
+                                taskid=taskid,
+                                dst_host=host,
+                                dst_database=database,
+                                sql_content=row['SQL'],
+                                sqlsha1=row['sqlsha1']
+                            )
+                        context = {'errCode': 201,
+                                   'dst_url': f'/projects/incep_tasks_record/incep_tasks_detail/{taskid}'}
+            return HttpResponse(json.dumps(context))
         else:
-            # SQL语法检查
-            if op_type == 'check':
-                context = incep_sql_check.run_check()
+            error = "请选择主机或库名"
+            context = {'errCode': 400, 'errMsg': error}
 
-            # 生成执行任务
-            elif op_type == 'make':
-                # 生成执行任务之前，检测是否审核通过
-                check_result = incep_sql_check.is_check_pass()
-                if check_result['errCode'] == 400:
-                    context = check_result
-                else:
-                    # 对OSC执行的SQL生成sqlsha1
-                    result = incep_sql_check.make_sqksha1()
-                    taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
-                    # 生成执行任务记录
-                    for row in result:
-                        IncepMakeExecTask.objects.create(
-                            uid=self.request.user.uid,
-                            user=self.request.user.username,
-                            taskid=taskid,
-                            dst_host=host,
-                            dst_database=database,
-                            sql_content=row['SQL'],
-                            sqlsha1=row['sqlsha1']
-                        )
-                    context = {'errCode': 201, 'dst_url': f'/projects/incep_tasks_record/incep_tasks_detail/{taskid}'}
-        return HttpResponse(json.dumps(context))
-
-    def form_invalid(self, form):
-        error = "请选择主机或库名"
-        context = {'errCode': 400, 'errMsg': error}
-
-        return HttpResponse(json.dumps(context))
+            return HttpResponse(json.dumps(context))
 
 
 class BeautifySQLView(View):
@@ -172,55 +175,54 @@ class IncepTasksResultView(View):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOnlineSqlCheckView(FormView):
-    """
-    处理用户提交的审核内容
-    """
-    form_class = OnlineAuditCommitForm
-    template_name = 'incep_online_sql_check.html'
+class IncepOnlineSqlCheckView(View):
+    def get(self, request):
+        return render(request, 'incep_online_sql_check.html')
 
-    def form_valid(self, form):
-        cleaned_data = form.cleaned_data
-        title = cleaned_data.get('title') + '__[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']'
-        remark = cleaned_data.get('remark')
-        verifier = cleaned_data.get('verifier')
-        operate_dba = cleaned_data.get('operate_dba')
-        group_id = cleaned_data.get('group_id')
-        email_cc = ','.join(self.request.POST.getlist('email_cc_id'))
-        host = cleaned_data['host']
-        database = cleaned_data['database']
-        op_action = cleaned_data.get('op_action')
-        sql_content = cleaned_data['sql_content']
+    @method_decorator(check_incep_alive)
+    def post(self, request):
+        form = OnlineAuditCommitForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            title = cleaned_data.get('title') + '__[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']'
+            remark = cleaned_data.get('remark')
+            verifier = cleaned_data.get('verifier')
+            operate_dba = cleaned_data.get('operate_dba')
+            group_id = cleaned_data.get('group_id')
+            email_cc = ','.join(self.request.POST.getlist('email_cc_id'))
+            host = cleaned_data['host']
+            database = cleaned_data['database']
+            op_action = cleaned_data.get('op_action')
+            sql_content = cleaned_data['sql_content']
 
-        result = IncepSqlCheck(sql_content, host, database, self.request.user.username).is_check_pass()
-        if result.get('errCode') == 400:
-            context = result
-        elif result.get('errCode') == 200:
-            with transaction.atomic():
-                OnlineAuditContents.objects.create(
-                    title=title,
-                    op_action='数据修改' if op_action == 'op_data' else '表结构变更',
-                    dst_host=host,
-                    dst_database=database,
-                    group_id=group_id,
-                    remark=remark,
-                    proposer=self.request.user.username,
-                    operate_dba=operate_dba,
-                    verifier=verifier,
-                    email_cc=email_cc,
-                    contents=sql_content
-                )
+            result = IncepSqlCheck(sql_content, host, database, self.request.user.username).is_check_pass()
+            if result.get('errCode') == 400:
+                context = result
+            elif result.get('errCode') == 200:
+                with transaction.atomic():
+                    OnlineAuditContents.objects.create(
+                        title=title,
+                        op_action='数据修改' if op_action == 'op_data' else '表结构变更',
+                        dst_host=host,
+                        dst_database=database,
+                        group_id=group_id,
+                        remark=remark,
+                        proposer=self.request.user.username,
+                        operate_dba=operate_dba,
+                        verifier=verifier,
+                        email_cc=email_cc,
+                        contents=sql_content
+                    )
 
-            # 发送通知邮件
-            latest_id = OnlineAuditContents.objects.latest('id').id
-            send_commit_mail.delay(latest_id=latest_id)
-            context = {'errCode': '200', 'errMsg': '提交成功, 跳转到工单页面'}
-        return HttpResponse(json.dumps(context))
-
-    def form_invalid(self, form):
-        error = form.errors.as_text()
-        context = {'errCode': '400', 'errMsg': error}
-        return HttpResponse(json.dumps(context))
+                # 发送通知邮件
+                latest_id = OnlineAuditContents.objects.latest('id').id
+                send_commit_mail.delay(latest_id=latest_id)
+                context = {'errCode': '200', 'errMsg': '提交成功, 跳转到工单页面'}
+            return HttpResponse(json.dumps(context))
+        else:
+            error = form.errors.as_text()
+            context = {'errCode': '400', 'errMsg': error}
+            return HttpResponse(json.dumps(context))
 
 
 class GetRemarkInfo(View):
@@ -596,6 +598,7 @@ class IncepTasksDetailView(View):
 
 
 class IncepExecTaskView(View):
+    @method_decorator(check_incep_alive)
     def post(self, request):
         id = request.POST.get('id')
         taskid = request.POST.get('taskid')

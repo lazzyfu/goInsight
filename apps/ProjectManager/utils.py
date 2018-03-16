@@ -1,5 +1,9 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+from django.http import HttpResponse
+import socket
+import json
+from AuditSQL import settings
 
 from ProjectManager.models import IncepMakeExecTask
 
@@ -29,3 +33,22 @@ def update_tasks_status(**kwargs):
         data.backup_dbname = exec_result[1]['backup_dbname']
         data.exec_log = exec_result
         data.save()
+
+
+def check_incep_alive(fun):
+    """检测inception进程是否运行"""
+
+    def wapper(request, *args, **kwargs):
+        inception_host = getattr(settings, 'INCEPTION_HOST')
+        inception_port = getattr(settings, 'INCEPTION_PORT')
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((inception_host, inception_port))
+
+        if 0 == result:
+            return fun(request, *args, **kwargs)
+        else:
+            context = {'errCode': 400, 'errMsg': 'Inception服务无法抵达，请联系管理员'}
+            return HttpResponse(json.dumps(context))
+
+    return wapper
