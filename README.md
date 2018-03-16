@@ -2,10 +2,12 @@
 
 **AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本**
 
+**需求、后台、使用等请移步Wiki，谢谢**
+
 **为了提高审核效率和保证生产数据安全，数据库审核分解成如下2种模式：**
 ```
 线上审核
-  开发 --> Inception审核SQL --> 生成工单 --> Leader审批 --> DBA手动执行 --> DBA反馈执行进度 --> 完成*
+  开发 --> Inception审核SQL --> 生成工单 --> Leader审批 --> DBA手动执行 --> DBA反馈执行进度 --> 完成
 
 线下审核
   开发 --> Inception审核SQL --> 生成执行任务 --> 执行任务 --> 实时显示进度 --> 查看结果
@@ -193,13 +195,16 @@ service nginx restart
   解决办法：隔段时间自己进入docker容器手动清理下僵尸进程，对目标数据库没任何影响
 
 ## 线上SQL审核提交流程(点击查看GIF动图）
+
 ![gif动图](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2018-03-15%2009_31_03.gif)
 ![提交发送的邮件](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/mail-1.png)
 
 ## 线上SQL审批流程(点击查看GIF动图）
+
 ![审批流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2.gif)
 
 ## 线下SQL执行任务流程(点击查看GIF动态)
+
 ![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/11.gif)
 
 ## 联系方式
