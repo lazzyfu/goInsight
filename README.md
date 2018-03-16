@@ -1,35 +1,34 @@
 # AuditSQL
 
-AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本
+**AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本**
 
-为了提高审核效率和保证生产数据安全，数据库审核分解成如下2种模式：
-- 线上审核
+**为了提高审核效率和保证生产数据安全，数据库审核分解成如下2种模式：**
+```
+线上审核
+  开发 --> Inception审核SQL --> 生成工单 --> Leader审批 --> DBA手动执行 --> DBA反馈执行进度 --> 完成*
 
-   开发 --> Inception审核SQL --> 生成工单 --> Leader审批 --> DBA手动执行 --> DBA反馈执行进度 --> 完成
-
-- 线下审核
-
-   开发 --> Inception审核SQL --> 生成执行任务 --> 执行任务 --> 实时显示进度 --> 查看结果
+线下审核
+  开发 --> Inception审核SQL --> 生成执行任务 --> 执行任务 --> 实时显示进度 --> 查看结果
+```
 
 ## 说明
-- 不提供注册功能，账号权限需要管理员后台手动添加，或者绑定ldap激活认证
-- 后台地址：http://auditsql.example.com/admin，此处应修改为自己指定的域名
-- 后台超级管理员账号为：admin/123.com
-- 后台账号列表有个下拉框，有个reset password, 可用户重置密码为：123.com
-- 新建用户均无密码，可通过reset password设置为:123.com，用户登录后，可自行修改密码
-- 使用LDAP认证的用户，密码修改无效
-- 内置mysql账号：root/123.com
+```
+1. 为了安全，未提供注册功能，账号权限需要管理员后台手动添加，或者绑定ldap激活认证
+2. 后台账号列表有个下拉框，有个reset password, 可重置用户密码为：123.com
+3. 新建用户均无密码，可通过reset password设置为:123.com，用户登录后，可自行修改密码
+4. 使用LDAP认证的用户，密码修改无效
+5. 内置mysql管理账号：root/123.com
+6. 后台初始账号为：admin/123.com
+```
 
 ## 演示demo
-tips: 由于演示demo的数据库在国外，因此速度较慢，请见谅
-
-地址：http://auditsql.ekcloud666.com/
-
+```
+tips: 由于演示demo的数据库在国外，因此速度较慢，js可能无法加载，仅做体验，请见谅
+体验地址：http://auditsql.ekcloud666.com/
 后台地址：http://auditsql.ekcloud666.com/admin
-
 后台账号：admin/123.com
-
 后台提供的几个账号，密码均为: 123.com
+```
 
 
 ## 开发组件
@@ -81,7 +80,7 @@ tips: 由于演示demo的数据库在国外，因此速度较慢，请见谅
 
 
 ## 权限控制
-用户角色（默认的3个角色）：
+用户角色（默认的3个角色，可自行添加，必须保留Leader和DBA角色）：
 - Leader ：具有线上工单的审批权限
 - DBA：具有线上工单的执行权限
 - Developer
