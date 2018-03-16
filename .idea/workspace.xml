@@ -52,11 +52,48 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="-922">
-                <caret line="25" column="42" lean-forward="false" selection-start-line="25" selection-start-column="42" selection-end-line="25" selection-end-column="42" />
+              <first_editor relative-caret-position="439">
+                <caret line="73" column="11" lean-forward="true" selection-start-line="73" selection-start-column="11" selection-end-line="73" selection-end-column="11" />
                 <folding />
               </first_editor>
               <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="439">
+              <caret line="647" column="32" lean-forward="true" selection-start-line="647" selection-start-column="32" selection-end-line="647" selection-end-column="32" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+                <marker date="1521180740820" expanded="true" signature="23828:23957" ph="select id,us... sqlaudit_incep_make_exec_task" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="412">
+              <caret line="294" column="38" lean-forward="true" selection-start-line="294" selection-start-column="38" selection-end-line="294" selection-end-column="38" />
+              <folding>
+                <marker date="1520911848304" expanded="true" signature="5317:5841" ph="select table... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="inception_api.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/inception/inception_api.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="252">
+              <caret line="126" column="8" lean-forward="false" selection-start-line="126" selection-start-column="8" selection-end-line="126" selection-end-column="8" />
+              <folding>
+                <marker date="1521179571188" expanded="true" signature="2586:2637" ph="select schem... schemata" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -575,7 +612,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49570817" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="manage.py@AuditSQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49427754" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24391988" sideWeight="0.48134327" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24391988" sideWeight="0.48134327" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -952,30 +989,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/inception/inception_api.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-47">
-          <caret line="111" column="8" lean-forward="false" selection-start-line="111" selection-start-column="8" selection-end-line="111" selection-end-column="8" />
-          <folding>
-            <marker date="1521179571188" expanded="true" signature="2586:2637" ph="select schem... schemata" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
-          <caret line="309" column="29" lean-forward="false" selection-start-line="309" selection-start-column="29" selection-end-line="309" selection-end-column="29" />
-          <folding>
-            <marker date="1520911848304" expanded="true" signature="5317:5841" ph="select table... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="388">
-          <caret line="644" column="39" lean-forward="false" selection-start-line="644" selection-start-column="39" selection-end-line="644" selection-end-column="39" />
+        <state relative-caret-position="439">
+          <caret line="647" column="32" lean-forward="true" selection-start-line="647" selection-start-column="32" selection-end-line="647" selection-end-column="32" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
             <marker date="1521180740820" expanded="true" signature="23828:23957" ph="select id,us... sqlaudit_incep_make_exec_task" />
@@ -983,11 +1000,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="294" column="38" lean-forward="true" selection-start-line="294" selection-start-column="38" selection-end-line="294" selection-end-column="38" />
+          <folding>
+            <marker date="1520911848304" expanded="true" signature="5317:5841" ph="select table... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/inception/inception_api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="126" column="8" lean-forward="false" selection-start-line="126" selection-start-column="8" selection-end-line="126" selection-end-column="8" />
+          <folding>
+            <marker date="1521179571188" expanded="true" signature="2586:2637" ph="select schem... schemata" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="-922">
-            <caret line="25" column="42" lean-forward="false" selection-start-line="25" selection-start-column="42" selection-end-line="25" selection-end-column="42" />
+          <first_editor relative-caret-position="439">
+            <caret line="73" column="11" lean-forward="true" selection-start-line="73" selection-start-column="11" selection-end-line="73" selection-end-column="11" />
             <folding />
           </first_editor>
           <second_editor />

@@ -78,17 +78,6 @@ tips: 由于演示demo的数据库在国外，因此速度较慢，js可能无�
 - 扩展功能：
    - 支持数据库表结构变更自动E-Mail通知，并生成变更结果
 
-
-## 权限控制
-用户角色（默认的3个角色，可自行添加，必须保留Leader和DBA角色）：
-- Leader ：具有线上工单的审批权限
-- DBA：具有线上工单的执行权限
-- Developer
-
-项目组（需要自己创建）：
-- 联系人和用户可以属于多个项目
-- 只要属于该项目的用户和联系人，才具有该项目的查看权限，用户权限继承项目权限
-
 ## 安装部署
 ### 源码部署文档（不推荐，太费劲）
 [手动部署 install.txt 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)
@@ -179,44 +168,11 @@ service nginx start
 nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 ```
 
-Inception配置文件：
-
-/etc/inception.cnf
-
-根据自己的需求进行修改，完成后，重启inception服务
-
-nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
-
 
 ## 已知的问题
 - 当使用OSC执行线下任务时，inception会自动产生一个僵尸进程，不知道为什么
 
   解决办法：隔段时间自己进入docker容器手动清理下僵尸进程，对目标数据库没任何影响
-
-## Inception配置
-登陆后台http://auditsql.example.com/admin --> 首页 --> Inception配置 -->  Inception数据库账号配置
-
-添加目标数据库的账号，该账号必须存在各个目标主机上，如图：
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/incep_1.png)
-
-
-权限设置：
- - 线下：至少需要super/create/alter/update/insert/delete/select/replication client/replication slave权限
- - 线上：需要select/insert/update/delete权限即可
-
-## 后台功能
-![后台列表页](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/houtai-1.png)
-
-账号配置：
-
-配置用户账户、联系人、角色、项目组
-
-以用户账户配置举例，如图：
-
-![用户账户列表](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/user-1.png)
-
-![用户账户详情](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/user-2.png)
 
 ## 线上SQL审核提交流程(点击查看GIF动图）
 ![gif动图](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2018-03-15%2009_31_03.gif)
@@ -227,18 +183,6 @@ nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 
 ## 线下SQL执行任务流程(点击查看GIF动态)
 ![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/11.gif)
-
-## 配置表结构变更E-Mail通知
-
-只要监控库的表结构发生变动，就会触发E-Mail邮件通知
-
-如图：
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-1.png)
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-3.png)
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/d-4.png)
-
 
 ## 联系方式
    
