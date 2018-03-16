@@ -20,6 +20,18 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运
 - 使用LDAP认证的用户，密码修改无效
 - 内置mysql账号：root/123.com
 
+## 演示demo
+tips: 由于演示demo的数据库在国外，因此速度较慢，请见谅
+
+地址：http://auditsql.ekcloud666.com/
+
+后台地址：http://auditsql.ekcloud666.com/admin
+
+后台账号：admin/123.com
+
+后台提供的几个账号，密码均为: 123.com
+
+
 ## 开发组件
 - Python 3.6
 - Django 2.0 
