@@ -32,11 +32,13 @@ tips: 由于演示demo的数据库在国外，因此速度较慢，js可能无�
 
 
 ## 开发组件
+```
 - Python 3.6
 - Django 2.0 
 - django-celery
 - django-channels
 - AdminLTE
+```
 
 ## 功能：
 - 线上审核
@@ -78,11 +80,12 @@ tips: 由于演示demo的数据库在国外，因此速度较慢，js可能无�
 - 扩展功能：
    - 支持数据库表结构变更自动E-Mail通知，并生成变更结果
 
-## 安装部署
-### 源码部署文档（不推荐，太费劲）
-[手动部署 install.txt 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)
+## 部署/升级
+### 两种部署方式
+#### 方式一：源码部署文档（不推荐，太费劲）
+_[手动部署 install.txt 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)_
 
-### Docker部署（已封装成docker镜像，执行拉取，启动服务即可）
+#### 方式二：Docker部署（已封装成docker镜像，执行拉取，启动服务即可）
 拉取docker镜像：
 ```bash
 docker pull lazzyfu/auditsql
@@ -166,6 +169,21 @@ nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/
 service nginx start
 /etc/init.d/celeryd start
 nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
+```
+
+## 升级
+```bash
+docker exec -it 2d91d72dd15f /bin/bash
+cd /data/web/AuditSQL
+git pull
+python manager.py migrate
+python manager.py collectstatic
+# 最后重启服务
+uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+cd /data/web/AuditSQL
+nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
+service nginx restart
+/etc/init.d/celeryd restart
 ```
 
 
