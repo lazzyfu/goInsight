@@ -65,7 +65,7 @@
         <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="179">
-              <caret line="210" column="28" lean-forward="true" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
+              <caret line="210" column="28" lean-forward="false" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -365,6 +365,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/media/img/2018/02" />
       <recent name="$PROJECT_DIR$/apps/ProjectManager/inception" />
       <recent name="$PROJECT_DIR$/apps" />
     </key>
@@ -1037,7 +1038,7 @@
     <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="179">
-          <caret line="210" column="28" lean-forward="true" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
+          <caret line="210" column="28" lean-forward="false" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
           <folding />
         </state>
       </provider>
