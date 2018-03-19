@@ -200,12 +200,6 @@ service nginx restart
 /etc/init.d/celeryd restart
 ```
 
-
-## 已知的问题
-- 当使用OSC执行线下任务时，inception会自动产生一个僵尸进程，不知道为什么
-
-  解决办法：隔段时间自己进入docker容器手动清理下僵尸进程，对目标数据库没任何影响
-
 ## 线上SQL审核提交流程(点击查看GIF动图）
 
 ![gif动图](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2018-03-15%2009_31_03.gif)
