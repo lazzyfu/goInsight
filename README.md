@@ -88,12 +88,12 @@ tips: 由于演示demo的数据库在国外，因此速度较慢，js可能无�
 _[手动部署 install.txt 点击查看](https://github.com/lazzyfu/AuditSQL/blob/master/media/files/install.txt)_
 
 #### 方式二：Docker部署（已封装成docker镜像，执行拉取，启动服务即可）
-拉取docker镜像：
+step1：拉取docker镜像
 ```bash
 docker pull lazzyfu/auditsql
 ```
 
-启动docker：
+step2：启动docker
 ```bash
 docker images
 docker run -itd -p 80:8000 --name=auditsql 459ad0efb89d /bin/bash
@@ -101,16 +101,16 @@ docker ps -a
 docker exec -it 2d91d72dd15f /bin/bash
 ```
 
-修改域名：
+step3：修改域名
 
 vim /etc/nginx/conf.d/nginx.conf
 ```bash
 # 改成自己的域名
 # 需要做域名解析或者自己本地hosts文件绑定宿主机IP
-server_name sqlaudit.public.jbh.com;
+server_name auditsql.example.com;
 ```
 
-系统配置：
+step4：修改默认配置
 
 vim /data/web/AuditSQL/AuditSQL/settings.py
 
@@ -159,7 +159,7 @@ AUTH_LDAP_USER_ATTR_MAP = {"username": "cn", 'email': 'mail', "displayname": 'di
 # logger.setLevel(logging.DEBUG)
 ```
 
-开启服务(请务必确保下面服务启动)：
+step5：开启服务(请务必确保下面服务启动)
 
 ```bash
 chown -R mysql:mysql /var/lib/mysql
@@ -173,14 +173,26 @@ service nginx start
 nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 ```
 
-## 升级
+step6：访问
+
+如果没有域名解析，请在本机hosts文件中绑定域名，例如：宿主机IP为：10.72.63.127
+
 ```bash
-docker exec -it 2d91d72dd15f /bin/bash
+10.72.63.127 auditsql.example.com
+```
+
+最后，浏览器访问：auditsql.example.com即可
+
+
+## 代码更新
+```bash
 cd /data/web/AuditSQL
 git pull
 python manager.py migrate
 python manager.py collectstatic
-# 最后重启服务
+# 如果存在冲突文件，请删除冲突文件，重新git pull
+
+# 最后重启相关服务（先kill杀掉）
 uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
 cd /data/web/AuditSQL
 nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
