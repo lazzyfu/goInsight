@@ -211,7 +211,7 @@ service nginx restart
 
 ## 线下SQL执行任务流程(点击查看GIF动态)
 
-![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2018-03-20 17_26_56.gif)
+![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2018-03-20_17_26_56.gif)
 
 ## 联系方式
    
