@@ -9,8 +9,8 @@ from .views import BeautifySQLView, GetInceptionHostConfigView, \
     GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
     IncepOnlineSqlRecordsView, IncepOnlineClickVerifyView, IncepOnlineClickFinishView, IncepOnlineClickCloseView, \
     OnlineAuditDetailView, \
-    OnlineSqlReplyView, IncepSqlCheckView, IncepOnlineSqlCheckView, IncepTasksRecordsView, \
-    IncepTasksDetailView, IncepExecTaskView, IncepTasksResultView
+    OnlineSqlReplyView, IncepSqlCheckView, IncepOnlineSqlCheckView, IncepTasksRecordsListView, \
+    IncepTasksDetailView, IncepExecTaskView, IncepTasksResultView, IncepTasksRecordsView, IncepTasksDetailListView
 
 urlpatterns = [
     path(r'get_inception_hostconfig/', login_required(GetInceptionHostConfigView.as_view()),
@@ -43,8 +43,9 @@ urlpatterns = [
     path(r'incep_sql_check/', login_required(IncepSqlCheckView.as_view()), name='p_incep_sql_check'),
     path(r'incep_exec_task/', login_required(IncepExecTaskView.as_view()), name='p_incep_exec_task'),
     path(r'incep_tasks_record/', login_required(IncepTasksRecordsView.as_view()), name='p_incep_tasks_records'),
+    path(r'incep_tasks_record_list/', login_required(IncepTasksRecordsListView.as_view()), name='p_incep_tasks_records_list'),
     re_path(r'incep_tasks_detail/(?P<taskid>.*)/', login_required(IncepTasksDetailView.as_view())),
+    path(r'incep_tasks_detail_list/', login_required(IncepTasksDetailListView.as_view()), name='p_incep_tasks_detail_list'),
     re_path(r'incep_tasks_result/', login_required(IncepTasksResultView.as_view()), name='p_incep_tasks_result'),
-
     path(r'beautify_sql/', login_required(BeautifySQLView.as_view()), name='p_beautify_sql'),
 ]

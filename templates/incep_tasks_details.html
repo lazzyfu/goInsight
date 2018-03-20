@@ -3,10 +3,6 @@
 
 {% block link_css %}
     <style>
-        .table > tbody > tr > td {
-            padding: 12px;
-        }
-
         .box-size {
             font-size: 12px;
         }
@@ -38,58 +34,59 @@
                 <div class="box-header">
                     <div class="mailbox-read-info">
                         <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务--> 执行</h3>
+                        <h3 id="taskid" style="display: none">{{ taskid }}</h3>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th class="col-md-1">ID</th>
-                                <th class="col-md-1">用户</th>
-                                <th class="col-md-3">sql语句</th>
-                                <th class="col-md-3">sqlsha1</th>
-                                <th class="col-md-1">进度</th>
-                                <th class="col-md-1">执行</th>
-                                <th class="col-md-1">停止</th>
-                                <th class="col-md-1">结果</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for row in task_details %}
-                                <tr>
-                                    <td>{{ row.sid }}</td>
-                                    <td>{{ row.user }}</td>
-                                    <td>{{ row.sql_content }}</td>
-                                    <td>{{ row.sqlsha1 }}</td>
-                                    <td>{{ row.exec_status }}</td>
-                                    <td><a href="#" onclick="execTask({{ row.id }}, '{{ row.taskid }}', 'start')"><i
-                                            class="fa fa-check-square-o"></i></a></td>
-                                    <td><a href="#" onclick="execTask({{ row.id }}, '{{ row.taskid }}', 'stop')"><i
-                                            class="fa fa-power-off"></i></a></td>
-                                    <td><a href="#" onclick="getTasksResult({{ row.id }})"><i
-                                            class="fa fa-sliders"></i></a></td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                    {#                    <div class="table-responsive">#}
+                    {#                        <table class="table table-hover">#}
+                    {#                            <thead>#}
+                    {#                            <tr>#}
+                    {#                                <th class="col-md-1">ID</th>#}
+                    {#                                <th class="col-md-1">用户</th>#}
+                    {#                                <th class="col-md-3">sql语句</th>#}
+                    {#                                <th class="col-md-3">sqlsha1</th>#}
+                    {#                                <th class="col-md-1">进度</th>#}
+                    {#                                <th class="col-md-1">执行</th>#}
+                    {#                                <th class="col-md-1">停止</th>#}
+                    {#                                <th class="col-md-1">结果</th>#}
+                    {#                            </tr>#}
+                    {#                            </thead>#}
+                    {#                            <tbody>#}
+                    {#                            {% for row in task_details %}#}
+                    {#                                <tr>#}
+                    {#                                    <td>{{ row.sid }}</td>#}
+                    {#                                    <td>{{ row.user }}</td>#}
+                    {#                                    <td>{{ row.sql_content }}</td>#}
+                    {#                                    <td>{{ row.sqlsha1 }}</td>#}
+                    {#                                    <td>{{ row.exec_status }}</td>#}
+                    {#                                    <td><a href="#" onclick="execTask({{ row.id }}, '{{ row.taskid }}', 'start')"><i#}
+                    {#                                            class="fa fa-check-square-o"></i></a></td>#}
+                    {#                                    <td><a href="#" onclick="execTask({{ row.id }}, '{{ row.taskid }}', 'stop')"><i#}
+                    {#                                            class="fa fa-power-off"></i></a></td>#}
+                    {#                                    <td><a href="#" onclick="getTasksResult({{ row.id }})"><i#}
+                    {#                                            class="fa fa-sliders"></i></a></td>#}
+                    {#                                </tr>#}
+                    {#                            {% endfor %}#}
+                    {#                            </tbody>#}
+                    {#                        </table>#}
+                    <table id="demo-table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box-size" id="typediv1" style="visibility: hidden">
+        <div class="box">
+            <div class="box-header">
+                <div class="mailbox-read-info">
+                    <h3 class="box-title"><i class="fa fa-hand--right"></i> 结果输出</h3>
                 </div>
             </div>
 
-            <div class="box-size" id="typediv1" style="visibility: hidden">
-                <div class="box">
-                    <div class="box-header">
-                        <div class="mailbox-read-info">
-                            <h3 class="box-title"><i class="fa fa-hand--right"></i> 结果输出</h3>
-                        </div>
-                    </div>
-
-                    <div class="box-body no-padding">
-                        <dl id="output_append" class="log-ul">
-                        </dl>
-                    </div>
-                </div>
+            <div class="box-body no-padding">
+                <dl id="output_append" class="log-ul">
+                </dl>
             </div>
         </div>
     </div>
@@ -132,6 +129,93 @@
     <script src="{% static 'c_websocket.js' %}"></script>
 
     <script>
+        /**
+         * 初始化bootstrap-table，生成表格
+         */
+        var taskid = '\'' + $('#taskid').text() + '\'';
+        $(function () {
+            $('#demo-table').bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_incep_tasks_detail_list' %}",
+                queryParams: function queryParams() {
+                    return {'taskid': taskid};
+                },
+                cache: false,
+                sidePagination: "client",
+                showColumns: true,
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                singleSelect: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,
+                pageSize: 20,
+                pageList: [10, 20, 30],
+                uniqueId: "id",
+
+                columns: [
+                    {
+                        field: 'sid',
+                        title: 'ID',
+                        sortable: true
+                    },
+                    {
+                        field: 'user',
+                        title: '用户',
+                        sortable: true
+                    }, {
+                        field: 'sql_content',
+                        title: 'sql语句',
+                        sortable: true
+                    },
+                    {
+                        field: 'sqlsha1',
+                        title: 'sqlsha1',
+                        sortable: true
+                    },
+                    {
+                        field: 'exec_status',
+                        title: '任务进度'
+                    },
+                    {
+                        field: 'id',
+                        title: "执行",
+                        formatter: function (value, row, index) {
+                            return '<a href="#" onclick="execTask(' + row.id + ', ' + taskid + ', ' + '\'start\'' + ')"> <i class="fa fa-play-circle"></i></a>';
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "停止",
+                        formatter: function (value, row, index) {
+                            return '<a href="#" onclick="execTask(' + row.id + ', ' + taskid + ', ' + '\'stop\'' + ')"> <i class="fa fa-power-off"></i></a>';
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "结果",
+                        formatter: function (value, row, index) {
+                            return '<a href="#" onclick="getTasksResult(' + row.id + ')"><i class="fa fa-list-ol"></i></a> ';
+                        }
+                    }
+                ]
+            })
+        });
+
+        /**
+         * 每5s刷新一次表格
+         */
+
+        $(function () {
+            function refreshTable() {
+                $('#demo-table').bootstrapTable('refresh', {silent: true});
+            }
+
+            setInterval(refreshTable, 5000);
+        });
+
+        <!-- 高亮SQL文本 -->
         var myTextarea = document.getElementById('select_sql');
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,

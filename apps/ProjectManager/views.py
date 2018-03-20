@@ -561,12 +561,13 @@ class OnlineSqlReplyView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepTasksRecordsView(PaginationMixin, ListView):
-    paginate_by = 8
-    context_object_name = 'exec_tasks'
-    template_name = 'incep_tasks_records.html'
+class IncepTasksRecordsView(View):
+    def get(self, request):
+        return render(request, 'incep_tasks_records.html')
 
-    def get_queryset(self):
+
+class IncepTasksRecordsListView(View):
+    def get(self, request):
         exec_tasks = []
         query = "select id,user,taskid,dst_host,dst_database,make_time from sqlaudit_incep_make_exec_task group by taskid order by make_time  desc"
         for row in IncepMakeExecTask.objects.raw(query):
@@ -575,11 +576,53 @@ class IncepTasksRecordsView(PaginationMixin, ListView):
                                'dst_host': row.dst_host,
                                'dst_database': row.dst_database,
                                'make_time': row.make_time})
-        return exec_tasks
+        return JsonResponse(exec_tasks, safe=False)
 
+
+# class IncepTasksRecordsListView(PaginationMixin, ListView):
+#     paginate_by = 8
+#     context_object_name = 'exec_tasks'
+#     template_name = 'incep_tasks_records.html'
+#
+#     def get_queryset(self):
+#         exec_tasks = []
+#         query = "select id,user,taskid,dst_host,dst_database,make_time from sqlaudit_incep_make_exec_task group by taskid order by make_time  desc"
+#         for row in IncepMakeExecTask.objects.raw(query):
+#             exec_tasks.append({'user': row.user,
+#                                'taskid': row.taskid,
+#                                'dst_host': row.dst_host,
+#                                'dst_database': row.dst_database,
+#                                'make_time': row.make_time})
+#         return exec_tasks
+
+
+# class IncepTasksDetailView(View):
+#     def get(self, request, taskid):
+#         query = f"select id,user,sqlsha1,sql_content,taskid,case exec_status when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' end as exec_status from sqlaudit_incep_make_exec_task where taskid={taskid}"
+#         i = 1
+#         task_details = []
+#         for row in IncepMakeExecTask.objects.raw(query):
+#             task_details.append({
+#                 'sid': i,
+#                 'id': row.id,
+#                 'user': row.user,
+#                 'sqlsha1': row.sqlsha1,
+#                 'sql_content': row.sql_content,
+#                 'taskid': row.taskid,
+#                 'exec_status': row.exec_status
+#             })
+#             i += 1
+#         return render(request, 'incep_tasks_details.html', {'task_details': task_details})
 
 class IncepTasksDetailView(View):
     def get(self, request, taskid):
+        return render(request, 'incep_tasks_details.html', {'taskid': taskid})
+
+
+class IncepTasksDetailListView(View):
+    def get(self, request):
+        taskid = request.GET.get('taskid')
+
         query = f"select id,user,sqlsha1,sql_content,taskid,case exec_status when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' end as exec_status from sqlaudit_incep_make_exec_task where taskid={taskid}"
         i = 1
         task_details = []
@@ -594,7 +637,7 @@ class IncepTasksDetailView(View):
                 'exec_status': row.exec_status
             })
             i += 1
-        return render(request, 'incep_tasks_details.html', {'task_details': task_details})
+        return HttpResponse(json.dumps(task_details))
 
 
 class IncepExecTaskView(View):
@@ -618,10 +661,13 @@ class IncepExecTaskView(View):
             status = row.exec_status.split(',')
 
         if action == 'stop':
-            # 关闭正在执行的任务
-            stop_incep_osc.delay(user=request.user.username, sqlsha1=sqlsha1, redis_key=key, host=host,
-                                 database=database)
-            context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+            if exec_status in ('0', '1'):
+                context = {'errCode': 400, 'errMsg': '任务未执行或已完成，请不要重复操作'}
+            else:
+                # 关闭正在执行的任务
+                stop_incep_osc.delay(user=request.user.username, sqlsha1=sqlsha1, redis_key=key, host=host,
+                                     database=database)
+                context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
         elif action == 'start':
             # 每次只能执行一条任务，不可同时执行，避免数据库压力
             if '2' in status:
@@ -629,7 +675,7 @@ class IncepExecTaskView(View):
             else:
                 # 避免任务重复点击执行
                 if exec_status in ('1', '2'):
-                    context = {'errCode': 400, 'errMsg': '任务已完成或处理中，请不要重复执行'}
+                    context = {'errCode': 400, 'errMsg': '任务已完成或处理中，请不要重复操作'}
                 else:
                     # 如果sqlsha1存在，使用OSC执行
                     if sqlsha1:

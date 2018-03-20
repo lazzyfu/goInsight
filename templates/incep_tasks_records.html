@@ -16,49 +16,83 @@
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-primary">
+            <div class="box box-info">
                 <div class="box-header">
-                    <h3 class="box-title">执行任务记录</h3>
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务记录</h3>
+                    </div>
                 </div>
-                <!-- /.box-header -->
                 <div class="box-body">
-                    <table class="table table-hover table-responsive">
-                        <thead>
-                        <tr>
-                            <th class="col-sm-1">任务工单号</th>
-                            <th class="col-sm-1">创建用户</th>
-                            <th class="col-sm-1">目标主机</th>
-                            <th class="col-sm-1">数据库</th>
-                            <th class="col-sm-2">生成时间</th>
-                            <th class="col-sm-1">执行</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% if exec_tasks %}
-                            {% for row in exec_tasks %}
-                                <tr data-tt-parent-id="1">
-                                    <td>{{ row.taskid }}</td>
-                                    <td>{{ row.user }}</td>
-                                    <td>{{ row.dst_host }}</td>
-                                    <td>{{ row.dst_database }}</td>
-                                    <td>{{ row.make_time }}</td>
-                                    <td><a href="incep_tasks_detail/{{ row.taskid }}"><i
-                                            class="fa fa-list-ol"></i></a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td>未找到记录 ...</td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                    {# 分页 #}
-                    {% include 'pagination.html' %}
+                    <table id="demo-table"></table>
                 </div>
                 <!-- /.box-body -->
             </div>
             <!-- /.box -->
         </div>
     </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        /**
+         * 初始化bootstrap-table，生成表格
+         */
+        $(function () {
+            $('#demo-table').bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_incep_tasks_records_list' %}",
+                cache: false,
+                sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+                showColumns: true,
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                singleSelect: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                        //每页的记录行数（*）
+                pageList: [10, 20, 30],        //可供选择的每页的行数（*）
+                uniqueId: "taskid",                     //每一行的唯一标识，一般为主键列
+
+                columns: [
+                    {
+                        field: 'taskid',
+                        title: '任务工单号',
+                        sortable: true
+                    },
+                    {
+                        field: 'user',
+                        title: '创建用户',
+                        sortable: true
+                    }, {
+                        field: 'dst_host',
+                        title: '主机',
+                        sortable: true
+                    },
+                    {
+                        field: 'dst_database',
+                        title: '数据库',
+                        sortable: true
+                    },
+                    {
+                        field: 'make_time',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {
+                        field: 'taskid',
+                        title: "任务详情",
+                        formatter: function (value, row, index) {
+                            return '<a href="incep_tasks_detail/' + row.taskid + '"><i class="fa fa-list-ol"></i></a> ';
+                        }
+                    }
+                ]
+            })
+        })
+    </script>
 {% endblock %}
