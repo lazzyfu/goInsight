@@ -1,13 +1,10 @@
-import socket
-from AuditSQL import settings
+# -*- coding:utf-8 -*-
 
-inception_host = getattr(settings, 'INCEPTION_HOST')
-inception_port = getattr(settings, 'INCEPTION_PORT')
+name = '付宗飞'
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-result = sock.connect_ex((inception_host, inception_port))
+print(name[::-1])
 
-if 0 == result:
-    print("Port is open")
-else:
-    print("Port is not open，return code：%s" % result)
+
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')

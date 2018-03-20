@@ -579,41 +579,6 @@ class IncepTasksRecordsListView(View):
         return JsonResponse(exec_tasks, safe=False)
 
 
-# class IncepTasksRecordsListView(PaginationMixin, ListView):
-#     paginate_by = 8
-#     context_object_name = 'exec_tasks'
-#     template_name = 'incep_tasks_records.html'
-#
-#     def get_queryset(self):
-#         exec_tasks = []
-#         query = "select id,user,taskid,dst_host,dst_database,make_time from sqlaudit_incep_make_exec_task group by taskid order by make_time  desc"
-#         for row in IncepMakeExecTask.objects.raw(query):
-#             exec_tasks.append({'user': row.user,
-#                                'taskid': row.taskid,
-#                                'dst_host': row.dst_host,
-#                                'dst_database': row.dst_database,
-#                                'make_time': row.make_time})
-#         return exec_tasks
-
-
-# class IncepTasksDetailView(View):
-#     def get(self, request, taskid):
-#         query = f"select id,user,sqlsha1,sql_content,taskid,case exec_status when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' end as exec_status from sqlaudit_incep_make_exec_task where taskid={taskid}"
-#         i = 1
-#         task_details = []
-#         for row in IncepMakeExecTask.objects.raw(query):
-#             task_details.append({
-#                 'sid': i,
-#                 'id': row.id,
-#                 'user': row.user,
-#                 'sqlsha1': row.sqlsha1,
-#                 'sql_content': row.sql_content,
-#                 'taskid': row.taskid,
-#                 'exec_status': row.exec_status
-#             })
-#             i += 1
-#         return render(request, 'incep_tasks_details.html', {'task_details': task_details})
-
 class IncepTasksDetailView(View):
     def get(self, request, taskid):
         return render(request, 'incep_tasks_details.html', {'taskid': taskid})
