@@ -184,19 +184,26 @@ step6：访问
 最后，浏览器访问：auditsql.example.com即可
 
 
-## 代码更新
+## 更新代码
 ```bash
 cd /data/web/AuditSQL
-git pull
-python manager.py migrate
-python manager.py collectstatic
+
 # 如果存在冲突文件，请删除冲突文件，重新git pull
+git pull
+
+python manage.py migrate --fake
+
+python manage.py collectstatic
 
 # 最后重启相关服务（先kill杀掉）
 uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+
 cd /data/web/AuditSQL
+
 nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
+
 service nginx restart
+
 /etc/init.d/celeryd restart
 ```
 

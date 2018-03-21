@@ -6,11 +6,9 @@ import re
 import pymysql
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.utils.decorators import method_decorator
 
 from AuditSQL import settings
 from ProjectManager.models import InceptionHostConfig
-from ProjectManager.utils import check_incep_alive
 
 channel_layer = get_channel_layer()
 
