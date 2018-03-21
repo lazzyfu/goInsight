@@ -5,4 +5,4 @@ AuditSQL/settings.py
 logs/*.log
 .idea/workspace.xml
 *.pyc
-*__pycache__*
+*/__pycache__/*
