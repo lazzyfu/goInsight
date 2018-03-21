@@ -5,4 +5,6 @@ AuditSQL/settings.py
 logs/*.log
 .idea/workspace.xml
 *.pyc
-__pycache__/
+*pycache__
+*.pyc
+apps/ProjectManager/inception/__pycache__/inception_api.cpython-36.pyc
