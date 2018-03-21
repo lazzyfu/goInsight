@@ -20,11 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf.urls.static import static
 
 from apps.UserManager.views import IndexView
-from .toolutils import permission_denied, page_not_found, server_error
 
-handler403 = permission_denied
-handler404 = page_not_found
-handler500 = server_error
 
 urlpatterns = [
     path('admin/', admin.site.urls),
