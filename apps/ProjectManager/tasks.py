@@ -4,24 +4,19 @@
 import datetime
 import difflib
 import hashlib
-import json
 import time
 
 import mysql.connector as mdb
-import pymysql
-import sys
-from asgiref.sync import async_to_sync
 from celery import shared_task
 from channels.layers import get_channel_layer
+from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db.models import F
 from django.template.loader import render_to_string
-from django.core.cache import cache
 
-from AuditSQL import settings
 from AuditSQL.settings import EMAIL_FROM
 from ProjectManager.inception.inception_api import IncepSqlCheck
-from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, InceptionHostConfig
+from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema
 from ProjectManager.utils import update_tasks_status
 from UserManager.models import ContactsDetail, UserAccount, Contacts
 

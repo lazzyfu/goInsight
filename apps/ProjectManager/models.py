@@ -24,7 +24,7 @@ class InceptionHostConfig(models.Model):
         return ', '.join(group)
 
     class Meta:
-        verbose_name = u'Inception数据库账号配置'
+        verbose_name = u'数据库连接账号'
         verbose_name_plural = verbose_name
 
         unique_together = ('host',)
@@ -125,7 +125,7 @@ class Remark(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'审核备注表'
+        verbose_name = u'线上操作备注'
         verbose_name_plural = verbose_name
 
         default_permissions = ()

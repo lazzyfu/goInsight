@@ -51,6 +51,8 @@ class UserAccountAdmin(admin.ModelAdmin):
             message_bit = "%s users were" % rows_updated
         self.message_user(request, "%s successfully reset password, password is: 123.com" % message_bit)
 
+    reset_password.short_description = u'重置用户密码为：123.com'
+
 
 @admin.register(Groups)
 class GroupsAdmin(admin.ModelAdmin):

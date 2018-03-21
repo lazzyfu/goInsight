@@ -1,10 +1,13 @@
-# -*- coding:utf-8 -*-
+import pymysql
 
-name = '付宗飞'
+# try:
+# 连接到inception
+try:
+    conn = pymysql.connect(host='10.72.63.128', user='inception_user', password='inception@123com',
+                           port=3306, use_unicode=True, charset="utf8", connect_timeout=1)
 
-print(name[::-1])
-
-
-import sys
-import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    if conn:
+        print('ok')
+    conn.close()
+except pymysql.Error as err:
+    print(err)

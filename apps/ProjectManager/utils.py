@@ -1,11 +1,24 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+import pymysql
 from django.http import HttpResponse
 import socket
 import json
 from AuditSQL import settings
 
 from ProjectManager.models import IncepMakeExecTask
+
+
+def check_mysql_conn(user, host, password, port):
+    try:
+        conn = pymysql.connect(user=user, host=host, password=password,
+                               port=port, use_unicode=True, connect_timeout=1)
+
+        if conn:
+            return {'status': 'INFO', 'msg': 'connect test is ok.'}
+        conn.close()
+    except pymysql.Error as err:
+        return {'status': 'ERROR', 'msg': err}
 
 
 def update_tasks_status(**kwargs):
