@@ -15,21 +15,11 @@
 
 ## 说明
 ```
-1. 为了安全，未提供注册功能，账号权限需要管理员后台手动添加，或者绑定ldap激活认证
-2. 后台账号列表有个下拉框，有个reset password, 可重置用户密码为：123.com
-3. 新建用户均无密码，可通过reset password设置为:123.com，用户登录后，可自行修改密码
-4. 使用LDAP认证的用户，密码修改无效
-5. 内置mysql管理账号：root/123.com
-6. 后台初始账号为：admin/123.com
-```
-
-## 演示demo
-```
-tips: 由于演示demo的数据库在国外，因此速度较慢，js可能无法加载，仅做体验，请见谅
-体验地址：http://auditsql.ekcloud666.com/
-后台地址：http://auditsql.ekcloud666.com/admin
-后台账号：admin/123.com
-后台提供的几个账号，密码均为: 123.com
+1. 未提供注册功能，账号需要管理员后台手动添加，或者绑定ldap激活认证
+2. 后台账号管理提供重置密码功能，默认重置为：123.com
+3. 内置mysql管理账号：root/123.com
+4. 前台地址：http://auditsql.example.com
+5. 后台地址：http://auditsql.example.com/admin, 初始账号为：admin/123.com
 ```
 
 
@@ -191,7 +181,7 @@ cd /data/web/AuditSQL
 # 如果存在冲突文件，请删除冲突文件，重新git pull
 git pull
 
-python manage.py migrate --fake
+python manage.py migrate fake
 
 python manage.py collectstatic
 
