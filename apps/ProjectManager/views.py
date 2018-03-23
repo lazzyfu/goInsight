@@ -131,7 +131,7 @@ class BeautifySQLView(View):
         return HttpResponse(json.dumps(context))
 
 
-class GetInceptionHostConfigView(View):
+class IncepHostConfigView(View):
     """获取inception指定的目标数据库配置"""
 
     def get(self, request):

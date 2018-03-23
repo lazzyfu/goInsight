@@ -4,7 +4,7 @@
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 
-from .views import BeautifySQLView, GetInceptionHostConfigView, \
+from .views import BeautifySQLView, IncepHostConfigView, \
     GetDatabaseListView, \
     GetRemarkInfo, GetGroupView, GetDbaLeaderView, GetContactsView, \
     IncepOnlineSqlRecordsView, IncepOnlineClickVerifyView, IncepOnlineClickFinishView, IncepOnlineClickCloseView, \
@@ -14,8 +14,8 @@ from .views import BeautifySQLView, GetInceptionHostConfigView, \
     IncepRollbackView, IncepStopView, IncepCreateOnlineTasksView
 
 urlpatterns = [
-    path(r'get_inception_hostconfig/', login_required(GetInceptionHostConfigView.as_view()),
-         name='p_inception_hostconfig'),
+    path(r'incep_host_config/', login_required(IncepHostConfigView.as_view()),
+         name='p_incep_host_config'),
     path(r'get_database/', login_required(GetDatabaseListView.as_view()), name='p_get_database'),
 
     # 线上工单
