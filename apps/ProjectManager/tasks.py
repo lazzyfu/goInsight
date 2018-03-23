@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 
 from AuditSQL.settings import EMAIL_FROM
 from ProjectManager.inception.inception_api import IncepSqlCheck
-from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema
+from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, IncepMakeExecTask
 from ProjectManager.utils import update_tasks_status
 from UserManager.models import ContactsDetail, UserAccount, Contacts
 
@@ -278,7 +278,14 @@ statu = 1: 推送执行进度
 """
 
 @shared_task
-def get_osc_percent(user, sqlsha1, redis_key, host, database):
+def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
+    obj = IncepMakeExecTask.objects.get(id=id)
+    if sqlsha1 is None:
+        sqlsha1 = obj.sqlsha1
+
+    host = obj.dst_host
+    database = obj.dst_database
+
     while True:
         if redis_key in cache:
             data = cache.get(redis_key)
@@ -301,7 +308,14 @@ def get_osc_percent(user, sqlsha1, redis_key, host, database):
 
 
 @shared_task
-def incep_async_tasks(user, sql, host, database, redis_key, id, taskid):
+def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None):
+    obj = IncepMakeExecTask.objects.get(id=id)
+    if sql is None:
+        sql = obj.sql_content + ';'
+
+    host = obj.dst_host
+    database = obj.dst_database
+
     incep_sql_check = IncepSqlCheck(sql, host, database, user)
 
     # 执行SQL
@@ -311,11 +325,23 @@ def incep_async_tasks(user, sql, host, database, redis_key, id, taskid):
     cache.set(redis_key, 'end')
 
     # 更新任务进度
-    update_tasks_status(id=id, taskid=taskid, exec_result=exec_result)
+    update_tasks_status(id=id, exec_result=exec_result, exec_status=exec_status)
 
 
 @shared_task
-def stop_incep_osc(user, sqlsha1, redis_key, host, database):
+def stop_incep_osc(user, redis_key=None, id=None):
+    obj = IncepMakeExecTask.objects.get(id=id)
+
+    exec_status = None
+    if obj.exec_status == '2':
+        sqlsha1 = obj.sqlsha1
+        exec_status = 0
+    elif obj.exec_status == '3':
+        sqlsha1 = obj.rollback_sqlsha1
+        exec_status = 1
+
+    host = obj.dst_host
+    database = obj.dst_database
     sql = f"inception stop alter '{sqlsha1}'"
 
     # 执行SQL
@@ -324,3 +350,8 @@ def stop_incep_osc(user, sqlsha1, redis_key, host, database):
 
     # 告诉获取进度的线程退出
     cache.set(redis_key, 'end')
+
+    # 更新任务进度
+    update_tasks_status(id=id, exec_status=exec_status)
+    # obj.exec_status = exec_status
+    # obj.save()

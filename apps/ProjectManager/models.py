@@ -68,6 +68,7 @@ class OnlineAuditContents(models.Model):
     op_action = models.CharField(max_length=100, default='', verbose_name=u'审核类型，数据修改or表结构变更')
     dst_host = models.CharField(null=False, default='', max_length=30, verbose_name=u'操作目标数据库主机')
     dst_database = models.CharField(null=False, default='', max_length=80, verbose_name=u'操作目标数据库')
+    type = models.CharField(max_length=5, default='', choices=(('DDL', u'数据库定义语言'), ('DML', u'数据库操纵语言')))
     remark = models.CharField(default='', max_length=30, verbose_name=u'备注')
     proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人')
     verifier = models.CharField(max_length=30, default='', verbose_name=u'批准人')
@@ -170,6 +171,8 @@ exec_progress = (
     ('0', u'未执行'),
     ('1', u'已完成'),
     ('2', u'处理中'),
+    ('3', u'回滚中'),
+    ('4', u'已回滚'),
 )
 
 
@@ -177,11 +180,16 @@ class IncepMakeExecTask(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     uid = models.IntegerField(null=False, default=0, verbose_name=u'操作用户uid')
     user = models.CharField(max_length=30, null=False, verbose_name=u'操作用户')
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'项目组id')
     taskid = models.CharField(null=False, max_length=128, verbose_name=u'任务号')
+    related_id = models.IntegerField(null=False,default=0, verbose_name=u'关联OnlineAuditContents的主键id')
+    category = models.CharField(null=False, max_length=2, default='0', choices=(('0', u'线下任务'), ('1', u'线上任务')), verbose_name=u'任务分类')
     dst_host = models.CharField(null=False, max_length=30, verbose_name=u'操作目标数据库主机')
     dst_database = models.CharField(null=False, max_length=80, verbose_name=u'操作目标数据库')
     sql_content = models.TextField(verbose_name=u'执行的SQL', default='')
+    type = models.CharField(max_length=5, default='', choices=(('DDL', u'数据库定义语言'), ('DML', u'数据库操纵语言')))
     sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
+    rollback_sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
     exec_status = models.CharField(max_length=10, default='0', choices=exec_progress, verbose_name=u'执行进度')
     sequence = models.CharField(null=False, default='', max_length=1024, verbose_name=u'备份记录id，inception生成的sequence')
     backup_dbname = models.CharField(null=False, max_length=1024, default='', verbose_name=u'inception生成的备份的库名')

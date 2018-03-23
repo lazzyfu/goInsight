@@ -21,32 +21,30 @@ def check_mysql_conn(user, host, password, port):
         return {'status': 'ERROR', 'msg': err}
 
 
-def update_tasks_status(**kwargs):
+def update_tasks_status(id=None, exec_result=None, exec_status=None):
     """
     更新任务进度
     更新备份信息
     """
-    id = kwargs.get('id')
-    taskid = kwargs.get('taskid')
-    exec_result = kwargs.get('exec_result')
 
-    data = IncepMakeExecTask.objects.get(id=id, taskid=taskid)
-    errlevel = [x['errlevel'] for x in exec_result]
+    data = IncepMakeExecTask.objects.get(id=id)
+    # if exec_result is not None:
+    errlevel = [x['errlevel'] for x in exec_result] if exec_result is not None else []
     if 1 in errlevel or 2 in errlevel:
-        # 报错，设置为：未执行
-        data.exec_status = 0
-        data.save()
+        if data.exec_status == '2':
+            data.exec_status = 0
+            data.save()
+        elif data.exec_status == '3':
+            data.exec_status = 1
+            data.save()
     else:
-        # 未报错
-        # 更新进度为：已完成
-        data.exec_status = 1
+        data.exec_status = exec_status
 
-        # 更新备份信息
-        data.sequence = exec_result[1]['sequence']
-        data.backup_dbname = exec_result[1]['backup_dbname']
-        data.exec_log = exec_result
+        if exec_status == 1:
+            data.sequence = exec_result[1]['sequence']
+            data.backup_dbname = exec_result[1]['backup_dbname']
+            data.exec_log = exec_result
         data.save()
-
 
 def check_incep_alive(fun):
     """检测inception进程是否运行"""

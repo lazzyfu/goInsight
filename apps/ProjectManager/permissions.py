@@ -7,8 +7,7 @@ from channels.layers import get_channel_layer
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from ProjectManager.models import OnlineAuditContents
-
+from ProjectManager.models import OnlineAuditContents, IncepMakeExecTask
 
 channel_layer = get_channel_layer()
 
@@ -54,6 +53,23 @@ def check_sql_detail_permission(fun):
 
         # 验证pk记录中的group_id是否和输入的group_id相同
         if obj.group_id == group_id:
+            return fun(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+    return wapper
+
+
+def check_incep_tasks_permission(fun):
+    """
+    只要DBA角色的用户，才能操作线上执行任务
+    """
+
+    def wapper(request, *args, **kwargs):
+        id = request.POST.get('id')
+        category = IncepMakeExecTask.objects.get(pk=id).category
+        user_role = request.user.user_role()
+        if category == '1' and user_role == 'DBA':
             return fun(request, *args, **kwargs)
         else:
             raise PermissionDenied

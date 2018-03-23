@@ -42,9 +42,12 @@
                             <th>批准人</th>
                             <th>执行人</th>
                             <th>审批</th>
-                            <th>执行</th>
+                            <th>反馈</th>
                             <th>关闭</th>
                             <th>详情</th>
+                            {% if request.user.user_role == 'DBA' %}
+                                <th>生成执行任务</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -90,6 +93,13 @@
                                         <a href="online_sql_detail/{{ row.id }}/{{ row.group_id }}"><i
                                                 class="fa fa-sliders"></i></a>
                                     </td>
+                                    {% if request.user.user_role == 'DBA' %}
+                                        <td>
+                                            <a href="#"
+                                               onclick="createTasks({{ row.id }}, {{ row.group_id }})"><i
+                                                    class="fa fa-cogs"></i></a>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         {% else %}
@@ -166,6 +176,29 @@
                     ;
                 });
             })
+        }
+
+        <!-- 创建任务 -->
+        function createTasks(id, group_id) {
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                type: 'post',
+                url: "{% url 'p_incep_create_tasks' %}",
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'group_id': group_id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                success: function (result) {
+                    if (result.errCode === 400) {
+                        displayPNotify(result.errCode, result.errMsg, refresh_page);
+                    }
+                    else {
+                        window.location.href = result.dst_url
+                    }
+                }
+            });
         }
     </script>
 {% endblock %}

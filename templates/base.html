@@ -135,9 +135,21 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_tasks_records' %}"><i class="fa fa-tasks"></i>执行任务</a></li>
-                        </li>
                         <li><a href="{% url 'p_incep_sql_check' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-paper-plane"></i>
+                        <span>执行任务</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'p_incep_tasks_records' %}"><i class="fa fa-tasks"></i>任务列表</a></li>
                         </li>
                     </ul>
                 </li>

@@ -15,15 +15,14 @@
             margin: 10px;
         }
 
-        .CodeMirror {
+        textarea {
+            width: 850px;
             border: 1px solid #eee;
-            height: 520px;
+            height: 320px;
             font-size: 13px;
-        }
-
-        .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
         }
+
     </style>
 {% endblock %}
 
@@ -72,9 +71,7 @@
                         <div class="box-body box-comments">
                             <div class="box-comment">
                                 <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
-                                <figure>
-                                    <textarea id="select_sql"></textarea>
-                                </figure>
+                                <textarea style="resize: none" readonly="readonly" id="select_sql"></textarea>
                             </div>
                             <div class="box-comment">
                                 <h5><i class="fa  fa-info-circle"> 执行日志</i></h5>
@@ -129,6 +126,11 @@
                         sortable: true
                     },
                     {
+                        field: 'category',
+                        title: '任务分类',
+                        sortable: true
+                    },
+                    {
                         field: 'user',
                         title: '用户',
                         sortable: true
@@ -144,20 +146,30 @@
                     },
                     {
                         field: 'exec_status',
-                        title: '任务进度'
+                        title: '任务进度',
+                        formatter: function (value, row, index) {
+                            return "<p class='text-red'> " + value +  "</p>"
+                        }
                     },
                     {
                         field: 'id',
                         title: "执行",
                         formatter: function (value, row, index) {
-                            return '<a href="#" onclick="execTask(' + row.id + ', ' + taskid + ', ' + '\'start\'' + ')"> <i class="fa fa-play-circle"></i></a>';
+                            return '<a href="#" onclick="execTask(' + row.id + ')"><i class="fa fa-play-circle"></i></a> ';
                         }
                     },
                     {
                         field: 'id',
-                        title: "停止",
+                        title: "停止OSC",
                         formatter: function (value, row, index) {
-                            return '<a href="#" onclick="execTask(' + row.id + ', ' + taskid + ', ' + '\'stop\'' + ')"> <i class="fa fa-power-off"></i></a>';
+                            return '<a href="#" onclick="execStop(' + row.id + ')"><i class="fa fa-power-off"></i></a> ';
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "回滚",
+                        formatter: function (value, row, index) {
+                            return '<a href="#" onclick="execRollback(' + row.id + ')"><i class="fa fa-undo"></i></a> ';
                         }
                     },
                     {
@@ -183,17 +195,33 @@
             setInterval(refreshTable, 5000);
         });
 
-        <!-- 高亮SQL文本 -->
-        var myTextarea = document.getElementById('select_sql');
-        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
-            lineNumbers: true,
-            mode: "text/x-mysql",
-            autoRefresh: true,
-            readOnly: true
-        });
+        <!-- 获取回滚语句和执行结果日志 -->
+        function getTasksResult(id) {
+            $.ajax({
+                url: "{% url 'p_incep_tasks_result' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'id': id},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $('#select_sql').empty();
+                    $('#execLog').empty();
+                    if (data.errCode == 200) {
+                        var log_html = renderIncepExecResult(data.exec_log);
+                        $('#select_sql').append(data.rollback_log);
+                        $('#execLog').append(log_html);
+                        $('#rollbackupModal').modal('show');
+                    }
+                    else if (data.errCode == 400) {
+                        displayPNotify(data.errCode, data.errMsg)
+                    }
+                }
+            })
+        }
 
-        <!-- 提交执行任务 -->
-        function execTask(id, taskid, action) {
+        <!-- 执行 -->
+        function execTask(id) {
             var csrftoken = $.cookie('csrftoken');
 
             $.ajax({
@@ -202,8 +230,6 @@
                 dataType: 'json',
                 data: {
                     'id': id,
-                    'taskid': taskid,
-                    'action': action,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,
@@ -214,28 +240,42 @@
             })
         }
 
-        <!-- 获取回滚语句和执行结果日志 -->
-        function getTasksResult(id) {
-            $('#rollbackSql').empty();
-            $('#rollbackupModal').modal('hide');
-            $('#execLog').empty();
+        <!-- 停止 -->
+        function execStop(id) {
+            var csrftoken = $.cookie('csrftoken');
+
             $.ajax({
-                url: "{% url 'p_incep_tasks_result' %}",
-                type: 'GET',
+                url: "{% url 'p_incep_stop' %}",
+                type: 'POST',
                 dataType: 'json',
-                data: {'id': id},
+                data: {
+                    'id': id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
                 timeout: 5000,
                 cache: false,
-                success: function (data) {
-                    if (data.errCode == 200) {
-                        var log_html = renderIncepExecResult(data.exec_log);
-                        myCodeMirror.setValue(data.rollback_log);
-                        $('#execLog').append(log_html);
-                        $('#rollbackupModal').modal('show');
-                    }
-                    else if (data.errCode == 400) {
-                        displayPNotify(data.errCode, data.errMsg)
-                    }
+                success: function (result) {
+                    displayPNotify(result.errCode, result.errMsg);
+                }
+            })
+        }
+
+        <!-- 回滚 -->
+        function execRollback(id) {
+            var csrftoken = $.cookie('csrftoken');
+
+            $.ajax({
+                url: "{% url 'p_incep_rollback' %}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    displayPNotify(result.errCode, result.errMsg);
                 }
             })
         }

@@ -10,7 +10,8 @@ from .views import BeautifySQLView, GetInceptionHostConfigView, \
     IncepOnlineSqlRecordsView, IncepOnlineClickVerifyView, IncepOnlineClickFinishView, IncepOnlineClickCloseView, \
     OnlineAuditDetailView, \
     OnlineSqlReplyView, IncepSqlCheckView, IncepOnlineSqlCheckView, IncepTasksRecordsListView, \
-    IncepTasksDetailView, IncepExecTaskView, IncepTasksResultView, IncepTasksRecordsView, IncepTasksDetailListView
+    IncepTasksDetailView, IncepExecTaskView, IncepTasksResultView, IncepTasksRecordsView, IncepTasksDetailListView, \
+    IncepRollbackView, IncepStopView, IncepCreateOnlineTasksView
 
 urlpatterns = [
     path(r'get_inception_hostconfig/', login_required(GetInceptionHostConfigView.as_view()),
@@ -38,14 +39,20 @@ urlpatterns = [
     path(r'incep_online_click_close/', login_required(IncepOnlineClickCloseView.as_view()),
          name='p_incep_online_click_close'),
     path(r'online_sql_reply/', login_required(OnlineSqlReplyView.as_view()), name='p_online_reply'),
+    path(r'incep_create_tasks/', login_required(IncepCreateOnlineTasksView.as_view()), name='p_incep_create_tasks'),
 
     # 线下工单
     path(r'incep_sql_check/', login_required(IncepSqlCheckView.as_view()), name='p_incep_sql_check'),
-    path(r'incep_exec_task/', login_required(IncepExecTaskView.as_view()), name='p_incep_exec_task'),
     path(r'incep_tasks_record/', login_required(IncepTasksRecordsView.as_view()), name='p_incep_tasks_records'),
-    path(r'incep_tasks_record_list/', login_required(IncepTasksRecordsListView.as_view()), name='p_incep_tasks_records_list'),
+    path(r'incep_tasks_record_list/', login_required(IncepTasksRecordsListView.as_view()),
+         name='p_incep_tasks_records_list'),
     re_path(r'incep_tasks_detail/(?P<taskid>.*)/', login_required(IncepTasksDetailView.as_view())),
-    path(r'incep_tasks_detail_list/', login_required(IncepTasksDetailListView.as_view()), name='p_incep_tasks_detail_list'),
+    path(r'incep_tasks_detail_list/', login_required(IncepTasksDetailListView.as_view()),
+         name='p_incep_tasks_detail_list'),
     re_path(r'incep_tasks_result/', login_required(IncepTasksResultView.as_view()), name='p_incep_tasks_result'),
     path(r'beautify_sql/', login_required(BeautifySQLView.as_view()), name='p_beautify_sql'),
+
+    path(r'incep_exec_task/', login_required(IncepExecTaskView.as_view()), name='p_incep_exec_task'),
+    re_path(r'incep_rollback/', login_required(IncepRollbackView.as_view()), name='p_incep_rollback'),
+    re_path(r'incep_stop/', login_required(IncepStopView.as_view()), name='p_incep_stop'),
 ]

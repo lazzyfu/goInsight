@@ -6,9 +6,11 @@ import re
 import pymysql
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django_redis import cache
 
 from AuditSQL import settings
-from ProjectManager.models import InceptionHostConfig
+from ProjectManager.models import InceptionHostConfig, IncepMakeExecTask
+from ProjectManager.utils import update_tasks_status
 
 channel_layer = get_channel_layer()
 
@@ -46,7 +48,11 @@ class GetBackupApi(object):
                 rollback_statement.append(i[0])
         cur.close()
         conn.close()
-        return '\n'.join(rollback_statement)
+
+        if rollback_statement:
+            return '\n'.join(rollback_statement)
+        else:
+            return '无记录'
 
 
 class GetDatabaseListApi(object):
@@ -95,14 +101,14 @@ def sql_filter(sql_content, op_action):
         if re.search(DML_FILTER, sql_content, re.I):
             context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
         else:
-            context = {'errMsg': '', 'errCode': 200}
+            context = {'errMsg': '', 'errCode': 200, 'type': 'DDL'}
         return context
 
     elif op_action == 'op_data':
         if re.search(DDL_FILTER, sql_content, re.I):
             context = {'errMsg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句', 'errCode': 400}
         else:
-            context = {'errMsg': '', 'errCode': 200}
+            context = {'errMsg': '', 'errCode': 200, 'type': 'DML'}
         return context
 
 
@@ -188,7 +194,7 @@ class IncepSqlCheck(object):
 
         return context
 
-    def make_sqksha1(self):
+    def make_sqlsha1(self):
         """
         将SQL切片成列表，分表进行审核并生成sqlsha1
         不可一起审核生成，否则执行时，两者SQL生成的sqlsha1不一致，无法获取进度
