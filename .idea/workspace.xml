@@ -54,12 +54,12 @@
             <state relative-caret-position="151">
               <caret line="562" column="6" lean-forward="false" selection-start-line="562" selection-start-column="6" selection-end-line="562" selection-end-column="6" />
               <folding>
-                <marker date="1522040089205" expanded="true" signature="10717:11084" ph="select ac.co... auditsql_contacts" />
-                <marker date="1522040089205" expanded="true" signature="23905:24298" ph="select a.id,... sqlaudit_incep_make_exec_task" />
-                <marker date="1522040089205" expanded="true" signature="25090:25470" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522040089205" expanded="true" signature="25090:25472" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522040089205" expanded="true" signature="25090:25481" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522040089205" expanded="true" signature="26342:26469" ph="select id,gr... sqlaudit_incep_make_exec_task" />
+                <marker date="1522042308229" expanded="true" signature="10717:11084" ph="select ac.co... auditsql_contacts" />
+                <marker date="1522042308229" expanded="true" signature="23905:24289" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+                <marker date="1522042308229" expanded="true" signature="25081:25452" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522042308229" expanded="true" signature="25081:25454" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522042308229" expanded="true" signature="25081:25463" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522042308229" expanded="true" signature="26324:26442" ph="select id,gr... sqlaudit_incep_make_exec_task" />
               </folding>
             </state>
           </provider>
@@ -98,8 +98,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="703">
-              <caret line="197" column="0" lean-forward="true" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
+            <state relative-caret-position="489">
+              <caret line="204" column="0" lean-forward="true" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -148,7 +148,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>p_incept_online_click_verify</find>
       <find>incep_online_click_finish</find>
       <find>IncepOnlineClickFinishView</find>
       <find>incep_online_click_close</find>
@@ -178,10 +177,9 @@
       <find>IncepPerformTasksView</find>
       <find>incep_of_details</find>
       <find>select_group</find>
+      <find>sqlaudit_incep_make_exec_task</find>
     </findStrings>
     <replaceStrings>
-      <replace>contacts_info</replace>
-      <replace>ContactsInfoView</replace>
       <replace>incep_ol_approve</replace>
       <replace>IncepOlApproveView</replace>
       <replace>p_incep_ol_approve</replace>
@@ -210,6 +208,8 @@
       <replace>incep_of_records</replace>
       <replace>incep_perform</replace>
       <replace>IncepPerformView</replace>
+      <replace />
+      <replace>sqlaudit_incep_tasks</replace>
     </replaceStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -636,7 +636,7 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34577113" sideWeight="0.50858366" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34552845" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34552845" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49570817" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -644,6 +644,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15335463" sideWeight="0.48134327" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41768292" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -654,7 +655,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49713877" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1046,12 +1046,12 @@
         <state relative-caret-position="151">
           <caret line="562" column="6" lean-forward="false" selection-start-line="562" selection-start-column="6" selection-end-line="562" selection-end-column="6" />
           <folding>
-            <marker date="1522040089205" expanded="true" signature="10717:11084" ph="select ac.co... auditsql_contacts" />
-            <marker date="1522040089205" expanded="true" signature="23905:24298" ph="select a.id,... sqlaudit_incep_make_exec_task" />
-            <marker date="1522040089205" expanded="true" signature="25090:25470" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522040089205" expanded="true" signature="25090:25472" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522040089205" expanded="true" signature="25090:25481" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522040089205" expanded="true" signature="26342:26469" ph="select id,gr... sqlaudit_incep_make_exec_task" />
+            <marker date="1522042308229" expanded="true" signature="10717:11084" ph="select ac.co... auditsql_contacts" />
+            <marker date="1522042308229" expanded="true" signature="23905:24289" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+            <marker date="1522042308229" expanded="true" signature="25081:25452" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522042308229" expanded="true" signature="25081:25454" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522042308229" expanded="true" signature="25081:25463" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522042308229" expanded="true" signature="26324:26442" ph="select id,gr... sqlaudit_incep_make_exec_task" />
           </folding>
         </state>
       </provider>
@@ -1074,8 +1074,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="197" column="0" lean-forward="true" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
+        <state relative-caret-position="489">
+          <caret line="204" column="0" lean-forward="true" selection-start-line="204" selection-start-column="0" selection-end-line="204" selection-end-column="0" />
           <folding />
         </state>
       </provider>
