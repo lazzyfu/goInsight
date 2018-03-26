@@ -42,7 +42,7 @@
             $('#demo-table').bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_incep_tasks_records_list' %}",
+                url: "{% url 'p_incep_of_records_l' %}",
                 cache: false,
                 sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
                 showColumns: true,
@@ -98,7 +98,7 @@
                         field: 'taskid',
                         title: "任务详情",
                         formatter: function (value, row, index) {
-                            return '<a href="incep_tasks_detail/' + row.taskid + '"><i class="fa fa-list-ol"></i></a> ';
+                            return '<a href="incep_of_details/' + row.taskid + '"><i class="fa fa-list-ol"></i></a> ';
                         }
                     }
                 ]

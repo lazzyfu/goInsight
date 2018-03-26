@@ -30,9 +30,9 @@ from .tasks import send_commit_mail, send_verify_mail, send_reply_mail, get_osc_
 channel_layer = get_channel_layer()
 
 
-class IncepSqlCheckView(View):
+class IncepOfAuditView(View):
     def get(self, request):
-        return render(request, 'incep_sql_check.html')
+        return render(request, 'incep_of_audit.html')
 
     @method_decorator(check_incep_alive)
     def post(self, request):
@@ -49,24 +49,24 @@ class IncepSqlCheckView(View):
             filter_result = sql_filter(sql_content, op_action)
 
             # 实例化
-            incep_sql_check = IncepSqlCheck(sql_content, host, database, self.request.user.username)
+            incep_of_audit = IncepSqlCheck(sql_content, host, database, self.request.user.username)
 
             if filter_result['errCode'] == 400:
                 context = filter_result
             else:
                 # SQL语法检查
                 if op_type == 'check':
-                    context = incep_sql_check.run_check()
+                    context = incep_of_audit.run_check()
 
                 # 生成执行任务
                 elif op_type == 'make':
                     # 生成执行任务之前，检测是否审核通过
-                    check_result = incep_sql_check.is_check_pass()
+                    check_result = incep_of_audit.is_check_pass()
                     if check_result['errCode'] == 400:
                         context = check_result
                     else:
                         # 对OSC执行的SQL生成sqlsha1
-                        result = incep_sql_check.make_sqlsha1()
+                        result = incep_of_audit.make_sqlsha1()
                         taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
                         # 生成执行任务记录
                         for row in result:
@@ -81,7 +81,7 @@ class IncepSqlCheckView(View):
                                 type=filter_result['type']
                             )
                         context = {'errCode': 201,
-                                   'dst_url': f'/projects/incep_tasks_record/incep_tasks_detail/{taskid}'}
+                                   'dst_url': f'/projects/incep_of_records/incep_of_details/{taskid}'}
             return HttpResponse(json.dumps(context))
         else:
             error = "请选择主机或库名"
@@ -143,7 +143,7 @@ class IncepHostConfigView(View):
         return JsonResponse(list(envResult), safe=False)
 
 
-class GetDatabaseListView(View):
+class GetDBListView(View):
     """列出选中环境的数据库库名"""
 
     def post(self, request):
@@ -153,7 +153,7 @@ class GetDatabaseListView(View):
         return HttpResponse(json.dumps(dbList))
 
 
-class IncepTasksResultView(View):
+class IncepOfResultsView(View):
     def get(self, request):
         id = request.GET.get('id')
         if IncepMakeExecTask.objects.get(id=id).exec_status in ('1', '4'):
@@ -171,9 +171,9 @@ class IncepTasksResultView(View):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOnlineSqlCheckView(View):
+class IncepOlAuditView(View):
     def get(self, request):
-        return render(request, 'incep_online_sql_check.html')
+        return render(request, 'incep_ol_audit.html')
 
     @method_decorator(check_incep_alive)
     def post(self, request):
@@ -222,13 +222,13 @@ class IncepOnlineSqlCheckView(View):
             return HttpResponse(json.dumps(context))
 
 
-class GetRemarkInfo(View):
+class RemarkInfoView(View):
     def post(self, request):
         obj = Remark.objects.all().values('id', 'remark')
         return JsonResponse(list(obj), safe=False)
 
 
-class GetGroupView(View):
+class GroupInfoView(View):
     def get(self, request):
         groups = GroupsDetail.objects.filter(
             user__uid=request.user.uid).annotate(
@@ -238,7 +238,7 @@ class GetGroupView(View):
         return JsonResponse(list(groups), safe=False)
 
 
-class GetDbaLeaderView(View):
+class AuditUserView(View):
     def post(self, request):
         """
         获取指定项目可用的dba和leader信息
@@ -261,7 +261,7 @@ class GetDbaLeaderView(View):
         return JsonResponse(result, safe=False)
 
 
-class GetContactsView(View):
+class ContactsInfoView(View):
     def post(self, request):
         """ 获取指定项目的联系人"""
         group_id = request.POST.get('group_id')
@@ -279,10 +279,10 @@ class GetContactsView(View):
         return JsonResponse(result, safe=False)
 
 
-class IncepOnlineSqlRecordsView(PaginationMixin, ListView):
+class IncepOlRecordsView(PaginationMixin, ListView):
     paginate_by = 8
     context_object_name = 'audit_records'
-    template_name = 'incep_online_sql_records.html'
+    template_name = 'incep_ol_records.html'
 
     obj = OnlineAuditContents.objects.all().annotate(
         progress_value=Case(
@@ -331,12 +331,12 @@ class IncepOnlineSqlRecordsView(PaginationMixin, ListView):
         return audit_records
 
 
-class IncepOnlineClickVerifyView(FormView):
+class IncepOlApproveView(FormView):
     form_class = VerifyCommitForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
-        return super(IncepOnlineClickVerifyView, self).dispatch(request, *args, **kwargs)
+        return super(IncepOlApproveView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -391,12 +391,12 @@ class IncepOnlineClickVerifyView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOnlineClickFinishView(FormView):
+class IncepOlFeedbackView(FormView):
     form_class = VerifyCommitForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
-        return super(IncepOnlineClickFinishView, self).dispatch(request, *args, **kwargs)
+        return super(IncepOlFeedbackView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -453,12 +453,12 @@ class IncepOnlineClickFinishView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOnlineClickCloseView(FormView):
+class IncepOlCloseView(FormView):
     form_class = VerifyCommitForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
-        return super(IncepOnlineClickCloseView, self).dispatch(request, *args, **kwargs)
+        return super(IncepOlCloseView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -504,7 +504,7 @@ class IncepOnlineClickCloseView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class OnlineAuditDetailView(View):
+class IncepOlDetailsView(View):
     @method_decorator(check_sql_detail_permission)
     def get(self, request, id, group_id):
         obj = OnlineAuditContents.objects.annotate(
@@ -526,11 +526,11 @@ class OnlineAuditDetailView(View):
             username=F('user__username'),
             avatar_file=F('user__avatar_file'),
         ).filter(reply__id=id).values('username', 'avatar_file', 'reply_contents', 'created_at')
-        return render(request, 'incep_online_sql_detail.html',
+        return render(request, 'incep_ol_details.html',
                       {'contents': contents, 'group': group, 'reply_contents': reply_contents})
 
 
-class OnlineSqlReplyView(FormView):
+class IncepOlReplyView(FormView):
     """处理用户的回复信息"""
 
     form_class = ReplyContentForm
@@ -558,20 +558,20 @@ class OnlineSqlReplyView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepTasksRecordsView(View):
+class IncepOfRecordsView(View):
     def get(self, request):
-        return render(request, 'incep_tasks_records.html')
+        return render(request, 'incep_of_records.html')
 
 
-class IncepTasksRecordsListView(View):
+class IncepOfRecordsListView(View):
     def get(self, request):
         exec_tasks = []
-        user_in_group = '(' + str(request.session['groups'][0]) + ')' if len(request.session['groups']) == 1 else tuple(request.session['groups'])
+        user_in_group = '(' + str(request.session['groups'][0]) + ')' if len(request.session['groups']) == 1 else tuple(
+            request.session['groups'])
         query = f"select a.id,a.user,a.taskid,a.dst_host,a.dst_database,a.make_time, b.group_name," \
                 f"case a.category when '0' then '线下任务' when '1' then '线上任务' end as category " \
                 f"from sqlaudit_incep_make_exec_task as a join auditsql_groups as b " \
                 f"on a.group_id = b.group_id where b.group_id in {user_in_group} group by a.taskid order by a.make_time  desc"
-        print(query)
         for row in IncepMakeExecTask.objects.raw(query):
             exec_tasks.append({'user': row.user,
                                'taskid': row.taskid,
@@ -583,20 +583,20 @@ class IncepTasksRecordsListView(View):
         return JsonResponse(list(exec_tasks), safe=False)
 
 
-class IncepTasksDetailView(View):
+class IncepOfDetailsView(View):
     def get(self, request, taskid):
-        return render(request, 'incep_tasks_details.html', {'taskid': taskid})
+        return render(request, 'incep_of_details.html', {'taskid': taskid})
 
 
-class IncepTasksDetailListView(View):
+class IncepOfDetailsListView(View):
     def get(self, request):
         taskid = request.GET.get('taskid')
 
-        query = f"select id,user,sqlsha1,sql_content,taskid,case exec_status " \
-                f"when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' when '3' then '回滚中' " \
-                f"when '4' then '已回滚' end as exec_status," \
-                f"case category when '0' then '线下任务' when '1' then '线上任务' end as category" \
-                f" from sqlaudit_incep_make_exec_task where taskid={taskid}"
+        query = "select id,user,sqlsha1,sql_content,taskid,case exec_status " \
+                "when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' when '3' then '回滚中' " \
+                "when '4' then '已回滚' end as exec_status," \
+                "case category when '0' then '线下任务' when '1' then '线上任务' end as category" \
+                " from sqlaudit_incep_make_exec_task where taskid={taskid}".format(taskid=taskid)
         i = 0
         task_details = []
         for row in IncepMakeExecTask.objects.raw(query):
@@ -615,7 +615,7 @@ class IncepTasksDetailListView(View):
         return HttpResponse(json.dumps(task_details))
 
 
-class IncepExecTaskView(View):
+class IncepPerformView(View):
     """
     执行任务
     """
@@ -663,11 +663,11 @@ class IncepExecTaskView(View):
 
                 # 如果sqlsha1不存在，直接执行
                 else:
-                    incep_sql_check = IncepSqlCheck(obj.sql_content + ';',
-                                                    obj.dst_host,
-                                                    obj.dst_database,
-                                                    request.user.username)
-                    exec_result = incep_sql_check.run_exec(0)
+                    incep_of_audit = IncepSqlCheck(obj.sql_content + ';',
+                                                   obj.dst_host,
+                                                   obj.dst_database,
+                                                   request.user.username)
+                    exec_result = incep_of_audit.run_exec(0)
                     # 更新任务状态
                     update_tasks_status(id=id,
                                         exec_result=exec_result,
@@ -723,12 +723,12 @@ class IncepRollbackView(View):
             if rollback_sql == u'无记录':
                 context = {'errCode': 400, 'errMsg': '没有找到备份记录，回滚失败'}
             else:
-                incep_sql_check = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
-                result = incep_sql_check.make_sqlsha1()[1]
+                incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
+                result = incep_of_audit.make_sqlsha1()[1]
 
                 if obj.type == 'DML':
-                    incep_sql_check = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
-                    exec_result = incep_sql_check.run_exec(0)
+                    incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
+                    exec_result = incep_of_audit.run_exec(0)
                     # 更新任务状态
                     update_tasks_status(id=id, exec_result=exec_result, exec_status=4)
 
@@ -759,9 +759,9 @@ class IncepRollbackView(View):
                                               redis_key=key)
                         context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
                     else:
-                        incep_sql_check = IncepSqlCheck(result['SQL'] + ';', obj.dst_host, obj.dst_database,
-                                                        request.user.username)
-                        exec_result = incep_sql_check.run_exec(0)
+                        incep_of_audit = IncepSqlCheck(result['SQL'] + ';', obj.dst_host, obj.dst_database,
+                                                       request.user.username)
+                        exec_result = incep_of_audit.run_exec(0)
                         # 更新任务状态
                         update_tasks_status(id=id, exec_result=exec_result, exec_status=4)
 
@@ -769,7 +769,7 @@ class IncepRollbackView(View):
         return HttpResponse(json.dumps(context))
 
 
-class IncepCreateOnlineTasksView(View):
+class IncepGenerateTasksView(View):
     @method_decorator(check_group_permission)
     def post(self, request):
         id = request.POST.get('id')
@@ -777,7 +777,7 @@ class IncepCreateOnlineTasksView(View):
         if IncepMakeExecTask.objects.filter(related_id=id).first():
             taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
             context = {'errCode': 201,
-                       'dst_url': f'/projects/incep_tasks_record/incep_tasks_detail/{taskid}'}
+                       'dst_url': f'/projects/incep_of_records/incep_of_details/{taskid}'}
         else:
             obj = get_object_or_404(OnlineAuditContents, pk=id)
 
@@ -788,10 +788,11 @@ class IncepCreateOnlineTasksView(View):
                 sql_content = obj.contents
 
                 # 实例化
-                incep_sql_check = IncepSqlCheck(sql_content, host, database, request.user.username)
+                incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
 
                 # 对OSC执行的SQL生成sqlsha1
-                result = incep_sql_check.make_sqlsha1()
+
+                result = incep_of_audit.make_sqlsha1()
                 taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
                 # 生成执行任务记录
                 for row in result:
@@ -810,7 +811,7 @@ class IncepCreateOnlineTasksView(View):
                     )
 
                 context = {'errCode': 201,
-                           'dst_url': f'/projects/incep_tasks_record/incep_tasks_detail/{taskid}'}
+                           'dst_url': f'/projects/incep_of_records/incep_of_details/{taskid}'}
             else:
                 context = {'errCode': 400,
                            'errMsg': 'Leader审核未通过'}

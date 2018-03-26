@@ -48,24 +48,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="23" column="91" lean-forward="true" selection-start-line="23" selection-start-column="91" selection-end-line="23" selection-end-column="91" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="133" column="6" lean-forward="false" selection-start-line="133" selection-start-column="6" selection-end-line="133" selection-end-column="6" />
+            <state relative-caret-position="832">
+              <caret line="819" column="0" lean-forward="true" selection-start-line="819" selection-start-column="0" selection-end-line="819" selection-end-column="0" />
               <folding>
-                <element signature="e#0#11#0" expanded="true" />
-                <marker date="1521796333638" expanded="true" signature="23910:24303" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+                <marker date="1522026944824" expanded="true" signature="10618:10985" ph="select ac.co... auditsql_contacts" />
+                <marker date="1522026944824" expanded="true" signature="23806:24199" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+                <marker date="1522026944824" expanded="true" signature="24991:25371" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522026944824" expanded="true" signature="24991:25373" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522026944824" expanded="true" signature="24991:25382" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522026944824" expanded="true" signature="26243:26370" ph="select id,gr... sqlaudit_incep_make_exec_task" />
               </folding>
             </state>
           </provider>
@@ -74,17 +68,17 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
+            <state relative-caret-position="0">
               <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="4" selection-end-line="185" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="incep_tasks_details.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/incep_tasks_details.html">
+      <file leaf-file-name="incep_of_details.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/incep_of_details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
+            <state relative-caret-position="0">
               <caret line="232" column="52" lean-forward="false" selection-start-line="232" selection-start-column="52" selection-end-line="232" selection-end-column="52" />
               <folding />
             </state>
@@ -94,7 +88,7 @@
       <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
+            <state relative-caret-position="0">
               <caret line="46" column="19" lean-forward="false" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
               <folding />
             </state>
@@ -104,7 +98,7 @@
       <file leaf-file-name="permissions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/permissions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
+            <state relative-caret-position="0">
               <caret line="62" column="32" lean-forward="false" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="32" />
               <folding>
                 <element signature="e#43#54#0" expanded="true" />
@@ -116,27 +110,27 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/UserManager/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2622">
+            <state relative-caret-position="0">
               <caret line="153" column="36" lean-forward="false" selection-start-line="153" selection-start-column="36" selection-end-line="153" selection-end-column="36" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="incep_online_sql_records.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/incep_online_sql_records.html">
+      <file leaf-file-name="incep_ol_records.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/incep_ol_records.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2417">
+            <state relative-caret-position="0">
               <caret line="199" column="17" lean-forward="false" selection-start-line="199" selection-start-column="17" selection-end-line="199" selection-end-column="17" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="incep_tasks_records.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/incep_tasks_records.html">
+      <file leaf-file-name="incep_of_records.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/incep_of_records.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="370">
+            <state relative-caret-position="0">
               <caret line="67" column="38" lean-forward="false" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
               <folding />
             </state>
@@ -156,68 +150,68 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>p_incep_tasks_records_render</find>
-      <find>table</find>
+      <find>IncepOnlineClickVerifyView</find>
+      <find>p_incept_online_click_verify</find>
+      <find>incep_online_click_finish</find>
+      <find>IncepOnlineClickFinishView</find>
+      <find>incep_online_click_close</find>
+      <find>IncepOnlineClickCloseView</find>
+      <find>online_sql_reply</find>
+      <find>OnlineSqlReplyView</find>
+      <find>IncepCreateOnlineTasksView</find>
+      <find>incep_create_tasks</find>
+      <find>incep_sql_check</find>
+      <find>IncepSqlCheckView</find>
+      <find>incep_tasks_record</find>
+      <find>p_incep_of_recordss</find>
+      <find>IncepTasksRecordsView</find>
+      <find>incep_of_records_list</find>
+      <find>IncepTasksRecordsListView</find>
+      <find>IncepOfRecordsLView</find>
       <find>incep_tasks_detail</find>
-      <find>init_fun</find>
-      <find>RE</find>
-      <find>re</find>
-      <find>OnlineAuditContents</find>
-      <find>exec_log</find>
-      <find>pymysql</find>
-      <find>action</find>
-      <find>sqlaudit_incep_make_exec_task</find>
-      <find>rollbacksql</find>
-      <find>rollbackSql</find>
-      <find>make_sqksha1</find>
-      <find>p_incep_rollback</find>
-      <find>IncepMakeExecTask</find>
-      <find>obj.database</find>
-      <find>incep_async_tasks</find>
-      <find>exec_status</find>
-      <find>exec_status=0</find>
-      <find>print(e)</find>
-      <find>IncepExecTask</find>
-      <find>p_incep_create_tasks</find>
-      <find>IncepCreateTasksView</find>
-      <find>print</find>
-      <find>group_permissions</find>
-      <find>False</find>
-      <find>check_incep_tasks_permission</find>
-      <find>p_inception_hostconfig</find>
-      <find>GetInceptionHostConfigView</find>
+      <find>IncepTasksDetailView</find>
+      <find>incep_of_details_list</find>
+      <find>IncepTasksDetailListView</find>
+      <find>incep_tasks_result</find>
+      <find>IncepTasksResultView</find>
+      <find>incep_exec_task</find>
+      <find>IncepExecTaskView</find>
+      <find>incep_of_recordss</find>
+      <find>incep_perform_tasks</find>
+      <find>IncepPerformTasksView</find>
+      <find>incep_of_details</find>
     </findStrings>
     <replaceStrings>
-      <replace>incep_offline_all_sql_detail</replace>
-      <replace>IncepOfflineSqlRecords</replace>
-      <replace>incep_online_sql_records</replace>
-      <replace>incep_online_click_verify</replace>
-      <replace>incep_online_click_finish</replace>
-      <replace>incep_online_click_close</replace>
-      <replace>IncepOnlineAuditRecordsView</replace>
-      <replace>IncepOnlineClickVerifyView</replace>
-      <replace>IncepOnlineClickFinishView</replace>
-      <replace>IncepOnlineClickCloseView</replace>
-      <replace>allsql_detail</replace>
-      <replace>singlesql_detail</replace>
-      <replace>sql_detail</replace>
-      <replace>IncepOfflineSqlDetailView</replace>
-      <replace>p_incep_online_sql_records</replace>
-      <replace>p_incept_online_click_verify</replace>
-      <replace>p_incep_online_click_finish</replace>
-      <replace>p_incep_online_click_close</replace>
-      <replace>td</replace>
-      <replace>data</replace>
-      <replace>displayname</replace>
-      <replace>IncepTasksRecordsListView</replace>
-      <replace>IncepTasksRecordsView</replace>
-      <replace>p_incep_tasks_records</replace>
-      <replace>make_sqlsha1</replace>
-      <replace>IncepExecTask</replace>
-      <replace>IncepCreateOnlineTasksView</replace>
-      <replace>permissions</replace>
-      <replace>p_incep_host_config</replace>
-      <replace>IncepHostConfigView</replace>
+      <replace>contacts_info</replace>
+      <replace>ContactsInfoView</replace>
+      <replace>incep_ol_approve</replace>
+      <replace>IncepOlApproveView</replace>
+      <replace>p_incep_ol_approve</replace>
+      <replace>incep_ol_feedback</replace>
+      <replace>IncepOlFeedbackView</replace>
+      <replace>incep_ol_close</replace>
+      <replace>IncepOlCloseView</replace>
+      <replace>incep_ol_reply</replace>
+      <replace>IncepOlReplyView</replace>
+      <replace>IncepGenerateTasksView</replace>
+      <replace>incep_generate_tasks</replace>
+      <replace>incep_of_audit</replace>
+      <replace>IncepOfAuditView</replace>
+      <replace>p_incep_of_records</replace>
+      <replace>IncepOfRecordsView</replace>
+      <replace>incep_of_records_l</replace>
+      <replace>IncepOfRecordsLView</replace>
+      <replace>IncepOfRecordsListView</replace>
+      <replace>incep_of_details</replace>
+      <replace>incep_of_details_l</replace>
+      <replace>IncepOfDetailsView</replace>
+      <replace>incep_of_results</replace>
+      <replace>IncepOfResultsView</replace>
+      <replace>incep_perform_tasks</replace>
+      <replace>IncepPerformTasksView</replace>
+      <replace>incep_of_records</replace>
+      <replace>incep_perform</replace>
+      <replace>IncepPerformView</replace>
     </replaceStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -272,8 +266,8 @@
         <option value="$PROJECT_DIR$/templates/incep_online_sql_records.html" />
         <option value="$PROJECT_DIR$/templates/incep_tasks_details.html" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/permissions.py" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/views.py" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/urls.py" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/views.py" />
       </list>
     </option>
   </component>
@@ -290,8 +284,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1440" />
-    <option name="height" value="900" />
+    <option name="x" value="-199" />
+    <option name="y" value="-1080" />
+    <option name="width" value="1920" />
+    <option name="height" value="1080" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -308,7 +304,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -349,13 +345,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.detected.package.stylelint" value="true" />
@@ -629,28 +625,27 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
+    <frame x="-199" y="-1080" width="1920" height="1080" extended-state="0" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34577113" sideWeight="0.50858366" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34577113" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34552845" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49570817" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="manage.py@AuditSQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49427754" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20100144" sideWeight="0.48134327" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1517572" sideWeight="0.48134327" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41791046" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41768292" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21745351" sideWeight="0.51865673" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="manage.py@AuditSQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49427754" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49713877" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -672,7 +667,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="68" />
+      <option name="time" value="70" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -709,7 +704,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="12" column="14" lean-forward="false" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -748,7 +742,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="167">
           <caret line="103" column="0" lean-forward="false" selection-start-line="103" selection-start-column="0" selection-end-line="103" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -874,9 +867,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#11#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -893,7 +884,6 @@
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="515">
             <caret line="208" column="25" lean-forward="true" selection-start-line="208" selection-start-column="25" selection-end-line="208" selection-end-column="25" />
-            <folding />
           </first_editor>
           <second_editor />
         </state>
@@ -901,7 +891,6 @@
       <provider editor-type-id="text-editor">
         <state relative-caret-position="36">
           <caret line="2" column="2" lean-forward="true" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -926,7 +915,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-7">
           <caret line="37" column="40" lean-forward="false" selection-start-line="37" selection-start-column="40" selection-end-line="37" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -934,7 +922,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1738">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -942,7 +929,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="394">
           <caret line="56" column="35" lean-forward="true" selection-start-line="56" selection-start-column="35" selection-end-line="56" selection-end-column="35" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -951,7 +937,7 @@
         <state relative-caret-position="361">
           <caret line="339" column="38" lean-forward="true" selection-start-line="339" selection-start-column="38" selection-end-line="339" selection-end-column="38" />
           <folding>
-            <marker date="1521775685942" expanded="true" signature="5208:5732" ph="select table... " />
+            <marker date="1522025765469" expanded="true" signature="5208:5732" ph="select table... " />
           </folding>
         </state>
       </provider>
@@ -964,7 +950,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_sql_check.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_of_audit.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1996">
           <caret line="320" column="26" lean-forward="true" selection-start-line="320" selection-start-column="26" selection-end-line="320" selection-end-column="26" />
@@ -983,23 +969,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_tasks_records.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_of_records.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
+        <state relative-caret-position="0">
           <caret line="67" column="38" lean-forward="false" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_online_sql_records.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_ol_records.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2417">
+        <state relative-caret-position="0">
           <caret line="199" column="17" lean-forward="false" selection-start-line="199" selection-start-column="17" selection-end-line="199" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_online_sql_detail.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_ol_details.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="13" column="25" lean-forward="true" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
@@ -1009,7 +995,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
+        <state relative-caret-position="0">
           <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="4" selection-end-line="185" selection-end-column="12" />
           <folding />
         </state>
@@ -1017,13 +1003,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
+        <state relative-caret-position="0">
           <caret line="46" column="19" lean-forward="false" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_online_sql_check.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_ol_audit.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-6715">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1031,9 +1017,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_tasks_details.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_of_details.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
+        <state relative-caret-position="0">
           <caret line="232" column="52" lean-forward="false" selection-start-line="232" selection-start-column="52" selection-end-line="232" selection-end-column="52" />
           <folding />
         </state>
@@ -1041,7 +1027,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/UserManager/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2622">
+        <state relative-caret-position="0">
           <caret line="153" column="36" lean-forward="false" selection-start-line="153" selection-start-column="36" selection-end-line="153" selection-end-column="36" />
           <folding />
         </state>
@@ -1049,7 +1035,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/permissions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
+        <state relative-caret-position="0">
           <caret line="62" column="32" lean-forward="false" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="32" />
           <folding>
             <element signature="e#43#54#0" expanded="true" />
@@ -1057,22 +1043,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="133" column="6" lean-forward="false" selection-start-line="133" selection-start-column="6" selection-end-line="133" selection-end-column="6" />
+        <state relative-caret-position="306">
+          <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <marker date="1521796333638" expanded="true" signature="23910:24303" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+            <element signature="e#44#101#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="23" column="91" lean-forward="true" selection-start-line="23" selection-start-column="91" selection-end-line="23" selection-end-column="91" />
-          <folding />
+        <state relative-caret-position="832">
+          <caret line="819" column="0" lean-forward="true" selection-start-line="819" selection-start-column="0" selection-end-line="819" selection-end-column="0" />
+          <folding>
+            <marker date="1522026944824" expanded="true" signature="10618:10985" ph="select ac.co... auditsql_contacts" />
+            <marker date="1522026944824" expanded="true" signature="23806:24199" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+            <marker date="1522026944824" expanded="true" signature="24991:25371" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522026944824" expanded="true" signature="24991:25373" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522026944824" expanded="true" signature="24991:25382" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522026944824" expanded="true" signature="26243:26370" ph="select id,gr... sqlaudit_incep_make_exec_task" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -291,10 +291,10 @@ def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
             data = cache.get(redis_key)
             if data == 'start':
                 sql = f"inception get osc_percent '{sqlsha1}'"
-                incep_sql_check = IncepSqlCheck(sql, host, database, user)
+                incep_of_audit = IncepSqlCheck(sql, host, database, user)
 
                 # 执行SQL
-                incep_sql_check.run_status(1)
+                incep_of_audit.run_status(1)
 
                 # 每2s获取一次
                 time.sleep(2)
@@ -316,10 +316,10 @@ def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None)
     host = obj.dst_host
     database = obj.dst_database
 
-    incep_sql_check = IncepSqlCheck(sql, host, database, user)
+    incep_of_audit = IncepSqlCheck(sql, host, database, user)
 
     # 执行SQL
-    exec_result = incep_sql_check.run_exec(0)
+    exec_result = incep_of_audit.run_exec(0)
 
     # 告诉获取进度的线程退出
     cache.set(redis_key, 'end')
@@ -345,8 +345,8 @@ def stop_incep_osc(user, redis_key=None, id=None):
     sql = f"inception stop alter '{sqlsha1}'"
 
     # 执行SQL
-    incep_sql_check = IncepSqlCheck(sql, host, database, user)
-    incep_sql_check.run_status(0)
+    incep_of_audit = IncepSqlCheck(sql, host, database, user)
+    incep_of_audit.run_status(0)
 
     # 告诉获取进度的线程退出
     cache.set(redis_key, 'end')

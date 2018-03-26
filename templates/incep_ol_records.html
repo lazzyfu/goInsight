@@ -17,7 +17,7 @@
                 <div class="box-header">
                     <h3 class="box-title">数据变更记录</h3>
                     <div class="box-tools">
-                        <form action="{% url 'p_incep_online_sql_records' %}" method="get">
+                        <form action="{% url 'p_incep_ol_records' %}" method="get">
                             <div class="input-group input-group-sm" style="width: 350px;">
                                 <input type="text" name="search_content" class="form-control pull-right"
                                        placeholder="Search">
@@ -76,21 +76,21 @@
                                     </td>
                                     <td>
                                         <a href="#"
-                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incept_online_click_verify' %}', '通过', '不通过')"><i
+                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_ol_approve' %}', '通过', '不通过')"><i
                                                 class="fa fa-pencil-square-o fa-lg"></i></a>
                                     </td>
                                     <td>
                                         <a href="#"
-                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_online_click_finish' %}', '处理中', '已完成')"><i
+                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_ol_feedback' %}', '处理中', '已完成')"><i
                                                 class="fa fa-check-square-o fa-lg"></i></a>
                                     </td>
                                     <td>
                                         <a href="#"
-                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_online_click_close' %}', '提交', '结束')"><i
+                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_ol_close' %}', '提交', '结束')"><i
                                                 class="fa fa-close fa-lg"></i></a>
                                     </td>
                                     <td>
-                                        <a href="online_sql_detail/{{ row.id }}/{{ row.group_id }}"><i
+                                        <a href="incep_ol_details/{{ row.id }}/{{ row.group_id }}"><i
                                                 class="fa fa-sliders"></i></a>
                                     </td>
                                     {% if request.user.user_role == 'DBA' %}
@@ -183,7 +183,7 @@
             var csrftoken = $.cookie('csrftoken');
             $.ajax({
                 type: 'post',
-                url: "{% url 'p_incep_create_tasks' %}",
+                url: "{% url 'p_incep_generate_tasks' %}",
                 dataType: 'json',
                 data: {
                     'id': id,
