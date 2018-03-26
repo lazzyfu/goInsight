@@ -86,7 +86,7 @@ class IncepOfAuditView(View):
                                    'dst_url': f'/projects/incep_of_records/incep_of_details/{taskid}'}
             return HttpResponse(json.dumps(context))
         else:
-            error = "请选择主机或库名"
+            error = "请选择主机、库名和项目组"
             context = {'errCode': 400, 'errMsg': error}
 
             return HttpResponse(json.dumps(context))

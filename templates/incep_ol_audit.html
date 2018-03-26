@@ -74,6 +74,15 @@
                             </div>
 
                             <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">项目</label>
+                                <div class="col-sm-9">
+                                    <select id="select_group" name="group_id" style="width: 100%" required
+                                            class="selectpicker form-control" title="请选择一个可用的项目...">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group has-feedback">
                                 <label class="control-label col-sm-3">标题</label>
                                 <div class="col-sm-9">
                                     <input type="text" id="select_title" name="title" data-minlength="5"
@@ -87,15 +96,6 @@
                                 <div class="col-sm-9">
                                     <select id="select_remark" name="remark" style="width: 100%" title="请选择合适的备注"
                                             class="selectpicker form-control dropup" required>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group has-feedback">
-                                <label class="control-label col-sm-3">项目</label>
-                                <div class="col-sm-9">
-                                    <select id="select_group" name="group_id" style="width: 100%" required
-                                            class="selectpicker form-control" title="请选择一个可用的项目...">
                                     </select>
                                 </div>
                             </div>
@@ -450,6 +450,7 @@
             var database = $("#select_db").val();
             var host = $("#select_env").val();
             var op_action = $("#select_op").val();
+            var group_id = $("#select_group").val();
             var csrftoken = $.cookie('csrftoken');
 
             {#判断输入的SQL内容是否存在#}
@@ -468,6 +469,7 @@
                     'host': host,
                     'op_type': op_type,
                     'op_action': op_action,
+                    'group_id': group_id,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,
