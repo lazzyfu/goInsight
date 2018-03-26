@@ -201,4 +201,4 @@ class IncepMakeExecTask(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_incep_make_exec_task'
+        db_table = 'sqlaudit_incep_tasks'
