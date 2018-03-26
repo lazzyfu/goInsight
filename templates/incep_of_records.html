@@ -70,7 +70,16 @@
                     {
                         field: 'category',
                         title: '任务分类',
-                        sortable: true
+                        sortable: true,
+                        formatter: function (value, row, index) {
+                            if (value === '线上任务'){
+                                return "<p class='text-blue'>" + value + "</p>"
+                            }
+                            else if (value === '线下任务') {
+                                return "<p class='text-muted'>" + value + "</p>"
+                            }
+                        }
+
                     },
                     {
                         field: 'user',

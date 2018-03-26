@@ -43,6 +43,7 @@ class IncepOfAuditView(View):
             database = cleaned_data['database']
             op_action = cleaned_data.get('op_action')
             op_type = cleaned_data['op_type']
+            group_id = cleaned_data['group_id']
             sql_content = cleaned_data['sql_content']
 
             # 对检测的SQL类型进行区分
@@ -75,6 +76,7 @@ class IncepOfAuditView(View):
                                 user=self.request.user.username,
                                 taskid=taskid,
                                 dst_host=host,
+                                group_id=group_id,
                                 dst_database=database,
                                 sql_content=row['SQL'],
                                 sqlsha1=row['sqlsha1'],

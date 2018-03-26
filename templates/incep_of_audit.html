@@ -72,6 +72,15 @@
                                 </div>
                             </div>
 
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3">项目</label>
+                                <div class="col-sm-9">
+                                    <select id="select_group" name="group_id" style="width: 100%" required
+                                            class="selectpicker form-control" title="请选择一个可用的项目...">
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
@@ -248,6 +257,26 @@
         }
 
         /**
+         * 获取当前用户所属的项目组
+         */
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_group_info' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, data) {
+                        $("#select_group").append(  //此处向select中循环绑定数据
+                            "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            })
+        });
+
+        /**
          * 执行inception语法检查
          * @param op_type
          * @return {boolean}
@@ -258,6 +287,7 @@
             var database = $("#select_db").val();
             var host = $("#select_env").val();
             var op_action = $("#select_op").val();
+            var group_id = $('#select_group').val();
             var csrftoken = $.cookie('csrftoken');
 
             {#判断输入的SQL内容是否存在#}
@@ -276,6 +306,7 @@
                     'host': host,
                     'op_type': op_type,
                     'op_action': op_action,
+                    'group_id': group_id,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,

@@ -51,16 +51,46 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="765" column="38" lean-forward="false" selection-start-line="765" selection-start-column="38" selection-end-line="765" selection-end-column="38" />
+            <state relative-caret-position="151">
+              <caret line="562" column="6" lean-forward="false" selection-start-line="562" selection-start-column="6" selection-end-line="562" selection-end-column="6" />
               <folding>
-                <marker date="1522026944824" expanded="true" signature="10618:10985" ph="select ac.co... auditsql_contacts" />
-                <marker date="1522026944824" expanded="true" signature="23806:24199" ph="select a.id,... sqlaudit_incep_make_exec_task" />
-                <marker date="1522026944824" expanded="true" signature="24991:25371" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522026944824" expanded="true" signature="24991:25373" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522026944824" expanded="true" signature="24991:25382" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522026944824" expanded="true" signature="26243:26370" ph="select id,gr... sqlaudit_incep_make_exec_task" />
+                <marker date="1522040089205" expanded="true" signature="10717:11084" ph="select ac.co... auditsql_contacts" />
+                <marker date="1522040089205" expanded="true" signature="23905:24298" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+                <marker date="1522040089205" expanded="true" signature="25090:25470" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522040089205" expanded="true" signature="25090:25472" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522040089205" expanded="true" signature="25090:25481" ph="select id,us... sqlaudit_incep_make_exec_task" />
+                <marker date="1522040089205" expanded="true" signature="26342:26469" ph="select id,gr... sqlaudit_incep_make_exec_task" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/forms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="324">
+              <caret line="18" column="44" lean-forward="true" selection-start-line="18" selection-start-column="44" selection-end-line="18" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="incep_of_audit.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/incep_of_audit.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2229">
+              <caret line="296" column="13" lean-forward="true" selection-start-line="296" selection-start-column="13" selection-end-line="296" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="incep_of_records.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/incep_of_records.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="418">
+              <caret line="84" column="38" lean-forward="true" selection-start-line="84" selection-start-column="38" selection-end-line="84" selection-end-column="38" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -68,18 +98,38 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3240">
-              <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="4" selection-end-line="185" selection-end-column="12" />
+            <state relative-caret-position="381">
+              <caret line="198" column="15" lean-forward="true" selection-start-line="198" selection-start-column="15" selection-end-line="198" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="incep_of_details.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="incep_of_details.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/incep_of_details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="232" column="52" lean-forward="false" selection-start-line="232" selection-start-column="52" selection-end-line="232" selection-end-column="52" />
+            <state relative-caret-position="558">
+              <caret line="262" column="19" lean-forward="true" selection-start-line="262" selection-start-column="19" selection-end-line="262" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="453">
+              <caret line="52" column="60" lean-forward="true" selection-start-line="52" selection-start-column="60" selection-end-line="52" selection-end-column="60" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="291">
+              <caret line="41" column="57" lean-forward="false" selection-start-line="41" selection-start-column="57" selection-end-line="41" selection-end-column="57" />
               <folding />
             </state>
           </provider>
@@ -98,7 +148,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>IncepOnlineClickVerifyView</find>
       <find>p_incept_online_click_verify</find>
       <find>incep_online_click_finish</find>
       <find>IncepOnlineClickFinishView</find>
@@ -128,6 +177,7 @@
       <find>incep_perform_tasks</find>
       <find>IncepPerformTasksView</find>
       <find>incep_of_details</find>
+      <find>select_group</find>
     </findStrings>
     <replaceStrings>
       <replace>contacts_info</replace>
@@ -165,8 +215,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/incep_offline_allsql_detail.html" />
-        <option value="$PROJECT_DIR$/.gitattributes" />
         <option value="$PROJECT_DIR$/templates/incep_offline_sql_records.html" />
         <option value="$PROJECT_DIR$/templates/incep_offline_sql_detail.html" />
         <option value="$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/kombu/transport/django/models.py" />
@@ -180,7 +228,6 @@
         <option value="$PROJECT_DIR$/AuditSQL/routing.py" />
         <option value="$PROJECT_DIR$/templates/500.html" />
         <option value="$PROJECT_DIR$/templates/403.html" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/forms.py" />
         <option value="$PROJECT_DIR$/AuditSQL/settings_bak.py" />
         <option value="$PROJECT_DIR$/logs/request.log" />
         <option value="$PROJECT_DIR$/logs/all.log" />
@@ -212,10 +259,13 @@
         <option value="$PROJECT_DIR$/templates/incep_tasks_details.html" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/permissions.py" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/urls.py" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/views.py" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/utils.py" />
         <option value="$PROJECT_DIR$/../AuditSQL.wiki/_Sidebar" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/views.py" />
+        <option value="$PROJECT_DIR$/templates/incep_of_audit.html" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/forms.py" />
+        <option value="$PROJECT_DIR$/templates/incep_of_records.html" />
       </list>
     </option>
   </component>
@@ -276,23 +326,6 @@
               <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="ProjectManager" type="462c0819:PsiDirectoryNode" />
               <item name="inception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="apps" type="462c0819:PsiDirectoryNode" />
-              <item name="UserManager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="gif" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
@@ -633,14 +666,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/http/response.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="452" column="6" lean-forward="false" selection-start-line="452" selection-start-column="6" selection-end-line="452" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/500.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -660,6 +685,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="12" column="14" lean-forward="true" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -667,6 +693,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="12" column="14" lean-forward="true" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -696,6 +723,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#49#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -745,6 +775,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -784,13 +815,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -802,6 +826,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -809,6 +834,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="408">
           <caret line="30" column="0" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -816,6 +842,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="147">
           <caret line="88" column="0" lean-forward="false" selection-start-line="88" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -824,6 +851,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
           <caret line="70" column="69" lean-forward="false" selection-start-line="70" selection-start-column="69" selection-end-line="70" selection-end-column="69" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -852,6 +880,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
           <caret line="339" column="38" lean-forward="true" selection-start-line="339" selection-start-column="38" selection-end-line="339" selection-end-column="38" />
+          <folding>
+            <marker date="1522025765469" expanded="true" signature="5208:5732" ph="select table... " />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -859,13 +890,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
           <caret line="144" column="51" lean-forward="false" selection-start-line="144" selection-start-column="51" selection-end-line="144" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_of_audit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1996">
-          <caret line="320" column="26" lean-forward="true" selection-start-line="320" selection-start-column="26" selection-end-line="320" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -873,6 +898,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-11">
           <caret line="144" column="28" lean-forward="true" selection-start-line="144" selection-start-column="28" selection-end-line="144" selection-end-column="28" />
+          <folding>
+            <element signature="e#43#54#0" expanded="false" />
+            <marker date="1521769421259" expanded="true" signature="2660:2711" ph="select schem... schemata" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -880,43 +909,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="13" column="25" lean-forward="true" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3240">
-          <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="4" selection-end-line="185" selection-end-column="12" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_ol_audit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6715">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="765" column="38" lean-forward="false" selection-start-line="765" selection-start-column="38" selection-end-line="765" selection-end-column="38" />
-          <folding>
-            <marker date="1522026944824" expanded="true" signature="10618:10985" ph="select ac.co... auditsql_contacts" />
-            <marker date="1522026944824" expanded="true" signature="23806:24199" ph="select a.id,... sqlaudit_incep_make_exec_task" />
-            <marker date="1522026944824" expanded="true" signature="24991:25371" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522026944824" expanded="true" signature="24991:25373" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522026944824" expanded="true" signature="24991:25382" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522026944824" expanded="true" signature="26243:26370" ph="select id,gr... sqlaudit_incep_make_exec_task" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -924,6 +917,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="496">
           <caret line="62" column="32" lean-forward="false" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="32" />
+          <folding>
+            <element signature="e#43#54#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -931,13 +927,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="895">
           <caret line="153" column="36" lean-forward="false" selection-start-line="153" selection-start-column="36" selection-end-line="153" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_of_records.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="67" column="38" lean-forward="false" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -945,6 +935,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="727">
           <caret line="199" column="17" lean-forward="false" selection-start-line="199" selection-start-column="17" selection-end-line="199" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -989,6 +980,14 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/templates/incep_of_details.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="558">
+          <caret line="262" column="19" lean-forward="true" selection-start-line="262" selection-start-column="19" selection-end-line="262" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="453">
@@ -997,10 +996,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_of_details.html">
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="232" column="52" lean-forward="false" selection-start-line="232" selection-start-column="52" selection-end-line="232" selection-end-column="52" />
+        <state relative-caret-position="381">
+          <caret line="198" column="15" lean-forward="true" selection-start-line="198" selection-start-column="15" selection-end-line="198" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/incep_ol_audit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="334">
+          <caret line="104" column="54" lean-forward="true" selection-start-line="104" selection-start-column="54" selection-end-line="104" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/UserManager/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="18" column="44" lean-forward="true" selection-start-line="18" selection-start-column="44" selection-end-line="18" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="41" column="57" lean-forward="false" selection-start-line="41" selection-start-column="57" selection-end-line="41" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="151">
+          <caret line="562" column="6" lean-forward="false" selection-start-line="562" selection-start-column="6" selection-end-line="562" selection-end-column="6" />
+          <folding>
+            <marker date="1522040089205" expanded="true" signature="10717:11084" ph="select ac.co... auditsql_contacts" />
+            <marker date="1522040089205" expanded="true" signature="23905:24298" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+            <marker date="1522040089205" expanded="true" signature="25090:25470" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522040089205" expanded="true" signature="25090:25472" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522040089205" expanded="true" signature="25090:25481" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522040089205" expanded="true" signature="26342:26469" ph="select id,gr... sqlaudit_incep_make_exec_task" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/incep_of_audit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2229">
+          <caret line="296" column="13" lean-forward="true" selection-start-line="296" selection-start-column="13" selection-end-line="296" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/incep_of_records.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="84" column="38" lean-forward="true" selection-start-line="84" selection-start-column="38" selection-end-line="84" selection-end-column="38" />
           <folding />
         </state>
       </provider>

@@ -17,6 +17,7 @@ class InceptionSqlCheckForm(forms.Form):
     database = forms.CharField(required=True, max_length=64)
     op_action = forms.CharField(required=True)
     op_type = forms.CharField(required=True)
+    group_id = forms.IntegerField(required=True)
     sql_content = forms.CharField(widget=forms.Textarea)
 
 class OnlineAuditCommitForm(forms.Form):
