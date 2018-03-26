@@ -71,7 +71,11 @@ def check_incep_tasks_permission(fun):
         user_role = request.user.user_role()
         if category == '1' and user_role == 'DBA':
             return fun(request, *args, **kwargs)
+        if category == '0':
+            return fun(request, *args, **kwargs)
         else:
-            raise PermissionDenied
+            # raise PermissionDenied
+            context = {'errCode': 400, 'errMsg': '权限拒绝，只要DBA可以操作'}
+            return HttpResponse(json.dumps(context))
 
     return wapper
