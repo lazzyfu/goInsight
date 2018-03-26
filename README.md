@@ -1,7 +1,7 @@
 AuditSQL介绍
 ===============
 
-AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本，欢迎大家的使用，谢谢！
+**AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本，欢迎大家的使用，谢谢！**
 
 开发组件：
 - Python 3.6
@@ -10,7 +10,12 @@ AuditSQL是基于Inception开发的一款web审核平台，旨在降低DBA的运
 - django-channels
 - AdminLTE
 
-**Wiki：https://github.com/lazzyfu/AuditSQL/wiki**
+## Wiki地址
+
+**详细的使用说明**
+
+**https://github.com/lazzyfu/AuditSQL/wiki**
+
 
 ## 功能：
 - 线上工单
