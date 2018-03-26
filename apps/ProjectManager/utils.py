@@ -28,7 +28,6 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
     """
 
     data = IncepMakeExecTask.objects.get(id=id)
-    # if exec_result is not None:
     errlevel = [x['errlevel'] for x in exec_result] if exec_result is not None else []
     if 1 in errlevel or 2 in errlevel:
         if data.exec_status == '2':
