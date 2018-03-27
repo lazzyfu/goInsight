@@ -137,7 +137,15 @@
                     }, {
                         field: 'sql_content',
                         title: 'sql语句',
-                        sortable: true
+                        sortable: true,
+                        formatter: function (value) {
+                            if (value.length >= 128) {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 128) + '&nbsp;...' + '</a>'
+                            }
+                            else {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value + '</a>'
+                            }
+                        }
                     },
                     {
                         field: 'sqlsha1',
@@ -148,7 +156,21 @@
                         field: 'exec_status',
                         title: '任务进度',
                         formatter: function (value, row, index) {
-                            return "<p class='text-red'> " + value +  "</p>"
+                            if (value === '已完成'){
+                                return "<p class='text-green'>" + value + "</p>"
+                            }
+                            else if (value === '已回滚') {
+                                return "<p class='text-blue'>" + value + "</p>"
+                            }
+                            else if (value === '处理中') {
+                                return "<p class='text-yellow'>" + value + "</p>"
+                            }
+                            else if (value === '回滚中') {
+                                return "<p class='text-yellow'>" + value + "</p>"
+                            }
+                            else if (value === '未执行') {
+                                return "<p class='text-red'>" + value + "</p>"
+                            }
                         }
                     },
                     {
