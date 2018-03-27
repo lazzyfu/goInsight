@@ -784,7 +784,7 @@ class IncepGenerateTasksView(View):
             obj = get_object_or_404(OnlineAuditContents, pk=id)
 
             # 只要leader批准后，才能执行生成执行任务
-            if obj.progress_status == '2':
+            if obj.progress_status in ('2', '3', '4', '5'):
                 host = obj.dst_host
                 database = obj.dst_database
                 sql_content = obj.contents
