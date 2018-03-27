@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.db.models import F
+from django.contrib import messages
 
 from UserManager.models import Groups, Contacts, UserAccount, GroupsDetail
 
@@ -182,8 +183,9 @@ class IncepMakeExecTask(models.Model):
     user = models.CharField(max_length=30, null=False, verbose_name=u'操作用户')
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'项目组id')
     taskid = models.CharField(null=False, max_length=128, verbose_name=u'任务号')
-    related_id = models.IntegerField(null=False,default=0, verbose_name=u'关联OnlineAuditContents的主键id')
-    category = models.CharField(null=False, max_length=2, default='0', choices=(('0', u'线下任务'), ('1', u'线上任务')), verbose_name=u'任务分类')
+    related_id = models.IntegerField(null=False, default=0, verbose_name=u'关联OnlineAuditContents的主键id')
+    category = models.CharField(null=False, max_length=2, default='0', choices=(('0', u'线下任务'), ('1', u'线上任务')),
+                                verbose_name=u'任务分类')
     dst_host = models.CharField(null=False, max_length=30, verbose_name=u'操作目标数据库主机')
     dst_database = models.CharField(null=False, max_length=80, verbose_name=u'操作目标数据库')
     sql_content = models.TextField(verbose_name=u'执行的SQL', default='')
@@ -202,3 +204,16 @@ class IncepMakeExecTask(models.Model):
 
         default_permissions = ()
         db_table = 'sqlaudit_incep_tasks'
+
+
+class DomainName(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    domain_name = models.CharField(max_length=256, default='', null=False, verbose_name=u'域名地址')
+
+    class Meta:
+        verbose_name = u'域名地址'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_domain_name'
+

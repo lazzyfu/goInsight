@@ -16,7 +16,8 @@ from django.template.loader import render_to_string
 
 from AuditSQL.settings import EMAIL_FROM
 from ProjectManager.inception.inception_api import IncepSqlCheck
-from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, IncepMakeExecTask
+from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, IncepMakeExecTask, \
+    DomainName
 from ProjectManager.utils import update_tasks_status
 from UserManager.models import ContactsDetail, UserAccount, Contacts
 
@@ -57,8 +58,10 @@ def send_commit_mail(**kwargs):
     bcc = userinfo.get_bcc_email()
 
     # 向_commit_mail.html渲染data数据
+    if DomainName.objects.filter().first():
+        domain_name = DomainName.objects.get().domain_name
     record = OnlineAuditContents.objects.annotate(group_name=F('group__group_name')).get(pk=latest_id)
-    email_html_body = render_to_string('_send_commit_mail.html', {'data': record})
+    email_html_body = render_to_string('_send_commit_mail.html', {'data': record, 'domain_name': domain_name})
 
     # 发送邮件
     msg = EmailMessage(subject=record.title,
@@ -353,5 +356,3 @@ def stop_incep_osc(user, redis_key=None, id=None):
 
     # 更新任务进度
     update_tasks_status(id=id, exec_status=exec_status)
-    # obj.exec_status = exec_status
-    # obj.save()

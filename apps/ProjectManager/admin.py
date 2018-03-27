@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 
 # Register your models here.
-from ProjectManager.models import InceptionHostConfig, Remark, InceptionHostConfigDetail
+from ProjectManager.models import InceptionHostConfig, Remark, InceptionHostConfigDetail, DomainName
 from ProjectManager.utils import check_mysql_conn
 
 
@@ -36,9 +36,24 @@ class InceptionHostConfigAdmin(admin.ModelAdmin):
 
     check_connection_status.short_description = u'测试账号到数据库的连接'
 
+
 @admin.register(Remark)
 class RemarkAdmin(admin.ModelAdmin):
     list_display = ('id', 'remark', 'created_at', 'updated_at')
+
+
+@admin.register(DomainName)
+class DomainNameAdmin(admin.ModelAdmin):
+    list_display = ('id', 'domain_name')
+
+    def save_model(self, request, obj, form, change):
+        if self.model.objects.filter().first():
+            if change:
+                super(DomainNameAdmin, self).save_model(request, obj, form, change)
+            else:
+                super(DomainNameAdmin, self).message_user(request, '新建失败，只能存在一条记录', level=messages.ERROR)
+        else:
+            super(DomainNameAdmin, self).save_model(request, obj, form, change)
 
 
 admin.site.register(InceptionHostConfig, InceptionHostConfigAdmin)
