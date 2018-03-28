@@ -239,7 +239,6 @@ INCEPTION_BACKUP_USER = 'root'
 INCEPTION_BACKUP_PASSWORD = '123.com'
 INCEPTION_BACKUP_PORT = 3306
 
-
 # 邮箱账号
 ## 修改成自己公司的邮箱账户
 ## 该账户用于实时发送审核邮件
@@ -250,82 +249,44 @@ EMAIL_HOST_PASSWORD = '123.com'
 EMAIL_USE_TLS = False
 EMAIL_FROM = 'lazzyfu@163.com'
 
-
-# 此处不要纠结，我就是随便找的记录日志的
-## 日志记录在logs/request.log
+# 日志
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}  #日志格式模式
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
     },
     'filters': {
     },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-            },
-        'default': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/all.log',     #日志输出文件
-            'maxBytes': 1024*1024*5,       #文件大小
-            'backupCount': 5,              #备份份数
-            'formatter': 'standard',        #使用哪种formatters日志格式
-        },
-        'error': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/error.log',
-            'maxBytes': 1024*1024*5,
-            'backupCount': 5,
-            'formatter': 'standard',
-            },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'standard'
+            'formatter': 'simple'
         },
-        'request_handler': {
+        'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/request.log',
-            'maxBytes': 1024*1024*5,
+            'filename': 'logs/all.log',
+            'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
-            'formatter': 'standard',
-            },
-        'scprits_handler': {    #scprits请求
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/script.log',
-            'maxBytes': 1024*1024*5,
-            'backupCount': 5,
-            'formatter': 'standard',
-            }
+            'formatter': 'verbose',
+        }
     },
     'loggers': {
         'django': {
-            'handlers': ['default',],    #使用的默认日志，和console日志
-            'level': 'DEBUG',
-            'propagate': False
+            'handlers': ['console', 'file'],
+            'propagate': True,
         },
-        'django.request': {    #request请求处理的日志处理器
-            'handlers': ['request_handler'],
+        'django.request': {
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': False,
-            },
-        'scripts': {
-            'handlers': ['scprits_handler'],
-            'level': 'INFO',
-            'propagate': False
-        },
-        'blog.views': {    #views视图日志处理器，在views里面使用
-            'handlers': ['default', 'error'],
-            'level': 'DEBUG',
-            'propagate': True
         },
     }
 }

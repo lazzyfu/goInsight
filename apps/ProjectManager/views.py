@@ -17,13 +17,13 @@ from pure_pagination import PaginationMixin
 
 from ProjectManager.forms import InceptionSqlCheckForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
 from ProjectManager.permissions import check_group_permission, check_sql_detail_permission, check_incep_tasks_permission
-from ProjectManager.utils import update_tasks_status, check_incep_alive
+from ProjectManager.utils import update_tasks_status, check_incep_alive, check_mysql_conn
 from UserManager.models import GroupsDetail, UserAccount, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlCheck, \
     sql_filter
 from utils.tools import format_request
 from .models import Remark, OnlineAuditContents, \
-    OnlineAuditContentsReply, InceptionHostConfigDetail, IncepMakeExecTask
+    OnlineAuditContentsReply, InceptionHostConfigDetail, IncepMakeExecTask, InceptionHostConfig
 from .tasks import send_commit_mail, send_verify_mail, send_reply_mail, get_osc_percent, incep_async_tasks, \
     stop_incep_osc
 
@@ -151,8 +151,14 @@ class GetDBListView(View):
     def post(self, request):
         data = format_request(request)
         host = data['host']
-        dbList = GetDatabaseListApi(host).get_dbname()
-        return HttpResponse(json.dumps(dbList))
+        obj = InceptionHostConfig.objects.get(host=host)
+        result = check_mysql_conn(obj.user, host, obj.password, obj.port)
+        if result['status'] == 'INFO':
+            db_list = GetDatabaseListApi(host).get_dbname()
+            context = {'errCode': 200, 'errMsg': db_list}
+        else:
+            context = {'errCode': 400, 'errMsg': f'获取列表失败，不能连接到mysql服务器：{host}'}
+        return HttpResponse(json.dumps(context))
 
 
 class IncepOfResultsView(View):

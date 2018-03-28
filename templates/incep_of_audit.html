@@ -194,7 +194,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    if (data.errCode == 400) {
+                    if (data.errCode === 400) {
                         displayPNotify('400', data.errMsg);
                     }
                     else {
@@ -246,12 +246,17 @@
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    var html = '';
-                    $.each(data, function (index, db) {
-                        html += "<option value=" + db + ">" + db + "</option>"
-                    });
-                    $('#select_db').append(html);
-                    $('.selectpicker').selectpicker('refresh')
+                    if (data.errCode === 200) {
+                        var html = '';
+                        $.each(data.errMsg, function (index, db) {
+                            html += "<option value=" + db + ">" + db + "</option>"
+                        });
+                        $('#select_db').append(html);
+                        $('.selectpicker').selectpicker('refresh')
+                    }
+                    else {
+                        displayPNotify(data.errCode, data.errMsg);
+                    }
                 }
             })
         }
@@ -291,7 +296,7 @@
             var csrftoken = $.cookie('csrftoken');
 
             {#判断输入的SQL内容是否存在#}
-            if (sql_content == '') {
+            if (sql_content === '') {
                 displayPNotify('400', '请输入要检测的SQL语句');
                 return false
             }
@@ -312,7 +317,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    if (result.errCode == 200) {
+                    if (result.errCode === 200) {
                         $('#td_append').empty();
                         document.getElementById('typediv1').style.visibility = "visible";
                         var html = '';
@@ -320,19 +325,19 @@
                             var SQL = content.SQL;
                             var ID = content.ID;
                             var stage = content.stage;
-                            if (content.errlevel == 0) {
+                            if (content.errlevel === 0) {
                                 var errlevel = '成功'
                             }
-                            else if (content.errlevel == 1) {
+                            else if (content.errlevel === 1) {
                                 var errlevel = '警告'
                             }
-                            else if (content.errlevel == 2) {
+                            else if (content.errlevel === 2) {
                                 var errlevel = '错误'
                             }
                             var stagestatus = content.stagestatus;
                             var errormessage = content.errormessage;
                             var Affected_rows = content.Affected_rows;
-                            var execute_time = content.execute_time
+                            var execute_time = content.execute_time;
                             html += "<tr>" +
                                 "<td>" + ID + "</td>" +
                                 "<td>" + stage + "</td>" +
@@ -346,7 +351,7 @@
                         });
                         $('#td_append').append(html);
                     }
-                    else if (result.errCode == 400) {
+                    else if (result.errCode === 400) {
                         displayPNotify(result.errCode, result.errMsg)
                     }
                     else {

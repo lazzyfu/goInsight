@@ -1,8 +1,6 @@
 from django.db import models
-
 # Create your models here.
 from django.db.models import F
-from django.contrib import messages
 
 from UserManager.models import Groups, Contacts, UserAccount, GroupsDetail
 

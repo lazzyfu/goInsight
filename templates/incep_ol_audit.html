@@ -264,6 +264,7 @@
             })
         });
 
+
         /**
          * 获取指定主机的数据库库名列表
          */
@@ -279,12 +280,17 @@
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    var html = '';
-                    $.each(data, function (index, db) {
-                        html += "<option value=" + db + ">" + db + "</option>"
-                    });
-                    $('#select_db').append(html);
-                    $('.selectpicker').selectpicker('refresh')
+                    if (data.errCode === 200) {
+                        var html = '';
+                        $.each(data.errMsg, function (index, db) {
+                            html += "<option value=" + db + ">" + db + "</option>"
+                        });
+                        $('#select_db').append(html);
+                        $('.selectpicker').selectpicker('refresh')
+                    }
+                    else {
+                        displayPNotify(data.errCode, data.errMsg);
+                    }
                 }
             })
         }
