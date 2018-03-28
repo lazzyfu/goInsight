@@ -4,6 +4,7 @@ from datetime import datetime
 
 import sqlparse
 from channels.layers import get_channel_layer
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import F, When, Value, CharField, Case, Count
@@ -313,6 +314,10 @@ class IncepOlRecordsView(PaginationMixin, ListView):
         group_name=F('group__group_name'),
         group_id=F('group__group_id'),
     )
+
+    # @method_decorator(login_required)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super(IncepOlRecordsView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         user_in_group = self.request.session['groups']

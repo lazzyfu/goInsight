@@ -22,14 +22,14 @@ def check_group_permission(fun):
         user_in_group = request.session['groups']
         group_id = request.POST.get('group_id')
 
-        if len(user_in_group) > 0:
+        if user_in_group is not None:
             if int(group_id) in request.session['groups']:
                 return fun(request, *args, **kwargs)
             else:
                 context = {'errCode': '403', 'errMsg': '权限拒绝，您不属于该项目组的成员'}
+                return HttpResponse(json.dumps(context))
         else:
             raise PermissionDenied
-        return HttpResponse(json.dumps(context))
 
     return wapper
 
