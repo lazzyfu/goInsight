@@ -890,7 +890,7 @@ class ExecDataExportView(View):
         if DataExport.objects.get(pk=id).status in ('1', '2'):
             context = {'errCode': 400, 'errMsg': '数据正在执行或已完成，请不要重复操作'}
         else:
-            make_export_file.delay(id=id)
+            make_export_file.delay(user=request.user.username, id=id)
 
             DataExport.objects.filter(pk=id).update(status='1')
 

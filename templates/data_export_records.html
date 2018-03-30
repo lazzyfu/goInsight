@@ -64,6 +64,7 @@
 {% endblock %}
 
 {% block link_javascripts %}
+    <script src="{% static 'c_websocket.js' %}"></script>
     <script>
         /**
          * 初始化bootstrap-table，生成表格
@@ -237,5 +238,13 @@
 
             setInterval(refreshTable, 5000);
         });
+
+        <!-- 创建websocket -->
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/');
+        socket.onmessage = function (message) {
+            var result = JSON.parse(message.data);
+
+            displayPNotify(result.errCode, result.errMsg);
+        }
     </script>
 {% endblock %}

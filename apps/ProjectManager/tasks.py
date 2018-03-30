@@ -4,6 +4,7 @@
 import datetime
 import difflib
 import hashlib
+import json
 import pyminizip
 import time
 from datetime import datetime
@@ -13,7 +14,9 @@ import string
 import mysql.connector as mdb
 import os
 import pymysql
+import sys
 from celery import shared_task
+from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.core.mail import EmailMessage
@@ -24,7 +27,6 @@ from openpyxl.styles import Font, Alignment
 from django.core.files import File
 
 from AuditSQL.settings import EMAIL_FROM
-from AuditSQL.settings import MEDIA_ROOT
 from ProjectManager.inception.inception_api import IncepSqlCheck
 from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, IncepMakeExecTask, \
     DomainName, InceptionHostConfig, DataExport, Files
@@ -53,7 +55,7 @@ class GetUserInfo(object):
             user_list.append(obj.verifier)
         elif 'operate_dba' in args:
             user_list.append(obj.operate_dba)
-        
+
         user_email = list(UserAccount.objects.filter(username__in=user_list).values_list('email', flat=True))
         return user_email
 
@@ -383,7 +385,7 @@ def stop_incep_osc(user, redis_key=None, id=None):
 
 
 @shared_task
-def make_export_file(id):
+def make_export_file(user, id):
     obj = DataExport.objects.get(pk=id)
     config = InceptionHostConfig.objects.get(host=obj.dst_host, is_enable=0)
 
@@ -419,57 +421,62 @@ def make_export_file(id):
             for key in cursor.fetchone():
                 c_title.append(key)
 
+        wb = Workbook()
+        wb.encoding = f'{obj.file_coding}'
+        ws = wb.active
+        font = Font(name='Courier', size=14)
+        align = Alignment(horizontal='right', vertical='center')
+
+        # 写入数据
+        ws.append(c_title)
+        for irow in c_result:
+            ws.append(irow)
+
+        # 设置表格的样式
+        for row in range(1, ws.max_row + 1):
+            for column in range(1, ws.max_column + 1):
+                ws.cell(row=row, column=column).font = font
+                ws.cell(row=row, column=column).alignment = align
+                ws.row_dimensions[row].height = 18
+                column_alias = ws.cell(row=row, column=column).column
+                ws.column_dimensions[f'{column_alias}'].width = 15
+
+        wb.save(tmp_file)
+
+        # 压缩并加密，随机生成12位长度的字符串
+        salt = ''.join(random.sample(string.ascii_letters + string.digits, 12))
+        pyminizip.compress_multiple([tmp_file], zip_file, salt, 4)
+
+        # 将文件转换为File对象，便于存储
+        with open(zip_file, 'rb') as f:
+            myfile = File(f)
+
+            # 写入信息到表中
+            Files.objects.create(
+                export_id=id,
+                file_name=obj.title + '.xlsx.gz',
+                file_size=os.path.getsize(zip_file),
+                files=myfile,
+                encryption_key=salt,
+                content_type=obj.file_format
+            )
+
+        # 删除文件，保留加密和压缩后的文件
+        os.remove(tmp_file)
+        os.remove(zip_file)
+
+        # 更新进度
+        DataExport.objects.filter(pk=id).update(status='2')
+
+        send_data_export_reply_mail.delay(latest_id=id)
+    except conn.InternalError as err:
+        pull_msg = {'errCode': 400, 'errMsg': str(err)}
+        DataExport.objects.filter(pk=id).update(status='0')
+        async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
+                                                       'text': json.dumps(pull_msg)})
+
     finally:
         conn.close()
-
-    wb = Workbook()
-    wb.encoding = f'{obj.file_coding}'
-    ws = wb.active
-    font = Font(name='Courier', size=14)
-    align = Alignment(horizontal='right', vertical='center')
-
-    # 写入数据
-    ws.append(c_title)
-    for irow in c_result:
-        ws.append(irow)
-
-    # 设置表格的样式
-    for row in range(1, ws.max_row + 1):
-        for column in range(1, ws.max_column + 1):
-            ws.cell(row=row, column=column).font = font
-            ws.cell(row=row, column=column).alignment = align
-            ws.row_dimensions[row].height = 18
-            column_alias = ws.cell(row=row, column=column).column
-            ws.column_dimensions[f'{column_alias}'].width = 15
-
-    wb.save(tmp_file)
-
-    # 压缩并加密，随机生成12位长度的字符串
-    salt = ''.join(random.sample(string.ascii_letters + string.digits, 12))
-    pyminizip.compress_multiple([tmp_file], zip_file, salt, 4)
-
-    # 将文件转换为File对象，便于存储
-    with open(zip_file, 'rb') as f:
-        myfile = File(f)
-
-        # 写入信息到表中
-        Files.objects.create(
-            export_id=id,
-            file_name=obj.title + '.xlsx.gz',
-            file_size=os.path.getsize(zip_file),
-            files=myfile,
-            encryption_key=salt,
-            content_type=obj.file_format
-        )
-
-    # 删除文件，保留加密和压缩后的文件
-    os.remove(tmp_file)
-    os.remove(zip_file)
-
-    # 更新进度
-    DataExport.objects.filter(pk=id).update(status='2')
-
-    send_data_export_reply_mail.delay(latest_id=id)
 
 
 @shared_task
