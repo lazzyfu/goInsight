@@ -21,6 +21,7 @@ from django.db.models import F
 from django.template.loader import render_to_string
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
+from django.core.files import File
 
 from AuditSQL.settings import EMAIL_FROM
 from AuditSQL.settings import MEDIA_ROOT
@@ -34,23 +35,36 @@ channel_layer = get_channel_layer()
 
 
 class GetUserInfo(object):
-    def __init__(self, latest_id):
+    def __init__(self, obj, latest_id):
+        self.obj = obj
         self.latest_id = latest_id
 
-    def get_user_email(self):
-        obj = OnlineAuditContents.objects.get(id=self.latest_id)
-        user_list = [obj.proposer, obj.verifier, obj.operate_dba]
+    def get_user_email(self, *args):
+        """
+        args
+        传入用户参数列表，可传入：proposer, verifier, operate_dba
+        返回传入用户的邮箱地址
+        """
+        obj = self.obj.objects.get(pk=self.latest_id)
+        user_list = []
+        if 'proposer' in args:
+            user_list.append(obj.proposer)
+        elif 'verifier' in args:
+            user_list.append(obj.verifier)
+        elif 'operate_dba' in args:
+            user_list.append(obj.operate_dba)
+        
         user_email = list(UserAccount.objects.filter(username__in=user_list).values_list('email', flat=True))
         return user_email
 
     def get_contact_email(self):
-        cc = list(OnlineAuditContents.objects.get(pk=self.latest_id).email_cc.split(','))
+        cc = list(self.obj.objects.get(pk=self.latest_id).email_cc.split(','))
         contact_email = list(Contacts.objects.filter(contact_id__in=cc).values_list('contact_email', flat=True))
         return contact_email
 
     # 获取项目组密送成员的邮箱
     def get_bcc_email(self):
-        group_id = OnlineAuditContents.objects.get(pk=self.latest_id).group_id
+        group_id = self.obj.objects.get(pk=self.latest_id).group_id
         bcc_email = ContactsDetail.objects.filter(group__group_id=group_id).filter(bcc='1').annotate(
             contact_email=F('contact__contact_email')
         ).values_list('contact_email', flat=True)
@@ -60,9 +74,9 @@ class GetUserInfo(object):
 @shared_task
 def send_commit_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetUserInfo(latest_id)
+    userinfo = GetUserInfo(OnlineAuditContents, latest_id)
 
-    receiver = userinfo.get_user_email()
+    receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
     cc = userinfo.get_contact_email()
     bcc = userinfo.get_bcc_email()
 
@@ -93,9 +107,9 @@ def send_commit_mail(**kwargs):
 @shared_task
 def send_verify_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetUserInfo(latest_id)
+    userinfo = GetUserInfo(OnlineAuditContents, latest_id)
 
-    receiver = userinfo.get_user_email()
+    receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
     cc = userinfo.get_contact_email()
     bcc = userinfo.get_bcc_email()
 
@@ -126,9 +140,9 @@ def send_verify_mail(**kwargs):
 def send_reply_mail(**kwargs):
     latest_id = kwargs['latest_id']
     reply_id = kwargs['reply_id']
-    userinfo = GetUserInfo(latest_id)
+    userinfo = GetUserInfo(OnlineAuditContents, latest_id)
 
-    receiver = userinfo.get_user_email()
+    receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
     cc = userinfo.get_contact_email()
     bcc = userinfo.get_bcc_email()
 
@@ -381,11 +395,8 @@ def make_export_file(id):
                            charset="utf8")
 
     # 创建目录和生成文件名
-    FMT = datetime.now().strftime("%Y%m%d")
-    if not os.path.exists(f'{MEDIA_ROOT}/files/{FMT}/'):
-        os.makedirs(f'{MEDIA_ROOT}/files/{FMT}/')
-    file = f'{MEDIA_ROOT}/files/{FMT}/{obj.title}.{obj.file_format}'
-    zip_file = file + '.zip'
+    tmp_file = f'media/tmp/{obj.title}.{obj.file_format}'
+    zip_file = tmp_file + '.zip'
 
     try:
         sql = obj.sql_contents
@@ -431,23 +442,98 @@ def make_export_file(id):
             column_alias = ws.cell(row=row, column=column).column
             ws.column_dimensions[f'{column_alias}'].width = 15
 
-    wb.save(file)
+    wb.save(tmp_file)
 
     # 压缩并加密，随机生成12位长度的字符串
     salt = ''.join(random.sample(string.ascii_letters + string.digits, 12))
-    pyminizip.compress_multiple([file], zip_file, salt, 4)
+    pyminizip.compress_multiple([tmp_file], zip_file, salt, 4)
+
+    # 将文件转换为File对象，便于存储
+    with open(zip_file, 'rb') as f:
+        myfile = File(f)
+
+        # 写入信息到表中
+        Files.objects.create(
+            export_id=id,
+            file_name=obj.title + '.xlsx.gz',
+            file_size=os.path.getsize(zip_file),
+            files=myfile,
+            encryption_key=salt,
+            content_type=obj.file_format
+        )
 
     # 删除文件，保留加密和压缩后的文件
-    os.remove(file)
+    os.remove(tmp_file)
+    os.remove(zip_file)
 
-    # 写入信息到表中
-    Files.objects.create(
-        export_id=id,
-        file_name=obj.title+'.xlsx.gz',
-        file_size=os.path.getsize(zip_file),
-        files='/media/files' + zip_file.split('media/files')[1],
-        encryption_key=salt,
-        content_type=obj.file_format
-    )
-
+    # 更新进度
     DataExport.objects.filter(pk=id).update(status='2')
+
+    send_data_export_reply_mail.delay(latest_id=id)
+
+
+@shared_task
+def send_data_export_mail(**kwargs):
+    latest_id = kwargs['latest_id']
+    userinfo = GetUserInfo(DataExport, latest_id)
+
+    receiver = userinfo.get_user_email('proposer', 'operate_dba')
+    cc = userinfo.get_contact_email()
+    bcc = userinfo.get_bcc_email()
+
+    # 向_send_data_export_mail.html渲染data数据
+    if DomainName.objects.filter().first():
+        domain_name = DomainName.objects.get().domain_name
+    record = DataExport.objects.annotate(group_name=F('group__group_name')).get(pk=latest_id)
+    email_html_body = render_to_string('_send_data_export_mail.html', {'data': record, 'domain_name': domain_name})
+
+    # 发送邮件
+    msg = EmailMessage(subject=record.title,
+                       body=email_html_body,
+                       from_email=EMAIL_FROM,
+                       to=receiver,
+                       cc=cc,
+                       bcc=bcc,
+                       )
+    msg.content_subtype = "html"
+    msg.send()
+
+
+@shared_task
+def send_data_export_reply_mail(**kwargs):
+    latest_id = kwargs['latest_id']
+    userinfo = GetUserInfo(DataExport, latest_id)
+
+    obj = DataExport.objects.get(pk=latest_id)
+    user_list = [obj.proposer, obj.operate_dba]
+    receiver = list(UserAccount.objects.filter(username__in=user_list).values_list('email', flat=True))
+    cc = userinfo.get_contact_email()
+    bcc = userinfo.get_bcc_email()
+
+    # 向mail_template.html渲染data数据
+    if DomainName.objects.filter().first():
+        domain_name = DomainName.objects.get().domain_name
+    record = Files.objects.get(export_id=latest_id)
+    title = DataExport.objects.get(pk=latest_id).title
+    email_html_body = render_to_string('_send_data_export_reply_mail.html', {
+        'data': record,
+        'domain_name': domain_name,
+        'file_size_mb': int(record.file_size / 1024 / 1024),
+    })
+
+    # 发送邮件
+    headers = {'Reply: ': receiver}
+    title = 'Re: ' + title
+    msg = EmailMessage(subject=title,
+                       body=email_html_body,
+                       from_email=EMAIL_FROM,
+                       to=receiver,
+                       cc=cc,
+                       bcc=bcc,
+                       headers=headers)
+    msg.content_subtype = "html"
+    # 如果文件的大小小于20MB，作为附件发送
+    if int(record.file_size / 1024 / 1024) <= 20:
+        if record:
+            msg.attach_file(record.files.path)
+    msg.send()

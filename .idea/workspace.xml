@@ -10,7 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/AuditSQL$tests.coverage" NAME="tests Coverage Results" MODIFIED="1522315337402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/ProjectManager" />
+    <SUITE FILE_PATH="coverage/AuditSQL$tests.coverage" NAME="tests Coverage Results" MODIFIED="1522394295522" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/ProjectManager" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -51,25 +51,22 @@
       <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="793">
-              <caret line="55" column="41" lean-forward="false" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
+            <state relative-caret-position="489">
+              <caret line="63" column="9" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="9" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
-                <marker date="1522310147285" expanded="true" signature="367:472" ph="select uid,m... xboss_account" />
-                <marker date="1522310147285" expanded="true" signature="697:802" ph="select uid,m... xboss_account" />
+                <marker date="1522394295515" expanded="true" signature="394:499" ph="select uid,m... xboss_account" />
+                <marker date="1522394295515" expanded="true" signature="741:846" ph="select uid,m... xboss_account" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="data_export_records.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="data_export_records.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/data_export_records.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="57" column="53" lean-forward="true" selection-start-line="57" selection-start-column="53" selection-end-line="57" selection-end-column="53" />
-              <folding>
-                <element signature="e#1724#1742#0#HTML" expanded="true" />
-              </folding>
+            <state relative-caret-position="2250">
+              <caret line="125" column="42" lean-forward="true" selection-start-line="125" selection-start-column="42" selection-end-line="125" selection-end-column="42" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -77,38 +74,41 @@
       <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="443">
-              <caret line="438" column="0" lean-forward="true" selection-start-line="438" selection-start-column="0" selection-end-line="438" selection-end-column="0" />
+            <state relative-caret-position="1123">
+              <caret line="537" column="46" lean-forward="true" selection-start-line="537" selection-start-column="46" selection-end-line="537" selection-end-column="46" />
               <folding>
                 <element signature="e#44#59#0" expanded="true" />
-                <marker date="1522316138009" expanded="true" signature="5612:6136" ph="select table... " />
+                <marker date="1522395351531" expanded="true" signature="6131:6655" ph="select table... " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
+      <file leaf-file-name="message.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/core/mail/message.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="712">
-              <caret line="895" column="0" lean-forward="true" selection-start-line="895" selection-start-column="0" selection-end-line="895" selection-end-column="0" />
-              <folding>
-                <marker date="1522375889312" expanded="true" signature="11220:11587" ph="select ac.co... auditsql_contacts" />
-                <marker date="1522375889312" expanded="true" signature="24408:24792" ph="select a.id,... sqlaudit_incep_make_exec_task" />
-                <marker date="1522375889312" expanded="true" signature="25584:25955" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522375889312" expanded="true" signature="25584:25957" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522375889312" expanded="true" signature="25584:25966" ph="select id,us... sqlaudit_incep_make_exec_task" />
-                <marker date="1522375889312" expanded="true" signature="26827:26945" ph="select id,gr... sqlaudit_incep_make_exec_task" />
-              </folding>
+            <state relative-caret-position="834">
+              <caret line="360" column="42" lean-forward="false" selection-start-line="360" selection-start-column="42" selection-end-line="360" selection-end-column="42" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="permissions.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/permissions.py">
+      <file leaf-file-name="_send_data_export_reply_mail.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/_send_data_export_reply_mail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="88" column="41" lean-forward="true" selection-start-line="88" selection-start-column="41" selection-end-line="88" selection-end-column="41" />
+            <state relative-caret-position="450">
+              <caret line="25" column="7" lean-forward="true" selection-start-line="25" selection-start-column="7" selection-end-line="25" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_send_data_export_mail.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/_send_data_export_mail.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="767">
+              <caret line="127" column="17" lean-forward="false" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -117,18 +117,8 @@
       <file leaf-file-name="data_export.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/data_export.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3873">
-              <caret line="405" column="22" lean-forward="true" selection-start-line="405" selection-start-column="22" selection-end-line="405" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="27" column="52" lean-forward="true" selection-start-line="27" selection-start-column="52" selection-end-line="27" selection-end-column="52" />
+            <state relative-caret-position="519">
+              <caret line="90" column="34" lean-forward="true" selection-start-line="90" selection-start-column="34" selection-end-line="90" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -137,8 +127,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="433">
-              <caret line="234" column="30" lean-forward="true" selection-start-line="234" selection-start-column="30" selection-end-line="234" selection-end-column="30" />
+            <state relative-caret-position="487">
+              <caret line="258" column="32" lean-forward="true" selection-start-line="258" selection-start-column="32" selection-end-line="258" selection-end-column="32" />
               <folding />
             </state>
           </provider>
@@ -157,13 +147,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>p_incep_ol_audit</find>
-      <find>p_incep_of_audit</find>
-      <find>op_type</find>
-      <find>tooltip</find>
-      <find>message_user</find>
-      <find>sqlaudit_inception_sql_operate_record</find>
-      <find>logg</find>
       <find>dis</find>
       <find>AnonymousUser</find>
       <find>displayname</find>
@@ -186,10 +169,16 @@
       <find>pymysql</find>
       <find>connector</find>
       <find>mdb</find>
+      <find>latest_id</find>
+      <find>title</find>
+      <find>OnlineAuditContents</find>
+      <find>`</find>
+      <find>GetUserInfo</find>
+      <find>get_user_email()</find>
+      <find>get_user_email</find>
       <find>taskid</find>
     </findStrings>
     <replaceStrings>
-      <replace>p_incep_ol_approve</replace>
       <replace>incep_ol_feedback</replace>
       <replace>IncepOlFeedbackView</replace>
       <replace>incep_ol_close</replace>
@@ -219,13 +208,12 @@
       <replace>sqlaudit_incep_tasks</replace>
       <replace>col-sm-4</replace>
       <replace>col-sm-2</replace>
+      <replace>get_user_email('proposer', 'verifier', 'operate_dba')</replace>
     </replaceStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/incep_offline_sql_check.html" />
-        <option value="$PROJECT_DIR$/templates/incep_online_sql_commit.html" />
         <option value="$PROJECT_DIR$/templates/_send_reply_mail.html" />
         <option value="$PROJECT_DIR$/templates/_send_verify_mail.html" />
         <option value="$PROJECT_DIR$/apps/UserManager/views.py" />
@@ -262,19 +250,21 @@
         <option value="$PROJECT_DIR$/apps/UserManager/admin.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/inception/inception_api.py" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/models.py" />
-        <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/tests.py" />
         <option value="$PROJECT_DIR$/templates/incep_of_details.html" />
         <option value="$PROJECT_DIR$/static/self_public.js" />
         <option value="$PROJECT_DIR$/templates/incep_of_records.html" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/urls.py" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/tasks.py" />
-        <option value="$PROJECT_DIR$/templates/data_export.html" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/apps/ProjectManager/permissions.py" />
-        <option value="$PROJECT_DIR$/apps/ProjectManager/views.py" />
+        <option value="$PROJECT_DIR$/templates/_send_data_export_mail.html" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/models.py" />
         <option value="$PROJECT_DIR$/templates/data_export_records.html" />
+        <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/tests.py" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/tasks.py" />
+        <option value="$PROJECT_DIR$/apps/ProjectManager/views.py" />
+        <option value="$PROJECT_DIR$/templates/data_export.html" />
+        <option value="$PROJECT_DIR$/templates/_send_data_export_reply_mail.html" />
       </list>
     </option>
   </component>
@@ -353,20 +343,6 @@
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="files" type="462c0819:PsiDirectoryNode" />
-              <item name="20180329" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="files" type="462c0819:PsiDirectoryNode" />
-              <item name="20180330" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -388,18 +364,18 @@
     <property name="python.debugger.dataview.coloredbydefault" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/media/gif" />
-      <recent name="$PROJECT_DIR$/media/img/2018/02" />
-      <recent name="$PROJECT_DIR$/apps/ProjectManager/inception" />
-      <recent name="$PROJECT_DIR$/apps" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/templates" />
       <recent name="$PROJECT_DIR$/media/gif" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.2/bower_components/bootstrap-table" />
       <recent name="$PROJECT_DIR$/media/img/2018/28" />
       <recent name="$PROJECT_DIR$/AuditSQL" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/media/gif" />
+      <recent name="$PROJECT_DIR$/media/img/2018/02" />
+      <recent name="$PROJECT_DIR$/apps/ProjectManager/inception" />
+      <recent name="$PROJECT_DIR$/apps" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -414,7 +390,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Django server.AuditSQL">
+  <component name="RunManager" selected="Python.tests">
     <configuration name="tests" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -661,12 +637,13 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34577113" sideWeight="0.50858366" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.49570817" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34552845" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.48272356" sideWeight="0.49570817" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34552845" sideWeight="0.4914163" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15974441" sideWeight="0.48134327" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21745351" sideWeight="0.51865673" order="2" side_tool="true" content_ui="tabs" />
@@ -678,7 +655,6 @@
       <window_info id="manage.py@AuditSQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.49427754" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.49713877" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329602" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -728,38 +704,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/contrib/messages/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#49#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/contrib/admin/options.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="457">
-          <caret line="1352" column="37" lean-forward="true" selection-start-line="1352" selection-start-column="37" selection-end-line="1352" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/_send_commit_mail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2466">
-          <caret line="137" column="10" lean-forward="false" selection-start-line="137" selection-start-column="10" selection-end-line="137" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/500.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="14" lean-forward="false" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
@@ -827,6 +771,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="546">
           <caret line="247" column="5" lean-forward="true" selection-start-line="247" selection-start-column="5" selection-end-line="247" selection-end-column="5" />
+          <folding>
+            <element signature="e#0#56#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1007,13 +954,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="160" column="18" lean-forward="false" selection-start-line="160" selection-start-column="18" selection-end-line="160" selection-end-column="18" />
           <folding />
         </state>
       </provider>
@@ -1041,30 +981,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="793">
-          <caret line="55" column="41" lean-forward="false" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-            <marker date="1522310147285" expanded="true" signature="367:472" ph="select uid,m... xboss_account" />
-            <marker date="1522310147285" expanded="true" signature="697:802" ph="select uid,m... xboss_account" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="149">
-          <caret line="27" column="52" lean-forward="true" selection-start-line="27" selection-start-column="52" selection-end-line="27" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="433">
-          <caret line="234" column="30" lean-forward="true" selection-start-line="234" selection-start-column="30" selection-end-line="234" selection-end-column="30" />
+          <caret line="27" column="52" lean-forward="false" selection-start-line="27" selection-start-column="52" selection-end-line="27" selection-end-column="52" />
           <folding />
         </state>
       </provider>
@@ -1073,14 +993,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6424">
           <caret line="421" column="0" lean-forward="true" selection-start-line="421" selection-start-column="0" selection-end-line="421" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/data_export.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3873">
-          <caret line="405" column="22" lean-forward="true" selection-start-line="405" selection-start-column="22" selection-end-line="405" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -1101,47 +1013,112 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/permissions.py">
+    <entry file="file://$PROJECT_DIR$/templates/_send_commit_mail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="88" column="41" lean-forward="true" selection-start-line="88" selection-start-column="41" selection-end-line="88" selection-end-column="41" />
+        <state relative-caret-position="347">
+          <caret line="123" column="17" lean-forward="true" selection-start-line="123" selection-start-column="17" selection-end-line="123" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
+    <entry file="file://$USER_HOME$/virtualenv_py36/lib/python3.6/site-packages/django/core/mail/message.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="712">
-          <caret line="895" column="0" lean-forward="true" selection-start-line="895" selection-start-column="0" selection-end-line="895" selection-end-column="0" />
+        <state relative-caret-position="834">
+          <caret line="360" column="42" lean-forward="false" selection-start-line="360" selection-start-column="42" selection-end-line="360" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="489">
+          <caret line="63" column="9" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="9" />
           <folding>
-            <marker date="1522375889312" expanded="true" signature="11220:11587" ph="select ac.co... auditsql_contacts" />
-            <marker date="1522375889312" expanded="true" signature="24408:24792" ph="select a.id,... sqlaudit_incep_make_exec_task" />
-            <marker date="1522375889312" expanded="true" signature="25584:25955" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522375889312" expanded="true" signature="25584:25957" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522375889312" expanded="true" signature="25584:25966" ph="select id,us... sqlaudit_incep_make_exec_task" />
-            <marker date="1522375889312" expanded="true" signature="26827:26945" ph="select id,gr... sqlaudit_incep_make_exec_task" />
+            <marker date="1522394295515" expanded="true" signature="394:499" ph="select uid,m... xboss_account" />
+            <marker date="1522394295515" expanded="true" signature="741:846" ph="select uid,m... xboss_account" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/ProjectManager/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="443">
-          <caret line="438" column="0" lean-forward="true" selection-start-line="438" selection-start-column="0" selection-end-line="438" selection-end-column="0" />
+        <state relative-caret-position="1123">
+          <caret line="537" column="46" lean-forward="true" selection-start-line="537" selection-start-column="46" selection-end-line="537" selection-end-column="46" />
           <folding>
             <element signature="e#44#59#0" expanded="true" />
-            <marker date="1522316138009" expanded="true" signature="5612:6136" ph="select table... " />
+            <marker date="1522395351531" expanded="true" signature="6131:6655" ph="select table... " />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1725">
+          <caret line="157" column="21" lean-forward="false" selection-start-line="157" selection-start-column="21" selection-end-line="157" selection-end-column="21" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/data_export_records.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="57" column="53" lean-forward="true" selection-start-line="57" selection-start-column="53" selection-end-line="57" selection-end-column="53" />
+        <state relative-caret-position="2250">
+          <caret line="125" column="42" lean-forward="true" selection-start-line="125" selection-start-column="42" selection-end-line="125" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/data_export.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="519">
+          <caret line="90" column="34" lean-forward="true" selection-start-line="90" selection-start-column="34" selection-end-line="90" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="487">
+          <caret line="258" column="32" lean-forward="true" selection-start-line="258" selection-start-column="32" selection-end-line="258" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/permissions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="88" column="41" lean-forward="false" selection-start-line="88" selection-start-column="41" selection-end-line="88" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_send_data_export_mail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="767">
+          <caret line="127" column="17" lean-forward="false" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/ProjectManager/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-627">
+          <caret line="854" column="52" lean-forward="true" selection-start-line="854" selection-start-column="52" selection-end-line="854" selection-end-column="52" />
           <folding>
-            <element signature="e#1724#1742#0#HTML" expanded="true" />
+            <marker date="1522395597176" expanded="true" signature="11243:11610" ph="select ac.co... auditsql_contacts" />
+            <marker date="1522395597176" expanded="true" signature="24431:24815" ph="select a.id,... sqlaudit_incep_make_exec_task" />
+            <marker date="1522395597176" expanded="true" signature="25607:25978" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522395597176" expanded="true" signature="25607:25980" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522395597176" expanded="true" signature="25607:25989" ph="select id,us... sqlaudit_incep_make_exec_task" />
+            <marker date="1522395597176" expanded="true" signature="26850:26968" ph="select id,gr... sqlaudit_incep_make_exec_task" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_send_data_export_reply_mail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="25" column="7" lean-forward="true" selection-start-line="25" selection-start-column="7" selection-end-line="25" selection-end-column="7" />
+          <folding />
         </state>
       </provider>
     </entry>

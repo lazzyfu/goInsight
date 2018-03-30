@@ -1,0 +1,26 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+{% if file_size_mb <= 20 %}
+    <p>您好，任务已经处理完成，请查阅附件，谢谢。</p>
+    <p>解密密码：{{ data.encryption_key }}</p>
+{% else %}
+    <p>您好，任务已经处理完成。</p>
+    <p>由于数据大于20MB， 请访问：{{ domain_name }}/projects/data_export_records 进行下载</p>
+{% endif %}
+<br>
+<p>Tips：</p>
+<b class="text-red">机密数据，请勿外传</b>
+</body>
+</html>

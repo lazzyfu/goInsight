@@ -27,7 +27,7 @@ from utils.tools import format_request
 from .models import Remark, OnlineAuditContents, \
     OnlineAuditContentsReply, InceptionHostConfigDetail, IncepMakeExecTask, InceptionHostConfig, DataExport, Files
 from .tasks import send_commit_mail, send_verify_mail, send_reply_mail, get_osc_percent, incep_async_tasks, \
-    stop_incep_osc, make_export_file
+    stop_incep_osc, make_export_file, send_data_export_mail
 
 channel_layer = get_channel_layer()
 
@@ -836,19 +836,22 @@ class DataExportView(View):
     def post(self, request):
         data = format_request(request)
 
+        title = '__'.join((data['title'],datetime.now().strftime("%Y%m%d%H%M%S")))
+
         DataExport.objects.create(
             proposer=request.user.username,
             group_id=data['group_id'],
             dst_host=data['host'],
             dst_database=data['database'],
-            title=data['title'],
+            title=title,
             file_format=data['file_format'],
             file_coding=data['file_coding'],
             operate_dba=data['operate_dba'],
             email_cc=data['email_cc_id'],
             sql_contents=data['sql_content']
         )
-
+        latest_id = DataExport.objects.latest('id').id
+        send_data_export_mail.delay(latest_id=latest_id)
         context = {'errCode': 200, 'errMsg': '提交成功'}
         return HttpResponse(json.dumps(context))
 
@@ -899,12 +902,15 @@ class DataExportDownloadView(View):
     def get(self, request):
         id = request.GET.get('id')
 
-        obj = Files.objects.get(export_id=id)
-        file_size = str(round(obj.file_size/1024, 2)) + 'KB'
-        file_name = obj.file_name
-        file_path = str(obj.files)
-        encryption_key = obj.encryption_key
+        if DataExport.objects.get(pk=id).status == '2':
+            obj = Files.objects.get(export_id=id)
+            file_size = str(round(obj.file_size / 1024, 2)) + 'KB'
+            file_name = obj.file_name
+            file_path = obj.files.url
+            encryption_key = obj.encryption_key
 
-        context = {'errCode': 200, 'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
-                   'encryption_key': encryption_key}
+            context = {'errCode': 200, 'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
+                       'encryption_key': encryption_key}
+        else:
+            context = {'errCode': 400, 'errMsg': '文件未生成，无法下载'}
         return HttpResponse(json.dumps(context))
