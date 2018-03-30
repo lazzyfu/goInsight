@@ -88,7 +88,7 @@ def check_data_export_permission(fun):
 
     def wapper(request, *args, **kwargs):
         user_role = request.user.user_role()
-        if user_role == 'DBA':
+        if user_role in ('DBA', 'Leader'):
             return fun(request, *args, **kwargs)
         else:
             context = {'errCode': 400, 'errMsg': '权限拒绝，只要DBA可以操作'}
