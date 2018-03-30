@@ -17,16 +17,17 @@ from django.views.generic import FormView, ListView
 from pure_pagination import PaginationMixin
 
 from ProjectManager.forms import InceptionSqlCheckForm, OnlineAuditCommitForm, VerifyCommitForm, ReplyContentForm
-from ProjectManager.permissions import check_group_permission, check_sql_detail_permission, check_incep_tasks_permission
+from ProjectManager.permissions import check_group_permission, check_sql_detail_permission, \
+    check_incep_tasks_permission, check_data_export_permission
 from ProjectManager.utils import update_tasks_status, check_incep_alive, check_mysql_conn
 from UserManager.models import GroupsDetail, UserAccount, Contacts
 from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, GetBackupApi, IncepSqlCheck, \
     sql_filter
 from utils.tools import format_request
 from .models import Remark, OnlineAuditContents, \
-    OnlineAuditContentsReply, InceptionHostConfigDetail, IncepMakeExecTask, InceptionHostConfig
+    OnlineAuditContentsReply, InceptionHostConfigDetail, IncepMakeExecTask, InceptionHostConfig, DataExport, Files
 from .tasks import send_commit_mail, send_verify_mail, send_reply_mail, get_osc_percent, incep_async_tasks, \
-    stop_incep_osc
+    stop_incep_osc, make_export_file
 
 channel_layer = get_channel_layer()
 
@@ -314,10 +315,6 @@ class IncepOlRecordsView(PaginationMixin, ListView):
         group_name=F('group__group_name'),
         group_id=F('group__group_id'),
     )
-
-    # @method_decorator(login_required)
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super(IncepOlRecordsView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         user_in_group = self.request.session['groups']
@@ -829,4 +826,85 @@ class IncepGenerateTasksView(View):
                 context = {'errCode': 400,
                            'errMsg': 'Leader审核未通过'}
 
+        return HttpResponse(json.dumps(context))
+
+
+class DataExportView(View):
+    def get(self, request):
+        return render(request, 'data_export.html')
+
+    def post(self, request):
+        data = format_request(request)
+
+        DataExport.objects.create(
+            proposer=request.user.username,
+            group_id=data['group_id'],
+            dst_host=data['host'],
+            dst_database=data['database'],
+            title=data['title'],
+            file_format=data['file_format'],
+            file_coding=data['file_coding'],
+            operate_dba=data['operate_dba'],
+            email_cc=data['email_cc_id'],
+            sql_contents=data['sql_content']
+        )
+
+        context = {'errCode': 200, 'errMsg': '提交成功'}
+        return HttpResponse(json.dumps(context))
+
+
+class DataExportRecordsView(View):
+    def get(self, request):
+        return render(request, 'data_export_records.html')
+
+
+class DataExportRecordsListView(View):
+    def get(self, request):
+        user_in_group = request.session['groups']
+
+        records = DataExport.objects.all().annotate(
+            exec_status=Case(
+                When(status='0', then=Value('未生成')),
+                When(status='1', then=Value('执行中')),
+                When(status='2', then=Value('已生成')),
+                output_field=CharField(),
+            ),
+            group_name=F('group__group_name'),
+        ).filter(group_id__in=user_in_group).values('id', 'exec_status', 'group_name', 'title', 'dst_host',
+                                                    'dst_database',
+                                                    'proposer', 'operate_dba', 'file_coding', 'file_format',
+                                                    'sql_contents', 'created_at').order_by('-created_at')
+        return JsonResponse(list(records), safe=False)
+
+
+class ExecDataExportView(View):
+    """生成导出文件"""
+
+    @method_decorator(check_data_export_permission)
+    def post(self, request):
+        id = request.POST.get('id')
+
+        if DataExport.objects.get(pk=id).status in ('1', '2'):
+            context = {'errCode': 400, 'errMsg': '数据正在执行或已完成，请不要重复操作'}
+        else:
+            make_export_file.delay(id=id)
+
+            DataExport.objects.filter(pk=id).update(status='1')
+
+            context = {'errCode': 200, 'errMsg': '已提交处理，请稍后'}
+        return HttpResponse(json.dumps(context))
+
+
+class DataExportDownloadView(View):
+    def get(self, request):
+        id = request.GET.get('id')
+
+        obj = Files.objects.get(export_id=id)
+        file_size = str(round(obj.file_size/1024, 2)) + 'KB'
+        file_name = obj.file_name
+        file_path = str(obj.files)
+        encryption_key = obj.encryption_key
+
+        context = {'errCode': 200, 'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
+                   'encryption_key': encryption_key}
         return HttpResponse(json.dumps(context))

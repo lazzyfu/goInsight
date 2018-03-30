@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .table > tr > td {
+            vertical-align: middle !important;
+        }
+
+        .table > tbody > tr > td {
+            padding: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 数据导出记录</h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table id="demo-table"></table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+
+    <div class="modal fade modal-wide" id="exportdataModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa fa-hand-o-right"></i> 下载文件</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box">
+                    <div class="box-body">
+                        <ul class="mailbox-attachments clearfix">
+                            <li>
+                                <span class="mailbox-attachment-icon"><i class="fa fa-file-excel-o"></i></span>
+
+                                <div class="mailbox-attachment-info">
+                                    <a href="#" style="color: red" id="s_file_name" class="mailbox-attachment-name"><i
+                                            class="fa fa-paperclip"></i></a>
+                                    <span id="s_file_size" class="mailbox-attachment-size">
+                                </span>
+                                </div>
+                            </li>
+                        </ul>
+                        <p>解密密码：</p>
+                        <p id="s_encryption_key"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        /**
+         * 初始化bootstrap-table，生成表格
+         */
+        $(function () {
+            $('#demo-table').bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_data_export_records_l' %}",
+                cache: false,
+                sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+                showColumns: true,
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                singleSelect: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                        //每页的记录行数（*）
+                pageList: [10, 20, 30],        //可供选择的每页的行数（*）
+                uniqueId: "taskid",                     //每一行的唯一标识，一般为主键列
+
+                columns: [
+                    {
+                        field: 'title',
+                        title: '文件名',
+                        sortable: true
+                    },
+                    {
+                        field: 'exec_status',
+                        title: '进度',
+                        sortable: true,
+                        formatter: function (value) {
+                            if (value === '未生成') {
+                                return "<p class='text-muted'>" + value + "</p>"
+                            }
+                            else if (value === '执行中') {
+                                return "<p class='text-red'>" + value + "</p>"
+                            }
+                            else if (value === '已生成') {
+                                return "<p class='text-green'>" + value + "</p>"
+                            }
+                        }
+                    },
+                    {
+                        field: 'group_name',
+                        title: '项目',
+                        sortable: true
+                    },
+                    {
+                        field: 'proposer',
+                        title: '申请人',
+                        sortable: true
+                    },
+                    {
+                        field: 'operate_dba',
+                        title: '操作DBA',
+                        sortable: true
+                    }, {
+                        field: 'dst_host',
+                        title: '主机',
+                        sortable: true
+                    },
+                    {
+                        field: 'dst_database',
+                        title: '数据库',
+                        sortable: true
+                    },
+                    {
+                        field: 'file_coding',
+                        title: '编码',
+                        sortable: true
+                    },
+                    {
+                        field: 'file_format',
+                        title: '格式',
+                        sortable: true
+                    },
+                    {
+                        field: 'sql_contents',
+                        title: 'SQL',
+                        sortable: true,
+                        formatter: function (value) {
+                            if (value.length >= 64) {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 64) + '&nbsp;...' + '</a>'
+                            }
+                            else {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value + '</a>'
+                            }
+                        }
+                    },
+                    {
+                        field: 'created_at',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "执行",
+                        formatter: function (value, row, index) {
+                            return '<a href="#" onclick="makeFile(' + row.id + ')"><i class="fa fa-check-square-o"></i></a> ';
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "下载",
+                        formatter: function (value, row, index) {
+                            return '<a href="#" onclick="downloadFile(' + row.id + ')"><i class="fa fa-cloud-download"></i></a> ';
+                        }
+                    }
+                ]
+            })
+        });
+
+
+        <!-- 生成文件 -->
+        function makeFile(id) {
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                type: 'post',
+                url: "{% url 'p_exec_data_export' %}",
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                success: function (result) {
+                    displayPNotify(result.errCode, result.errMsg);
+                }
+            });
+        }
+
+        <!-- 获取文件，提供下载 -->
+        function downloadFile(id) {
+            $.ajax({
+                url: "{% url 'p_data_export_download' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'id': id},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $('#s_file_name').empty();
+                    $('#s_file_size').empty();
+                    $('#s_encryption_key').empty();
+                    if (data.errCode == 200) {
+                        $('#s_file_name').append(data.file_name);
+                        $('#s_file_size').append(data.file_size);
+                        $("#s_file_name").attr("href", data.file_path);
+                        $('#s_encryption_key').append(data.encryption_key);
+                        $('#exportdataModal').modal('show');
+                    }
+                    else if (data.errCode == 400) {
+                        displayPNotify(data.errCode, data.errMsg)
+                    }
+                }
+            })
+        }
+
+        /**
+         * 每5s刷新一次表格
+         */
+
+        $(function () {
+            function refreshTable() {
+                $('#demo-table').bootstrapTable('refresh', {silent: true});
+            }
+
+            setInterval(refreshTable, 5000);
+        });
+    </script>
+{% endblock %}

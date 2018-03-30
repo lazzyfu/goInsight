@@ -111,6 +111,25 @@
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">MAIN NAVIGATION</li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-paper-plane"></i>
+                        <span>工单历史</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-list-ol"></i>审核记录</a>
+                        </li>
+                        <li><a href="{% url 'p_incep_of_records' %}"><i class="fa fa-tasks"></i>执行任务</a></li>
+                        </li>
+                        <li><a href="{% url 'p_data_export_records' %}"><i class="fa fa-tasks"></i>导出记录</a></li>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-folder-open-o"></i>
@@ -120,9 +139,8 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-list-ol"></i>工单记录</a>
-                        </li>
                         <li><a href="{% url 'p_incep_ol_audit' %}"><i class="fa fa-edit"></i>数据变更</a></li>
+                        <li><a href="{% url 'p_data_export' %}"><i class="fa fa-share-square-o"></i>数据导出</a></li>
                     </ul>
                 </li>
 
@@ -140,19 +158,7 @@
                     </ul>
                 </li>
 
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-paper-plane"></i>
-                        <span>执行任务</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_of_records' %}"><i class="fa fa-tasks"></i>任务列表</a></li>
-                        </li>
-                    </ul>
-                </li>
+
             </ul>
         </section>
         <!-- /.sidebar -->

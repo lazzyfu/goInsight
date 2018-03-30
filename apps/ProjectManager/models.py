@@ -59,7 +59,6 @@ progress_status_choices = (
     ('5', u'已关闭')
 )
 
-
 class OnlineAuditContents(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'项目组id')
@@ -215,3 +214,46 @@ class DomainName(models.Model):
         default_permissions = ()
         db_table = 'sqlaudit_domain_name'
 
+
+class DataExport(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'项目组id')
+    title = models.CharField(max_length=100, verbose_name=u'标题')
+    dst_host = models.CharField(null=False, default='', max_length=30, verbose_name=u'操作目标数据库主机')
+    dst_database = models.CharField(null=False, default='', max_length=80, verbose_name=u'操作目标数据库')
+    proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人')
+    status = models.CharField(max_length=2, default='0', choices=(('0', u'未生成'), ('1', u'执行中'), ('2', u'已生成')), verbose_name=u'生成进度')
+    operate_dba = models.CharField(max_length=30, default='', verbose_name=u'执行dba')
+    email_cc = models.CharField(max_length=1024, default='', verbose_name=u'抄送人')
+    file_coding = models.CharField(max_length=256, default='', verbose_name=u'文件编码')
+    file_format = models.CharField(max_length=256, default='', verbose_name=u'文件格式')
+    sql_contents = models.TextField(default='', verbose_name=u'提交的内容')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
+
+    class Meta:
+        verbose_name = u'数据导出'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_data_export'
+
+class Files(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    export = models.ForeignKey(DataExport, on_delete=models.CASCADE, verbose_name=u'导出id')
+    file_name = models.CharField(max_length=256, default='', verbose_name=u'文件名')
+    file_size = models.IntegerField(default=0, verbose_name=u'文件大小，单位B')
+    files = models.FileField(upload_to='files/%Y/%m/%d/')
+    encryption_key = models.CharField(max_length=128, null=False, default='', verbose_name=u'加密秘钥')
+    content_type = models.CharField(max_length=100, default='', verbose_name=u'文件的类型')
+
+    def size(self):
+        return ''.join((str(round(self.file_size / 1024 / 1024, 2)), 'MB')) if self.file_size > 1048576 else ''.join(
+            (str(round(self.file_size / 1024, 2)), 'KB'))
+
+    class Meta:
+        verbose_name = u'文件'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_files'

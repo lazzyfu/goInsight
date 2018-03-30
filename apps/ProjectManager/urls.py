@@ -11,7 +11,8 @@ from .views import BeautifySQLView, IncepHostConfigView, \
     IncepOlDetailsView, \
     IncepOlReplyView, IncepOfAuditView, IncepOlAuditView, IncepOfRecordsListView, \
     IncepPerformView, IncepOfResultsView, IncepOfRecordsView, IncepOfDetailsView, \
-    IncepRollbackView, IncepStopView, IncepGenerateTasksView, IncepOfDetailsListView
+    IncepRollbackView, IncepStopView, IncepGenerateTasksView, IncepOfDetailsListView, DataExportView, \
+    DataExportRecordsView, DataExportRecordsListView, ExecDataExportView, DataExportDownloadView
 
 urlpatterns = [
     path(r'incep_host_config/', login_required(IncepHostConfigView.as_view()),
@@ -49,4 +50,11 @@ urlpatterns = [
     path(r'incep_perform/', login_required(IncepPerformView.as_view()), name='p_incep_perform'),
     re_path(r'incep_rollback/', login_required(IncepRollbackView.as_view()), name='p_incep_rollback'),
     re_path(r'incep_stop/', login_required(IncepStopView.as_view()), name='p_incep_stop'),
+
+    # 数据导出
+    path(r'data_export/', login_required(DataExportView.as_view()), name='p_data_export'),
+    path(r'data_export_records/', login_required(DataExportRecordsView.as_view()), name='p_data_export_records'),
+    path(r'data_export_records_l/', login_required(DataExportRecordsListView.as_view()), name='p_data_export_records_l'),
+    path(r'exec_data_export/', login_required(ExecDataExportView.as_view()), name='p_exec_data_export'),
+    path(r'data_export_download/', login_required(DataExportDownloadView.as_view()), name='p_data_export_download'),
 ]

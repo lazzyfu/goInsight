@@ -12,7 +12,6 @@ admin.site.site_header = '数据库审核系统'
 # 不注册系统的Group
 admin.site.unregister(Group)
 
-
 class RolesDetailInline(admin.StackedInline):
     model = RolesDetail
     max_num = 1

@@ -77,5 +77,3 @@ function random_str(len) {
     }
     return pwd
 }
-
-

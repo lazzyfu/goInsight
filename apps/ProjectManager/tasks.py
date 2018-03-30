@@ -4,20 +4,29 @@
 import datetime
 import difflib
 import hashlib
+import pyminizip
 import time
+from datetime import datetime
+import random
+import string
 
 import mysql.connector as mdb
+import os
+import pymysql
 from celery import shared_task
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db.models import F
 from django.template.loader import render_to_string
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
 
 from AuditSQL.settings import EMAIL_FROM
+from AuditSQL.settings import MEDIA_ROOT
 from ProjectManager.inception.inception_api import IncepSqlCheck
 from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, IncepMakeExecTask, \
-    DomainName
+    DomainName, InceptionHostConfig, DataExport, Files
 from ProjectManager.utils import update_tasks_status
 from UserManager.models import ContactsDetail, UserAccount, Contacts
 
@@ -280,6 +289,7 @@ status = 0: 推送执行结果
 statu = 1: 推送执行进度
 """
 
+
 @shared_task
 def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
     obj = IncepMakeExecTask.objects.get(id=id)
@@ -356,3 +366,88 @@ def stop_incep_osc(user, redis_key=None, id=None):
 
     # 更新任务进度
     update_tasks_status(id=id, exec_status=exec_status)
+
+
+@shared_task
+def make_export_file(id):
+    obj = DataExport.objects.get(pk=id)
+    config = InceptionHostConfig.objects.get(host=obj.dst_host, is_enable=0)
+
+    conn = pymysql.connect(host=config.host,
+                           user=config.user,
+                           password=config.password,
+                           port=config.port,
+                           database=obj.dst_database,
+                           charset="utf8")
+
+    # 创建目录和生成文件名
+    FMT = datetime.now().strftime("%Y%m%d")
+    if not os.path.exists(f'{MEDIA_ROOT}/files/{FMT}/'):
+        os.makedirs(f'{MEDIA_ROOT}/files/{FMT}/')
+    file = f'{MEDIA_ROOT}/files/{FMT}/{obj.title}.{obj.file_format}'
+    zip_file = file + '.zip'
+
+    try:
+        sql = obj.sql_contents
+        # 获取内容
+        with conn.cursor() as cursor:
+            cursor.execute(sql)
+
+            c_result = []
+
+            for row in cursor.fetchall():
+                c_result.append(row)
+
+        # 获取标题
+        conn.cursorclass = pymysql.cursors.DictCursor
+        with conn.cursor() as cursor:
+            cursor.execute(sql)
+
+            c_title = []
+
+            for key in cursor.fetchone():
+                c_title.append(key)
+
+    finally:
+        conn.close()
+
+    wb = Workbook()
+    wb.encoding = f'{obj.file_coding}'
+    ws = wb.active
+    font = Font(name='Courier', size=14)
+    align = Alignment(horizontal='right', vertical='center')
+
+    # 写入数据
+    ws.append(c_title)
+    for irow in c_result:
+        ws.append(irow)
+
+    # 设置表格的样式
+    for row in range(1, ws.max_row + 1):
+        for column in range(1, ws.max_column + 1):
+            ws.cell(row=row, column=column).font = font
+            ws.cell(row=row, column=column).alignment = align
+            ws.row_dimensions[row].height = 18
+            column_alias = ws.cell(row=row, column=column).column
+            ws.column_dimensions[f'{column_alias}'].width = 15
+
+    wb.save(file)
+
+    # 压缩并加密，随机生成12位长度的字符串
+    salt = ''.join(random.sample(string.ascii_letters + string.digits, 12))
+    pyminizip.compress_multiple([file], zip_file, salt, 4)
+
+    # 删除文件，保留加密和压缩后的文件
+    os.remove(file)
+
+    # 写入信息到表中
+    Files.objects.create(
+        export_id=id,
+        file_name=obj.title+'.xlsx.gz',
+        file_size=os.path.getsize(zip_file),
+        files='/media/files' + zip_file.split('media/files')[1],
+        encryption_key=salt,
+        content_type=obj.file_format
+    )
+
+    DataExport.objects.filter(pk=id).update(status='2')
