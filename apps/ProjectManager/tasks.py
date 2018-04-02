@@ -14,7 +14,6 @@ import string
 import mysql.connector as mdb
 import os
 import pymysql
-import sys
 from celery import shared_task
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -51,9 +50,9 @@ class GetUserInfo(object):
         user_list = []
         if 'proposer' in args:
             user_list.append(obj.proposer)
-        elif 'verifier' in args:
+        if 'verifier' in args:
             user_list.append(obj.verifier)
-        elif 'operate_dba' in args:
+        if 'operate_dba' in args:
             user_list.append(obj.operate_dba)
 
         user_email = list(UserAccount.objects.filter(username__in=user_list).values_list('email', flat=True))
@@ -98,11 +97,6 @@ def send_commit_mail(**kwargs):
                        )
     msg.content_subtype = "html"
 
-    # 如果存在上传文件，作为附件发送
-    # attachments = UploadFiles.objects.filter(content_id=latest_id).filter(type='0')
-    # if attachments:
-    #     for i in attachments:
-    #         msg.attach_file(r'media/{}'.format(i.files))
     msg.send()
 
 
