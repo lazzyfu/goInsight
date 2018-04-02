@@ -3,13 +3,6 @@
 
 {% block link_css %}
     <style>
-        .table > tr > td {
-            vertical-align: middle !important;
-        }
-
-        .table > tbody > tr > td {
-            padding: 12px;
-        }
     </style>
 {% endblock %}
 
@@ -46,16 +39,19 @@
                             <li>
                                 <span class="mailbox-attachment-icon"><i class="fa fa-file-excel-o"></i></span>
 
-                                <div class="mailbox-attachment-info">
+                                <div class="mailbox-attachment-info" style="word-wrap:break-word;">
                                     <a href="#" style="color: red" id="s_file_name" class="mailbox-attachment-name"><i
                                             class="fa fa-paperclip"></i></a>
                                     <span id="s_file_size" class="mailbox-attachment-size">
                                 </span>
                                 </div>
                             </li>
+                            <li>
+                                <p>解密密码：</p>
+                                <p id="s_encryption_key"></p>
+                            </li>
                         </ul>
-                        <p>解密密码：</p>
-                        <p id="s_encryption_key"></p>
+
                     </div>
                 </div>
             </div>

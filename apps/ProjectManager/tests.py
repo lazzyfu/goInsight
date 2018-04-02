@@ -60,5 +60,3 @@ def aa(*args):
     print(args)
 
     print(type(list(args)))
-
-aa(1,2,3)
