@@ -102,7 +102,7 @@
             $('#demo-table').bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_incep_of_details_l' %}",
+                url: "{% url 'p_incep_perform_details_l' %}",
                 queryParams: function queryParams() {
                     return {'taskid': taskid};
                 },
@@ -220,7 +220,7 @@
         <!-- 获取回滚语句和执行结果日志 -->
         function getTasksResult(id) {
             $.ajax({
-                url: "{% url 'p_incep_of_results' %}",
+                url: "{% url 'p_incep_perform_records' %}",
                 type: 'GET',
                 dataType: 'json',
                 data: {'id': id},

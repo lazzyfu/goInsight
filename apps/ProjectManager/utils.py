@@ -45,6 +45,7 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
             data.exec_log = exec_result
         data.save()
 
+
 def check_incep_alive(fun):
     """检测inception进程是否运行"""
 
