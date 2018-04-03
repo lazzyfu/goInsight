@@ -156,14 +156,24 @@ class IncepSqlCheck(object):
 
         return {'status': 0, 'data': self.conn_incep(sql)}
 
-    def run_exec(self, status):
+    def run_exec(self, status, backup):
         """对SQL进行执行"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
-              f"--execute=1;--port={self.dst_port};*/" \
-              f"\ninception_magic_start;" \
-              f"\nuse {self.dst_database};" \
-              f"\n{self.sql_content}" \
-              f"\ninception_magic_commit;"
+        if backup is True:
+            """当检测的affected_row <= 10000时，执行并备份"""
+            sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+                  f"--execute=1;--port={self.dst_port};*/" \
+                  f"\ninception_magic_start;" \
+                  f"\nuse {self.dst_database};" \
+                  f"\n{self.sql_content}" \
+                  f"\ninception_magic_commit;"
+        else:
+            """当检测的affected_row > 10000时，只执行不备份"""
+            sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+                  f"--execute=1;--disable-remote-backup;--port={self.dst_port};*/" \
+                  f"\ninception_magic_start;" \
+                  f"\nuse {self.dst_database};" \
+                  f"\n{self.sql_content}" \
+                  f"\ninception_magic_commit;"
 
         exec_result = self.conn_incep(sql)
         pull_msg = {'status': status, 'data': exec_result}

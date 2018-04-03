@@ -352,13 +352,14 @@ class IncepGenerateTasksView(View):
                 # 生成执行任务记录
                 for row in result:
                     IncepMakeExecTask.objects.create(
-                        uid=self.request.user.uid,
+                        uid=request.user.uid,
                         user=obj.proposer,
                         taskid=taskid,
                         dst_host=host,
                         dst_database=database,
                         sql_content=row['SQL'],
                         sqlsha1=row['sqlsha1'],
+                        affected_rows=row['Affected_rows'],
                         type=obj.type,
                         category='1',
                         related_id=id,

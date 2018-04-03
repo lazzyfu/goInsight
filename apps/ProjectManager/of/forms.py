@@ -38,16 +38,17 @@ class IncepOfAuditForm(forms.Form):
             # 生成执行任务记录
             for row in result:
                 IncepMakeExecTask.objects.create(
-                    uid=self.request.user.uid,
-                    user=self.request.user.username,
+                    uid=request.user.uid,
+                    user=request.user.username,
                     taskid=taskid,
                     dst_host=host,
                     group_id=group_id,
                     dst_database=database,
                     sql_content=row['SQL'],
                     sqlsha1=row['sqlsha1'],
+                    affected_row=row['Affected_rows'],
                     type='DML' if op_action == 'op_data' else 'DDL',
                 )
             context = {'status': 0, 'msg': '',
-                       'jump_url': f'/projects/incep_perform_records/incep_perform_details/{taskid}'}
+                       'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
         return context

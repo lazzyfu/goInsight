@@ -17,7 +17,7 @@ urlpatterns = [
     path(r'audit_user/', login_required(AuditUserView.as_view())),
     path(r'contacts_info/', login_required(ContactsInfoView.as_view())),
     path(r'beautify_sql/', login_required(BeautifySQLView.as_view())),
-    path(r'syntax_check/', login_required(SyntaxCheckView.as_view()), name='p_syntax_check'),
+    path(r'syntax_check/', login_required(SyntaxCheckView.as_view())),
 
     # 线上工单审核
     path(r'ol/', include('ProjectManager.ol.urls')),

@@ -220,23 +220,23 @@
         <!-- 获取回滚语句和执行结果日志 -->
         function getTasksResult(id) {
             $.ajax({
-                url: "{% url 'p_incep_perform_records' %}",
+                url: "{% url 'p_incep_perform_results' %}",
                 type: 'GET',
                 dataType: 'json',
                 data: {'id': id},
                 timeout: 5000,
                 cache: false,
-                success: function (data) {
+                success: function (result) {
                     $('#select_sql').empty();
                     $('#execLog').empty();
-                    if (data.status == 200) {
-                        var log_html = renderIncepExecResult(data.exec_log);
-                        $('#select_sql').append(data.rollback_log);
+                    if (result.status === 0) {
+                        var log_html = renderIncepExecResult(result.data.exec_log);
+                        $('#select_sql').append(result.data.rollback_log);
                         $('#execLog').append(log_html);
                         $('#rollbackupModal').modal('show');
                     }
-                    else if (data.status == 400) {
-                        displayPNotify(data.status, data.msg)
+                    else {
+                        displayPNotify(result.status, result.msg)
                     }
                 }
             })

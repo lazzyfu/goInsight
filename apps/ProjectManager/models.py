@@ -192,6 +192,7 @@ class IncepMakeExecTask(models.Model):
     rollback_sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
     exec_status = models.CharField(max_length=10, default='0', choices=exec_progress, verbose_name=u'执行进度')
     sequence = models.CharField(null=False, default='', max_length=1024, verbose_name=u'备份记录id，inception生成的sequence')
+    affected_row = models.IntegerField(null=False, default=0, verbose_name=u'预计影响行数')
     backup_dbname = models.CharField(null=False, max_length=1024, default='', verbose_name=u'inception生成的备份的库名')
     exec_log = models.TextField(verbose_name=u'执行成功的记录', default='')
     make_time = models.DateTimeField(auto_now_add=True, verbose_name=u'生成时间')

@@ -295,7 +295,7 @@ def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
 
 
 @shared_task
-def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None):
+def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None, backup=False):
     obj = IncepMakeExecTask.objects.get(id=id)
     if sql is None:
         sql = obj.sql_content + ';'
@@ -306,7 +306,7 @@ def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None)
     incep_of_audit = IncepSqlCheck(sql, host, database, user)
 
     # 执行SQL
-    exec_result = incep_of_audit.run_exec(0)
+    exec_result = incep_of_audit.run_exec(0, backup)
 
     # 告诉获取进度的线程退出
     cache.set(redis_key, 'end')

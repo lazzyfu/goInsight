@@ -29,7 +29,7 @@
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal">
+            <form class="form-horizontal" id="auditCommitForm" action="{% url 'p_incep_of_audit' %}" method="post">
                 <div class="col-md-4">
                     <!-- Profile Image -->
                     <div class="box">
@@ -86,7 +86,7 @@
                                 <div class="col-sm-9">
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
                                     </button>
-                                    <button type="button" onclick="IncepSqlCheckForm('check')"
+                                    <button type="button" onclick="incepSyntaxCheckForm()"
                                             class="btn bg-info btn-sm">语法检测
                                     </button>
                                 </div>
@@ -94,8 +94,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <button type="button" onclick="IncepSqlCheckForm('make')"
-                                            class="btn bg-info btn-sm">
+                                    <button type="submit" class="btn bg-info btn-sm">
                                         生成执行任务
                                     </button>
                                 </div>
@@ -138,6 +137,7 @@
                         </div>
                     </div>
                 </div>
+                {% csrf_token %}
             </form>
         </div>
 
@@ -204,87 +204,6 @@
                 }
             })
         });
-
-
-        /**
-         * 执行inception语法检查
-         * @param op_type
-         * @return {boolean}
-         */
-
-        function IncepSqlCheckForm(op_type) {
-            var sql_content = myCodeMirror.getValue();
-            var database = $("#select_db").val();
-            var host = $("#select_env").val();
-            var op_action = $("#select_op").val();
-            var group_id = $('#select_group').val();
-            var csrftoken = $.cookie('csrftoken');
-
-            {#判断输入的SQL内容是否存在#}
-            if (sql_content === '') {
-                displayPNotify('400', '请输入要检测的SQL语句');
-                return false
-            }
-
-            $.ajax({
-                url: "{% url 'p_incep_of_audit' %}",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    'sql_content': sql_content,
-                    'database': database,
-                    'host': host,
-                    'op_type': op_type,
-                    'op_action': op_action,
-                    'group_id': group_id,
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                timeout: 5000,
-                cache: false,
-                success: function (result) {
-                    if (result.status === 200) {
-                        $('#td_append').empty();
-                        document.getElementById('typediv1').style.visibility = "visible";
-                        var html = '';
-                        $.each(result.data, function (index, content) {
-                            var SQL = content.SQL;
-                            var ID = content.ID;
-                            var stage = content.stage;
-                            if (content.errlevel === 0) {
-                                var errlevel = '成功'
-                            }
-                            else if (content.errlevel === 1) {
-                                var errlevel = '警告'
-                            }
-                            else if (content.errlevel === 2) {
-                                var errlevel = '错误'
-                            }
-                            var stagestatus = content.stagestatus;
-                            var errormessage = content.errormessage;
-                            var Affected_rows = content.Affected_rows;
-                            var execute_time = content.execute_time;
-                            html += "<tr>" +
-                                "<td>" + ID + "</td>" +
-                                "<td>" + stage + "</td>" +
-                                "<td>" + stagestatus + "</td>" +
-                                "<td>" + errlevel + "</td>" +
-                                "<td>" + errormessage + "</td>" +
-                                "<td>" + SQL + "</td>" +
-                                "<td>" + Affected_rows + "</td>" +
-                                "<td>" + execute_time + "</td>" +
-                                "</tr>";
-                        });
-                        $('#td_append').append(html);
-                    }
-                    else if (result.status === 400) {
-                        displayPNotify(result.status, result.msg)
-                    }
-                    else {
-                        window.location.href = result.jump_url
-                    }
-                }
-            })
-        }
 
 
         $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>");
