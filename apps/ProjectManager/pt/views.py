@@ -39,11 +39,11 @@ class IncepPerformView(View):
         # 每次只能执行一条任务，不可同时执行，避免数据库压力
         key = '-'.join(('django', str(request.user.uid), obj.sqlsha1))
         if '2' in status or '3' in status:
-            context = {'errCode': 400, 'errMsg': '请等待当前其他任务执行完成'}
+            context = {'status': 400, 'msg': '请等待当前其他任务执行完成'}
         else:
             # 避免任务重复点击执行
             if obj.exec_status != '0':
-                context = {'errCode': 400, 'errMsg': '请不要重复操作任务'}
+                context = {'status': 400, 'msg': '请不要重复操作任务'}
             else:
                 # 如果sqlsha1存在，使用OSC执行
                 if obj.sqlsha1:
@@ -65,7 +65,7 @@ class IncepPerformView(View):
                                           id=id,
                                           redis_key=key)
 
-                    context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+                    context = {'status': 200, 'msg': '提交处理，请查看输出'}
 
                 # 如果sqlsha1不存在，直接执行
                 else:
@@ -79,7 +79,7 @@ class IncepPerformView(View):
                                         exec_result=exec_result,
                                         exec_status=1)
 
-                    context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+                    context = {'status': 200, 'msg': '提交处理，请查看输出'}
         return HttpResponse(json.dumps(context))
 
 
@@ -97,13 +97,13 @@ class IncepStopView(View):
         key = '-'.join(('django', str(request.user.uid), obj.sqlsha1))
 
         if obj.exec_status in ('0', '1', '4'):
-            context = {'errCode': 400, 'errMsg': '请不要重复操作任务'}
+            context = {'status': 400, 'msg': '请不要重复操作任务'}
         else:
             # 关闭正在执行的任务
             stop_incep_osc.delay(user=request.user.username,
                                  redis_key=key,
                                  id=id)
-            context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+            context = {'status': 200, 'msg': '提交处理，请查看输出'}
         return HttpResponse(json.dumps(context))
 
 
@@ -121,13 +121,13 @@ class IncepRollbackView(View):
         context = {}
 
         if obj.exec_status in ('0', '3', '4'):
-            context = {'errCode': 400, 'errMsg': '请不要重复操作'}
+            context = {'status': 400, 'msg': '请不要重复操作'}
         else:
             # 获取回滚语句
             rollback_sql = GetBackupApi(
                 {'backupdbName': obj.backup_dbname, 'sequence': obj.sequence}).get_rollback_statement()
             if rollback_sql == u'无记录':
-                context = {'errCode': 400, 'errMsg': '没有找到备份记录，回滚失败'}
+                context = {'status': 400, 'msg': '没有找到备份记录，回滚失败'}
             else:
                 incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
                 result = incep_of_audit.make_sqlsha1()[1]
@@ -138,7 +138,7 @@ class IncepRollbackView(View):
                     # 更新任务状态
                     update_tasks_status(id=id, exec_result=exec_result, exec_status=4)
 
-                    context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+                    context = {'status': 200, 'msg': '提交处理，请查看输出'}
 
                 elif obj.type == 'DDL':
                     if result['sqlsha1']:
@@ -163,7 +163,7 @@ class IncepRollbackView(View):
                                               sqlsha1=result['sqlsha1'],
                                               id=id,
                                               redis_key=key)
-                        context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+                        context = {'status': 200, 'msg': '提交处理，请查看输出'}
                     else:
                         incep_of_audit = IncepSqlCheck(result['SQL'] + ';', obj.dst_host, obj.dst_database,
                                                        request.user.username)
@@ -171,7 +171,7 @@ class IncepRollbackView(View):
                         # 更新任务状态
                         update_tasks_status(id=id, exec_result=exec_result, exec_status=4)
 
-                        context = {'errCode': 200, 'errMsg': '提交处理，请查看输出'}
+                        context = {'status': 200, 'msg': '提交处理，请查看输出'}
         return HttpResponse(json.dumps(context))
 
 
@@ -231,6 +231,7 @@ class IncepOfDetailsListView(View):
         del task_details[0]
         return HttpResponse(json.dumps(task_details))
 
+
 class IncepOfResultsView(View):
     def get(self, request):
         id = request.GET.get('id')
@@ -242,8 +243,8 @@ class IncepOfResultsView(View):
             exec_log = sqlDetail.exec_log if sqlDetail.exec_log else '无记录'
 
             # 此处要将exec_log去字符串处理，否则无法转换为json
-            context = {'rollback_log': rollback_sql, 'exec_log': literal_eval(exec_log), 'errCode': 200}
+            context = {'rollback_log': rollback_sql, 'exec_log': literal_eval(exec_log), 'status': 200}
         else:
-            context = {'errCode': 400, 'errMsg': '该SQL未被执行，无法查询状态信息'}
+            context = {'status': 400, 'msg': '该SQL未被执行，无法查询状态信息'}
 
         return HttpResponse(json.dumps(context))

@@ -38,7 +38,7 @@ class DataExportView(View):
         )
         latest_id = DataExport.objects.latest('id').id
         send_data_export_mail.delay(latest_id=latest_id)
-        context = {'errCode': 200, 'errMsg': '提交成功'}
+        context = {'status': 200, 'msg': '提交成功'}
         return HttpResponse(json.dumps(context))
 
 
@@ -74,13 +74,13 @@ class ExecDataExportView(View):
         id = request.POST.get('id')
 
         if DataExport.objects.get(pk=id).status in ('1', '2'):
-            context = {'errCode': 400, 'errMsg': '数据正在执行或已完成，请不要重复操作'}
+            context = {'status': 400, 'msg': '数据正在执行或已完成，请不要重复操作'}
         else:
             make_export_file.delay(user=request.user.username, id=id)
 
             DataExport.objects.filter(pk=id).update(status='1')
 
-            context = {'errCode': 200, 'errMsg': '已提交处理，请稍后'}
+            context = {'status': 200, 'msg': '已提交处理，请稍后'}
         return HttpResponse(json.dumps(context))
 
 
@@ -95,8 +95,8 @@ class DataExportDownloadView(View):
             file_path = obj.files.url
             encryption_key = obj.encryption_key
 
-            context = {'errCode': 200, 'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
+            context = {'status': 200, 'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
                        'encryption_key': encryption_key}
         else:
-            context = {'errCode': 400, 'errMsg': '文件未生成，无法下载'}
+            context = {'status': 400, 'msg': '文件未生成，无法下载'}
         return HttpResponse(json.dumps(context))

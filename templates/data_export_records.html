@@ -191,7 +191,7 @@
                     'csrfmiddlewaretoken': csrftoken
                 },
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             });
         }
@@ -209,15 +209,15 @@
                     $('#s_file_name').empty();
                     $('#s_file_size').empty();
                     $('#s_encryption_key').empty();
-                    if (data.errCode == 200) {
+                    if (data.status == 200) {
                         $('#s_file_name').append(data.file_name);
                         $('#s_file_size').append(data.file_size);
                         $("#s_file_name").attr("href", data.file_path);
                         $('#s_encryption_key').append(data.encryption_key);
                         $('#exportdataModal').modal('show');
                     }
-                    else if (data.errCode == 400) {
-                        displayPNotify(data.errCode, data.errMsg)
+                    else if (data.status == 400) {
+                        displayPNotify(data.status, data.msg)
                     }
                 }
             })
@@ -240,7 +240,7 @@
         socket.onmessage = function (message) {
             var result = JSON.parse(message.data);
 
-            displayPNotify(result.errCode, result.errMsg);
+            displayPNotify(result.status, result.msg);
         }
     </script>
 {% endblock %}

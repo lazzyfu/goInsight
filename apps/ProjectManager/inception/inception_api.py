@@ -92,21 +92,21 @@ class GetDatabaseListApi(object):
 
 # DDL和DML过滤
 def sql_filter(sql_content, op_action):
-    DDL_FILTER = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
-    DML_FILTER = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
+    ddl_filter = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
+    dml_filter = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
 
     if op_action == 'op_schema':
-        if re.search(DML_FILTER, sql_content, re.I):
-            context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
+        if re.search(dml_filter, sql_content, re.I):
+            context = {'status': 2, 'msg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句'}
         else:
-            context = {'errMsg': '', 'errCode': 200, 'type': 'DDL'}
+            context = {'msg': '', 'status': 0, 'type': 'DDL'}
         return context
 
     elif op_action == 'op_data':
-        if re.search(DDL_FILTER, sql_content, re.I):
-            context = {'errMsg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句', 'errCode': 400}
+        if re.search(ddl_filter, sql_content, re.I):
+            context = {'status': 2, 'msg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句'}
         else:
-            context = {'errMsg': '', 'errCode': 200, 'type': 'DML'}
+            context = {'msg': '', 'status': 0, 'type': 'DML'}
         return context
 
 
@@ -147,17 +147,19 @@ class IncepSqlCheck(object):
 
     def run_check(self):
         """对SQL进行审核"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};--enable-check=1;--port={self.dst_port};*/" \
+        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+              f"--enable-check=1;--port={self.dst_port};*/" \
               f"\ninception_magic_start;" \
               f"\nuse {self.dst_database};" \
               f"\n{self.sql_content}" \
               f"\ninception_magic_commit;"
 
-        return {'errCode': 200, 'data': self.conn_incep(sql)}
+        return {'status': 0, 'data': self.conn_incep(sql)}
 
     def run_exec(self, status):
         """对SQL进行执行"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};--execute=1;--port={self.dst_port};*/" \
+        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+              f"--execute=1;--port={self.dst_port};*/" \
               f"\ninception_magic_start;" \
               f"\nuse {self.dst_database};" \
               f"\n{self.sql_content}" \
@@ -172,7 +174,8 @@ class IncepSqlCheck(object):
 
     def run_status(self, status):
         """执行inception命令"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};--execute=1;--port={self.dst_port};*/" \
+        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+              f"--execute=1;--port={self.dst_port};*/" \
               f"\n{self.sql_content}"
         exec_result = self.conn_incep(sql)
         pull_msg = {'status': status, 'data': exec_result}
@@ -186,9 +189,9 @@ class IncepSqlCheck(object):
         check_data = self.run_check()['data']
         errlevel = [x['errlevel'] for x in check_data]
         if 1 in errlevel or 2 in errlevel:
-            context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
+            context = {'status': 2, 'msg': 'SQL语法检查未通过, 请执行语法检测'}
         else:
-            context = {'data': check_data, 'errCode': 200}
+            context = {'status': 0, 'data': check_data}
 
         return context
 

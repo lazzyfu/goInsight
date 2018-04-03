@@ -141,10 +141,10 @@
                                 'csrfmiddlewaretoken': csrftoken
                             },
                             success: function (result) {
-                                displayPNotify(result.errCode, result.errMsg, refresh_page);
+                                displayPNotify(result.status, result.msg, refresh_page);
                             },
                             error: function (result) {
-                                displayPNotify(result.errCode, result.errMsg);
+                                displayPNotify(result.status, result.msg);
                             }
                         });
                     }
@@ -191,11 +191,11 @@
                     'csrfmiddlewaretoken': csrftoken
                 },
                 success: function (result) {
-                    if (result.errCode === 400) {
-                        displayPNotify(result.errCode, result.errMsg, refresh_page);
+                    if (result.status === 400) {
+                        displayPNotify(result.status, result.msg, refresh_page);
                     }
                     else {
-                        window.location.href = result.dst_url
+                        window.location.href = result.jump_url
                     }
                 }
             });

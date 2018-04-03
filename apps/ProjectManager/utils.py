@@ -5,6 +5,7 @@ from django.http import HttpResponse
 import socket
 import json
 from AuditSQL import settings
+from ProjectManager.inception.inception_api import sql_filter, IncepSqlCheck
 
 from ProjectManager.models import IncepMakeExecTask
 
@@ -59,7 +60,23 @@ def check_incep_alive(fun):
         if 0 == result:
             return fun(request, *args, **kwargs)
         else:
-            context = {'errCode': 400, 'errMsg': 'Inception服务无法抵达，请联系管理员'}
+            context = {'status': 2, 'msg': 'Inception服务无法抵达，请联系管理员'}
             return HttpResponse(json.dumps(context))
+
+    return wapper
+
+
+def check_sql_filter(fun):
+    """检查SQL类型，DML还是DDL操作"""
+    def wapper(request, *args, **kwargs):
+        sql = request.POST.get('sql_content')
+        op_action = request.POST.get('op_action')
+
+        filter_result = sql_filter(sql, op_action)
+        if filter_result.get('status') == 2:
+            context = filter_result
+            return HttpResponse(json.dumps(context))
+        else:
+            return fun(request, *args, **kwargs)
 
     return wapper

@@ -2,7 +2,7 @@
 # edit by fuzongfei
 
 from django.contrib.auth.decorators import login_required
-from django.urls import path, re_path, include
+from django.urls import path, re_path
 
 from ProjectManager.ol.views import IncepOlAuditView, IncepOlRecordsView, IncepOlDetailsView, IncepOlApproveView, \
     IncepOlFeedbackView, IncepOlCloseView, IncepOlReplyView, IncepGenerateTasksView

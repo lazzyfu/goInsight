@@ -6,9 +6,10 @@ from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
+from ProjectManager.forms import SyntaxCheckForm
 from ProjectManager.utils import check_mysql_conn
 from UserManager.models import GroupsDetail, UserAccount, Contacts
-from apps.ProjectManager.inception.inception_api import GetDatabaseListApi
+from apps.ProjectManager.inception.inception_api import GetDatabaseListApi, sql_filter, IncepSqlCheck
 from utils.tools import format_request
 from .models import Remark, InceptionHostConfigDetail, InceptionHostConfig
 
@@ -49,8 +50,8 @@ class BeautifySQLView(View):
                     beautify_sql_list.append(comment + sql_format)
             context = {'data': '\n\n'.join(beautify_sql_list)}
         except Exception as err:
+            context = {'status': 2, 'msg': "注释不合法, 请检查"}
             raise OSError(err)
-            context = {'errCode': 400, 'errMsg': "注释不合法, 请检查"}
 
         return HttpResponse(json.dumps(context))
 
@@ -59,8 +60,9 @@ class IncepHostConfigView(View):
     """获取指定的数据库配置"""
 
     def get(self, request):
-        config_type = request.GET.get('type')
-        user_in_group = self.request.session.get('groups')
+        data = format_request(request)
+        config_type = data.get('type')
+        user_in_group = request.session.get('groups')
         result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
                                                             comment=F('config__comment')).filter(
             config__type=config_type).filter(group__group_id__in=user_in_group).values('host', 'comment')
@@ -77,9 +79,9 @@ class GetDBListView(View):
         result = check_mysql_conn(obj.user, host, obj.password, obj.port)
         if result['status'] == 'INFO':
             db_list = GetDatabaseListApi(host).get_dbname()
-            context = {'errCode': 200, 'errMsg': db_list}
+            context = {'status': 0, 'msg': '', 'data': db_list}
         else:
-            context = {'errCode': 400, 'errMsg': f'获取列表失败，不能连接到mysql服务器：{host}'}
+            context = {'status': 2, 'msg': f'获取列表失败，不能连接到mysql服务器：{host}'}
         return HttpResponse(json.dumps(context))
 
 
@@ -140,3 +142,32 @@ class ContactsInfoView(View):
                 result.append(row.contact_info)
 
         return JsonResponse(result, safe=False)
+
+
+class SyntaxCheckView(View):
+    def post(self, request):
+        form = SyntaxCheckForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            host = cleaned_data['host']
+            database = cleaned_data['database']
+            op_action = cleaned_data.get('op_action')
+            sql_content = cleaned_data['sql_content']
+
+            # 对检测的SQL类型进行区分
+            filter_result = sql_filter(sql_content, op_action)
+
+            # 实例化
+            incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
+
+            if filter_result['status'] == 2:
+                context = filter_result
+            else:
+                # SQL语法检查
+                context = incep_of_audit.run_check()
+
+            return HttpResponse(json.dumps(context))
+        else:
+            error = "请选择主机、库名和项目组"
+            context = {'status': 2, 'msg': error}
+            return HttpResponse(json.dumps(context))

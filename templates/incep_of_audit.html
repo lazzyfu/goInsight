@@ -181,34 +181,8 @@
         });
 
         /**
-         * 美化SQL
-         */
-        function beautifySQL() {
-            var sql_content = myCodeMirror.getValue();
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_beautify_sql' %}',
-                type: 'POST',
-                dataType: 'json',
-                data: {'sql_content': sql_content, 'csrfmiddlewaretoken': csrftoken},
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    if (data.errCode === 400) {
-                        displayPNotify('400', data.errMsg);
-                    }
-                    else {
-                        $.each(data, function (index, sql) {
-                            myCodeMirror.setValue(sql);
-                        })
-                    }
-                }
-            })
-        }
-
-        /**
          * 获取线下环境主机信息
-         * type=1
+         * type=0
          */
         $(function () {
             $.ajax({
@@ -231,55 +205,6 @@
             })
         });
 
-        /**
-         * 获取指定主机的数据库库名列表
-         */
-        function getDatabaseList() {
-            $("#select_db").empty();
-            var host = $("#select_env").val();
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_db_list' %}',
-                type: 'POST',
-                dataType: 'json',
-                data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    if (data.errCode === 200) {
-                        var html = '';
-                        $.each(data.errMsg, function (index, db) {
-                            html += "<option value=" + db + ">" + db + "</option>"
-                        });
-                        $('#select_db').append(html);
-                        $('.selectpicker').selectpicker('refresh')
-                    }
-                    else {
-                        displayPNotify(data.errCode, data.errMsg);
-                    }
-                }
-            })
-        }
-
-        /**
-         * 获取当前用户所属的项目组
-         */
-        $(function () {
-            $.ajax({
-                url: '{% url 'p_group_info' %}',
-                type: 'GET',
-                dataType: 'json',
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    $.each(data, function (index, data) {
-                        $("#select_group").append(  //此处向select中循环绑定数据
-                            "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
-                    });
-                    $('.selectpicker').selectpicker('refresh');
-                }
-            })
-        });
 
         /**
          * 执行inception语法检查
@@ -317,7 +242,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    if (result.errCode === 200) {
+                    if (result.status === 200) {
                         $('#td_append').empty();
                         document.getElementById('typediv1').style.visibility = "visible";
                         var html = '';
@@ -351,11 +276,11 @@
                         });
                         $('#td_append').append(html);
                     }
-                    else if (result.errCode === 400) {
-                        displayPNotify(result.errCode, result.errMsg)
+                    else if (result.status === 400) {
+                        displayPNotify(result.status, result.msg)
                     }
                     else {
-                        window.location.href = result.dst_url
+                        window.location.href = result.jump_url
                     }
                 }
             })

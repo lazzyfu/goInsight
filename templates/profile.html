@@ -96,7 +96,7 @@
                     clearForm: true,
                     dataType: 'json',
                     success: function (result) {
-                        displayPNotify(result.errCode, result.errMsg, refresh_page);
+                        displayPNotify(result.status, result.msg, refresh_page);
                     }
                 });
                 return false;

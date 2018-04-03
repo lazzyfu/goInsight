@@ -229,14 +229,14 @@
                 success: function (data) {
                     $('#select_sql').empty();
                     $('#execLog').empty();
-                    if (data.errCode == 200) {
+                    if (data.status == 200) {
                         var log_html = renderIncepExecResult(data.exec_log);
                         $('#select_sql').append(data.rollback_log);
                         $('#execLog').append(log_html);
                         $('#rollbackupModal').modal('show');
                     }
-                    else if (data.errCode == 400) {
-                        displayPNotify(data.errCode, data.errMsg)
+                    else if (data.status == 400) {
+                        displayPNotify(data.status, data.msg)
                     }
                 }
             })
@@ -257,7 +257,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             })
         }
@@ -277,7 +277,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             })
         }
@@ -297,7 +297,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             })
         }
