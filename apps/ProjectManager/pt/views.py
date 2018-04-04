@@ -160,8 +160,8 @@ class IncepPerformView(View):
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
 
                 else:
-                    # 当affected_row>10000时，只执行不备份
-                    if obj.affected_row > 10000:
+                    # 当affected_row>1000时，只执行不备份
+                    if obj.affected_row > 1000:
                         incep_async_tasks.delay(user=request.user.username,
                                                 id=id, exec_status=1)
                     else:
