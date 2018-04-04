@@ -217,7 +217,7 @@ class IncepRollbackView(View):
             # 获取回滚语句
             rollback_sql = GetBackupApi(
                 {'backupdbName': obj.backup_dbname, 'sequence': obj.sequence}).get_rollback_statement()
-            if rollback_sql is False:
+            if rollback_sql is None:
                 context = {'status': 2, 'msg': '没有找到备份记录，回滚失败'}
             else:
                 incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)

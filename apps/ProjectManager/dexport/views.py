@@ -3,7 +3,7 @@
 import json
 from datetime import datetime
 
-from django.db.models import Case, When, Value, CharField
+from django.db.models import Case, When, Value, CharField, F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -38,7 +38,7 @@ class DataExportView(View):
         )
         latest_id = DataExport.objects.latest('id').id
         send_data_export_mail.delay(latest_id=latest_id)
-        context = {'status': 200, 'msg': '提交成功'}
+        context = {'status': 0, 'msg': ''}
         return HttpResponse(json.dumps(context))
 
 
@@ -74,13 +74,13 @@ class ExecDataExportView(View):
         id = request.POST.get('id')
 
         if DataExport.objects.get(pk=id).status in ('1', '2'):
-            context = {'status': 400, 'msg': '数据正在执行或已完成，请不要重复操作'}
+            context = {'status': 2, 'msg': '数据正在执行或已完成，请不要重复操作'}
         else:
             make_export_file.delay(user=request.user.username, id=id)
 
             DataExport.objects.filter(pk=id).update(status='1')
 
-            context = {'status': 200, 'msg': '已提交处理，请稍后'}
+            context = {'status': 0, 'msg': '已提交处理，请稍后'}
         return HttpResponse(json.dumps(context))
 
 
@@ -95,8 +95,9 @@ class DataExportDownloadView(View):
             file_path = obj.files.url
             encryption_key = obj.encryption_key
 
-            context = {'status': 200, 'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
-                       'encryption_key': encryption_key}
+            context = {'status': 0, 'msg': '',
+                       'data': {'file_size': file_size, 'file_path': file_path, 'file_name': file_name,
+                                'encryption_key': encryption_key}}
         else:
-            context = {'status': 400, 'msg': '文件未生成，无法下载'}
+            context = {'status': 2, 'msg': '文件未生成，无法下载'}
         return HttpResponse(json.dumps(context))

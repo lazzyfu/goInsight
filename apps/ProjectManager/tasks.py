@@ -428,7 +428,7 @@ def make_export_file(user, id):
 
         send_data_export_reply_mail.delay(latest_id=id)
     except conn.InternalError as err:
-        pull_msg = {'status': 400, 'msg': str(err)}
+        pull_msg = {'status': 2, 'msg': str(err)}
         DataExport.objects.filter(pk=id).update(status='0')
         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
                                                        'text': json.dumps(pull_msg)})

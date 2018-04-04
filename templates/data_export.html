@@ -227,27 +227,23 @@
          * 生成工单
          */
 
-        var export_records_main = function () {
-            window.parent.location.href = "/projects/data_export_records"
-        };
-
         <!-- 有效性验证 -->
         $('#auditCommitForm').validator().on('submit', function (e) {
             var sql_content = myCodeMirror.getValue();
             if (sql_content.length < 10) {
-                displayPNotify('400', '审核内容不能为空或小于10个字符');
+                displayPNotify(2, '审核内容不能为空或小于10个字符');
                 return false;
             }
             if (e.isDefaultPrevented()) {
                 // 验证不通过
-                displayPNotify('400', '表单无效，请完成填写');
+                displayPNotify(2, '表单无效，请完成填写');
             } else {
                 // 验证通过
                 $('#auditCommitForm').ajaxSubmit({
                     data: {'sql_content': sql_content},
                     dataType: 'json',
-                    success: function (result) {
-                        displayPNotify(result.status, result.msg, export_records_main);
+                    success: function () {
+                        window.parent.location.href = "/projects/de/data_export_records"
                     }
                 });
                 return false;

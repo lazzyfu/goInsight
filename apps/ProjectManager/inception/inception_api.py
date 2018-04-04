@@ -41,23 +41,28 @@ class GetBackupApi(object):
                 table_query = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ " \
                               f"where opid_time={self.sequence}"
                 cur.execute(table_query)
-                for row in cur.fetchall():
-                    if row:
-                        dst_table = row[0]
+                if cur.fetchall().count(1) == 0:
+                    for row in cur.fetchall():
+                        print(row)
+                        print('..fasfs')
+                        if row:
+                            dst_table = row[0]
 
-                        rollback_statement_query = f"select rollback_statement from {self.backupdbName}.{dst_table} " \
-                                                   f"where opid_time={self.sequence}"
-                        cur.execute(rollback_statement_query)
+                            rollback_statement_query = f"select rollback_statement from {self.backupdbName}.{dst_table} " \
+                                                       f"where opid_time={self.sequence}"
+                            cur.execute(rollback_statement_query)
 
-                        for i in cur.fetchall():
-                            rollback_statement.append(i[0])
+                            for i in cur.fetchall():
+                                rollback_statement.append(i[0])
 
-                        if rollback_statement:
-                            return '\n'.join(rollback_statement)
+                            if rollback_statement:
+                                return '\n'.join(rollback_statement)
+                            else:
+                                return False
                         else:
                             return False
-                    else:
-                        return False
+                else:
+                    return False
             except conn.ProgrammingError as err:
                 logger.warning(err)
                 return False

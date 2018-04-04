@@ -114,7 +114,7 @@ class IncepOlApproveView(FormView):
         context = {}
         # 当记录关闭时
         if data.progress_status == '5':
-            context = {'status': '400', 'msg': '该记录已被关闭、请不要重复提交'}
+            context = {status: 2, 'msg': '该记录已被关闭、请不要重复提交'}
         # 当记录未关闭时
         else:
             # 角色为Leader的用户可以审批
@@ -127,7 +127,7 @@ class IncepOlApproveView(FormView):
                             data.fact_verifier = self.request.user.username
                             data.verifier_time = timezone.now()
                             data.save()
-                            context = {'status': '200', 'msg': '操作成功、审核通过'}
+                            context = {status: 0, 'msg': '操作成功、审核通过'}
                             send_verify_mail.delay(latest_id=id,
                                                    username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
@@ -138,21 +138,21 @@ class IncepOlApproveView(FormView):
                             data.fact_verifier = self.request.user.username
                             data.verifier_time = timezone.now()
                             data.save()
-                            context = {'status': '200', 'msg': '操作成功、审核未通过'}
+                            context = {status: 0, 'msg': '操作成功、审核未通过'}
                             send_verify_mail.delay(latest_id=id,
                                                    username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                 # 其他情况
                 else:
-                    context = {'status': '400', 'msg': '操作失败、请不要重复提交'}
+                    context = {status: 2, 'msg': '操作失败、请不要重复提交'}
             else:
-                context = {'status': '403', 'msg': '权限拒绝, 您没有权限操作'}
+                context = {status: 1, 'msg': '权限拒绝, 您没有权限操作'}
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
         error = form.errors.as_text()
-        context = {'status': '400', 'msg': error}
+        context = {status: 2, 'msg': error}
 
         return HttpResponse(json.dumps(context))
 
@@ -174,7 +174,7 @@ class IncepOlFeedbackView(FormView):
         context = {}
         # 当记录关闭时
         if data.progress_status == '5':
-            context = {'status': '400', 'msg': '该记录已被关闭、请不要重复提交'}
+            context = {status: 2, 'msg': '该记录已被关闭、请不要重复提交'}
         # 当记录未关闭时
         else:
             # 角色为DBA的才能进行操作
@@ -186,7 +186,7 @@ class IncepOlFeedbackView(FormView):
                         if status == u'处理中':
                             data.progress_status = '3'
                             data.save()
-                            context = {'status': '200', 'msg': '操作成功、正在处理中'}
+                            context = {status: 0, 'msg': '操作成功、正在处理中'}
                             send_verify_mail.delay(latest_id=id,
                                                    username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
@@ -197,24 +197,24 @@ class IncepOlFeedbackView(FormView):
                             data.fact_operate_dba = self.request.user.username
                             data.operate_time = timezone.now()
                             data.save()
-                            context = {'status': '200', 'msg': '操作成功、处理完成'}
+                            context = {status: 0, 'msg': '操作成功、处理完成'}
                             send_verify_mail.delay(latest_id=id,
                                                    username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                 # 未批准
                 elif data.progress_status == '1' or data.progress_status == '0':
-                    context = {'status': '400', 'msg': '操作失败、审核未通过'}
+                    context = {status: 2, 'msg': '操作失败、审核未通过'}
                 # 其他情况
                 else:
-                    context = {'status': '400', 'msg': '操作失败、请不要重复提交'}
+                    context = {status: 2, 'msg': '操作失败、请不要重复提交'}
             else:
-                context = {'status': '403', 'msg': '权限拒绝、只有DBA角色可以操作'}
+                context = {status: 1, 'msg': '权限拒绝、只有DBA角色可以操作'}
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
         error = form.errors.as_text()
-        context = {'status': '400', 'msg': error}
+        context = {status: 2, 'msg': error}
 
         return HttpResponse(json.dumps(context))
 
@@ -236,14 +236,14 @@ class IncepOlCloseView(FormView):
         context = {}
         # 当记录关闭时
         if data.progress_status == '5':
-            context = {'status': '400', 'msg': '该记录已被关闭、请不要重复提交'}
+            context = {status: 2, 'msg': '该记录已被关闭、请不要重复提交'}
         # 当记录未关闭时
         else:
             if len(addition_info) >= 5:
                 # 当进度为：处理中或已完成时
                 if status == u'提交':
                     if data.progress_status == '3' or data.progress_status == '4':
-                        context = {'status': '400', 'msg': '操作失败、数据正在处理中或已完成'}
+                        context = {status: 2, 'msg': '操作失败、数据正在处理中或已完成'}
                     else:
                         with transaction.atomic():
                             data.progress_status = '5'
@@ -251,21 +251,21 @@ class IncepOlCloseView(FormView):
                             data.close_reason = addition_info
                             data.close_time = timezone.now()
                             data.save()
-                            context = {'status': '200', 'msg': '操作成功、记录关闭成功'}
+                            context = {status: 0, 'msg': '操作成功、记录关闭成功'}
                             send_verify_mail.delay(latest_id=id,
                                                    username=self.request.user.username,
                                                    user_role=self.request.user.user_role(),
                                                    addition_info=addition_info)
                 elif status == u'结束':
-                    context = {'status': '400', 'msg': '操作失败、关闭窗口'}
+                    context = {status: 2, 'msg': '操作失败、关闭窗口'}
             else:
-                context = {'status': '400', 'msg': '操作失败、<关闭原因>不能少于5个字符'}
+                context = {status: 2, 'msg': '操作失败、<关闭原因>不能少于5个字符'}
 
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
         error = form.errors.as_text()
-        context = {'status': '400', 'msg': error}
+        context = {status: 2, 'msg': error}
 
         return HttpResponse(json.dumps(context))
 
@@ -309,7 +309,7 @@ class IncepOlReplyView(FormView):
             reply_id=reply_id,
             user_id=self.request.user.uid,
             reply_contents=reply_contents)
-        context = {'status': '200', 'msg': '回复成功'}
+        context = {status: 0, 'msg': '回复成功'}
         latest_id = OnlineAuditContentsReply.objects.latest('id').id
         send_reply_mail.delay(latest_id=latest_id,
                               reply_id=reply_id,
@@ -319,7 +319,7 @@ class IncepOlReplyView(FormView):
 
     def form_invalid(self, form):
         error = form.errors.as_text()
-        context = {'status': '400', 'msg': error}
+        context = {status: 2, 'msg': error}
 
         return HttpResponse(json.dumps(context))
 
@@ -331,7 +331,7 @@ class IncepGenerateTasksView(View):
 
         if IncepMakeExecTask.objects.filter(related_id=id).first():
             taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
-            context = {'status': 201,
+            context = {status: 0,
                        'jump_url': f'/projects/incep_perform_records/incep_perform_details/{taskid}'}
         else:
             obj = get_object_or_404(OnlineAuditContents, pk=id)
@@ -366,10 +366,10 @@ class IncepGenerateTasksView(View):
                         group_id=obj.group_id
                     )
 
-                context = {'status': 201,
+                context = {status: 0,
                            'jump_url': f'/projects/incep_perform_records/incep_perform_details/{taskid}'}
             else:
-                context = {'status': 400,
+                context = {'status': 2,
                            'msg': 'Leader审核未通过'}
 
         return HttpResponse(json.dumps(context))

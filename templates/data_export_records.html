@@ -205,19 +205,19 @@
                 data: {'id': id},
                 timeout: 5000,
                 cache: false,
-                success: function (data) {
+                success: function (result) {
                     $('#s_file_name').empty();
                     $('#s_file_size').empty();
                     $('#s_encryption_key').empty();
-                    if (data.status == 200) {
-                        $('#s_file_name').append(data.file_name);
-                        $('#s_file_size').append(data.file_size);
-                        $("#s_file_name").attr("href", data.file_path);
-                        $('#s_encryption_key').append(data.encryption_key);
+                    if (result.status === 0) {
+                        $('#s_file_name').append(result.data.file_name);
+                        $('#s_file_size').append(result.data.file_size);
+                        $("#s_file_name").attr("href", result.data.file_path);
+                        $('#s_encryption_key').append(result.data.encryption_key);
                         $('#exportdataModal').modal('show');
                     }
-                    else if (data.status == 400) {
-                        displayPNotify(data.status, data.msg)
+                    else if (data.status === 2) {
+                        displayPNotify(result.data.status, result.data.msg)
                     }
                 }
             })
