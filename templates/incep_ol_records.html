@@ -28,7 +28,8 @@
                 queryParams: function (params) {
                     return {
                         limit_size: params.limit + params.offset,
-                        offset_size: params.offset
+                        offset_size: params.offset,
+                        search_content: params.search
                     }
                 },
                 sidePagination: "server",

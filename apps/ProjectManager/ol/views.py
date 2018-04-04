@@ -55,8 +55,9 @@ class IncepOlRecordsListView(View):
         data = format_request(request)
         limit_size = int(data.get('limit_size'))
         offset_size = int(data.get('offset_size'))
+        search_content = data.get('search_content')
         user_in_group = request.session['groups']
-        obj = OnlineAuditContents.objects.all().annotate(
+        query = OnlineAuditContents.objects.all().annotate(
             progress_value=Case(
                 When(progress_status='0', then=Value('待批准')),
                 When(progress_status='1', then=Value('未批准')),
@@ -77,6 +78,10 @@ class IncepOlRecordsListView(View):
             group_name=F('group__group_name'),
             group_id=F('group__group_id'),
         )
+        if search_content:
+            obj = query.filter(contents__icontains=search_content)
+        else:
+            obj = query
 
         ol_total = obj.filter(group_id__in=user_in_group).count()
 
