@@ -216,8 +216,8 @@
                         $('#s_encryption_key').append(result.data.encryption_key);
                         $('#exportdataModal').modal('show');
                     }
-                    else if (data.status === 2) {
-                        displayPNotify(result.data.status, result.data.msg)
+                    else if (result.status === 2) {
+                        displayPNotify(result.status, result.msg)
                     }
                 }
             })

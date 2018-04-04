@@ -79,16 +79,16 @@ class ChangePasswordView(View):
                     if old_password != new_password:
                         user.password = make_password(new_password)
                         user.save()
-                        context = {status: 0, 'msg': '密码修改成功'}
+                        context = {'status': 0, 'msg': '密码修改成功'}
                     else:
-                        context = {status: 2, 'msg': '新密码等于旧密码，请重新输入'}
+                        context = {'status': 2, 'msg': '新密码等于旧密码，请重新输入'}
                 else:
-                    context = {status: 2, 'msg': '旧密码错误，请重新输入'}
+                    context = {'status': 2, 'msg': '旧密码错误，请重新输入'}
             else:
-                context = {status: 2, 'msg': '密码不匹配，请重新输入'}
+                context = {'status': 2, 'msg': '密码不匹配，请重新输入'}
         else:
             error = form.errors.as_text()
-            context = {status: 2, 'msg': error}
+            context = {'status': 2, 'msg': error}
         return HttpResponse(json.dumps(context))
 
 
