@@ -1,14 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block link_css %}
-    <style>
-        .table {
-            vertical-align: middle !important;
-        }
-    </style>
-{% endblock %}
-
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
@@ -30,9 +22,16 @@
             $('#demo-table').bootstrapTable({
                 method: 'get',
                 dataType: 'json',
+                contentType: "application/x-www-form-urlencoded",
                 url: "{% url 'p_incep_ol_records_l' %}",
                 cache: false,
-                sidePagination: "client",
+                queryParams: function (params) {
+                    return {
+                        limit_size: params.limit + params.offset,
+                        offset_size: params.offset
+                    }
+                },
+                sidePagination: "server",
                 showColumns: true,
                 pagination: true,
                 search: true,
@@ -41,14 +40,10 @@
                 minimumCountColumns: 2,
                 pageNumber: 1,
                 pageSize: 10,
-                pageList: [10, 20, 30],
+                locale: 'zh-CN',
+                pageList: [10, 20],
                 uniqueId: "id",
                 classes: 'table table-hover table-no-bordered',
-                rowStyle: function rowStyle(row, index) {
-                    return {
-                        css: {"white-space": "nowrap"}
-                    };
-                },
 
                 columns: [
                     {

@@ -35,6 +35,12 @@
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
 
+    <style>
+        .table > tbody > tr > td {
+            vertical-align: middle !important;
+        }
+    </style>
+
     <!-- 定义 css block -->
     {% block link_css %}
     {% endblock %}

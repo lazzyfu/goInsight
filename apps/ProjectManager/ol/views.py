@@ -52,6 +52,9 @@ class IncepOlRecordsView(View):
 
 class IncepOlRecordsListView(View):
     def get(self, request):
+        data = format_request(request)
+        limit_size = int(data.get('limit_size'))
+        offset_size = int(data.get('offset_size'))
         user_in_group = request.session['groups']
         obj = OnlineAuditContents.objects.all().annotate(
             progress_value=Case(
@@ -75,64 +78,14 @@ class IncepOlRecordsListView(View):
             group_id=F('group__group_id'),
         )
 
+        ol_total = obj.filter(group_id__in=user_in_group).count()
+
         ol_records = obj.filter(group_id__in=user_in_group).values('group_name', 'progress_color',
                                                                    'progress_value', 'id', 'group_id', 'title',
-                                                                   'proposer', 'operate_dba', 'verifier',
-                                                                   'created_at').order_by('-created_at')
-
-        return JsonResponse(list(ol_records), safe=False)
-
-
-# class IncepOlRecordsView(PaginationMixin, ListView):
-#     paginate_by = 8
-#     context_object_name = 'audit_records'
-#     template_name = 'incep_ol_records.html'
-#
-#     obj = OnlineAuditContents.objects.all().annotate(
-#         progress_value=Case(
-#             When(progress_status='0', then=Value('待批准')),
-#             When(progress_status='1', then=Value('未批准')),
-#             When(progress_status='2', then=Value('已批准')),
-#             When(progress_status='3', then=Value('处理中')),
-#             When(progress_status='4', then=Value('已完成')),
-#             When(progress_status='5', then=Value('已关闭')),
-#             output_field=CharField(),
-#         ),
-#         progress_color=Case(
-#             When(progress_status__in=('0',), then=Value('btn-primary')),
-#             When(progress_status__in=('2',), then=Value('btn-warning')),
-#             When(progress_status__in=('1', '5'), then=Value('btn-danger')),
-#             When(progress_status__in=('3',), then=Value('btn-info')),
-#             When(progress_status__in=('4',), then=Value('btn-success')),
-#             output_field=CharField(),
-#         ),
-#         group_name=F('group__group_name'),
-#         group_id=F('group__group_id'),
-#     )
-#
-#     def get_queryset(self):
-#         user_in_group = self.request.session['groups']
-#         search_content = self.request.GET.get('search_content')
-#
-#         if search_content:
-#             audit_records = self.obj.filter(
-#                 contents__contains=search_content
-#             ).filter(group_id__in=user_in_group). \
-#                 values('group_name',
-#                        'progress_color',
-#                        'progress_value', 'id', 'group_id',
-#                        'title',
-#                        'proposer', 'operate_dba', 'verifier',
-#                        'created_at').order_by('-created_at')
-#         else:
-#             audit_records = self.obj.filter(group_id__in=user_in_group). \
-#                 values('group_name', 'progress_color',
-#                        'progress_value', 'id', 'group_id',
-#                        'title',
-#                        'proposer', 'operate_dba', 'verifier',
-#                        'created_at').order_by('-created_at')
-#
-#         return audit_records
+                                                                   'proposer', 'operate_dba', 'verifier', 'created_at'
+                                                                   ).order_by('-created_at')[offset_size:limit_size]
+        result = {'total': ol_total, 'rows': list(ol_records)}
+        return JsonResponse(result, safe=False)
 
 
 class IncepOlApproveView(FormView):
@@ -367,7 +320,6 @@ class IncepGenerateTasksView(View):
     def post(self, request):
         id = request.POST.get('id')
 
-        print(request.user.user_role())
         if request.user.user_role() == 'DBA':
             if IncepMakeExecTask.objects.filter(related_id=id).first():
                 taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid

@@ -1,18 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block link_css %}
-    <style>
-        .table > tr > td {
-            vertical-align: middle !important;
-        }
-
-        .table > tbody > tr > td {
-            padding: 12px;
-        }
-    </style>
-{% endblock %}
-
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
@@ -55,6 +43,7 @@
                 pageSize: 10,                        //每页的记录行数（*）
                 pageList: [10, 20, 30],        //可供选择的每页的行数（*）
                 uniqueId: "taskid",                     //每一行的唯一标识，一般为主键列
+                classes: 'table table-hover table-no-bordered',
 
                 columns: [
                     {
