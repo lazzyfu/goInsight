@@ -295,7 +295,7 @@ def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
 
 
 @shared_task
-def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None, backup=False):
+def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None, backup=None):
     obj = IncepMakeExecTask.objects.get(id=id)
     if sql is None:
         sql = obj.sql_content + ';'

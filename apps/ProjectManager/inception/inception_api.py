@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import logging
 import re
 
 import pymysql
@@ -11,6 +12,7 @@ from AuditSQL import settings
 from ProjectManager.models import InceptionHostConfig
 
 channel_layer = get_channel_layer()
+logger = logging.getLogger(__name__)
 
 
 class GetBackupApi(object):
@@ -35,22 +37,29 @@ class GetBackupApi(object):
         rollback_statement = []
 
         if self.backupdbName != 'None':
-            dstTableQuery = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ where opid_time={self.sequence}"
-            cur.execute(dstTableQuery)
-            dstTable = cur.fetchone()[0]
+            try:
+                table_query = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ " \
+                              f"where opid_time={self.sequence}"
+                cur.execute(table_query)
+                dst_table = cur.fetchone()[0]
 
-            rollbackStatementQuery = f"select rollback_statement from {self.backupdbName}.{dstTable} where opid_time={self.sequence}"
-            cur.execute(rollbackStatementQuery)
+                rollback_statement_query = f"select rollback_statement from {self.backupdbName}.{dst_table} " \
+                                           f"where opid_time={self.sequence}"
+                cur.execute(rollback_statement_query)
 
-            for i in cur.fetchall():
-                rollback_statement.append(i[0])
-        cur.close()
-        conn.close()
+                for i in cur.fetchall():
+                    rollback_statement.append(i[0])
 
-        if rollback_statement:
-            return '\n'.join(rollback_statement)
-        else:
-            return '无记录'
+                if rollback_statement:
+                    return '\n'.join(rollback_statement)
+                else:
+                    return '无记录'
+            except conn.ProgrammingError as err:
+                logger.warning(err)
+                return '无记录'
+            finally:
+                cur.close()
+                conn.close()
 
 
 class GetDatabaseListApi(object):
@@ -62,32 +71,31 @@ class GetDatabaseListApi(object):
     IGNORED_PARAMS = ['information_schema', 'mysql', 'percona']
 
     def get_dbname(self):
-        master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
-        masterHost = master.host
-        masterUser = master.user
-        masterPassword = master.password
-        masterPort = master.port
+        config = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+        host = config.host
+        user = config.user
+        password = config.password
+        port = config.port
 
         try:
-            conn = pymysql.connect(host=masterHost, user=masterUser,
-                                   password=masterPassword,
-                                   port=masterPort, use_unicode=True, charset="utf8")
+            conn = pymysql.connect(host=host, user=user,
+                                   password=password,
+                                   port=port, use_unicode=True, charset="utf8")
             cur = conn.cursor()
-            dbQuery = "select schema_name from information_schema.schemata"
-            cur.execute(dbQuery)
-            dbList = []
+            cur.execute("select schema_name from information_schema.schemata")
+            db_list = []
             for i in cur.fetchall():
-                dbList.append(i[0])
+                db_list.append(i[0])
 
             for i in self.IGNORED_PARAMS:
-                if i in dbList:
-                    dbList.remove(i)
+                if i in db_list:
+                    db_list.remove(i)
 
             cur.close()
             conn.close()
-            return dbList
+            return db_list
         except Exception as err:
-            raise
+            logger.warning(err)
 
 
 # DDL和DML过滤
@@ -156,10 +164,9 @@ class IncepSqlCheck(object):
 
         return {'status': 0, 'data': self.conn_incep(sql)}
 
-    def run_exec(self, status, backup):
+    def run_exec(self, status, backup=None):
         """对SQL进行执行"""
-        if backup is True:
-            """当检测的affected_row <= 10000时，执行并备份"""
+        if backup == 'yes':
             sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
                   f"--execute=1;--port={self.dst_port};*/" \
                   f"\ninception_magic_start;" \
@@ -167,7 +174,6 @@ class IncepSqlCheck(object):
                   f"\n{self.sql_content}" \
                   f"\ninception_magic_commit;"
         else:
-            """当检测的affected_row > 10000时，只执行不备份"""
             sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
                   f"--execute=1;--disable-remote-backup;--port={self.dst_port};*/" \
                   f"\ninception_magic_start;" \
