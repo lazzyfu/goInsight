@@ -16,7 +16,7 @@ from ProjectManager.models import IncepMakeExecTask
 from ProjectManager.permissions import check_incep_tasks_permission
 from ProjectManager.tasks import get_osc_percent, incep_async_tasks, \
     stop_incep_osc
-from ProjectManager.utils import update_tasks_status, check_incep_alive
+from ProjectManager.utils import check_incep_alive
 from apps.ProjectManager.inception.inception_api import GetBackupApi, IncepSqlCheck
 from utils.tools import format_request
 
@@ -63,7 +63,7 @@ class IncepOfResultsView(View):
             sequence_result = {'backupdbName': sql_detail.backup_dbname, 'sequence': sql_detail.sequence}
             rollback_sql = GetBackupApi(sequence_result).get_rollback_statement()
 
-            exec_log = sql_detail.exec_log if sql_detail.exec_log else '无记录'
+            exec_log = sql_detail.exec_log if sql_detail.exec_log else ''
 
             # 此处要将exec_log去字符串处理，否则无法转换为json
             data = {'rollback_log': rollback_sql, 'exec_log': literal_eval(exec_log)}
@@ -160,12 +160,12 @@ class IncepPerformView(View):
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
 
                 else:
-                    # 当affected_row>1000时，只执行不备份
-                    if obj.affected_row > 1000:
+                    # 当affected_row>2000时，只执行不备份
+                    if obj.affected_row > 2000:
                         incep_async_tasks.delay(user=request.user.username,
                                                 id=id, exec_status=1)
                     else:
-                        # 当affected_row<=10000时，只执行且备份
+                        # 当affected_row<=2000时，执行且备份
                         incep_async_tasks.delay(user=request.user.username, backup='yes', id=id, exec_status=1)
 
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
@@ -217,7 +217,7 @@ class IncepRollbackView(View):
             # 获取回滚语句
             rollback_sql = GetBackupApi(
                 {'backupdbName': obj.backup_dbname, 'sequence': obj.sequence}).get_rollback_statement()
-            if rollback_sql == u'无记录':
+            if rollback_sql is False:
                 context = {'status': 2, 'msg': '没有找到备份记录，回滚失败'}
             else:
                 incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)

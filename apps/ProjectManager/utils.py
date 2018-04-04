@@ -30,13 +30,19 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
 
     data = IncepMakeExecTask.objects.get(id=id)
     errlevel = [x['errlevel'] for x in exec_result] if exec_result is not None else []
+    stagestatus = [x['stagestatus'] for x in exec_result] if exec_result is not None else []
+
     if 1 in errlevel or 2 in errlevel:
-        if data.exec_status == '2':
-            data.exec_status = 0
-            data.save()
-        elif data.exec_status == '3':
+        if 'Execute Successfully' in stagestatus[1]:
             data.exec_status = 1
             data.save()
+        else:
+            if data.exec_status == '2':
+                data.exec_status = 0
+                data.save()
+            elif data.exec_status == '3':
+                data.exec_status = 1
+                data.save()
     else:
         data.exec_status = exec_status
 

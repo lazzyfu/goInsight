@@ -231,7 +231,14 @@
                     $('#execLog').empty();
                     if (result.status === 0) {
                         var log_html = renderIncepExecResult(result.data.exec_log);
-                        $('#select_sql').append(result.data.rollback_log);
+                        var rollback_sql = '';
+                        if (result.data.rollback_log) {
+                            rollback_sql = result.data.rollback_log
+                        }
+                        else {
+                            rollback_sql = ' 无记录'
+                        }
+                        $('#select_sql').append(rollback_sql);
                         $('#execLog').append(log_html);
                         $('#rollbackupModal').modal('show');
                     }
