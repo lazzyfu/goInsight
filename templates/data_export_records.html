@@ -108,37 +108,31 @@
                     },
                     {
                         field: 'proposer',
-                        title: '申请人',
-                        sortable: true
+                        title: '申请人'
                     },
                     {
                         field: 'operate_dba',
-                        title: '操作DBA',
-                        sortable: true
-                    }, {
+                        title: '操作DBA'
+                    },
+                    {
                         field: 'dst_host',
-                        title: '主机',
-                        sortable: true
+                        title: '主机'
                     },
                     {
                         field: 'dst_database',
-                        title: '数据库',
-                        sortable: true
+                        title: '数据库'
                     },
                     {
                         field: 'file_coding',
-                        title: '编码',
-                        sortable: true
+                        title: '编码'
                     },
                     {
                         field: 'file_format',
-                        title: '格式',
-                        sortable: true
+                        title: '格式'
                     },
                     {
                         field: 'sql_contents',
                         title: 'SQL',
-                        sortable: true,
                         formatter: function (value) {
                             if (value.length >= 64) {
                                 return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 64) + '&nbsp;...' + '</a>'

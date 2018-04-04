@@ -48,8 +48,7 @@
                 columns: [
                     {
                         field: 'taskid',
-                        title: '任务工单号',
-                        sortable: true
+                        title: '任务工单号'
                     },
                     {
                         field: 'group_name',
@@ -61,7 +60,7 @@
                         title: '任务分类',
                         sortable: true,
                         formatter: function (value, row, index) {
-                            if (value === '线上任务'){
+                            if (value === '线上任务') {
                                 return "<p class='text-blue'>" + value + "</p>"
                             }
                             else if (value === '线下任务') {
@@ -72,17 +71,15 @@
                     },
                     {
                         field: 'user',
-                        title: '创建用户',
-                        sortable: true
-                    }, {
+                        title: '创建用户'
+                    },
+                    {
                         field: 'dst_host',
-                        title: '主机',
-                        sortable: true
+                        title: '主机'
                     },
                     {
                         field: 'dst_database',
-                        title: '数据库',
-                        sortable: true
+                        title: '数据库'
                     },
                     {
                         field: 'make_time',

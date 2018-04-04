@@ -49,20 +49,17 @@
                     {
                         field: 'progress_value',
                         title: '进度',
-                        sortable: true,
                         formatter: function (value, row, index) {
                             return "<button type='button' class='btn " + row.progress_color + "'>" + value + "</button>"
                         }
                     },
                     {
                         field: 'group_name',
-                        title: '项目',
-                        sortable: true,
+                        title: '项目'
                     },
                     {
                         field: 'title',
                         title: '标题',
-                        sortable: true,
                         formatter: function (value, row) {
                             if (value.length >= 16) {
                                 return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 16) + '&nbsp;...' + '</a>'
@@ -82,22 +79,18 @@
                     },
                     {
                         field: 'proposer',
-                        title: '申请人',
-                        sortable: true
+                        title: '申请人'
                     },
                     {
                         field: 'verifier',
-                        title: '批准人',
-                        sortable: true
+                        title: '批准人'
                     }, {
                         field: 'operate_dba',
-                        title: 'DBA',
-                        sortable: true
+                        title: 'DBA'
                     },
                     {
                         field: 'id',
                         title: '审批',
-                        sortable: true,
                         formatter: function (value, row, index) {
                             return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
                         }
@@ -105,7 +98,6 @@
                     {
                         field: 'id',
                         title: '反馈',
-                        sortable: true,
                         formatter: function (value, row, index) {
                             return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-check-square-o fa-lg'></i></a>"
                         }
@@ -113,7 +105,6 @@
                     {
                         field: 'id',
                         title: '关闭',
-                        sortable: true,
                         formatter: function (value, row, index) {
                             return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
                         }
@@ -121,7 +112,6 @@
                     {
                         field: 'id',
                         title: '详情',
-                        sortable: true,
                         formatter: function (value, row, index) {
                             return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders'></i></a>"
                         }
