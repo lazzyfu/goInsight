@@ -13,6 +13,11 @@ AuditSQL介绍
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
 
+## gif图
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/show.gif)
+
+
 ## 开发组件
 
 - Python 3.6
