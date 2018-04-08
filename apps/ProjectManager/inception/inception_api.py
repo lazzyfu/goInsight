@@ -110,7 +110,7 @@ class GetDatabaseListApi(object):
 # DDL和DML过滤
 def sql_filter(sql_content, op_action):
     ddl_filter = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
-    dml_filter = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
+    dml_filter = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM|\nUPDATE|\nDELETE|\nINSERT'
 
     if op_action == 'op_schema':
         if re.search(dml_filter, sql_content, re.I):
