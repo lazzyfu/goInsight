@@ -5,77 +5,41 @@ import datetime
 import difflib
 import hashlib
 import json
+import os
 import pyminizip
-import time
-from datetime import datetime
 import random
 import string
+import time
+from datetime import datetime
 
 import mysql.connector as mdb
-import os
 import pymysql
-from celery import shared_task
 from asgiref.sync import async_to_sync
+from celery import shared_task
 from channels.layers import get_channel_layer
 from django.core.cache import cache
+from django.core.files import File
 from django.core.mail import EmailMessage
 from django.db.models import F
 from django.template.loader import render_to_string
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
-from django.core.files import File
 
 from AuditSQL.settings import EMAIL_FROM
 from ProjectManager.inception.inception_api import IncepSqlCheck
 from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, MonitorSchema, IncepMakeExecTask, \
     DomainName, InceptionHostConfig, DataExport, Files
 from ProjectManager.utils import update_tasks_status
-from UserManager.models import ContactsDetail, UserAccount, Contacts
+from UserManager.models import UserAccount
+from UserManager.utils import GetEmailAddr
 
 channel_layer = get_channel_layer()
-
-
-class GetUserInfo(object):
-    def __init__(self, obj, latest_id):
-        self.obj = obj
-        self.latest_id = latest_id
-
-    def get_user_email(self, *args):
-        """
-        args
-        传入用户参数列表，可传入：proposer, verifier, operate_dba
-        返回传入用户的邮箱地址
-        """
-        obj = self.obj.objects.get(pk=self.latest_id)
-        user_list = []
-        if 'proposer' in args:
-            user_list.append(obj.proposer)
-        if 'verifier' in args:
-            user_list.append(obj.verifier)
-        if 'operate_dba' in args:
-            user_list.append(obj.operate_dba)
-
-        user_email = list(UserAccount.objects.filter(username__in=user_list).values_list('email', flat=True))
-        return user_email
-
-    def get_contact_email(self):
-        cc = list(self.obj.objects.get(pk=self.latest_id).email_cc.split(','))
-        contact_email = list(Contacts.objects.filter(contact_id__in=cc).values_list('contact_email', flat=True))
-        return contact_email
-
-    # 获取项目组密送成员的邮箱
-    def get_bcc_email(self):
-        group_id = self.obj.objects.get(pk=self.latest_id).group_id
-        bcc_email = ContactsDetail.objects.filter(group__group_id=group_id).filter(bcc='1').annotate(
-            contact_email=F('contact__contact_email')
-        ).values_list('contact_email', flat=True)
-        return list(bcc_email)
 
 
 @shared_task
 def send_commit_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetUserInfo(OnlineAuditContents, latest_id)
+    userinfo = GetEmailAddr(OnlineAuditContents, latest_id)
 
     receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
     cc = userinfo.get_contact_email()
@@ -103,7 +67,7 @@ def send_commit_mail(**kwargs):
 @shared_task
 def send_verify_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetUserInfo(OnlineAuditContents, latest_id)
+    userinfo = GetEmailAddr(OnlineAuditContents, latest_id)
 
     receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
     cc = userinfo.get_contact_email()
@@ -136,7 +100,7 @@ def send_verify_mail(**kwargs):
 def send_reply_mail(**kwargs):
     latest_id = kwargs['latest_id']
     reply_id = kwargs['reply_id']
-    userinfo = GetUserInfo(OnlineAuditContents, latest_id)
+    userinfo = GetEmailAddr(OnlineAuditContents, latest_id)
 
     receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
     cc = userinfo.get_contact_email()
@@ -331,7 +295,7 @@ def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
 
 
 @shared_task
-def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None):
+def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None, backup=None):
     obj = IncepMakeExecTask.objects.get(id=id)
     if sql is None:
         sql = obj.sql_content + ';'
@@ -342,7 +306,7 @@ def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None)
     incep_of_audit = IncepSqlCheck(sql, host, database, user)
 
     # 执行SQL
-    exec_result = incep_of_audit.run_exec(0)
+    exec_result = incep_of_audit.run_exec(0, backup)
 
     # 告诉获取进度的线程退出
     cache.set(redis_key, 'end')
@@ -464,7 +428,7 @@ def make_export_file(user, id):
 
         send_data_export_reply_mail.delay(latest_id=id)
     except conn.InternalError as err:
-        pull_msg = {'errCode': 400, 'errMsg': str(err)}
+        pull_msg = {'status': 2, 'msg': str(err)}
         DataExport.objects.filter(pk=id).update(status='0')
         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
                                                        'text': json.dumps(pull_msg)})
@@ -476,7 +440,7 @@ def make_export_file(user, id):
 @shared_task
 def send_data_export_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetUserInfo(DataExport, latest_id)
+    userinfo = GetEmailAddr(DataExport, latest_id)
 
     receiver = userinfo.get_user_email('proposer', 'operate_dba')
     cc = userinfo.get_contact_email()
@@ -503,7 +467,7 @@ def send_data_export_mail(**kwargs):
 @shared_task
 def send_data_export_reply_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetUserInfo(DataExport, latest_id)
+    userinfo = GetEmailAddr(DataExport, latest_id)
 
     obj = DataExport.objects.get(pk=latest_id)
     user_list = [obj.proposer, obj.operate_dba]

@@ -26,7 +26,7 @@ def check_group_permission(fun):
             if int(group_id) in request.session['groups']:
                 return fun(request, *args, **kwargs)
             else:
-                context = {'errCode': '403', 'errMsg': '权限拒绝，您不属于该项目组的成员'}
+                context = {'status': 1, 'msg': '权限拒绝，您不属于该项目组的成员'}
                 return HttpResponse(json.dumps(context))
         else:
             raise PermissionDenied
@@ -36,8 +36,7 @@ def check_group_permission(fun):
 
 def check_sql_detail_permission(fun):
     """
-    :param fun: request
-    :return: 验证用户是否有指定项目详情记录的访问权限
+    验证用户是否有指定项目详情记录的访问权限
     """
 
     def wapper(request, *args, **kwargs):
@@ -75,7 +74,7 @@ def check_incep_tasks_permission(fun):
             return fun(request, *args, **kwargs)
         else:
             # raise PermissionDenied
-            context = {'errCode': 400, 'errMsg': '权限拒绝，只要DBA可以操作'}
+            context = {'status': 1, 'msg': '权限拒绝，只要DBA可以操作'}
             return HttpResponse(json.dumps(context))
 
     return wapper
@@ -91,7 +90,7 @@ def check_data_export_permission(fun):
         if user_role in ('DBA', 'Leader'):
             return fun(request, *args, **kwargs)
         else:
-            context = {'errCode': 400, 'errMsg': '权限拒绝，只要DBA可以操作'}
+            context = {'status': 1, 'msg': '权限拒绝，只要DBA可以操作'}
             return HttpResponse(json.dumps(context))
 
     return wapper

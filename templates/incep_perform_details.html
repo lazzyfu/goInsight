@@ -102,7 +102,7 @@
             $('#demo-table').bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_incep_of_details_l' %}",
+                url: "{% url 'p_incep_perform_details_l' %}",
                 queryParams: function queryParams() {
                     return {'taskid': taskid};
                 },
@@ -118,6 +118,7 @@
                 pageSize: 20,
                 pageList: [10, 20, 30],
                 uniqueId: "id",
+                classes: 'table table-hover table-no-bordered',
 
                 columns: [
                     {
@@ -220,23 +221,30 @@
         <!-- 获取回滚语句和执行结果日志 -->
         function getTasksResult(id) {
             $.ajax({
-                url: "{% url 'p_incep_of_results' %}",
+                url: "{% url 'p_incep_perform_results' %}",
                 type: 'GET',
                 dataType: 'json',
                 data: {'id': id},
                 timeout: 5000,
                 cache: false,
-                success: function (data) {
+                success: function (result) {
                     $('#select_sql').empty();
                     $('#execLog').empty();
-                    if (data.errCode == 200) {
-                        var log_html = renderIncepExecResult(data.exec_log);
-                        $('#select_sql').append(data.rollback_log);
+                    if (result.status === 0) {
+                        var log_html = renderIncepExecResult(result.data.exec_log);
+                        var rollback_sql = '';
+                        if (result.data.rollback_log) {
+                            rollback_sql = result.data.rollback_log
+                        }
+                        else {
+                            rollback_sql = ' 无记录'
+                        }
+                        $('#select_sql').append(rollback_sql);
                         $('#execLog').append(log_html);
                         $('#rollbackupModal').modal('show');
                     }
-                    else if (data.errCode == 400) {
-                        displayPNotify(data.errCode, data.errMsg)
+                    else {
+                        displayPNotify(result.status, result.msg)
                     }
                 }
             })
@@ -257,7 +265,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             })
         }
@@ -277,7 +285,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             })
         }
@@ -297,7 +305,7 @@
                 timeout: 5000,
                 cache: false,
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             })
         }

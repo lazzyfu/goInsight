@@ -5,6 +5,7 @@ from django.http import HttpResponse
 import socket
 import json
 from AuditSQL import settings
+from ProjectManager.inception.inception_api import sql_filter, IncepSqlCheck
 
 from ProjectManager.models import IncepMakeExecTask
 
@@ -29,13 +30,19 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
 
     data = IncepMakeExecTask.objects.get(id=id)
     errlevel = [x['errlevel'] for x in exec_result] if exec_result is not None else []
+    stagestatus = [x['stagestatus'] for x in exec_result] if exec_result is not None else []
+
     if 1 in errlevel or 2 in errlevel:
-        if data.exec_status == '2':
-            data.exec_status = 0
-            data.save()
-        elif data.exec_status == '3':
+        if 'Execute Successfully' in stagestatus[1]:
             data.exec_status = 1
             data.save()
+        else:
+            if data.exec_status == '2':
+                data.exec_status = 0
+                data.save()
+            elif data.exec_status == '3':
+                data.exec_status = 1
+                data.save()
     else:
         data.exec_status = exec_status
 
@@ -44,6 +51,7 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
             data.backup_dbname = exec_result[1]['backup_dbname']
             data.exec_log = exec_result
         data.save()
+
 
 def check_incep_alive(fun):
     """检测inception进程是否运行"""
@@ -58,7 +66,23 @@ def check_incep_alive(fun):
         if 0 == result:
             return fun(request, *args, **kwargs)
         else:
-            context = {'errCode': 400, 'errMsg': 'Inception服务无法抵达，请联系管理员'}
+            context = {'status': 2, 'msg': 'Inception服务无法抵达，请联系管理员'}
             return HttpResponse(json.dumps(context))
+
+    return wapper
+
+
+def check_sql_filter(fun):
+    """检查SQL类型，DML还是DDL操作"""
+    def wapper(request, *args, **kwargs):
+        sql = request.POST.get('sql_content')
+        op_action = request.POST.get('op_action')
+
+        filter_result = sql_filter(sql, op_action)
+        if filter_result.get('status') == 2:
+            context = filter_result
+            return HttpResponse(json.dumps(context))
+        else:
+            return fun(request, *args, **kwargs)
 
     return wapper

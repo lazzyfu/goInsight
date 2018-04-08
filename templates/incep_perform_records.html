@@ -1,18 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block link_css %}
-    <style>
-        .table > tr > td {
-            vertical-align: middle !important;
-        }
-
-        .table > tbody > tr > td {
-            padding: 12px;
-        }
-    </style>
-{% endblock %}
-
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
@@ -42,7 +30,7 @@
             $('#demo-table').bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_incep_of_records_l' %}",
+                url: "{% url 'p_incep_perform_records_l' %}",
                 cache: false,
                 sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
                 showColumns: true,
@@ -55,12 +43,12 @@
                 pageSize: 10,                        //每页的记录行数（*）
                 pageList: [10, 20, 30],        //可供选择的每页的行数（*）
                 uniqueId: "taskid",                     //每一行的唯一标识，一般为主键列
+                classes: 'table table-hover table-no-bordered',
 
                 columns: [
                     {
                         field: 'taskid',
-                        title: '任务工单号',
-                        sortable: true
+                        title: '任务工单号'
                     },
                     {
                         field: 'group_name',
@@ -72,7 +60,7 @@
                         title: '任务分类',
                         sortable: true,
                         formatter: function (value, row, index) {
-                            if (value === '线上任务'){
+                            if (value === '线上任务') {
                                 return "<p class='text-blue'>" + value + "</p>"
                             }
                             else if (value === '线下任务') {
@@ -83,17 +71,15 @@
                     },
                     {
                         field: 'user',
-                        title: '创建用户',
-                        sortable: true
-                    }, {
+                        title: '创建用户'
+                    },
+                    {
                         field: 'dst_host',
-                        title: '主机',
-                        sortable: true
+                        title: '主机'
                     },
                     {
                         field: 'dst_database',
-                        title: '数据库',
-                        sortable: true
+                        title: '数据库'
                     },
                     {
                         field: 'make_time',
@@ -107,7 +93,7 @@
                         field: 'taskid',
                         title: "任务详情",
                         formatter: function (value, row, index) {
-                            return '<a href="incep_of_details/' + row.taskid + '"><i class="fa fa-list-ol"></i></a> ';
+                            return '<a href="incep_perform_details/' + row.taskid + '"><i class="fa fa-list-ol"></i></a> ';
                         }
                     }
                 ]

@@ -59,6 +59,7 @@ progress_status_choices = (
     ('5', u'已关闭')
 )
 
+
 class OnlineAuditContents(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'项目组id')
@@ -191,6 +192,7 @@ class IncepMakeExecTask(models.Model):
     rollback_sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
     exec_status = models.CharField(max_length=10, default='0', choices=exec_progress, verbose_name=u'执行进度')
     sequence = models.CharField(null=False, default='', max_length=1024, verbose_name=u'备份记录id，inception生成的sequence')
+    affected_row = models.IntegerField(null=False, default=0, verbose_name=u'预计影响行数')
     backup_dbname = models.CharField(null=False, max_length=1024, default='', verbose_name=u'inception生成的备份的库名')
     exec_log = models.TextField(verbose_name=u'执行成功的记录', default='')
     make_time = models.DateTimeField(auto_now_add=True, verbose_name=u'生成时间')
@@ -222,7 +224,8 @@ class DataExport(models.Model):
     dst_host = models.CharField(null=False, default='', max_length=30, verbose_name=u'操作目标数据库主机')
     dst_database = models.CharField(null=False, default='', max_length=80, verbose_name=u'操作目标数据库')
     proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人')
-    status = models.CharField(max_length=2, default='0', choices=(('0', u'未生成'), ('1', u'执行中'), ('2', u'已生成')), verbose_name=u'生成进度')
+    status = models.CharField(max_length=2, default='0', choices=(('0', u'未生成'), ('1', u'执行中'), ('2', u'已生成')),
+                              verbose_name=u'生成进度')
     operate_dba = models.CharField(max_length=30, default='', verbose_name=u'执行dba')
     email_cc = models.CharField(max_length=1024, default='', verbose_name=u'抄送人')
     file_coding = models.CharField(max_length=256, default='', verbose_name=u'文件编码')

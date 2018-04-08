@@ -1,127 +1,135 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block link_css %}
-    <style>
-        .table > tbody > tr > td {
-            padding: 12px;
-            vertical-align: middle !important;
-        }
-    </style>
-{% endblock %}
-
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
             <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">数据变更记录</h3>
-                    <div class="box-tools">
-                        <form action="{% url 'p_incep_ol_records' %}" method="get">
-                            <div class="input-group input-group-sm" style="width: 350px;">
-                                <input type="text" name="search_content" class="form-control pull-right"
-                                       placeholder="Search">
-                                <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            {% csrf_token %}
-                        </form>
-                    </div>
-                </div>
-                <!-- /.box-header -->
                 <div class="box-body">
-                    <table class="table table-hover table-responsive">
-                        <thead>
-                        <tr>
-                            <th>进度</th>
-                            <th>项目</th>
-                            <th>标题</th>
-                            <th>申请人</th>
-                            <th>批准人</th>
-                            <th>执行人</th>
-                            <th>审批</th>
-                            <th>反馈</th>
-                            <th>关闭</th>
-                            <th>详情</th>
-                            {% if request.user.user_role == 'DBA' %}
-                                <th>生成执行任务</th>
-                            {% endif %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% if audit_records %}
-                            {% for row in audit_records %}
-                                <tr>
-                                    <td>
-                                        <button type="button"
-                                                class="btn btn-flat {{ row.progress_color }}">{{ row.progress_value }}</button>
-                                    </td>
-                                    <td>{{ row.group_name }}</td>
-                                    <td>
-                                        <a href="#" data-toggle="tooltip"
-                                           title="{{ row.title }}">{{ row.title|slice:"16"|add:'...' }}</a>
-                                        <br/>
-                                        <small class="byline">创建时间: {{ row.created_at }}</small>
-                                    </td>
-                                    <td>
-                                        {{ row.proposer }}
-                                    </td>
-                                    <td class="project_progress">
-                                        {{ row.verifier }}
-                                    </td>
-                                    <td>
-                                        {{ row.operate_dba }}
-                                    </td>
-                                    <td>
-                                        <a href="#"
-                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_ol_approve' %}', '通过', '不通过')"><i
-                                                class="fa fa-pencil-square-o fa-lg"></i></a>
-                                    </td>
-                                    <td>
-                                        <a href="#"
-                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_ol_feedback' %}', '处理中', '已完成')"><i
-                                                class="fa fa-check-square-o fa-lg"></i></a>
-                                    </td>
-                                    <td>
-                                        <a href="#"
-                                           onclick="verifyForm({{ row.id }}, {{ row.group_id }},'{% url 'p_incep_ol_close' %}', '提交', '结束')"><i
-                                                class="fa fa-close fa-lg"></i></a>
-                                    </td>
-                                    <td>
-                                        <a href="incep_ol_details/{{ row.id }}/{{ row.group_id }}"><i
-                                                class="fa fa-sliders"></i></a>
-                                    </td>
-                                    {% if request.user.user_role == 'DBA' %}
-                                        <td>
-                                            <a href="#"
-                                               onclick="createTasks({{ row.id }}, {{ row.group_id }})"><i
-                                                    class="fa fa-cogs"></i></a>
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td>未找到记录 ...</td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-
-                    {# 分页 #}
-                    {% include 'pagination.html' %}
+                    <table id="demo-table"></table>
                 </div>
-                <!-- /.box-body -->
             </div>
-            <!-- /.box -->
         </div>
     </div>
 {% endblock %}
 
 {% block link_javascripts %}
     <script>
+        /**
+         * 初始化bootstrap-table，生成表格
+         */
+        $(function () {
+            $('#demo-table').bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                contentType: "application/x-www-form-urlencoded",
+                url: "{% url 'p_incep_ol_records_l' %}",
+                cache: false,
+                queryParams: function (params) {
+                    return {
+                        limit_size: params.limit + params.offset,
+                        offset_size: params.offset,
+                        search_content: params.search
+                    }
+                },
+                sidePagination: "server",
+                showColumns: true,
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                singleSelect: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,
+                pageSize: 10,
+                locale: 'zh-CN',
+                pageList: [10, 20],
+                uniqueId: "id",
+                classes: 'table table-hover table-no-bordered',
+
+                columns: [
+                    {
+                        field: 'progress_value',
+                        title: '进度',
+                        formatter: function (value, row, index) {
+                            return "<button type='button' class='btn " + row.progress_color + "'>" + value + "</button>"
+                        }
+                    },
+                    {
+                        field: 'group_name',
+                        title: '项目'
+                    },
+                    {
+                        field: 'title',
+                        title: '标题',
+                        formatter: function (value, row) {
+                            if (value.length >= 16) {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 16) + '&nbsp;...' + '</a>'
+                            }
+                            else {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value + '</a>'
+                            }
+                        }
+                    },
+                    {
+                        field: 'created_at',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {
+                        field: 'proposer',
+                        title: '申请人'
+                    },
+                    {
+                        field: 'verifier',
+                        title: '批准人'
+                    }, {
+                        field: 'operate_dba',
+                        title: 'DBA'
+                    },
+                    {
+                        field: 'id',
+                        title: '审批',
+                        formatter: function (value, row, index) {
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: '反馈',
+                        formatter: function (value, row, index) {
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: '关闭',
+                        formatter: function (value, row, index) {
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: '详情',
+                        formatter: function (value, row, index) {
+                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders'></i></a>"
+                        }
+
+                    },
+                    {
+                        field: 'id',
+                        title: '执行',
+                        formatter: function (value, row) {
+                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-cogs'></i></a>"
+                        }
+                    }
+                ]
+            })
+        });
+
+
         function verifyForm(id, group_id, url, btn_left, btn_right) {
             layui.use('layedit', function () {
                 layui.use('layer', function () {
@@ -141,10 +149,10 @@
                                 'csrfmiddlewaretoken': csrftoken
                             },
                             success: function (result) {
-                                displayPNotify(result.errCode, result.errMsg, refresh_page);
+                                displayPNotify(result.status, result.msg, refresh_page);
                             },
                             error: function (result) {
-                                displayPNotify(result.errCode, result.errMsg);
+                                displayPNotify(result.status, result.msg);
                             }
                         });
                     }
@@ -178,6 +186,18 @@
             })
         }
 
+        /**
+         * 每5s刷新一次表格
+         */
+
+        $(function () {
+            function refreshTable() {
+                $('#demo-table').bootstrapTable('refresh', {silent: true});
+            }
+
+            setInterval(refreshTable, 5000);
+        });
+
         <!-- 创建任务 -->
         function createTasks(id, group_id) {
             var csrftoken = $.cookie('csrftoken');
@@ -191,11 +211,11 @@
                     'csrfmiddlewaretoken': csrftoken
                 },
                 success: function (result) {
-                    if (result.errCode === 400) {
-                        displayPNotify(result.errCode, result.errMsg, refresh_page);
+                    if (result.status === 0) {
+                        window.location.href = result.jump_url
                     }
                     else {
-                        window.location.href = result.dst_url
+                        displayPNotify(result.status, result.msg);
                     }
                 }
             });

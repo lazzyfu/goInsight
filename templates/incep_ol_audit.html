@@ -136,7 +136,7 @@
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
                                     </button>
 
-                                    <button type="button" onclick="IncepSqlCheckForm('check')"
+                                    <button type="button" onclick="incepSyntaxCheckForm()"
                                             class="btn bg-info btn-sm">语法检测
                                     </button>
                                 </div>
@@ -188,7 +188,7 @@
                                 <th class="col-sm-1 text-red">级别</th>
                                 <th class="col-sm-2 text-red">信息</th>
                                 <th class="col-sm-4 text-red">SQL</th>
-                                <th class="col-sm-1 text-red">行数</th>
+                                <th class="col-sm-1 text-red">扫描/影响行数</th>
                                 <th class="col-sm-1 text-red">耗时</th>
                             </tr>
                             </thead>
@@ -214,38 +214,12 @@
         });
 
         /**
-         * 美化SQL
-         */
-        function beautifySQL() {
-            var sql_content = myCodeMirror.getValue();
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_beautify_sql' %}',
-                type: 'POST',
-                dataType: 'json',
-                data: {'sql_content': sql_content, 'csrfmiddlewaretoken': csrftoken},
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    if (data.errCode == 400) {
-                        displayPNotify('400', data.errMsg);
-                    }
-                    else {
-                        $.each(data, function (index, sql) {
-                            myCodeMirror.setValue(sql);
-                        })
-                    }
-                }
-            })
-        }
-
-        /**
          * 获取线上环境主机信息
          * type=1
          */
         $(function () {
             $.ajax({
-                url: '{% url 'p_incep_host_config' %}',
+                url: '{% url 'p_host_config' %}',
                 type: 'GET',
                 data: {'type': 1},
                 dataType: 'json',
@@ -264,264 +238,6 @@
             })
         });
 
-
-        /**
-         * 获取指定主机的数据库库名列表
-         */
-        function getDatabaseList() {
-            $("#select_db").empty();
-            var host = $("#select_env").val();
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_db_list' %}',
-                type: 'POST',
-                dataType: 'json',
-                data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    if (data.errCode === 200) {
-                        var html = '';
-                        $.each(data.errMsg, function (index, db) {
-                            html += "<option value=" + db + ">" + db + "</option>"
-                        });
-                        $('#select_db').append(html);
-                        $('.selectpicker').selectpicker('refresh')
-                    }
-                    else {
-                        displayPNotify(data.errCode, data.errMsg);
-                    }
-                }
-            })
-        }
-
-        /**
-         * 获取备注信息
-         */
-        $(function () {
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_remark_info' %}',
-                type: 'POST',
-                dataType: 'json',
-                timeout: 5000,
-                data: {
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                cache: false,
-                success: function (data) {
-                    $.each(data, function (index, data) {
-                        $("#select_remark").append(  //此处向select中循环绑定数据
-                            "<option data-icon='fa fa-tag' value=" + data.remark + ">" + data.remark + "</option>");
-                    });
-                    $('.selectpicker').selectpicker('refresh');
-                }
-            })
-        });
-
-        /**
-         * 获取当前用户所属的项目组
-         */
-        $(function () {
-            $.ajax({
-                url: '{% url 'p_group_info' %}',
-                type: 'GET',
-                dataType: 'json',
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    $.each(data, function (index, data) {
-                        $("#select_group").append(  //此处向select中循环绑定数据
-                            "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
-                    });
-                    $('.selectpicker').selectpicker('refresh');
-                }
-            })
-        });
-
-        /**
-         *获取被选中项目的的DBA和Leader
-         */
-        $(function () {
-            $("#select_group").change(function () {
-                var group_id = $(this).val();
-                var csrftoken = $.cookie('csrftoken');
-                $.ajax({
-                    url: '{% url 'p_audit_user' %}',
-                    type: 'POST',
-                    dataType: 'json',
-                    timeout: 5000,
-                    data: {
-                        'group_id': group_id,
-                        'csrfmiddlewaretoken': csrftoken
-                    },
-                    cache: false,
-                    success: function (data) {
-                        $("#select_dba").empty();
-                        $("#select_leader").empty();
-                        $.each(data, function (index, data) {
-                            if (data.user_role == 'DBA') {
-                                $("#select_dba").append(  //此处向select中循环绑定数据
-                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.username + ">" + data.username + "</option>");
-                            }
-                            if (data.user_role == 'Leader') {
-                                $("#select_verifier").append(  //此处向select中循环绑定数据
-                                    "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.username + ">" + data.username + "</option>");
-                            }
-                        });
-                        $('.selectpicker').selectpicker('refresh');
-                    }
-                })
-            });
-            $("select_group").validator('update');
-        });
-
-        /**
-         * 获取用户选择的项目的联系人
-         */
-        $(function () {
-            $("#select_group").change(function () {
-                var group_id = $(this).val();
-                var csrftoken = $.cookie('csrftoken');
-                $.ajax({
-                    url: '{% url 'p_contacts_info' %}',
-                    type: 'POST',
-                    dataType: 'json',
-                    timeout: 5000,
-                    data: {
-                        'group_id': group_id,
-                        'csrfmiddlewaretoken': csrftoken
-                    },
-                    cache: false,
-                    success: function (data) {
-                        $("#select_contact").empty();
-                        $.each(data, function (index, row) {
-                            var html = '';
-                            for (var i = 0; i < row.split(",").length; i++) {
-                                var result = row.split(",")[i];
-                                var username = result.split(":")[0];
-                                var contact_id = result.split(":")[1];
-                                var email = result.split(":")[2];
-                                html += "<option data-icon='fa fa-user' data-subtext=" + email + " value=" + contact_id + ">" + username + "</option>";
-                            }
-                            $("#select_contact").append(html)
-                        });
-                        $('.selectpicker').selectpicker('refresh');
-                    }
-                })
-            })
-        });
-
-        /**
-         * 生成工单
-         */
-
-        var project_main_page = function () {
-            window.parent.location.href = "/projects/incep_ol_records/"
-        };
-
-        <!-- 有效性验证 -->
-        $('#auditCommitForm').validator().on('submit', function (e) {
-            var sql_content = myCodeMirror.getValue();
-            if (sql_content.length < 10) {
-                displayPNotify('400', '审核内容不能为空或小于10个字符');
-                return false;
-            }
-            if (e.isDefaultPrevented()) {
-                // 验证不通过
-                displayPNotify('400', '表单无效，请完成填写');
-            } else {
-                // 验证通过
-                $('#auditCommitForm').ajaxSubmit({
-                    data: {'sql_content': sql_content},
-                    dataType: 'json',
-                    success: function (result) {
-                        {#提交成功，将textarea设置为空#}
-
-                        displayPNotify(result.errCode, result.errMsg, project_main_page);
-                    }
-                });
-                return false;
-            }
-        });
-
-        /**
-         * 执行inception语法检查
-         * @param op_type
-         * @return {boolean}
-         */
-
-        function IncepSqlCheckForm(op_type) {
-            var sql_content = myCodeMirror.getValue();
-            var database = $("#select_db").val();
-            var host = $("#select_env").val();
-            var op_action = $("#select_op").val();
-            var group_id = $("#select_group").val();
-            var csrftoken = $.cookie('csrftoken');
-
-            {#判断输入的SQL内容是否存在#}
-            if (sql_content == '') {
-                displayPNotify('400', '请输入要检测的SQL语句');
-                return false
-            }
-
-            $.ajax({
-                url: "{% url 'p_incep_of_audit' %}",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    'sql_content': sql_content,
-                    'database': database,
-                    'host': host,
-                    'op_type': op_type,
-                    'op_action': op_action,
-                    'group_id': group_id,
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                timeout: 5000,
-                cache: false,
-                success: function (result) {
-                    if (result.errCode == 400) {
-                        displayPNotify(result.errCode, result.errMsg)
-                    }
-                    else {
-                        $('#td_append').empty();
-                        var html = '';
-                        {#当执行检查动作时，才显示#}
-                        document.getElementById('typediv1').style.visibility = "visible";
-                        $.each(result.data, function (index, content) {
-                            var SQL = content.SQL;
-                            var ID = content.ID;
-                            var stage = content.stage;
-                            if (content.errlevel == 0) {
-                                var errlevel = '成功'
-                            }
-                            else if (content.errlevel == 1) {
-                                var errlevel = '警告'
-                            }
-                            else if (content.errlevel == 2) {
-                                var errlevel = '错误'
-                            }
-                            var stagestatus = content.stagestatus;
-                            var errormessage = content.errormessage;
-                            var Affected_rows = content.Affected_rows;
-                            var execute_time = content.execute_time
-                            html += "<tr>" +
-                                "<td>" + ID + "</td>" +
-                                "<td>" + stage + "</td>" +
-                                "<td>" + stagestatus + "</td>" +
-                                "<td>" + errlevel + "</td>" +
-                                "<td>" + errormessage + "</td>" +
-                                "<td>" + SQL + "</td>" +
-                                "<td>" + Affected_rows + "</td>" +
-                                "<td>" + execute_time + "</td>" +
-                                "</tr>";
-                        });
-                        $('#td_append').append(html);
-                    }
-                }
-            })
-        }
 
         $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>");
 

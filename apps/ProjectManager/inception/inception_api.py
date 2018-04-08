@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import logging
 import re
 
 import pymysql
@@ -11,6 +12,7 @@ from AuditSQL import settings
 from ProjectManager.models import InceptionHostConfig
 
 channel_layer = get_channel_layer()
+logger = logging.getLogger(__name__)
 
 
 class GetBackupApi(object):
@@ -35,22 +37,38 @@ class GetBackupApi(object):
         rollback_statement = []
 
         if self.backupdbName != 'None':
-            dstTableQuery = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ where opid_time={self.sequence}"
-            cur.execute(dstTableQuery)
-            dstTable = cur.fetchone()[0]
+            try:
+                table_query = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ " \
+                              f"where opid_time={self.sequence}"
+                cur.execute(table_query)
+                if cur.fetchall().count(1) == 0:
+                    for row in cur.fetchall():
+                        print(row)
+                        print('..fasfs')
+                        if row:
+                            dst_table = row[0]
 
-            rollbackStatementQuery = f"select rollback_statement from {self.backupdbName}.{dstTable} where opid_time={self.sequence}"
-            cur.execute(rollbackStatementQuery)
+                            rollback_statement_query = f"select rollback_statement from {self.backupdbName}.{dst_table} " \
+                                                       f"where opid_time={self.sequence}"
+                            cur.execute(rollback_statement_query)
 
-            for i in cur.fetchall():
-                rollback_statement.append(i[0])
-        cur.close()
-        conn.close()
+                            for i in cur.fetchall():
+                                rollback_statement.append(i[0])
 
-        if rollback_statement:
-            return '\n'.join(rollback_statement)
-        else:
-            return '无记录'
+                            if rollback_statement:
+                                return '\n'.join(rollback_statement)
+                            else:
+                                return False
+                        else:
+                            return False
+                else:
+                    return False
+            except conn.ProgrammingError as err:
+                logger.warning(err)
+                return False
+            finally:
+                cur.close()
+                conn.close()
 
 
 class GetDatabaseListApi(object):
@@ -62,51 +80,50 @@ class GetDatabaseListApi(object):
     IGNORED_PARAMS = ['information_schema', 'mysql', 'percona']
 
     def get_dbname(self):
-        master = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
-        masterHost = master.host
-        masterUser = master.user
-        masterPassword = master.password
-        masterPort = master.port
+        config = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+        host = config.host
+        user = config.user
+        password = config.password
+        port = config.port
 
         try:
-            conn = pymysql.connect(host=masterHost, user=masterUser,
-                                   password=masterPassword,
-                                   port=masterPort, use_unicode=True, charset="utf8")
+            conn = pymysql.connect(host=host, user=user,
+                                   password=password,
+                                   port=port, use_unicode=True, charset="utf8")
             cur = conn.cursor()
-            dbQuery = "select schema_name from information_schema.schemata"
-            cur.execute(dbQuery)
-            dbList = []
+            cur.execute("select schema_name from information_schema.schemata")
+            db_list = []
             for i in cur.fetchall():
-                dbList.append(i[0])
+                db_list.append(i[0])
 
             for i in self.IGNORED_PARAMS:
-                if i in dbList:
-                    dbList.remove(i)
+                if i in db_list:
+                    db_list.remove(i)
 
             cur.close()
             conn.close()
-            return dbList
+            return db_list
         except Exception as err:
-            raise
+            logger.warning(err)
 
 
 # DDL和DML过滤
 def sql_filter(sql_content, op_action):
-    DDL_FILTER = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
-    DML_FILTER = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM'
+    ddl_filter = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
+    dml_filter = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM|\nUPDATE|\nDELETE|\nINSERT'
 
     if op_action == 'op_schema':
-        if re.search(DML_FILTER, sql_content, re.I):
-            context = {'errMsg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句', 'errCode': 400}
+        if re.search(dml_filter, sql_content, re.I):
+            context = {'status': 2, 'msg': f'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT语句'}
         else:
-            context = {'errMsg': '', 'errCode': 200, 'type': 'DDL'}
+            context = {'msg': '', 'status': 0, 'type': 'DDL'}
         return context
 
     elif op_action == 'op_data':
-        if re.search(DDL_FILTER, sql_content, re.I):
-            context = {'errMsg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句', 'errCode': 400}
+        if re.search(ddl_filter, sql_content, re.I):
+            context = {'status': 2, 'msg': f'DML模式下, 不支持ALTER|CREATE|TRUNCATE语句'}
         else:
-            context = {'errMsg': '', 'errCode': 200, 'type': 'DML'}
+            context = {'msg': '', 'status': 0, 'type': 'DML'}
         return context
 
 
@@ -147,21 +164,31 @@ class IncepSqlCheck(object):
 
     def run_check(self):
         """对SQL进行审核"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};--enable-check=1;--port={self.dst_port};*/" \
+        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+              f"--enable-check=1;--port={self.dst_port};*/" \
               f"\ninception_magic_start;" \
               f"\nuse {self.dst_database};" \
               f"\n{self.sql_content}" \
               f"\ninception_magic_commit;"
 
-        return {'errCode': 200, 'data': self.conn_incep(sql)}
+        return {'status': 0, 'data': self.conn_incep(sql)}
 
-    def run_exec(self, status):
+    def run_exec(self, status, backup=None):
         """对SQL进行执行"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};--execute=1;--port={self.dst_port};*/" \
-              f"\ninception_magic_start;" \
-              f"\nuse {self.dst_database};" \
-              f"\n{self.sql_content}" \
-              f"\ninception_magic_commit;"
+        if backup == 'yes':
+            sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+                  f"--execute=1;--port={self.dst_port};*/" \
+                  f"\ninception_magic_start;" \
+                  f"\nuse {self.dst_database};" \
+                  f"\n{self.sql_content}" \
+                  f"\ninception_magic_commit;"
+        else:
+            sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+                  f"--execute=1;--disable-remote-backup;--port={self.dst_port};*/" \
+                  f"\ninception_magic_start;" \
+                  f"\nuse {self.dst_database};" \
+                  f"\n{self.sql_content}" \
+                  f"\ninception_magic_commit;"
 
         exec_result = self.conn_incep(sql)
         pull_msg = {'status': status, 'data': exec_result}
@@ -172,7 +199,8 @@ class IncepSqlCheck(object):
 
     def run_status(self, status):
         """执行inception命令"""
-        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};--execute=1;--port={self.dst_port};*/" \
+        sql = f"/*--user={self.dst_user};--password={self.dst_password};--host={self.dst_host};" \
+              f"--execute=1;--port={self.dst_port};*/" \
               f"\n{self.sql_content}"
         exec_result = self.conn_incep(sql)
         pull_msg = {'status': status, 'data': exec_result}
@@ -186,9 +214,9 @@ class IncepSqlCheck(object):
         check_data = self.run_check()['data']
         errlevel = [x['errlevel'] for x in check_data]
         if 1 in errlevel or 2 in errlevel:
-            context = {'errMsg': 'SQL语法检查未通过, 请执行语法检测', 'errCode': 400}
+            context = {'status': 2, 'msg': 'SQL语法检查未通过, 请执行语法检测'}
         else:
-            context = {'data': check_data, 'errCode': 200}
+            context = {'status': 0, 'data': check_data}
 
         return context
 

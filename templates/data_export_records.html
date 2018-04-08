@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block link_css %}
-    <style>
-    </style>
-{% endblock %}
-
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
@@ -82,6 +77,7 @@
                 pageSize: 10,                        //每页的记录行数（*）
                 pageList: [10, 20, 30],        //可供选择的每页的行数（*）
                 uniqueId: "taskid",                     //每一行的唯一标识，一般为主键列
+                classes: 'table table-hover table-no-bordered',
 
                 columns: [
                     {
@@ -112,37 +108,31 @@
                     },
                     {
                         field: 'proposer',
-                        title: '申请人',
-                        sortable: true
+                        title: '申请人'
                     },
                     {
                         field: 'operate_dba',
-                        title: '操作DBA',
-                        sortable: true
-                    }, {
+                        title: '操作DBA'
+                    },
+                    {
                         field: 'dst_host',
-                        title: '主机',
-                        sortable: true
+                        title: '主机'
                     },
                     {
                         field: 'dst_database',
-                        title: '数据库',
-                        sortable: true
+                        title: '数据库'
                     },
                     {
                         field: 'file_coding',
-                        title: '编码',
-                        sortable: true
+                        title: '编码'
                     },
                     {
                         field: 'file_format',
-                        title: '格式',
-                        sortable: true
+                        title: '格式'
                     },
                     {
                         field: 'sql_contents',
                         title: 'SQL',
-                        sortable: true,
                         formatter: function (value) {
                             if (value.length >= 64) {
                                 return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 64) + '&nbsp;...' + '</a>'
@@ -191,7 +181,7 @@
                     'csrfmiddlewaretoken': csrftoken
                 },
                 success: function (result) {
-                    displayPNotify(result.errCode, result.errMsg);
+                    displayPNotify(result.status, result.msg);
                 }
             });
         }
@@ -205,19 +195,19 @@
                 data: {'id': id},
                 timeout: 5000,
                 cache: false,
-                success: function (data) {
+                success: function (result) {
                     $('#s_file_name').empty();
                     $('#s_file_size').empty();
                     $('#s_encryption_key').empty();
-                    if (data.errCode == 200) {
-                        $('#s_file_name').append(data.file_name);
-                        $('#s_file_size').append(data.file_size);
-                        $("#s_file_name").attr("href", data.file_path);
-                        $('#s_encryption_key').append(data.encryption_key);
+                    if (result.status === 0) {
+                        $('#s_file_name').append(result.data.file_name);
+                        $('#s_file_size').append(result.data.file_size);
+                        $("#s_file_name").attr("href", result.data.file_path);
+                        $('#s_encryption_key').append(result.data.encryption_key);
                         $('#exportdataModal').modal('show');
                     }
-                    else if (data.errCode == 400) {
-                        displayPNotify(data.errCode, data.errMsg)
+                    else if (result.status === 2) {
+                        displayPNotify(result.status, result.msg)
                     }
                 }
             })
@@ -240,7 +230,7 @@
         socket.onmessage = function (message) {
             var result = JSON.parse(message.data);
 
-            displayPNotify(result.errCode, result.errMsg);
+            displayPNotify(result.status, result.msg);
         }
     </script>
 {% endblock %}
