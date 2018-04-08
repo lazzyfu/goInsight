@@ -13,7 +13,7 @@ AuditSQL介绍
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
 
-## gif图
+## gif图（有些失真）
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/show.gif)
 
@@ -26,10 +26,12 @@ AuditSQL介绍
 - django-channels
 - AdminLTE
 
-## 功能简介
+## 功能简介（更多功能，请使用时体验）
 
 - 线上工单审核（近实时E-Mail通知）
+
 - 线下工单审核
+
 - 执行任务
    - 显示当前任务SQL列表
    - 执行（执行当前SQL，实时显示当前执行的OSC任务进度）
@@ -38,18 +40,20 @@ AuditSQL介绍
    - 回滚（对执行的SQL进行回滚操作）
 
 - SQL审核
-   - 流程化
+   - 审核流程化
    - SQL美化功能
    - SQL检测功能
-   - 审核历史记录
    - 语法高亮功能
    - 注释识别功能
 
-- 进度推送：
+- 数据导出
+  - 支持xlsx海量数据导出，并格式化
+
+- 推送
    - 线上工单E-Mail近实时推送
    - 执行任务执行进度的近实时显示
   
-- 其他：
+- 其他
    - 支持LDAP认证登陆
    - 项目权限控制
    - 角色权限控制
