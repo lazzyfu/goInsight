@@ -9,7 +9,7 @@ AuditSQL介绍
 **https://github.com/lazzyfu/AuditSQL/wiki**
 
 
-## 简要流程图
+## 简要流程图（请下载查看）
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png){: height="700px" }
 
