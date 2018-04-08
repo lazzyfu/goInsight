@@ -11,7 +11,7 @@ AuditSQL介绍
 
 ## 简要流程图（请下载查看）
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png){: height="700px" }
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
 
 ## 开发组件
 
