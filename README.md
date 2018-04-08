@@ -10,7 +10,7 @@ Wiki地址（使用说明）
 **https://github.com/lazzyfu/AuditSQL/wiki**
 
 
-流程图
+简要流程图
 ===============
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
@@ -23,7 +23,7 @@ Wiki地址（使用说明）
 - django-channels
 - AdminLTE
 
-功能
+功能简介
 ===============
 - 线上工单审核（近实时E-Mail通知）
 - 线下工单审核
@@ -55,20 +55,6 @@ Wiki地址（使用说明）
   
 - 扩展功能：
    - 支持数据库表结构变更自动E-Mail通知，并生成变更结果
-
-
-## 线上SQL审核提交流程(点击查看GIF动图）
-
-![gif动图](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2018-03-15%2009_31_03.gif)
-![提交发送的邮件](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/mail-1.png)
-
-## 线上SQL审批流程(点击查看GIF动图）
-
-![审批流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/2.gif)
-
-## 线下SQL执行任务流程(点击查看GIF动态)
-
-![线下SQL流程](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/of-op.gif)
 
 ## 联系方式
    
