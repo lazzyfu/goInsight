@@ -41,14 +41,13 @@ class GetBackupApi(object):
                 table_query = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ " \
                               f"where opid_time={self.sequence}"
                 cur.execute(table_query)
-                if cur.fetchall().count(1) == 0:
+                if cur.fetchone:
                     for row in cur.fetchall():
-                        print(row)
-                        print('..fasfs')
                         if row:
                             dst_table = row[0]
 
-                            rollback_statement_query = f"select rollback_statement from {self.backupdbName}.{dst_table} " \
+                            rollback_statement_query = f"select rollback_statement from " \
+                                                       f"{self.backupdbName}.{dst_table} " \
                                                        f"where opid_time={self.sequence}"
                             cur.execute(rollback_statement_query)
 
