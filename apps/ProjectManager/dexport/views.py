@@ -38,7 +38,7 @@ class DataExportView(View):
         )
         latest_id = DataExport.objects.latest('id').id
         send_data_export_mail.delay(latest_id=latest_id)
-        context = {'status': 0, 'msg': ''}
+        context = {'status': 0, 'jump_url': '/projects/de/data_export_records/'}
         return HttpResponse(json.dumps(context))
 
 

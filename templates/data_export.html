@@ -28,8 +28,8 @@
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal" id="auditCommitForm" action="{% url 'p_data_export' %}"
-                  method="post" data-toggle="validator">
+            <form class="form-horizontal" id="dataExportForm" action="{% url 'p_data_export' %}" method="post"
+                  data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
                     <div class="box box-primary">
@@ -84,8 +84,7 @@
                                             style="width: 100%"
                                             required
                                             class="selectpicker form-control" title="请选择...">
-{#                                        <option selected value="txt">txt</option>#}
-                                        <option value="xlsx">xlsx</option>
+                                        <option value="xlsx" selected>xlsx</option>
                                     </select>
                                 </div>
                             </div>
@@ -130,7 +129,7 @@
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
                                     </button>
 
-                                   <button type="submit" class="btn bg-info btn-sm">生成工单</button>
+                                    <button type="submit" class="btn bg-info btn-sm">生成工单</button>
                                 </div>
                             </div>
                         </div>
@@ -228,7 +227,7 @@
          */
 
         <!-- 有效性验证 -->
-        $('#auditCommitForm').validator().on('submit', function (e) {
+        $('#dataExportForm').validator().on('submit', function (e) {
             var sql_content = myCodeMirror.getValue();
             if (sql_content.length < 10) {
                 displayPNotify(2, '审核内容不能为空或小于10个字符');
@@ -239,17 +238,18 @@
                 displayPNotify(2, '表单无效，请完成填写');
             } else {
                 // 验证通过
-                $('#auditCommitForm').ajaxSubmit({
+                $('#dataExportForm').ajaxSubmit({
                     data: {'sql_content': sql_content},
                     dataType: 'json',
-                    success: function () {
-                        window.parent.location.href = "/projects/de/data_export_records"
+                    success: function (result) {
+                        if (result.status === 0) {
+                            window.parent.location.href = result.jump_url;
+                        }
                     }
                 });
                 return false;
             }
         });
-
 
     </script>
 {% endblock %}
