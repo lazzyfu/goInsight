@@ -63,9 +63,14 @@ class IncepHostConfigView(View):
         data = format_request(request)
         config_type = data.get('type')
         user_in_group = request.session.get('groups')
-        result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
-                                                            comment=F('config__comment')).filter(
-            config__type=config_type).filter(group__group_id__in=user_in_group).values('host', 'comment')
+        if config_type:
+            result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
+                                                                comment=F('config__comment')).filter(
+                config__type=config_type).filter(group__group_id__in=user_in_group).values('host', 'comment')
+        else:
+            result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
+                                                                comment=F('config__comment')).filter(
+                group__group_id__in=user_in_group).values('host', 'comment')
         return JsonResponse(list(result), safe=False)
 
 
