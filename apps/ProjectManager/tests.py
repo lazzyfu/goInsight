@@ -56,7 +56,3 @@
 # wb.save(f'{MEDIA_ROOT}/files/dadas.xlsx')
 # pyminizip.compress_multiple([f'{MEDIA_ROOT}/files/dadas.xlsx'], f'{MEDIA_ROOT}/files/dadas.xlsx.zip', "1233", 4)
 
-def aa(*args):
-    print(args)
-
-    print(type(list(args)))

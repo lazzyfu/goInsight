@@ -27,4 +27,5 @@ urlpatterns = [
     path(r'', login_required(IndexView.as_view()), name="p_index"),
     path(r'users/', include('UserManager.urls')),
     path(r'projects/', include('ProjectManager.urls')),
+    path(r'mstats/', include('mstats.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

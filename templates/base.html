@@ -34,6 +34,8 @@
     <!-- bootstrap-table -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/css/jquery.treegrid.css' %}">
 
     <style>
         .table > tbody > tr > td {
@@ -165,8 +167,21 @@
                         </li>
                     </ul>
                 </li>
-
-
+                {% if request.user.user_role == 'DBA' %}
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-cog"></i>
+                            <span>数据库管理</span>
+                            <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{% url 'p_r_mysql_user_manager' %}"><i class="fa fa-user"></i>账号信息</a></li>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
             </ul>
         </section>
         <!-- /.sidebar -->
@@ -232,6 +247,8 @@
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/js/jquery.treegrid.min.js' %}"></script>
 
 <!-- 定义 javascript block -->
 {% block link_javascripts %}

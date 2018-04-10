@@ -2,14 +2,11 @@
 # edit by fuzongfei
 import json
 
-from channels.layers import get_channel_layer
-
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from ProjectManager.models import OnlineAuditContents, IncepMakeExecTask
 
-channel_layer = get_channel_layer()
+from ProjectManager.models import OnlineAuditContents, IncepMakeExecTask
 
 
 def check_group_permission(fun):
@@ -94,5 +91,3 @@ def check_data_export_permission(fun):
             return HttpResponse(json.dumps(context))
 
     return wapper
-
-
