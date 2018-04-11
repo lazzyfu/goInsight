@@ -15,7 +15,7 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/Ionicons/css/ionicons.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/dist/css/AdminLTE.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/dist/css/AdminLTE.css' %}">
     <!-- animate -->
     <link rel="stylesheet" href="{% static 'animate.css' %}">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -249,13 +249,12 @@
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/js/jquery.treegrid.min.js' %}"></script>
+<!-- general js file -->
+<script src="{% static 'self_public.js' %}"></script>
 
 <!-- 定义 javascript block -->
 {% block link_javascripts %}
 {% endblock %}
-
-<!-- general js file -->
-<script src="{% static 'self_public.js' %}"></script>
 
 </body>
 </html>
