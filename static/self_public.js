@@ -96,153 +96,6 @@ function beautifySQL() {
     })
 }
 
-/**
- * 获取当前用户所属的项目组
- */
-$(function () {
-    $.ajax({
-        url: '/projects/group_info/',
-        type: 'GET',
-        dataType: 'json',
-        timeout: 5000,
-        cache: false,
-        success: function (data) {
-            $.each(data, function (index, data) {
-                $("#select_group").append(  //此处向select中循环绑定数据
-                    "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
-            });
-            $('.selectpicker').selectpicker('refresh');
-        }
-    })
-});
-
-/**
- *获取被选中项目的的DBA和Leader
- */
-$(function () {
-    $("#select_group").change(function () {
-        var group_id = $(this).val();
-        var csrftoken = $.cookie('csrftoken');
-        $.ajax({
-            url: '/projects/audit_user/',
-            type: 'POST',
-            dataType: 'json',
-            timeout: 5000,
-            data: {
-                'group_id': group_id,
-                'csrfmiddlewaretoken': csrftoken
-            },
-            cache: false,
-            success: function (data) {
-                $("#select_dba").empty();
-                $("#select_leader").empty();
-                $.each(data, function (index, data) {
-                    if (data.user_role == 'DBA') {
-                        $("#select_dba").append(  //此处向select中循环绑定数据
-                            "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.username + ">" + data.username + "</option>");
-                    }
-                    if (data.user_role == 'Leader') {
-                        $("#select_verifier").append(  //此处向select中循环绑定数据
-                            "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.username + ">" + data.username + "</option>");
-                    }
-                });
-                $('.selectpicker').selectpicker('refresh');
-            }
-        })
-    });
-    $("select_group").validator('update');
-});
-
-/**
- * 获取用户选择的项目的联系人
- */
-$(function () {
-    $("#select_group").change(function () {
-        var group_id = $(this).val();
-        var csrftoken = $.cookie('csrftoken');
-        $.ajax({
-            url: '/projects/contacts_info/',
-            type: 'POST',
-            dataType: 'json',
-            timeout: 5000,
-            data: {
-                'group_id': group_id,
-                'csrfmiddlewaretoken': csrftoken
-            },
-            cache: false,
-            success: function (data) {
-                $("#select_contact").empty();
-                $.each(data, function (index, row) {
-                    var html = '';
-                    for (var i = 0; i < row.split(",").length; i++) {
-                        var result = row.split(",")[i];
-                        var username = result.split(":")[0];
-                        var contact_id = result.split(":")[1];
-                        var email = result.split(":")[2];
-                        html += "<option data-icon='fa fa-user' data-subtext=" + email + " value=" + contact_id + ">" + username + "</option>";
-                    }
-                    $("#select_contact").append(html)
-                });
-                $('.selectpicker').selectpicker('refresh');
-            }
-        })
-    })
-});
-
-/**
- * 获取备注信息
- */
-$(function () {
-    var csrftoken = $.cookie('csrftoken');
-    $.ajax({
-        url: '/projects/remark_info/',
-        type: 'POST',
-        dataType: 'json',
-        timeout: 5000,
-        data: {
-            'csrfmiddlewaretoken': csrftoken
-        },
-        cache: false,
-        success: function (data) {
-            $.each(data, function (index, data) {
-                $("#select_remark").append(  //此处向select中循环绑定数据
-                    "<option data-icon='fa fa-tag' value=" + data.remark + ">" + data.remark + "</option>");
-            });
-            $('.selectpicker').selectpicker('refresh');
-        }
-    })
-});
-
-/**
- * 获取指定主机的数据库库名列表
- */
-function getDatabaseList() {
-    $("#select_db").empty();
-    var host = $("#select_env").val();
-    var csrftoken = $.cookie('csrftoken');
-    $.ajax({
-        url: '/projects/db_list/',
-        type: 'POST',
-        dataType: 'json',
-        data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
-        timeout: 5000,
-        cache: false,
-        success: function (result) {
-            if (result.status === 0) {
-                var html = '';
-                $.each(result.data, function (index, db) {
-                    html += "<option value=" + db + ">" + db + "</option>"
-                });
-                $('#select_db').append(html);
-                $('.selectpicker').selectpicker('refresh')
-            }
-            else {
-                displayPNotify(result.status, result.msg);
-            }
-        }
-    })
-}
-
 
 /**
  * 执行inception语法检查
@@ -349,3 +202,33 @@ $('#auditCommitForm').validator().on('submit', function (e) {
         return false;
     }
 });
+
+/**
+ * 获取指定主机的数据库库名列表
+ */
+function getDatabaseList() {
+    $("#select_db").empty();
+    var host = $("#select_env").val();
+    var csrftoken = $.cookie('csrftoken');
+    $.ajax({
+        url: '/projects/db_list/',
+        type: 'POST',
+        dataType: 'json',
+        data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
+        timeout: 5000,
+        cache: false,
+        success: function (result) {
+            if (result.status === 0) {
+                var html = '';
+                $.each(result.data, function (index, db) {
+                    html += "<option value=" + db + ">" + db + "</option>"
+                });
+                $('#select_db').append(html);
+                $('.selectpicker').selectpicker('refresh')
+            }
+            else {
+                displayPNotify(result.status, result.msg);
+            }
+        }
+    })
+}
