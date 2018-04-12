@@ -132,9 +132,9 @@ class MySQLUserManager(object):
                 cursor.execute(modify_query)
                 return {'status': 0, 'msg': '修改成功'}
         except self.conn.OperationalError as error:
-            return {'status': 1, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
+            return {'status': 2, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
         except self.conn.ProgrammingError as error:
-            return {'status': 1, 'msg': str(error)}
+            return {'status': 2, 'msg': str(error)}
         finally:
             self.flush_privileges()
             self.conn.close()
@@ -149,14 +149,27 @@ class MySQLUserManager(object):
                 # 赋予新权限
                 modify_query = f"grant {self.privileges} on {self.schema} to {self.username}"
                 cursor.execute(modify_query)
-                return {'status': 0, 'msg': '修改成功'}
+                return {'status': 0, 'msg': '创建成功'}
         except self.conn.OperationalError as error:
-            return {'status': 1, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
+            return {'status': 2, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
         except self.conn.ProgrammingError as error:
             self.rollback_user()
-            return {'status': 1, 'msg': f'语法错误，{str(error)}'}
+            return {'status': 2, 'msg': f'语法错误，{str(error)}'}
         except self.conn.InternalError as error:
-            return {'status': 1, 'msg': f'创建用户失败，请检查主机是否存在, {str(error)}'}
+            return {'status': 2, 'msg': f'创建用户失败，请检查主机是否存在, {str(error)}'}
+        finally:
+            self.flush_privileges()
+            self.conn.close()
+
+    def delete_host(self):
+        try:
+            with self.conn.cursor() as cursor:
+                delete_host_query = f"drop user {self.username}"
+                cursor.execute(delete_host_query)
+                cursor.close()
+                return {'status': 0, 'msg': '删除成功'}
+        except Exception as error:
+            return {'status': 2, 'msg': str(error)}
         finally:
             self.flush_privileges()
             self.conn.close()

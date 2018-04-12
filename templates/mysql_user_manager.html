@@ -3,7 +3,9 @@
 
 {% block link_css %}
     <style type="text/css">
-
+        .btn {
+            margin: 2px;
+        }
     </style>
 {% endblock %}
 
@@ -13,18 +15,23 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> 账号预览</h3>
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 账号管理
+                            <small class="text-red"><cite> Tips: 输入内容，按enter进行搜索</cite></small>
+                        </h3>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="col-sm-12">
-                        <div id="toolbar" class="btn-group">
+                    <div id="toolbar">
+                        <div class="form-inline" role="form">
                             <div class="form-group">
-                                <select id="select_env" name="host" onchange="refresh_table()"
-                                        required
-                                        class="form-control selectpicker" title="选择主机...">
+                                <select id="select_env" name="host" onchange="load_select_env_host()"
+                                        required class="selectpicker" title="选择主机...">
                                 </select>
                             </div>
+
+                            <button type="button" data-toggle="modal" data-target="#modal_user_modify"
+                                    data-whatever_action="new_user" class="btn btn-primary">新建用户
+                            </button>
                         </div>
                     </div>
                     <table id="table"></table>
@@ -37,14 +44,14 @@
     <div class="modal fade" id="modal_user_modify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form class="form-horizontal" id="userModifyForm" method="post" action="{% url 'p_mysql_priv_modify' %}">
+                <form class="form-horizontal" id="userModifyForm" method="post"
+                      action="{% url 'p_mysql_user_manager' %}">
                     {% csrf_token %}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title" id="myModalLabel"><i class="fa  fa-pencil"></i> 权限变更
-                            <small>tips：新设置的权限会覆盖掉旧权限</small>
+                        <h4 class="modal-title" id="myModalLabel"><i class="fa  fa-pencil" id="title"></i>
                         </h4>
                     </div>
 
@@ -67,14 +74,16 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">用户</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="text" class="form-control" name="user" readonly="readonly">
+                                    <input type="text" class="form-control" name="user" readonly="readonly"
+                                           id="write_user">
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id="display_host">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">主机</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="text" class="form-control" name="host" readonly="readonly"
+                                    <input type="text" class="form-control" spellcheck="false" name="host"
+                                           readonly="readonly"
                                            id="write_host">
                                 </div>
                             </div>
@@ -82,18 +91,19 @@
                             <div class="form-group" style="display: none" id="display_password">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">密码</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="password" class="form-control" name="password">
+                                    <input type="password" class="form-control" spellcheck="false" name="password">
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id="display_schema">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">schema</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="text" class="form-control" name="schema" readonly="readonly"
+                                    <input type="text" class="form-control" spellcheck="false" name="schema"
+                                           readonly="readonly"
                                            id="write_schema">
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="display_privileges">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">权限</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
                                     <input type="text" class="form-control"
@@ -105,7 +115,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        <button type="submit" class="btn btn-primary">保存</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
                     </div>
                 </form>
             </div>
@@ -125,8 +135,9 @@
             $table.bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_mysql_user_manager' %}",
+                url: "{% url 'p_mysql_user' %}",
                 search: true,
+                searchOnEnterKey: true,
                 cache: false,
                 showRefresh: true,
                 toolbar: '#toolbar',
@@ -147,7 +158,7 @@
                     }
                 },
                 onSearch: function (text) {
-                    refresh_table()
+                    $table.bootstrapTable('refresh', {silent: true})
                 },
                 onLoadSuccess: function (data) {
                     $table.treegrid({
@@ -208,13 +219,19 @@
                         title: '操作',
                         formatter: function (value, row, index) {
                             if (value) {
-                                return "<button class=\"btn btn-xs btn-info\" " +
+                                return ["<button class=\"btn btn-xs btn-info\" " +
+                                "data-toggle=\"modal\" data-target=\"#modal_user_modify\" " +
+                                "data-whatever_user=" + row.user + " " +
+                                "data-whatever_host=" + row.host + " " +
+                                "data-whatever_schema=" + row.schema + " " +
+                                "data-whatever_action=" + "modify_privileges" + " " +
+                                '>更改权限</button> ',
+                                    "<button class=\"btn btn-xs btn-danger\" " +
                                     "data-toggle=\"modal\" data-target=\"#modal_user_modify\" " +
                                     "data-whatever_user=" + row.user + " " +
                                     "data-whatever_host=" + row.host + " " +
-                                    "data-whatever_schema=" + row.schema + " " +
-                                    "data-whatever_action=" + "modify_privileges" + " " +
-                                    '>更改权限</button>'
+                                    "data-whatever_action=" + "delete_host" + " " +
+                                    '>删除主机</button>'].join(' ')
                             } else {
                                 return "<button class=\"btn btn-xs btn-warning\" " +
                                     "data-toggle=\"modal\" data-target=\"#modal_user_modify\" " +
@@ -230,14 +247,15 @@
 
         /**
          * modal中的whatever_action取值
-         * modify_privileges： 变更指定用户和主机的权限
-         * new_host：为指定用户新建主机
+         * modify_privileges： 变更指定用户和主机的权限，即：user@host
+         * new_host：为指定用户新建主机，即：user@host
+         * delete_host：删除指定的用户主机，即：user@host
          * 传递给后台进行判断
          */
 
         var current_select_host = '';
 
-        function refresh_table() {
+        function load_select_env_host() {
             $table.bootstrapTable('refresh', {silent: true});
             current_select_host = $('#select_env').val();
         }
@@ -260,7 +278,7 @@
                         html += "<option value=" + host + ">" + comment + "</option>"
                     });
                     $('#select_env').append(html);
-                    $('.selectpicker').selectpicker('refresh')
+                    $('.selectpicker').selectpicker('refresh', {silent: true})
                 }
             })
         });
@@ -270,7 +288,10 @@
          */
         $('#modal_user_modify').on('show.bs.modal', function (event) {
 
+            <!--清空所有的input的值-->
             $("input").val("");
+            <!--清空title的值-->
+            $("#title").empty();
 
             var button = $(event.relatedTarget);
             // 获取值
@@ -284,8 +305,15 @@
             var action = $('.modal-body input')[1];
             var user = $('.modal-body input')[2];
 
+            document.getElementById("display_password").style.display = "";
+            document.getElementById("display_host").style.display = "";
+            document.getElementById("display_schema").style.display = "";
+            document.getElementById("display_privileges").style.display = "";
+            $('#write_user').attr("readonly", "readonly");
+
             if (recipient_action === 'modify_privileges') {
                 document.getElementById("display_password").style.display = "none";
+
                 $('#write_host').attr("readonly", "readonly");
                 $('#write_schema').attr("readonly", "readonly");
 
@@ -294,11 +322,37 @@
 
                 modal.find(host).val(recipient_host);
                 modal.find(schema).val(recipient_schema);
+
+                <!--设置modal标题-->
+                $("#title").append(" 用户主机权限变更<small class='text-red'><cite> Tips：新设置的权限会覆盖掉旧权限</cite></small>")
             }
             else if (recipient_action === 'new_host') {
                 $('#write_host').removeAttr("readonly");
                 $('#write_schema').removeAttr("readonly");
-                document.getElementById("display_password").style.display = "";
+
+                <!--设置modal标题-->
+                $("#title").append(" 新建用户主机<small>")
+            }
+            else if (recipient_action === 'delete_host') {
+                $('#write_host').attr("readonly", "readonly");
+                document.getElementById("display_password").style.display = "none";
+                document.getElementById("display_schema").style.display = "none";
+                document.getElementById("display_privileges").style.display = "none";
+
+                var host = $('.modal-body input')[3];
+                modal.find(host).val(recipient_host);
+
+                <!--设置modal标题-->
+                var username = [recipient_user, recipient_host].join('@');
+                $("#title").append(" 删除用户主机 <small class='text-red'><cite> Tips: 将要删除用户：" + username + "</cite></small>")
+            }
+            else if (recipient_action === 'new_user') {
+                $('#write_user').removeAttr("readonly");
+                $('#write_host').removeAttr("readonly");
+                $('#write_schema').removeAttr("readonly");
+
+                <!--设置modal标题-->
+                $("#title").append(" 新建数据库用户<small>")
             }
 
             // 分别绑定为模态框input元素的value值
@@ -315,11 +369,10 @@
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
                     $('#modal_user_modify').modal('hide');
-                    $table.bootstrapTable('refresh', {silent: true})
+                    $table.bootstrapTable('refresh', {silent: true});
                 }
             });
             return false
         });
-
     </script>
 {% endblock %}

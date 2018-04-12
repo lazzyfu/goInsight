@@ -27,13 +27,13 @@ function displayPNotify(status, msg) {
     // 接收后端返回的状态值
     if (status === 0) {
         type = 'success';
-        title = 'SUCCESS'
+        title = '成功'
     } else if (status === 1) {
         type = 'notice';
-        title = 'NOTICE'
+        title = '警告'
     } else if (status === 2) {
         type = 'error';
-        title = 'ERROR'
+        title = '错误'
     }
 
     PNotify.prototype.options.styling = "bootstrap3";
