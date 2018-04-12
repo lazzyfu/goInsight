@@ -42,7 +42,7 @@ function displayPNotify(status, msg) {
         title: title,
         text: msg,
         type: type,
-        delay: 1500,
+        delay: 2000,
         nonblock: {
             nonblock: true
         },
