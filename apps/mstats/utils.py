@@ -15,7 +15,8 @@ def get_mysql_user_info(host):
                            user=data.user,
                            password=data.password,
                            charset='utf8',
-                           cursorclass=pymysql.cursors.DictCursor)
+                           port=data.port,
+                           cursorclass=pymysql.cursors.DictCursor, )
 
     # 此方法可能受中间件影响，查询结果不准确
     # mysql_version = int(conn.server_version.split('.', 2)[1])
@@ -87,6 +88,91 @@ def get_mysql_user_info(host):
             return data
     finally:
         conn.close()
+
+
+class MySQLUserManager(object):
+    def __init__(self, kwargs):
+        self.db_host = kwargs.get('db_host')
+        # username = user@host
+        self.username = kwargs.get('username')
+        self.schema = kwargs.get('schema')
+        self.password = kwargs.get('password')
+        self.privileges = kwargs.get('privileges')
+
+        data = InceptionHostConfig.objects.get(host=self.db_host)
+        self.conn = pymysql.connect(host=data.host,
+                                    user=data.user,
+                                    password=data.password,
+                                    port=data.port,
+                                    charset='utf8')
+
+    def flush_privileges(self):
+        """刷新权限"""
+        with self.conn.cursor() as cursor:
+            flush_query = f"flush privileges"
+            cursor.execute(flush_query)
+            cursor.close()
+
+    def rollback_user(self):
+        """移除执行错误后，已经生成的用户"""
+        with self.conn.cursor() as cursor:
+            rollback_user_query = f"drop user {self.username}"
+            cursor.execute(rollback_user_query)
+            cursor.close()
+
+    def priv_modify(self):
+        try:
+            with self.conn.cursor() as cursor:
+                # 先移除all privileges
+                revoke_query = f"revoke all ON {self.schema} from {self.username}"
+                cursor.execute(revoke_query)
+
+                # 赋予新权限
+                modify_query = f"grant {self.privileges} on {self.schema} to {self.username}"
+                cursor.execute(modify_query)
+                return {'status': 0, 'msg': '修改成功'}
+        except self.conn.OperationalError as error:
+            return {'status': 2, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
+        except self.conn.ProgrammingError as error:
+            return {'status': 2, 'msg': str(error)}
+        finally:
+            self.flush_privileges()
+            self.conn.close()
+
+    def new_host(self):
+        try:
+            with self.conn.cursor() as cursor:
+                # 创建用户主机
+                new_host_query = f"create user {self.username} identified by \"{self.password}\""
+                cursor.execute(new_host_query)
+
+                # 赋予新权限
+                modify_query = f"grant {self.privileges} on {self.schema} to {self.username}"
+                cursor.execute(modify_query)
+                return {'status': 0, 'msg': '创建成功'}
+        except self.conn.OperationalError as error:
+            return {'status': 2, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
+        except self.conn.ProgrammingError as error:
+            self.rollback_user()
+            return {'status': 2, 'msg': f'语法错误，{str(error)}'}
+        except self.conn.InternalError as error:
+            return {'status': 2, 'msg': f'创建用户失败，请检查主机是否存在, {str(error)}'}
+        finally:
+            self.flush_privileges()
+            self.conn.close()
+
+    def delete_host(self):
+        try:
+            with self.conn.cursor() as cursor:
+                delete_host_query = f"drop user {self.username}"
+                cursor.execute(delete_host_query)
+                cursor.close()
+                return {'status': 0, 'msg': '删除成功'}
+        except Exception as error:
+            return {'status': 2, 'msg': str(error)}
+        finally:
+            self.flush_privileges()
+            self.conn.close()
 
 
 def check_mysql_conn_status(fun):
