@@ -31,6 +31,7 @@ class MySQLUserView(View):
 
 
 class MySQLUserManagerView(View):
+    @method_decorator(check_dba_permission)
     def post(self, request):
         data = format_request(request)
         form = PrivModifyForm(data)

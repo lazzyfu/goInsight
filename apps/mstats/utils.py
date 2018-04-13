@@ -100,6 +100,7 @@ class MySQLUserManager(object):
         self.privileges = kwargs.get('privileges')
 
         data = InceptionHostConfig.objects.get(host=self.db_host)
+        self.dst_user = '@'.join((data.user, data.host))
         self.conn = pymysql.connect(host=data.host,
                                     user=data.user,
                                     password=data.password,
@@ -132,7 +133,7 @@ class MySQLUserManager(object):
                 cursor.execute(modify_query)
                 return {'status': 0, 'msg': '修改成功'}
         except self.conn.OperationalError as error:
-            return {'status': 2, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
+            return {'status': 2, 'msg': f'授权失败，请检查{self.dst_user}是否有with grant option权限'}
         except self.conn.ProgrammingError as error:
             return {'status': 2, 'msg': str(error)}
         finally:
@@ -151,7 +152,8 @@ class MySQLUserManager(object):
                 cursor.execute(modify_query)
                 return {'status': 0, 'msg': '创建成功'}
         except self.conn.OperationalError as error:
-            return {'status': 2, 'msg': f'授权失败，请检查{self.username}是否有with grant option权限'}
+            self.rollback_user()
+            return {'status': 2, 'msg': f'授权失败，请检查{self.dst_user}是否有with grant option权限'}
         except self.conn.ProgrammingError as error:
             self.rollback_user()
             return {'status': 2, 'msg': f'语法错误，{str(error)}'}
