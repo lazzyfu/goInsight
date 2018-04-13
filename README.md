@@ -11,16 +11,6 @@ AuditSQL介绍
 
 **https://github.com/lazzyfu/AuditSQL/wiki**
 
-
-## 简要流程图（请下载查看）
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
-
-## gif图（有些失真）
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/show.gif)
-
-
 ## 开发组件
 
 - Python 3.6
@@ -73,6 +63,23 @@ AuditSQL介绍
   
 - 扩展功能：
    - 支持数据库表结构变更自动E-Mail通知，并生成变更结果
+
+## 简要流程图
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
+
+## 页面展示(随便展示几处)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/show/show-1.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/show/show-2.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/show/show-3.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/show/show-4.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/show/show-5.png)
+
 
 ## 联系方式
    
