@@ -175,7 +175,6 @@
                 },
                 columns: [
                     {
-                        field: 'ck',
                         checkbox: true
                     },
                     {
@@ -363,8 +362,9 @@
 
         $('#userModifyForm').submit(function () {
             var csrftoken = $.cookie('csrftoken');
-            $('#userModifyForm').ajaxSubmit({
+            $(this).ajaxSubmit({
                 dataType: 'json',
+                resetForm: true,
                 data: {'csrfmiddlewaretoken': csrftoken},
                 success: function (result) {
                     displayPNotify(result.status, result.msg);

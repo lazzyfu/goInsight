@@ -34,6 +34,7 @@
     <!-- bootstrap-table -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap3-editable/css/bootstrap-editable.css' %}">
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/css/jquery.treegrid.css' %}">
 
@@ -167,6 +168,21 @@
                         </li>
                     </ul>
                 </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-files-o"></i>
+                        <span>定时任务</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'p_rcrontab' %}"><i class="fa fa-edit"></i>Crontabs</a></li>
+                        </li>
+                    </ul>
+                </li>
+
                 {% if request.user.user_role == 'DBA' %}
                     <li class="treeview">
                         <a href="#">
@@ -246,6 +262,7 @@
 <!-- bootstrap-table -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap3-editable/js/bootstrap-editable.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/js/jquery.treegrid.min.js' %}"></script>
