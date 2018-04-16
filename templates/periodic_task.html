@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 周期任务
+                        </h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="toolbar">
+                        <div class="form-inline" role="form">
+                            <button type="button" data-toggle="modal" data-target="#modal_new_periodic"
+                                    class="btn btn-primary" onclick="init_data()"><i class="fa fa-plus"></i> 新建
+                            </button>
+                            <button type="button" onclick="delete_selected()" class="btn btn-primary"><i
+                                    class="fa fa-minus"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                    <table id="table"></table>
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_new_periodic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form class="form-horizontal" id="periodicForm" method="post"
+                      action="{% url 'p_periodic_task' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"><i class="fa fa-pencil"></i> 新建周期任务
+                        </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">任务名</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="任务描述内容" name="name">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">任务</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <select id="s_task" name="task"
+                                            title="选择任务"
+                                            style="width: 100%" class="selectpicker form-control dropup"
+                                            required>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">是否启用</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <select name="enabled"
+                                            style="width: 100%" class="selectpicker form-control dropup"
+                                            required>
+                                        <option value="1" selected>启用</option>
+                                        <option value="0">禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">主机</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <select id="select_env" name="host" onchange="getDatabaseList()"
+                                            style="width: 100%"
+                                            required
+                                            class="form-control selectpicker" title="选择主机...">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">schema</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <select id="select_db" name="schema" style="width: 100%" required
+                                            class="form-control selectpicker" title="选择库名...">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">crontab</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <select id="s_crontab" name="crontab" style="width: 100%" required
+                                            class="form-control selectpicker" title="选择crontab...">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">收件人</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <textarea rows="5" style="resize: none" class="form-control" spellcheck="false"
+                                              placeholder="收件人邮箱, 以逗号分隔" name="receiver"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        /**
+         * 初始化bootstrap-table，生成表格
+         */
+        var $table = $('#table');
+        $(function () {
+            $table.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_periodic_task' %}",
+                search: true,
+                cache: false,
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                pageNumber: 1,
+                pageSize: 6,
+                locale: 'zh-CN',
+                pageList: [10, 20, 30],
+                toolbar: '#toolbar',
+                sidePagination: "client",
+                classes: 'table table-hover',
+                uniqueId: 'id',
+                formatLoadingMessage: function () {
+                    return "请稍等，正在加载中...";
+                },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+                columns: [
+                    {
+                        checkbox: true
+                    },
+                    {
+                        field: 'enabled',
+                        title: '启用',
+                        formatter: function (value) {
+                            if (value === true) {
+                                return "<i class='fa fa-check' style='color:green'></i>"
+                            }
+                            else {
+                                return "<i class='fa fa-close' style='color:red'></i>"
+                            }
+                        }
+                    },
+                    {
+                        field: 'name',
+                        title: '任务名'
+                    },
+                    {
+                        field: 'task',
+                        title: '任务',
+                        formatter: function (value) {
+                            return value.split('.')[2]
+                        }
+                    },
+                    {
+                        field: 'host',
+                        title: '主机'
+                    },
+                    {
+                        field: 'schema',
+                        title: 'schema'
+                    },
+                    {
+                        field: 'receiver',
+                        title: '收件人',
+                        width: '20%',
+                        formatter: function (value) {
+                            if (value) {
+                                return value.split(',').join('<br>')
+                            }
+                        }
+                    },
+                    {
+                        field: 'crontab_value',
+                        title: '执行时间'
+                    },
+                    {
+                        field: 'last_run_at',
+                        title: '最后一次运行时间'
+                    }
+                ],
+                // 编辑保存，上面的editable统一调用此方法
+                onEditableSave: function (field, row, oldValue, $el) {
+                    var csrftoken = $.cookie('csrftoken');
+                    // 将csrftoken附加到对象row
+                    row.csrfmiddlewaretoken = csrftoken;
+
+                    // 标记被修改的字段，后台根据指定字段进行数据修改
+                    row.action = 'edit_crontab';
+
+                    $.ajax({
+                        type: "post",
+                        url: "{% url 'p_crontab' %}",
+                        data: row,
+                        dataType: 'JSON',
+                        success: function (data) {
+                            displayPNotify(data.status, data.msg)
+                        },
+                        error: function (error) {
+                            displayPNotify(error.status, '您没有权限')
+                        }
+                    });
+                }
+            })
+        });
+
+
+        $('#periodicForm').submit(function () {
+            $(this).ajaxSubmit({
+                dataType: 'json',
+                resetForm: true,
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                    $('#modal_new_periodic').modal('hide');
+                    $table.bootstrapTable('refresh', {silent: true});
+                }
+            });
+            return false
+        });
+
+        // 删除选择的数据
+        function delete_selected() {
+            var selectedContent = $table.bootstrapTable('getAllSelections');
+            var id = [];
+            selectedContent.forEach(function (val) {
+                id.push(val['id'])
+            });
+            console.log(id);
+            if (id.length === 0) {
+                displayPNotify(2, '请至少勾选一行数据');
+                return false;
+            } else {
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: '{% url 'p_crontab' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 1000,
+                    data: {
+                        'action': 'delete_crontab',
+                        'id': id.toString(),
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    cache: false,
+                    success: function (result) {
+                        displayPNotify(result.status, result.msg);
+                        $table.bootstrapTable('refresh', {silent: true});
+                    }
+                })
+            }
+        }
+
+        function init_data() {
+            $('#select_env').empty();
+            $('#s_crontab').empty();
+            $('#s_task').empty();
+            $('#select_db').empty();
+
+            $.ajax({
+                url: '{% url 'p_host_config' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, row) {
+                        var host = row.host;
+                        var comment = row.comment;
+                        html += "<option value=" + host + ">" + comment + "</option>"
+                    });
+                    $('#select_env').append(html);
+                    $('.selectpicker').selectpicker('refresh', {silent: true})
+                }
+            });
+
+            // 获取tasks列表
+            $.ajax({
+                url: '{% url 'p_get_celery_tasks' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, row) {
+                        var f_task = row.split('.')[2];
+                        html += "<option value=" + row + ">" + f_task + "</option>"
+                    });
+                    $('#s_task').append(html);
+                    $('.selectpicker').selectpicker('refresh', {silent: true})
+                }
+            });
+
+            // 获取crontab列表
+            $.ajax({
+                url: '{% url 'p_get_crontab' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, row) {
+                        html += "<option value=" + row.id + ">" + row.crontab_value + "</option>"
+                    });
+                    $('#s_crontab').append(html);
+                    $('.selectpicker').selectpicker('refresh', {silent: true})
+                }
+            })
+        }
+    </script>
+{% endblock %}

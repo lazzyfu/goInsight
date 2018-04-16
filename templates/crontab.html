@@ -191,7 +191,7 @@
                     row.csrfmiddlewaretoken = csrftoken;
 
                     // 标记被修改的字段，后台根据指定字段进行数据修改
-                    row.field = field;
+                    row.action = 'edit_crontab';
 
                     $.ajax({
                         type: "post",
@@ -199,7 +199,7 @@
                         data: row,
                         dataType: 'JSON',
                         success: function (data) {
-                            displayPNotify(data.status, data.msg, refresh_table)
+                            displayPNotify(data.status, data.msg)
                         },
                         error: function (error) {
                             displayPNotify(error.status, '您没有权限')

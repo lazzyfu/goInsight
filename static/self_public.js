@@ -207,7 +207,7 @@ $('#auditCommitForm').validator().on('submit', function (e) {
  * 获取指定主机的数据库库名列表
  */
 function getDatabaseList() {
-    $("#select_db").empty();
+    $('#select_db').empty();
     var host = $("#select_env").val();
     var csrftoken = $.cookie('csrftoken');
     $.ajax({
@@ -227,6 +227,8 @@ function getDatabaseList() {
                 $('.selectpicker').selectpicker('refresh')
             }
             else {
+                // 此处必须刷新表格
+                $('.selectpicker').selectpicker('refresh');
                 displayPNotify(result.status, result.msg);
             }
         }
