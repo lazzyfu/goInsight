@@ -57,16 +57,17 @@
         {% if table_change_data %}
             {% for row in table_change_data %}
                 {% if row.remove %}
-                    <h5 style="color: red">删除的表</h5>
+                    <h5 style="color: red">删除的表：</h5>
                     {% for j in row.remove %}
-                        {{ j }}
+                        <p>{{ j }}</p>
                     {% endfor %}
                 {% endif %}
             {% endfor %}
 
             {% for row in table_change_data %}
                 {% if row.add %}
-                    <h5 style="color: red">新增的表：{{ row.add.table_name }}_[表结构]</h5>
+                    <h5 style="color: red">新增的表：</h5>
+                    <p>{{ row.add.table_name }}</p>
                     <pre>{{ row.add.table_stru }}</pre>
                 {% endif %}
             {% endfor %}

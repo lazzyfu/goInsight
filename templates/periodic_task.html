@@ -183,7 +183,12 @@
                             type: 'text',
                             title: '任务名',
                             validate: function (v) {
-                                if (!v) return '输入不能为空';
+                                if (v === 'celery.backend_cleanup') {
+                                    return '系统任务，不能编辑'
+                                }
+                                else if (!v) {
+                                    return '输入不能为空';
+                                }
                             }
                         }
                     },
@@ -242,9 +247,6 @@
                         dataType: 'JSON',
                         success: function (data) {
                             displayPNotify(data.status, data.msg)
-                        },
-                        error: function (error) {
-                            displayPNotify(error.status, '您没有权限')
                         }
                     });
                 }
