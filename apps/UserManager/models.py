@@ -44,6 +44,11 @@ class Roles(models.Model):
     def __str__(self):
         return self.role_name
 
+    def permission(self):
+        permission_name = PermissionDetail.objects.annotate(permission_name=F('permission__permission_name')).filter(
+            role__role_id=self.role_id).values_list('permission_name', flat=True)
+        return ', '.join(permission_name)
+
     class Meta:
         verbose_name = u'用户角色'
         verbose_name_plural = verbose_name
@@ -71,6 +76,40 @@ class RolesDetail(models.Model):
         db_table = 'auditsql_roles_detail'
 
         unique_together = ('user',)
+
+
+class Permission(models.Model):
+    """权限表"""
+    id = models.AutoField(primary_key=True, verbose_name=u'主键')
+    permission_name = models.CharField(max_length=30, null=False, verbose_name=u'权限名')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
+
+    def __str__(self):
+        return self.permission_name
+
+    class Meta:
+        verbose_name = u'角色权限'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'auditsql_permission'
+
+
+class PermissionDetail(models.Model):
+    """角色对应的权限，多对多关系"""
+    id = models.AutoField(primary_key=True, verbose_name=u'主键')
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE, null=False)
+    role = models.ForeignKey(Roles, on_delete=models.CASCADE, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
+
+    class Meta:
+        verbose_name = u'权限详情表'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'auditsql_permission_detail'
 
 
 class Groups(models.Model):
@@ -121,7 +160,8 @@ class Contacts(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     def contact_group(self):
-        group = ContactsDetail.objects.annotate(group_name=F('group__group_name')).filter(contact__contact_email=self.contact_email).values_list(
+        group = ContactsDetail.objects.annotate(group_name=F('group__group_name')).filter(
+            contact__contact_email=self.contact_email).values_list(
             'group_name', flat=True)
         return ', '.join(group)
 

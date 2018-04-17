@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 
-from .models import UserAccount, Groups, GroupsDetail, Contacts, Roles, RolesDetail, ContactsDetail
+from .models import UserAccount, Groups, GroupsDetail, Contacts, Roles, RolesDetail, ContactsDetail, PermissionDetail
 
 # Register your models here.
 
@@ -12,6 +12,7 @@ admin.site.site_header = '数据库审核系统'
 # 不注册系统的Group
 admin.site.unregister(Group)
 
+
 class RolesDetailInline(admin.StackedInline):
     model = RolesDetail
     max_num = 1
@@ -19,6 +20,11 @@ class RolesDetailInline(admin.StackedInline):
 
 class GroupsDetailInline(admin.StackedInline):
     model = GroupsDetail
+    extra = 1
+
+
+class PermissionDetailInline(admin.StackedInline):
+    model = PermissionDetail
     extra = 1
 
 
@@ -53,26 +59,28 @@ class UserAccountAdmin(admin.ModelAdmin):
     reset_password.short_description = u'重置用户密码为：123.com'
 
 
+class RolesAdmin(admin.ModelAdmin):
+    list_display = ('role_id', 'role_name', 'permission', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
+    list_display_links = ('role_name',)
+    inlines = [PermissionDetailInline, ]
+
+
+class ContactsAdmin(admin.ModelAdmin):
+    list_display = ('contact_id', 'contact_name', 'contact_email', 'contact_group', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
+    list_display_links = ('contact_email',)
+
+    inlines = [ContactsDetailInline, ]
+
+
 @admin.register(Groups)
 class GroupsAdmin(admin.ModelAdmin):
     list_display = ('group_id', 'group_name', 'created_at', 'updated_at')
     ordering = ('-created_at',)
 
 
-@admin.register(Roles)
-class RolesAdmin(admin.ModelAdmin):
-    list_display = ('role_id', 'role_name', 'created_at', 'updated_at')
-    ordering = ('-created_at',)
-
-
-class ContactsAdmin(admin.ModelAdmin):
-    list_display = ('contact_id', 'contact_name', 'contact_email', 'contact_group', 'created_at', 'updated_at')
-    ordering = ('-created_at',)
-    list_display_links = ('contact_email', )
-
-    inlines = [ContactsDetailInline, ]
-
-
 # 注册
 admin.site.register(UserAccount, UserAccountAdmin)
+admin.site.register(Roles, RolesAdmin)
 admin.site.register(Contacts, ContactsAdmin)

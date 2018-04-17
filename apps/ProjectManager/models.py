@@ -30,7 +30,7 @@ class InceptionHostConfig(models.Model):
         unique_together = ('host',)
 
         default_permissions = ()
-        db_table = 'sqlaudit_inception_hostconfig'
+        db_table = 'auditsql_inception_hostconfig'
 
 
 class InceptionHostConfigDetail(models.Model):
@@ -111,7 +111,7 @@ class OnlineAuditContents(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_audit_contents'
+        db_table = 'auditsql_audit_contents'
         unique_together = ('title',)
 
         permissions = (
@@ -130,7 +130,7 @@ class Remark(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_audit_remark'
+        db_table = 'auditsql_audit_remark'
 
 
 class OnlineAuditContentsReply(models.Model):
@@ -145,7 +145,7 @@ class OnlineAuditContentsReply(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_audit_contents_reply'
+        db_table = 'auditsql_audit_contents_reply'
 
     def reply_id(self):
         return self.reply.id
@@ -164,7 +164,7 @@ class MonitorSchema(models.Model):
         verbose_name = u'监控表结构变更表'
         verbose_name_plural = verbose_name
         permissions = ()
-        db_table = "sqlaudit_monitor_schema"
+        db_table = "auditsql_monitor_schema"
 
 
 exec_progress = (
@@ -203,7 +203,7 @@ class IncepMakeExecTask(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_incep_tasks'
+        db_table = 'auditsql_incep_tasks'
 
 
 class DomainName(models.Model):
@@ -215,7 +215,7 @@ class DomainName(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_domain_name'
+        db_table = 'auditsql_domain_name'
 
 
 class DataExport(models.Model):
@@ -240,7 +240,7 @@ class DataExport(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_data_export'
+        db_table = 'auditsql_data_export'
 
 
 class Files(models.Model):
@@ -261,4 +261,4 @@ class Files(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_files'
+        db_table = 'auditsql_files'

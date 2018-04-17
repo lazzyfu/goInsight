@@ -21,6 +21,7 @@ from ProjectManager.permissions import check_group_permission, check_sql_detail_
 from ProjectManager.tasks import send_verify_mail, \
     send_reply_mail
 from ProjectManager.utils import check_incep_alive, check_sql_filter
+from UserManager.permissions import permission_required
 from utils.tools import format_request
 
 
@@ -100,6 +101,7 @@ class IncepOlApproveView(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlApproveView, self).dispatch(request, *args, **kwargs)
 
+    @permission_required(u'审批权限')
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
         id = cleaned_data.get('id')

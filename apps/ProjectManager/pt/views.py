@@ -39,7 +39,7 @@ class IncepOfRecordsListView(View):
             request.session['groups'])
         query = f"select a.id,a.user,a.taskid,a.dst_host,a.dst_database,a.make_time, b.group_name," \
                 f"case a.category when '0' then '线下任务' when '1' then '线上任务' end as category " \
-                f"from sqlaudit_incep_tasks as a join auditsql_groups as b " \
+                f"from auditsql_incep_tasks as a join auditsql_groups as b " \
                 f"on a.group_id = b.group_id where b.group_id in {user_in_group} group by a.taskid " \
                 f"order by a.make_time  desc"
         for row in IncepMakeExecTask.objects.raw(query):
@@ -91,7 +91,7 @@ class IncepOfDetailsListView(View):
                 f"when '0' then '未执行' when '1' then '已完成' when '2' then '处理中' when '3' then '回滚中' " \
                 f"when '4' then '已回滚' end as exec_status," \
                 f"case category when '0' then '线下任务' when '1' then '线上任务' end as category" \
-                f" from sqlaudit_incep_tasks where taskid={taskid}".format(taskid=taskid)
+                f" from auditsql_incep_tasks where taskid={taskid}".format(taskid=taskid)
         i = 0
         task_details = []
         for row in IncepMakeExecTask.objects.raw(query):
@@ -122,7 +122,7 @@ class IncepPerformView(View):
         obj = IncepMakeExecTask.objects.get(id=id)
         status = ''
 
-        query = f"select id,group_concat(exec_status) as exec_status from sqlaudit_incep_tasks " \
+        query = f"select id,group_concat(exec_status) as exec_status from auditsql_incep_tasks " \
                 f"where taskid={obj.taskid} group by taskid"
         for row in IncepMakeExecTask.objects.raw(query):
             status = row.exec_status.split(',')
