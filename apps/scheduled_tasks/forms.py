@@ -2,14 +2,8 @@
 # edit by fuzongfei
 import json
 
-from celery import current_app
 from django import forms
 from djcelery.models import CrontabSchedule, PeriodicTask
-
-# 自动获取任务列表，并提供form选择
-celery_app = current_app
-tasks = list(sorted(name for name in celery_app.tasks if not name.startswith('celery.')))
-tasks_choice = tuple(zip(tasks, tasks))
 
 
 class PeriodicForm(forms.Form):
@@ -18,7 +12,7 @@ class PeriodicForm(forms.Form):
     schema = forms.CharField(max_length=64, min_length=1, required=True)
     crontab = forms.IntegerField(required=True)
     receiver = forms.CharField(max_length=256, min_length=1, required=True)
-    task = forms.ChoiceField(choices=tasks_choice)
+    task = forms.CharField(max_length=256, min_length=1, required=True)
     enabled = forms.ChoiceField(choices=(('0', u'禁用'), ('1', u'启用')))
 
     def is_save(self):
@@ -46,4 +40,3 @@ class PeriodicForm(forms.Form):
             context = {'status': 0, 'msg': '任务创建成功'}
 
         return context
-

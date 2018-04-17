@@ -73,6 +73,7 @@ class PeriodicTaskView(View):
 
         return JsonResponse(result, safe=False)
 
+    @transaction.atomic
     def post(self, request):
         data = format_request(request)
         form = PeriodicForm(data)
@@ -81,6 +82,41 @@ class PeriodicTaskView(View):
         else:
             error = form.errors.as_text()
             context = {'status': 2, 'msg': error}
+
+        return HttpResponse(json.dumps(context))
+
+
+class DeletePeriodicTaskView(View):
+    @transaction.atomic
+    def post(self, request):
+        data = format_request(request)
+        id = data.get('id')
+        for i in id.split(','):
+            PeriodicTask.objects.get(pk=i).delete()
+        context = {'status': 0, 'msg': '删除成功'}
+        return HttpResponse(json.dumps(context))
+
+
+class ModifyPeriodicTaskView(View):
+    @transaction.atomic
+    def post(self, request):
+        data = format_request(request)
+        id = data.get('id')
+        status = data.get('status')
+        action = data.get('action')
+
+        context = {}
+        if action == 'modify_status':
+            PeriodicTask.objects.filter(pk=id).update(enabled=status)
+            context = {'status': 0, 'msg': '状态切换成功'}
+        elif action == 'edit_periodic':
+            del data['csrfmiddlewaretoken']
+            del data['action']
+            kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
+            kwargs['receiver'] = data.get('receiver')
+            PeriodicTask.objects.filter(pk=id).update(name=data.get('name'), kwargs=json.dumps(kwargs))
+
+            context = {'status': 0, 'msg': '修改成功'}
 
         return HttpResponse(json.dumps(context))
 
@@ -94,8 +130,12 @@ class GetCrontabView(View):
 
 
 class GetCeleryTasksView(View):
+    """
+    周期任务中的任务命名必须以:monitor开发
+    """
     def get(self, post):
         # 获取任务列表
         celery_app = current_app
-        tasks = list(sorted(name for name in celery_app.tasks if not name.startswith('celery.')))
+        celery_app.loader.import_default_modules()
+        tasks = list(sorted(name for name in celery_app.tasks if not name.startswith('celery.') if 'monitor' in name))
         return HttpResponse(json.dumps(tasks))

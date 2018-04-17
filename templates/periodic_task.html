@@ -167,18 +167,25 @@
                     {
                         field: 'enabled',
                         title: '启用',
-                        formatter: function (value) {
+                        formatter: function (value, row) {
                             if (value === true) {
-                                return "<i class='fa fa-check' style='color:green'></i>"
+                                return "<a href='#' onclick=changestatus(" + row.id + ",'0')><i class='fa fa-check-square' style='color:green'></i></a>"
                             }
                             else {
-                                return "<i class='fa fa-close' style='color:red'></i>"
+                                return "<a href='#' onclick=changestatus(" + row.id + ",'1')><i class='fa fa-times-circle' style='color:red'></i></a>"
                             }
                         }
                     },
                     {
                         field: 'name',
-                        title: '任务名'
+                        title: '任务名',
+                        editable: {
+                            type: 'text',
+                            title: '任务名',
+                            validate: function (v) {
+                                if (!v) return '输入不能为空';
+                            }
+                        }
                     },
                     {
                         field: 'task',
@@ -199,9 +206,12 @@
                         field: 'receiver',
                         title: '收件人',
                         width: '20%',
-                        formatter: function (value) {
-                            if (value) {
-                                return value.split(',').join('<br>')
+                        editable: {
+                            type: 'textarea',
+                            rows: 5,
+                            title: '收件人',
+                            validate: function (v) {
+                                if (!v) return '输入不能为空';
                             }
                         }
                     },
@@ -217,16 +227,18 @@
                 // 编辑保存，上面的editable统一调用此方法
                 onEditableSave: function (field, row, oldValue, $el) {
                     var csrftoken = $.cookie('csrftoken');
-                    // 将csrftoken附加到对象row
-                    row.csrfmiddlewaretoken = csrftoken;
+                    var data = {'csrfmiddlewaretoken': csrftoken};
 
                     // 标记被修改的字段，后台根据指定字段进行数据修改
-                    row.action = 'edit_crontab';
+                    data.action = 'edit_periodic';
+                    data.id = row.id;
+                    data.name = row.name;
+                    data.receiver = row.receiver;
 
                     $.ajax({
                         type: "post",
-                        url: "{% url 'p_crontab' %}",
-                        data: row,
+                        url: "{% url 'p_modify_periodic_task' %}",
+                        data: data,
                         dataType: 'JSON',
                         success: function (data) {
                             displayPNotify(data.status, data.msg)
@@ -239,7 +251,7 @@
             })
         });
 
-
+        // 新建任务
         $('#periodicForm').submit(function () {
             $(this).ajaxSubmit({
                 dataType: 'json',
@@ -267,7 +279,7 @@
             } else {
                 var csrftoken = $.cookie('csrftoken');
                 $.ajax({
-                    url: '{% url 'p_crontab' %}',
+                    url: '{% url 'p_delete_periodic_task' %}',
                     type: 'POST',
                     dataType: 'json',
                     timeout: 1000,
@@ -341,6 +353,23 @@
                     });
                     $('#s_crontab').append(html);
                     $('.selectpicker').selectpicker('refresh', {silent: true})
+                }
+            })
+        }
+
+        // 修改状态
+        function changestatus(id, status) {
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_modify_periodic_task' %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {'action': 'modify_status', 'id': id, 'status': status, 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                    $table.bootstrapTable('refresh', {silent: true});
                 }
             })
         }
