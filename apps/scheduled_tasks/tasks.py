@@ -3,7 +3,7 @@
 
 import difflib
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pymysql
 from celery import shared_task
@@ -12,6 +12,78 @@ from django.template.loader import render_to_string
 
 from AuditSQL.settings import EMAIL_FROM
 from ProjectManager.models import InceptionHostConfig, MonitorSchema
+from scheduled_tasks.models import DeadLockRecords
+
+
+@shared_task
+def monitor_deadlocks(**kwargs):
+    # 计算时间差
+    # 全量同步时，一天之前的数据is_sign设置为：is_sign=1
+    now = datetime.now()
+    delta = timedelta(days=1)
+    before_one_day = now - delta
+
+    host = kwargs.get('host')
+    schema = kwargs.get('schema')
+    receiver = kwargs.get('receiver')
+    check_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    try:
+        latest_ts = DeadLockRecords.objects.order_by('-ts')[0].ts
+    except IndexError as err:
+        latest_ts = '0000-01-01 01:01:01'
+
+    config = InceptionHostConfig.objects.get(host=host, is_enable=0)
+
+    cnx = pymysql.connect(host=config.host,
+                          user=config.user,
+                          password=config.password,
+                          port=config.port,
+                          charset="utf8",
+                          cursorclass=pymysql.cursors.DictCursor)
+
+    try:
+        with cnx.cursor() as cursor:
+
+            query = f"select ts, thread, txn_time, user, ip, db, tbl, idx, lock_type, lock_mode, " \
+                    f"wait_hold, victim, query, is_sign from deadlock_record.deadlocks " \
+                    f"where ts > \"{latest_ts}\" and db=\"{schema}\""
+            cursor.execute(query)
+            for row in cursor.fetchall():
+                # 同步数据
+                is_sign = '1' if row['ts'] < before_one_day else '0'
+                row['src_host'] = kwargs['host']
+                row['is_sign'] = is_sign
+                DeadLockRecords.objects.create(**row)
+            cnx.commit()
+
+            data = list(DeadLockRecords.objects.filter(src_host=kwargs['host']).filter(is_sign='0').values())
+            i = 0
+            step = 2
+            result = []
+            while i <= (len(data) - step):
+                ts_to_json = {data[i]['ts']: (data[i], '<hr>', data[i + 1])}
+                result.append(ts_to_json)
+                i += step
+
+            for i in result:
+                for key, value in i.items():
+                    # 将记录设置为1，即：已推送邮件
+                    DeadLockRecords.objects.filter(src_host=kwargs['host']).filter(is_sign='0').update(is_sign='1')
+
+                    # 发送邮件
+                    email_html_body = render_to_string('_deadlocks_mail.html', {'data': value})
+                    title = f'死锁检测[{host}-{schema}_{check_time}]'
+                    msg = EmailMessage(subject=title,
+                                       body=email_html_body,
+                                       from_email=EMAIL_FROM,
+                                       to=receiver.split(','),
+                                       )
+                    msg.content_subtype = "html"
+                    msg.send()
+
+    finally:
+        cnx.close()
 
 
 @shared_task
