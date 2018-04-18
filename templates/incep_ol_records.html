@@ -5,6 +5,11 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 线上数据变更记录</h3>
+                    </div>
+                </div>
                 <div class="box-body">
                     <table id="demo-table"></table>
                 </div>
@@ -87,34 +92,34 @@
                         title: '批准人'
                     }, {
                         field: 'operate_dba',
-                        title: 'DBA'
+                        title: '执行人'
                     },
                     {
                         field: 'id',
                         title: '审批',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o '></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '反馈',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all '></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '关闭',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close '></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '详情',
                         formatter: function (value, row, index) {
-                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders'></i></a>"
+                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders '></i></a>"
                         }
 
                     },
@@ -122,7 +127,7 @@
                         field: 'id',
                         title: '执行',
                         formatter: function (value, row) {
-                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-cogs'></i></a>"
+                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o '></i></a>"
                         }
                     }
                 ]
@@ -215,6 +220,9 @@
                 success: function (result) {
                     if (result.status === 0) {
                         window.location.href = result.jump_url
+                    }
+                    else {
+                        displayPNotify(result.status, result.msg)
                     }
                 },
                 error: function (jqXHR) {
