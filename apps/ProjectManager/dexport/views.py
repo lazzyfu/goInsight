@@ -3,6 +3,7 @@
 import json
 from datetime import datetime
 
+from django.db import transaction
 from django.db.models import Case, When, Value, CharField, F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -10,8 +11,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from ProjectManager.models import DataExport, Files
-from ProjectManager.permissions import check_data_export_permission
 from ProjectManager.tasks import make_export_file, send_data_export_mail
+from UserManager.permissions import permission_required
 from utils.tools import format_request
 
 
@@ -19,6 +20,8 @@ class DataExportView(View):
     def get(self, request):
         return render(request, 'data_export.html')
 
+    @permission_required('can_commit')
+    @transaction.atomic
     def post(self, request):
         data = format_request(request)
 
@@ -69,7 +72,8 @@ class DataExportRecordsListView(View):
 class ExecDataExportView(View):
     """生成导出文件"""
 
-    @method_decorator(check_data_export_permission)
+    @permission_required('can_export')
+    @transaction.atomic
     def post(self, request):
         id = request.POST.get('id')
 

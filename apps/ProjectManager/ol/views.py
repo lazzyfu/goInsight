@@ -16,11 +16,10 @@ from django.views.generic import FormView
 from ProjectManager.inception.inception_api import IncepSqlCheck
 from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, IncepMakeExecTask
 from ProjectManager.ol.forms import IncepOlAuditForm, IncepOlReplyForm, IncepOlApproveForm
-from ProjectManager.permissions import check_sql_detail_permission
 from ProjectManager.tasks import send_verify_mail, \
     send_reply_mail
 from ProjectManager.utils import check_incep_alive, check_sql_filter
-from UserManager.permissions import permission_required, check_group_permission
+from UserManager.permissions import permission_required, check_group_permission, check_record_details_permission
 from utils.tools import format_request
 
 
@@ -29,6 +28,7 @@ class IncepOlAuditView(View):
         """渲染线上审核页面"""
         return render(request, 'incep_ol_audit.html')
 
+    @permission_required('can_commit')
     @method_decorator(check_incep_alive)
     @method_decorator(check_sql_filter)
     @transaction.atomic
@@ -51,7 +51,7 @@ class IncepOlRecordsView(View):
 
 
 class IncepOlRecordsListView(View):
-    """显示当前用户所在项目组的记录"""
+    """显示当前用户所在项目组的审核记录"""
 
     def get(self, request):
         data = format_request(request)
@@ -154,14 +154,14 @@ class IncepOlApproveView(FormView):
 
 
 class IncepOlFeedbackView(FormView):
-    """线上工单反馈"""
+    """线上工单反馈，一般是DBA执行后，反馈进度"""
     form_class = IncepOlApproveForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlFeedbackView, self).dispatch(request, *args, **kwargs)
 
-    @permission_required(u'')
+    @permission_required('can_execute')
     @transaction.atomic
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -176,39 +176,35 @@ class IncepOlFeedbackView(FormView):
             context = {'status': 2, 'msg': '该记录已被关闭、请不要重复提交'}
         # 当记录未关闭时
         else:
-            # 角色为DBA的才能进行操作
-            if self.request.user.user_role() == 'DBA':
-                # 当进度状态为：已批准或处理中时
-                if data.progress_status == '2' or data.progress_status == '3':
-                    # 当用户点击的是处理中, 状态变为：处理中
-                    with transaction.atomic():
-                        if status == u'处理中':
-                            data.progress_status = '3'
-                            data.save()
-                            context = {'status': 0, 'msg': '操作成功、正在处理中'}
-                            send_verify_mail.delay(latest_id=id,
-                                                   username=self.request.user.username,
-                                                   user_role=self.request.user.user_role(),
-                                                   addition_info=addition_info)
-                        # 当用户点击的是已完成, 状态变为：已完成
-                        elif status == u'已完成':
-                            data.progress_status = '4'
-                            data.fact_operate_dba = self.request.user.username
-                            data.operate_time = timezone.now()
-                            data.save()
-                            context = {'status': 0, 'msg': '操作成功、处理完成'}
-                            send_verify_mail.delay(latest_id=id,
-                                                   username=self.request.user.username,
-                                                   user_role=self.request.user.user_role(),
-                                                   addition_info=addition_info)
-                # 未批准
-                elif data.progress_status == '1' or data.progress_status == '0':
-                    context = {'status': 2, 'msg': '操作失败、审核未通过'}
-                # 其他情况
-                else:
-                    context = {'status': 2, 'msg': '操作失败、请不要重复提交'}
+            # 当进度状态为：已批准或处理中时
+            if data.progress_status == '2' or data.progress_status == '3':
+                # 当用户点击的是处理中, 状态变为：处理中
+                with transaction.atomic():
+                    if status == u'处理中':
+                        data.progress_status = '3'
+                        data.save()
+                        context = {'status': 0, 'msg': '操作成功、正在处理中'}
+                        send_verify_mail.delay(latest_id=id,
+                                               username=self.request.user.username,
+                                               user_role=self.request.user.user_role(),
+                                               addition_info=addition_info)
+                    # 当用户点击的是已完成, 状态变为：已完成
+                    elif status == u'已完成':
+                        data.progress_status = '4'
+                        data.fact_operate_dba = self.request.user.username
+                        data.operate_time = timezone.now()
+                        data.save()
+                        context = {'status': 0, 'msg': '操作成功、处理完成'}
+                        send_verify_mail.delay(latest_id=id,
+                                               username=self.request.user.username,
+                                               user_role=self.request.user.user_role(),
+                                               addition_info=addition_info)
+            # 未批准
+            elif data.progress_status == '1' or data.progress_status == '0':
+                context = {'status': 2, 'msg': '操作失败、审核未通过'}
+            # 其他情况
             else:
-                context = {'status': 1, 'msg': '权限拒绝、只有DBA角色可以操作'}
+                context = {'status': 2, 'msg': '操作失败、请不要重复提交'}
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
@@ -225,6 +221,8 @@ class IncepOlCloseView(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlCloseView, self).dispatch(request, *args, **kwargs)
 
+    @permission_required('can_approve', 'can_execute')
+    @transaction.atomic
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
         id = cleaned_data.get('id')
@@ -270,7 +268,9 @@ class IncepOlCloseView(FormView):
 
 
 class IncepOlDetailsView(View):
-    @method_decorator(check_sql_detail_permission)
+    """查看线上审核记录的详情"""
+
+    @method_decorator(check_record_details_permission)
     def get(self, request, id, group_id):
         obj = OnlineAuditContents.objects.annotate(
             progress_value=Case(
@@ -325,52 +325,50 @@ class IncepOlReplyView(FormView):
 
 class IncepGenerateTasksView(View):
     @method_decorator(check_group_permission)
+    @permission_required('can_execute')
     def post(self, request):
         id = request.POST.get('id')
 
-        if request.user.user_role() == 'DBA':
-            if IncepMakeExecTask.objects.filter(related_id=id).first():
-                taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
+        if IncepMakeExecTask.objects.filter(related_id=id).first():
+            taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
+            context = {'status': 0,
+                       'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
+        else:
+            obj = get_object_or_404(OnlineAuditContents, pk=id)
+
+            # 只要审核通过后，才能执行生成执行任务
+            if obj.progress_status in ('2', '3', '4', '5'):
+                host = obj.dst_host
+                database = obj.dst_database
+                sql_content = obj.contents
+
+                # 实例化
+                incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
+
+                # 对OSC执行的SQL生成sqlsha1
+
+                result = incep_of_audit.make_sqlsha1()
+                taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
+                # 生成执行任务记录
+                for row in result:
+                    IncepMakeExecTask.objects.create(
+                        uid=request.user.uid,
+                        user=obj.proposer,
+                        taskid=taskid,
+                        dst_host=host,
+                        dst_database=database,
+                        sql_content=row['SQL'],
+                        sqlsha1=row['sqlsha1'],
+                        affected_row=row['Affected_rows'],
+                        type=obj.type,
+                        category='1',
+                        related_id=id,
+                        group_id=obj.group_id
+                    )
+
                 context = {'status': 0,
                            'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
             else:
-                obj = get_object_or_404(OnlineAuditContents, pk=id)
-
-                # 只要leader批准后，才能执行生成执行任务
-                if obj.progress_status in ('2', '3', '4', '5'):
-                    host = obj.dst_host
-                    database = obj.dst_database
-                    sql_content = obj.contents
-
-                    # 实例化
-                    incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
-
-                    # 对OSC执行的SQL生成sqlsha1
-
-                    result = incep_of_audit.make_sqlsha1()
-                    taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
-                    # 生成执行任务记录
-                    for row in result:
-                        IncepMakeExecTask.objects.create(
-                            uid=request.user.uid,
-                            user=obj.proposer,
-                            taskid=taskid,
-                            dst_host=host,
-                            dst_database=database,
-                            sql_content=row['SQL'],
-                            sqlsha1=row['sqlsha1'],
-                            affected_row=row['Affected_rows'],
-                            type=obj.type,
-                            category='1',
-                            related_id=id,
-                            group_id=obj.group_id
-                        )
-
-                    context = {'status': 0,
-                               'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
-                else:
-                    context = {'status': 2, 'msg': 'Leader审核未通过'}
-        else:
-            context = {'status': 1, 'msg': '只要DBA才能执行'}
+                context = {'status': 2, 'msg': '审核未通过'}
 
         return HttpResponse(json.dumps(context))

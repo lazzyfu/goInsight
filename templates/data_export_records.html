@@ -152,7 +152,7 @@
                     },
                     {
                         field: 'id',
-                        title: "执行",
+                        title: "导出",
                         formatter: function (value, row, index) {
                             return '<a href="#" onclick="makeFile(' + row.id + ')"><i class="fa fa-check-square-o"></i></a> ';
                         }
@@ -169,7 +169,7 @@
         });
 
 
-        <!-- 生成文件 -->
+        <!-- 生成导出文件 -->
         function makeFile(id) {
             var csrftoken = $.cookie('csrftoken');
             $.ajax({
@@ -182,7 +182,12 @@
                 },
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
-                }
+                },
+                error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
             });
         }
 

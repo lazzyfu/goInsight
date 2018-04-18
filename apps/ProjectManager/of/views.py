@@ -10,6 +10,7 @@ from django.views import View
 
 from ProjectManager.of.forms import IncepOfAuditForm
 from ProjectManager.utils import check_incep_alive, check_sql_filter
+from UserManager.permissions import permission_required
 from utils.tools import format_request
 
 
@@ -19,6 +20,7 @@ class IncepOfAuditView(View):
 
     @method_decorator(check_incep_alive)
     @method_decorator(check_sql_filter)
+    @permission_required('can_commit')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)

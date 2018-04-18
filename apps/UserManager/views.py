@@ -3,13 +3,14 @@ import json
 from PIL import Image
 from django.contrib.auth import logout, login
 from django.contrib.auth.hashers import make_password
+from django.db.models import F
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import FormView, RedirectView
 
-from UserManager.models import UserAccount
+from UserManager.models import UserAccount, PermissionDetail
 from .forms import LoginForm, ChangePasswordForm
 
 
@@ -26,9 +27,16 @@ class LoginView(FormView):
         if user is not None:
             login(self.request, user)
             # 将用户所属的组id写入到session中
-            groups = UserAccount.objects.get(uid=self.request.user.uid).groupsdetail_set.all().values_list(
-                'group__group_id', flat=True)
-            self.request.session['groups'] = list(groups)
+            groups = list(UserAccount.objects.get(uid=self.request.user.uid).groupsdetail_set.all().values_list(
+                'group__group_id', flat=True))
+            self.request.session['groups'] = groups
+            user_role = self.request.user.user_role()
+
+            # 将用户权限写入到session
+            perm_list = list(PermissionDetail.objects.annotate(
+                permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
+                'permission_name', flat=True))
+            self.request.session['perm_list'] = perm_list
             # 判断用户是否激活
             if self.request.user.is_active is True:
                 # 判断用户是否属于任何一个组

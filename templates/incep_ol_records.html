@@ -129,7 +129,7 @@
             })
         });
 
-
+        // 确认操作
         function verifyForm(id, group_id, url, btn_left, btn_right) {
             layui.use('layedit', function () {
                 layui.use('layer', function () {
@@ -151,8 +151,10 @@
                             success: function (result) {
                                 displayPNotify(result.status, result.msg, refresh_page);
                             },
-                            error: function (result) {
-                                displayPNotify(result.status, result.msg);
+                            error: function (jqXHR) {
+                                if (jqXHR.status === 403) {
+                                    displayPNotify(jqXHR.status)
+                                }
                             }
                         });
                     }
@@ -198,7 +200,7 @@
             setInterval(refreshTable, 5000);
         });
 
-        <!-- 创建任务 -->
+        // 创建任务
         function createTasks(id, group_id) {
             var csrftoken = $.cookie('csrftoken');
             $.ajax({
@@ -214,8 +216,10 @@
                     if (result.status === 0) {
                         window.location.href = result.jump_url
                     }
-                    else {
-                        displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
                     }
                 }
             });

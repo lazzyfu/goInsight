@@ -15,7 +15,7 @@
                     <div id="toolbar">
                         <div class="form-inline" role="form">
                             <button type="button" data-toggle="modal" data-target="#modal_new_crontab"
-                                     class="btn btn-primary"> 新建
+                                    class="btn btn-primary"> 新建
                             </button>
                             <button type="button" onclick="delete_selected()" class="btn btn-primary"> 删除
                             </button>
@@ -209,7 +209,7 @@
             })
         });
 
-
+        // 新建crontab
         $('#crontabForm').submit(function () {
             $(this).ajaxSubmit({
                 dataType: 'json',
@@ -219,6 +219,12 @@
                     displayPNotify(result.status, result.msg);
                     $('#modal_new_crontab').modal('hide');
                     $table.bootstrapTable('refresh', {silent: true});
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        $('#modal_new_crontab').modal('hide');
+                        displayPNotify(jqXHR.status)
+                    }
                 }
             });
             return false
@@ -251,6 +257,11 @@
                     success: function (result) {
                         displayPNotify(result.status, result.msg);
                         $table.bootstrapTable('refresh', {silent: true});
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
                     }
                 })
             }

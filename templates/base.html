@@ -136,9 +136,7 @@
                         <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-file-text"></i>审核记录</a>
                         </li>
                         <li><a href="{% url 'p_incep_perform_records' %}"><i class="fa fa-file-text"></i>执行任务</a></li>
-                        </li>
                         <li><a href="{% url 'p_data_export_records' %}"><i class="fa fa-file-text"></i>导出记录</a></li>
-                        </li>
                     </ul>
                 </li>
 
@@ -166,10 +164,9 @@
                     </a>
                     <ul class="treeview-menu">
                         <li><a href="{% url 'p_incep_of_audit' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
-                        </li>
                     </ul>
                 </li>
-                {% if request.user.user_role == 'DBA' %}
+                {% if 'can_scheduled_view' in request.session.perm_list %}
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-tasks"></i>
@@ -180,12 +177,11 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="{% url 'p_rcrontab' %}"><i class="fa fa-clock-o"></i>Crontabs</a></li>
-                            </li>
                             <li><a href="{% url 'p_rperiodic_task' %}"><i class="fa fa-hourglass-2"></i>周期任务</a></li>
-                            </li>
                         </ul>
                     </li>
-
+                {% endif %}
+                {% if 'can_mysqluser_view' in request.session.perm_list %}
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-cog"></i>
@@ -196,7 +192,6 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="{% url 'p_r_mysql_user_manager' %}"><i class="fa fa-user"></i>账号管理</a></li>
-                            </li>
                         </ul>
                     </li>
                 {% endif %}

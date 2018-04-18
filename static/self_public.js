@@ -34,6 +34,10 @@ function displayPNotify(status, msg) {
     } else if (status === 2) {
         type = 'error';
         title = '错误'
+    } else if (status === 403) {
+        type = 'error';
+        title = '403';
+        msg = '权限拒绝，您没有权限操作'
     }
 
     PNotify.prototype.options.styling = "bootstrap3";
@@ -194,8 +198,10 @@ $('#auditCommitForm').validator().on('submit', function (e) {
                 if (result.status === 0) {
                     window.parent.location.href = result.jump_url
                 }
-                else {
-                    displayPNotify(result.status, result.msg)
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status === 403) {
+                    displayPNotify(jqXHR.status)
                 }
             }
         });

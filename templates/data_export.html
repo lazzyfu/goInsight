@@ -245,6 +245,11 @@
                         if (result.status === 0) {
                             window.parent.location.href = result.jump_url;
                         }
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
                     }
                 });
                 return false;

@@ -13,10 +13,10 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from ProjectManager.models import IncepMakeExecTask
-from ProjectManager.permissions import check_incep_tasks_permission
 from ProjectManager.tasks import get_osc_percent, incep_async_tasks, \
     stop_incep_osc
 from ProjectManager.utils import check_incep_alive
+from UserManager.permissions import permission_required
 from apps.ProjectManager.inception.inception_api import GetBackupApi, IncepSqlCheck
 from utils.tools import format_request
 
@@ -75,7 +75,7 @@ class IncepOfResultsView(View):
 
 
 class IncepOfDetailsView(View):
-    """渲染指定执行任务页面"""
+    """渲染指定执行任务详情页面"""
 
     def get(self, request, taskid):
         return render(request, 'incep_perform_details.html', {'taskid': taskid})
@@ -114,7 +114,7 @@ class IncepPerformView(View):
     """执行任务-执行"""
 
     @method_decorator(check_incep_alive)
-    @method_decorator(check_incep_tasks_permission)
+    @permission_required('can_execute')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -179,7 +179,8 @@ class IncepStopView(View):
     """
 
     @method_decorator(check_incep_alive)
-    @method_decorator(check_incep_tasks_permission)
+    @permission_required('can_execute')
+    @transaction.atomic
     def post(self, request):
         id = request.POST.get('id')
 
@@ -204,7 +205,7 @@ class IncepRollbackView(View):
     """
 
     @method_decorator(check_incep_alive)
-    @method_decorator(check_incep_tasks_permission)
+    @permission_required('can_execute')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)

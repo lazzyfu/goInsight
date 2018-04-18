@@ -7,6 +7,7 @@ status:
 0 : success
 1 : warning
 2 : error
+403: permission deny
 
 格式：
 context = {'status': 2, 'msg': 'SQL语法检查未通过', 'data': {'name': 'zs'}}
