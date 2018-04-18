@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 
-from .models import UserAccount, Groups, GroupsDetail, Contacts, Roles, RolesDetail, ContactsDetail, PermissionDetail
+from .models import UserAccount, Groups, GroupsDetail, Contacts, Roles, RolesDetail, ContactsDetail, PermissionDetail, \
+    Permission
 
 # Register your models here.
 
@@ -78,6 +79,13 @@ class ContactsAdmin(admin.ModelAdmin):
 class GroupsAdmin(admin.ModelAdmin):
     list_display = ('group_id', 'group_name', 'created_at', 'updated_at')
     ordering = ('-created_at',)
+
+
+@admin.register(Permission)
+class PermissionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'permission_name', 'permission_desc', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
+    readonly_fields = ['permission_name', 'permission_desc']
 
 
 # 注册

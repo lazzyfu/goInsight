@@ -11,17 +11,16 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import ListView, FormView
-from pure_pagination import PaginationMixin
+from django.views.generic import FormView
 
 from ProjectManager.inception.inception_api import IncepSqlCheck
 from ProjectManager.models import OnlineAuditContents, OnlineAuditContentsReply, IncepMakeExecTask
 from ProjectManager.ol.forms import IncepOlAuditForm, IncepOlReplyForm, IncepOlApproveForm
-from ProjectManager.permissions import check_group_permission, check_sql_detail_permission, check_incep_tasks_permission
+from ProjectManager.permissions import check_sql_detail_permission
 from ProjectManager.tasks import send_verify_mail, \
     send_reply_mail
 from ProjectManager.utils import check_incep_alive, check_sql_filter
-from UserManager.permissions import permission_required
+from UserManager.permissions import permission_required, check_group_permission
 from utils.tools import format_request
 
 
@@ -52,6 +51,8 @@ class IncepOlRecordsView(View):
 
 
 class IncepOlRecordsListView(View):
+    """显示当前用户所在项目组的记录"""
+
     def get(self, request):
         data = format_request(request)
         limit_size = int(data.get('limit_size'))
@@ -95,13 +96,15 @@ class IncepOlRecordsListView(View):
 
 
 class IncepOlApproveView(FormView):
+    """线上工单审批操作"""
     form_class = IncepOlApproveForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlApproveView, self).dispatch(request, *args, **kwargs)
 
-    @permission_required(u'审批权限')
+    @permission_required('can_approve')
+    @transaction.atomic
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
         id = cleaned_data.get('id')
@@ -109,59 +112,57 @@ class IncepOlApproveView(FormView):
         addition_info = cleaned_data.get('addition_info')
 
         data = OnlineAuditContents.objects.get(pk=id)
+
         context = {}
         # 当记录关闭时
         if data.progress_status == '5':
             context = {'status': 2, 'msg': '该记录已被关闭、请不要重复提交'}
         # 当记录未关闭时
         else:
-            # 角色为Leader的用户可以审批
-            if self.request.user.user_role() == 'Leader':
-                if data.progress_status == '0' or data.progress_status == '1':
-                    # 当用户点击的是通过, 状态变为：已批准
-                    with transaction.atomic():
-                        if status == u'通过':
-                            data.progress_status = '2'
-                            data.fact_verifier = self.request.user.username
-                            data.verifier_time = timezone.now()
-                            data.save()
-                            context = {'status': 0, 'msg': '操作成功、审核通过'}
-                            send_verify_mail.delay(latest_id=id,
-                                                   username=self.request.user.username,
-                                                   user_role=self.request.user.user_role(),
-                                                   addition_info=addition_info)
-                        # 当用户点击的是不通过, 状态变为：未批准
-                        elif status == u'不通过':
-                            data.progress_status = '1'
-                            data.fact_verifier = self.request.user.username
-                            data.verifier_time = timezone.now()
-                            data.save()
-                            context = {'status': 0, 'msg': '操作成功、审核未通过'}
-                            send_verify_mail.delay(latest_id=id,
-                                                   username=self.request.user.username,
-                                                   user_role=self.request.user.user_role(),
-                                                   addition_info=addition_info)
-                # 其他情况
-                else:
-                    context = {'status': 2, 'msg': '操作失败、请不要重复提交'}
+            if data.progress_status == '0' or data.progress_status == '1':
+                # 当用户点击的是通过, 状态变为：已批准
+                if status == u'通过':
+                    data.progress_status = '2'
+                    data.fact_verifier = self.request.user.username
+                    data.verifier_time = timezone.now()
+                    data.save()
+                    context = {'status': 0, 'msg': '操作成功、审核通过'}
+                    send_verify_mail.delay(latest_id=id,
+                                           username=self.request.user.username,
+                                           user_role=self.request.user.user_role(),
+                                           addition_info=addition_info)
+                # 当用户点击的是不通过, 状态变为：未批准
+                elif status == u'不通过':
+                    data.progress_status = '1'
+                    data.fact_verifier = self.request.user.username
+                    data.verifier_time = timezone.now()
+                    data.save()
+                    context = {'status': 0, 'msg': '操作成功、审核未通过'}
+                    send_verify_mail.delay(latest_id=id,
+                                           username=self.request.user.username,
+                                           user_role=self.request.user.user_role(),
+                                           addition_info=addition_info)
+            # 其他情况
             else:
-                context = {'status': 1, 'msg': '权限拒绝, 您没有权限操作'}
+                context = {'status': 2, 'msg': '操作失败、请不要重复提交'}
         return HttpResponse(json.dumps(context))
 
     def form_invalid(self, form):
         error = form.errors.as_text()
         context = {'status': 2, 'msg': error}
-
         return HttpResponse(json.dumps(context))
 
 
 class IncepOlFeedbackView(FormView):
+    """线上工单反馈"""
     form_class = IncepOlApproveForm
 
     @method_decorator(check_group_permission)
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlFeedbackView, self).dispatch(request, *args, **kwargs)
 
+    @permission_required(u'')
+    @transaction.atomic
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
         id = cleaned_data.get('id')

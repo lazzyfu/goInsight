@@ -45,9 +45,9 @@ class Roles(models.Model):
         return self.role_name
 
     def permission(self):
-        permission_name = PermissionDetail.objects.annotate(permission_name=F('permission__permission_name')).filter(
-            role__role_id=self.role_id).values_list('permission_name', flat=True)
-        return ', '.join(permission_name)
+        permission_desc = PermissionDetail.objects.annotate(permission_desc=F('permission__permission_desc')).filter(
+            role__role_id=self.role_id).values_list('permission_desc', flat=True)
+        return ', '.join(permission_desc)
 
     class Meta:
         verbose_name = u'用户角色'
@@ -82,6 +82,7 @@ class Permission(models.Model):
     """权限表"""
     id = models.AutoField(primary_key=True, verbose_name=u'主键')
     permission_name = models.CharField(max_length=30, null=False, verbose_name=u'权限名')
+    permission_desc = models.CharField(max_length=30, default='', null=False, verbose_name=u'权限描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 

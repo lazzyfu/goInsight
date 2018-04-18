@@ -9,28 +9,6 @@ from django.shortcuts import get_object_or_404
 from ProjectManager.models import OnlineAuditContents, IncepMakeExecTask
 
 
-def check_group_permission(fun):
-    """
-    验证用户是否属于指定的项目组
-    如果用户不属于该项目，则返回：PermissionDenied
-    """
-
-    def wapper(request, *args, **kwargs):
-        user_in_group = request.session['groups']
-        group_id = request.POST.get('group_id')
-
-        if user_in_group is not None:
-            if int(group_id) in request.session['groups']:
-                return fun(request, *args, **kwargs)
-            else:
-                context = {'status': 1, 'msg': '权限拒绝，您不属于该项目组的成员'}
-                return HttpResponse(json.dumps(context))
-        else:
-            raise PermissionDenied
-
-    return wapper
-
-
 def check_sql_detail_permission(fun):
     """
     验证用户是否有指定项目详情记录的访问权限

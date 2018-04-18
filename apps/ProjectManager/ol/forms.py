@@ -3,10 +3,11 @@
 from datetime import datetime
 
 from django import forms
+from django.utils import timezone
 
-from ProjectManager.tasks import send_commit_mail
-from ProjectManager.inception.inception_api import IncepSqlCheck, sql_filter
+from ProjectManager.inception.inception_api import IncepSqlCheck
 from ProjectManager.models import OnlineAuditContents
+from ProjectManager.tasks import send_commit_mail, send_verify_mail
 
 
 class IncepOlAuditForm(forms.Form):
