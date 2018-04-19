@@ -6,7 +6,7 @@ import pymysql
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from ProjectManager.models import InceptionHostConfig
+from project_manager.models import InceptionHostConfig
 
 
 def get_mysql_user_info(host):
@@ -90,7 +90,7 @@ def get_mysql_user_info(host):
         conn.close()
 
 
-class MySQLUserManager(object):
+class MySQLuser_manager(object):
     def __init__(self, kwargs):
         self.db_host = kwargs.get('db_host')
         # username = user@host

@@ -11,7 +11,7 @@ from django.views import View
 from djcelery.models import CrontabSchedule, PeriodicTask
 from djcelery.schedulers import ModelEntry
 
-from UserManager.permissions import permission_required
+from user_manager.permissions import permission_required
 from scheduled_tasks.forms import PeriodicForm
 from utils.tools import format_request
 

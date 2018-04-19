@@ -11,7 +11,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
 from AuditSQL.settings import EMAIL_FROM
-from ProjectManager.models import InceptionHostConfig, MonitorSchema
+from project_manager.models import InceptionHostConfig, MonitorSchema
 from scheduled_tasks.models import DeadLockRecords
 
 

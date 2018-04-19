@@ -7,9 +7,9 @@ logs/*.log
 *.pyc
 *pycache__
 *.pyc
-apps/ProjectManager/inception/__pycache__/inception_api.cpython-36.pyc
+apps/project_manager/inception/__pycache__/inception_api.cpython-36.pyc
 AuditSQL/media/files
 *.zip
-apps/ProjectManager/tests.py
-apps/ProjectManager/tests.py
-apps/ProjectManager/tests.py
+apps/project_manager/tests.py
+apps/project_manager/tests.py
+apps/project_manager/tests.py

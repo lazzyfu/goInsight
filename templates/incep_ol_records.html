@@ -7,7 +7,7 @@
             <div class="box">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> 线上数据变更记录</h3>
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 线上数据审核记录</h3>
                     </div>
                 </div>
                 <div class="box-body">
@@ -56,12 +56,16 @@
                         field: 'progress_value',
                         title: '进度',
                         formatter: function (value, row, index) {
-                            return "<button type='button' class='btn " + row.progress_color + "'>" + value + "</button>"
+                            return "<button type='button' class='btn " + row.progress_color + " btn-sm'>" + value + "</button>"
                         }
                     },
                     {
                         field: 'group_name',
                         title: '项目'
+                    },
+                    {
+                        field: 'type',
+                        title: '分类'
                     },
                     {
                         field: 'title',
@@ -91,35 +95,35 @@
                         field: 'verifier',
                         title: '批准人'
                     }, {
-                        field: 'operate_dba',
+                        field: 'operator',
                         title: '执行人'
                     },
                     {
                         field: 'id',
                         title: '审批',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o '></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '反馈',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all '></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '关闭',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close '></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '详情',
                         formatter: function (value, row, index) {
-                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders '></i></a>"
+                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders fa-lg'></i></a>"
                         }
 
                     },
@@ -127,7 +131,7 @@
                         field: 'id',
                         title: '执行',
                         formatter: function (value, row) {
-                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o '></i></a>"
+                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
                         }
                     }
                 ]

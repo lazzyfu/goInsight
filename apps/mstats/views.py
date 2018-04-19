@@ -7,10 +7,10 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
 
-from ProjectManager.models import InceptionHostConfig
-from UserManager.permissions import permission_required
+from project_manager.models import InceptionHostConfig
+from user_manager.permissions import permission_required
 from mstats.forms import PrivModifyForm
-from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLUserManager
+from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager
 from utils.tools import format_request
 
 
@@ -31,7 +31,7 @@ class MySQLUserView(View):
         return HttpResponse(json.dumps(data))
 
 
-class MySQLUserManagerView(View):
+class MySQLuser_managerView(View):
     @permission_required('can_mysqluser_edit')
     @transaction.atomic
     def post(self, request):
@@ -63,7 +63,7 @@ class MySQLUserManagerView(View):
             if user in protection_user_tuple:
                 context = {'status': 1, 'msg': f'该用户({user})已被保护，无法操作'}
             else:
-                mysql_user_mamager = MySQLUserManager(locals())
+                mysql_user_mamager = MySQLuser_manager(locals())
                 if action == "modify_privileges":
                     context = mysql_user_mamager.priv_modify()
                 elif action == "new_host":

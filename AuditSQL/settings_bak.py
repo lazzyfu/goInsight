@@ -29,7 +29,7 @@ SECRET_KEY = '*6stzec#)2qc&is59g1=#)9mccyjbxcl1(s-dti@!m1oz*c-kv'
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Define user auth table
-AUTH_USER_MODEL = 'UserManager.UserAccount'
+AUTH_USER_MODEL = 'user_manager.UserAccount'
 
 # Define login page
 LOGIN_URL = '/users/login/'
@@ -49,8 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'UserManager',
-    'ProjectManager',
+    'user_manager',
+    'project_manager',
     'djcelery',
     'kombu.transport.django',
 ]

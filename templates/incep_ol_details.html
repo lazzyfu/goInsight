@@ -18,7 +18,7 @@
             <div class="box box-primary">
                 <div class="box-body box-profile">
                     <img class="profile-user-img img-responsive img-circle"
-                         src="/media/{{ contents.proposer_info.avatar_file }}"
+                         src="/media/{{ contents.proposer_avatar_file }}"
                          alt="User profile picture">
 
                     <h3 class="profile-username text-center">{{ contents.proposer }}</h3>
@@ -61,12 +61,9 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <strong><i class="fa fa-tag margin-r-5"></i> 备注</strong>
+                    <strong><i class="fa fa-tag margin-r-5"></i> 分类</strong>
                     <p>
-                        {% for i in contents.remark_list %}
-                            <span class="label label-info">{{ i }}</span>
-                        {% endfor %}
-
+                        <span class="label label-info">{{ contents.type }}</span>
                     </p>
                     <hr>
 
@@ -91,7 +88,7 @@
 
                         <strong><i class="fa fa-file-text-o margin-r-5"></i> 关闭原因</strong>
                         <p class="text-muted">
-                            {{ contents.close_reason|safe }}
+                            {{ sql_detail.close_reason|safe }}
                         </p>
                     {% endif %}
                 </div>
@@ -116,7 +113,7 @@
 
                     <!-- /.mailbox-controls -->
                     <div class="mailbox-read-message">
-                        <textarea id="select_sql">{{ contents.contents|safe }}</textarea>
+                        <textarea id="select_sql">{{ sql_detail.contents|safe }}</textarea>
                     </div>
                     <!-- /.mailbox-read-message -->
                 </div>
@@ -186,7 +183,8 @@
                     clearForm: true,
                     dataType: 'json',
                     success: function (result) {
-                        displayPNotify(result.status, result.msg, refresh_page)
+                        displayPNotify(result.status, result.msg);
+                        refresh_page()
                     }
                 });
                 return false;
