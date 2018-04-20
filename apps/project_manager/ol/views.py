@@ -215,7 +215,8 @@ class IncepOlDetailsView(View):
                     output_field=CharField(),
                 ),
             ).get(ol=id)
-            export_file = ExportFiles.objects.get(export=detail.id)
+            if detail.progress == '2':
+                export_file = ExportFiles.objects.get(export=detail.id)
         return render(request, 'incep_ol_details.html',
                       {'contents': contents,
                        'group': group,
