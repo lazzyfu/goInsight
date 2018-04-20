@@ -82,7 +82,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">主机</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <select id="select_env" name="host" onchange="getDatabaseList()"
+                                    <select id="s_host" name="host" onchange="getDatabaseList()"
                                             style="width: 100%"
                                             required
                                             class="form-control selectpicker" title="选择主机...">
@@ -93,7 +93,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">schema</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <select id="select_db" name="schema" style="width: 100%" required
+                                    <select id="s_database" name="schema" style="width: 100%" required
                                             class="form-control selectpicker" title="选择库名...">
                                     </select>
                                 </div>
@@ -316,10 +316,10 @@
         }
 
         function init_data() {
-            $('#select_env').empty();
+            $('#s_host').empty();
             $('#s_crontab').empty();
             $('#s_task').empty();
-            $('#select_db').empty();
+            $('#s_database').empty();
 
             $.ajax({
                 url: '{% url 'p_host_config' %}',
@@ -334,7 +334,7 @@
                         var comment = row.comment;
                         html += "<option value=" + host + ">" + comment + "</option>"
                     });
-                    $('#select_env').append(html);
+                    $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh', {silent: true})
                 }
             });

@@ -31,7 +31,7 @@ class MySQLUserView(View):
         return HttpResponse(json.dumps(data))
 
 
-class MySQLuser_managerView(View):
+class MysqlUserManager(View):
     @permission_required('can_mysqluser_edit')
     @transaction.atomic
     def post(self, request):

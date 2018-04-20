@@ -24,7 +24,7 @@
                     <div id="toolbar">
                         <div class="form-inline" role="form">
                             <div class="form-group">
-                                <select id="select_env" name="host" onchange="load_select_env_host()"
+                                <select id="s_host" name="host" onchange="load_s_host_host()"
                                         required class="selectpicker" title="选择主机...">
                                 </select>
                             </div>
@@ -158,7 +158,7 @@
                 },
                 queryParams: function (params) {
                     return {
-                        'host': $("#select_env").val()
+                        'host': $("#s_host").val()
                     }
                 },
                 onSearch: function (text) {
@@ -261,9 +261,9 @@
 
         var current_select_host = '';
 
-        function load_select_env_host() {
+        function load_s_host_host() {
             $table.bootstrapTable('refresh', {silent: true});
-            current_select_host = $('#select_env').val();
+            current_select_host = $('#s_host').val();
         }
 
         /**
@@ -283,7 +283,7 @@
                         var comment = row.comment;
                         html += "<option value=" + host + ">" + comment + "</option>"
                     });
-                    $('#select_env').append(html);
+                    $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh', {silent: true})
                 }
             })
