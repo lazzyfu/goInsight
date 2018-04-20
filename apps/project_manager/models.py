@@ -127,7 +127,7 @@ class ExportFiles(models.Model):
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_files'
+        db_table = 'sqlaudit_export_files'
 
 
 class OlAuditContentsReply(models.Model):
