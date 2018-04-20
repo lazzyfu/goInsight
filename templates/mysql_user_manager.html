@@ -24,7 +24,7 @@
                     <div id="toolbar">
                         <div class="form-inline" role="form">
                             <div class="form-group">
-                                <select id="select_env" name="host" onchange="load_select_env_host()"
+                                <select id="s_host" name="host" onchange="load_s_host_host()"
                                         required class="selectpicker" title="选择主机...">
                                 </select>
                             </div>
@@ -74,7 +74,8 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">用户</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="text" class="form-control" placeholder="用户" name="user" readonly="readonly"
+                                    <input type="text" class="form-control" placeholder="用户" name="user"
+                                           readonly="readonly"
                                            id="write_user">
                                 </div>
                             </div>
@@ -82,7 +83,8 @@
                             <div class="form-group" id="display_host">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">主机</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="text" class="form-control" placeholder="目标主机" spellcheck="false" name="host"
+                                    <input type="text" class="form-control" placeholder="目标主机" spellcheck="false"
+                                           name="host"
                                            readonly="readonly"
                                            id="write_host">
                                 </div>
@@ -91,14 +93,16 @@
                             <div class="form-group" style="display: none" id="display_password">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">密码</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="password" class="form-control" placeholder="密码" spellcheck="false" name="password">
+                                    <input type="password" class="form-control" placeholder="密码" spellcheck="false"
+                                           name="password">
                                 </div>
                             </div>
 
                             <div class="form-group" id="display_schema">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">schema</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <input type="text" class="form-control" placeholder="例如：test.*" spellcheck="false" name="schema"
+                                    <input type="text" class="form-control" placeholder="例如：test.*" spellcheck="false"
+                                           name="schema"
                                            readonly="readonly"
                                            id="write_schema">
                                 </div>
@@ -154,7 +158,7 @@
                 },
                 queryParams: function (params) {
                     return {
-                        'host': $("#select_env").val()
+                        'host': $("#s_host").val()
                     }
                 },
                 onSearch: function (text) {
@@ -171,11 +175,13 @@
                     });
                 },
                 onLoadError: function (status) {
+                    if (status === 403) {
+                        displayPNotify(status);
+                    }
                     $table.bootstrapTable('removeAll');
                 },
                 columns: [
                     {
-                        field: 'ck',
                         checkbox: true
                     },
                     {
@@ -255,9 +261,9 @@
 
         var current_select_host = '';
 
-        function load_select_env_host() {
+        function load_s_host_host() {
             $table.bootstrapTable('refresh', {silent: true});
-            current_select_host = $('#select_env').val();
+            current_select_host = $('#s_host').val();
         }
 
         /**
@@ -277,7 +283,7 @@
                         var comment = row.comment;
                         html += "<option value=" + host + ">" + comment + "</option>"
                     });
-                    $('#select_env').append(html);
+                    $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh', {silent: true})
                 }
             })
@@ -363,13 +369,20 @@
 
         $('#userModifyForm').submit(function () {
             var csrftoken = $.cookie('csrftoken');
-            $('#userModifyForm').ajaxSubmit({
+            $(this).ajaxSubmit({
                 dataType: 'json',
+                resetForm: true,
                 data: {'csrfmiddlewaretoken': csrftoken},
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
                     $('#modal_user_modify').modal('hide');
                     $table.bootstrapTable('refresh', {silent: true});
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        $('#modal_user_modify').modal('hide');
+                        displayPNotify(jqXHR.status)
+                    }
                 }
             });
             return false

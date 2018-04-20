@@ -266,6 +266,11 @@
                 cache: false,
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
                 }
             })
         }
@@ -286,6 +291,11 @@
                 cache: false,
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
                 }
             })
         }
@@ -306,6 +316,11 @@
                 cache: false,
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
                 }
             })
         }

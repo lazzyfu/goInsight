@@ -5,6 +5,11 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 线上数据审核记录</h3>
+                    </div>
+                </div>
                 <div class="box-body">
                     <table id="demo-table"></table>
                 </div>
@@ -51,12 +56,23 @@
                         field: 'progress_value',
                         title: '进度',
                         formatter: function (value, row, index) {
-                            return "<button type='button' class='btn " + row.progress_color + "'>" + value + "</button>"
+                            return "<button type='button' class='btn " + row.progress_color + " btn-sm'>" + value + "</button>"
                         }
                     },
                     {
                         field: 'group_name',
                         title: '项目'
+                    },
+                    {
+                        field: 'type',
+                        title: '分类',
+                        formatter: function (value) {
+                            if (value === '数据变更') {
+                                return '<a href="#" class=\'text-green\'>' + value + '</a>'
+                            } else {
+                                return '<a href="#" class=\'text-blue\'>' + value + '</a>'
+                            }
+                        }
                     },
                     {
                         field: 'title',
@@ -86,8 +102,8 @@
                         field: 'verifier',
                         title: '批准人'
                     }, {
-                        field: 'operate_dba',
-                        title: 'DBA'
+                        field: 'operator',
+                        title: '执行人'
                     },
                     {
                         field: 'id',
@@ -100,7 +116,7 @@
                         field: 'id',
                         title: '反馈',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all fa-lg'></i></a>"
                         }
                     },
                     {
@@ -114,7 +130,7 @@
                         field: 'id',
                         title: '详情',
                         formatter: function (value, row, index) {
-                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders'></i></a>"
+                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders fa-lg'></i></a>"
                         }
 
                     },
@@ -122,14 +138,18 @@
                         field: 'id',
                         title: '执行',
                         formatter: function (value, row) {
-                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-cogs'></i></a>"
+                            if (row.type === '数据变更') {
+                                return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                            } else {
+                                return '<a href="#" onclick="generalExportFile(' + row.id + ')"><i class="fa fa-check-square-o fa-lg"></i></a> ';
+                            }
                         }
                     }
                 ]
             })
         });
 
-
+        // 确认操作
         function verifyForm(id, group_id, url, btn_left, btn_right) {
             layui.use('layedit', function () {
                 layui.use('layer', function () {
@@ -151,8 +171,10 @@
                             success: function (result) {
                                 displayPNotify(result.status, result.msg, refresh_page);
                             },
-                            error: function (result) {
-                                displayPNotify(result.status, result.msg);
+                            error: function (jqXHR) {
+                                if (jqXHR.status === 403) {
+                                    displayPNotify(jqXHR.status)
+                                }
                             }
                         });
                     }
@@ -186,6 +208,28 @@
             })
         }
 
+        <!-- 执行生成需要导出的文件 -->
+        function generalExportFile(id) {
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                type: 'post',
+                url: "{% url 'p_exec_data_export' %}",
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            });
+        }
+
         /**
          * 每5s刷新一次表格
          */
@@ -198,7 +242,7 @@
             setInterval(refreshTable, 5000);
         });
 
-        <!-- 创建任务 -->
+        // 创建任务
         function createTasks(id, group_id) {
             var csrftoken = $.cookie('csrftoken');
             $.ajax({
@@ -215,7 +259,12 @@
                         window.location.href = result.jump_url
                     }
                     else {
-                        displayPNotify(result.status, result.msg);
+                        displayPNotify(result.status, result.msg)
+                    }
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
                     }
                 }
             });

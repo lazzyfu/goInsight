@@ -95,20 +95,30 @@
                 <td>{{ data.group_name }}</td>
             </tr>
             <tr>
-                <td>类型:</td>
-                <td>{{ data.op_action }}</td>
+                <td>分类:</td>
+                {% if data.audit_type == '0' %}
+                    <td>数据变更</td>
+                {% elif data.audit_type == '1' %}
+                    <td>数据导出</td>
+                {% endif %}
             </tr>
+            {% if data.audit_type == '1' %}
+                <tr>
+                    <td>格式:</td>
+                    <td>{{ detail.file_format }}</td>
+                </tr>
+                <tr>
+                    <td>编码:</td>
+                    <td>{{ detail.file_coding }}</td>
+                </tr>
+            {% endif %}
             <tr>
                 <td>主机:</td>
-                <td>{{ data.dst_host }}</td>
+                <td>{{ data.host }}</td>
             </tr>
             <tr>
                 <td>库名:</td>
-                <td>{{ data.dst_database }}</td>
-            </tr>
-            <tr>
-                <td>备注：</td>
-                <td>{{ data.remark }}</td>
+                <td>{{ data.database }}</td>
             </tr>
             <tr>
                 <td>申请人:</td>
@@ -124,7 +134,7 @@
             </tr>
             <tr>
                 <td>执行DBA:</td>
-                <td>{{ data.operate_dba }}</td>
+                <td>{{ data.operator }}</td>
             </tr>
             <tr>
                 <td>提交时间:</td>
@@ -134,7 +144,7 @@
         </table>
     </div>
     <div class="box-body">
-        <pre>{{ data.contents }}</pre>
+        <pre>{{ detail.contents }}</pre>
     </div>
 </div>
 </body>

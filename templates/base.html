@@ -35,6 +35,8 @@
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
     <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap3-editable/css/bootstrap-editable.css' %}">
+    <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/css/jquery.treegrid.css' %}">
 
     <style>
@@ -131,12 +133,10 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-list-ol"></i>审核记录</a>
+                        <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-file-text"></i>审核记录</a>
                         </li>
-                        <li><a href="{% url 'p_incep_perform_records' %}"><i class="fa fa-tasks"></i>执行任务</a></li>
-                        </li>
-                        <li><a href="{% url 'p_data_export_records' %}"><i class="fa fa-tasks"></i>导出记录</a></li>
-                        </li>
+                        <li><a href="{% url 'p_incep_perform_records' %}"><i class="fa fa-file-text"></i>执行任务</a></li>
+{#                        <li><a href="{% url 'p_data_export_records' %}"><i class="fa fa-file-text"></i>导出记录</a></li>#}
                     </ul>
                 </li>
 
@@ -156,7 +156,7 @@
 
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
+                        <i class="fa fa-folder-open"></i>
                         <span>线下工单</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
@@ -164,10 +164,24 @@
                     </a>
                     <ul class="treeview-menu">
                         <li><a href="{% url 'p_incep_of_audit' %}"><i class="fa fa-edit"></i>SQL审核</a></li>
-                        </li>
                     </ul>
                 </li>
-                {% if request.user.user_role == 'DBA' %}
+                {% if 'can_scheduled_view' in request.session.perm_list %}
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-tasks"></i>
+                            <span>定时任务</span>
+                            <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{% url 'p_rcrontab' %}"><i class="fa fa-clock-o"></i>Crontabs</a></li>
+                            <li><a href="{% url 'p_rperiodic_task' %}"><i class="fa fa-hourglass-2"></i>周期任务</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                {% if 'can_mysqluser_view' in request.session.perm_list %}
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-cog"></i>
@@ -178,7 +192,6 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="{% url 'p_r_mysql_user_manager' %}"><i class="fa fa-user"></i>账号管理</a></li>
-                            </li>
                         </ul>
                     </li>
                 {% endif %}
@@ -246,6 +259,7 @@
 <!-- bootstrap-table -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap3-editable/js/bootstrap-editable.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/jquery-treegrid/js/jquery.treegrid.min.js' %}"></script>

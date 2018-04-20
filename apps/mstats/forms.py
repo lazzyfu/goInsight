@@ -12,4 +12,3 @@ class PrivModifyForm(forms.Form):
                  ('new_host', u'新建主机'),
                  ('delete_host', u'删除主机'),
                  ('new_user', u'新建用户')))
-

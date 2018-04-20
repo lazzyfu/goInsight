@@ -23,13 +23,13 @@
     <section class="content-header">
         <h1>
             线下业务-SQL语法审核
-            <small id="info_append"></small>
+            <small>支持DDL和DML语句检测</small>
         </h1>
     </section>
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal" id="auditCommitForm" action="{% url 'p_incep_of_audit' %}" method="post">
+            <form class="form-horizontal" id="ofAuditCommitForm" action="{% url 'p_incep_of_audit' %}" method="post">
                 <div class="col-md-4">
                     <!-- Profile Image -->
                     <div class="box">
@@ -42,7 +42,7 @@
                             <div class="form-group has-feedback">
                                 <label class="control-label col-sm-3">项目</label>
                                 <div class="col-sm-9">
-                                    <select id="select_group" name="group_id" style="width: 100%" required
+                                    <select id="s_group" name="group_id" style="width: 100%" required
                                             class="selectpicker form-control" title="请选择一个可用的项目...">
                                     </select>
                                 </div>
@@ -51,12 +51,12 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">操作</label>
                                 <div class="col-sm-9">
-                                    <select id="select_op" name="op_action" onchange="infoChange()"
+                                    <select id="s_operate" name="operate_type"
                                             style="width: 100%"
                                             required
                                             class="selectpicker form-control" title="请选择...">
-                                        <option selected value="op_schema">表结构修改</option>
-                                        <option value="op_data">数据修改</option>
+                                        <option selected value="DDL">表结构修改</option>
+                                        <option value="DML">数据修改</option>
                                     </select>
                                 </div>
                             </div>
@@ -64,7 +64,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">主机</label>
                                 <div class="col-sm-9">
-                                    <select id="select_env" name="host" onchange="getDatabaseList()"
+                                    <select id="s_host" name="host" onchange="getDatabaseList()"
                                             style="width: 100%"
                                             required
                                             class="form-control selectpicker" title="选择主机...">
@@ -75,7 +75,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">库名</label>
                                 <div class="col-sm-9">
-                                    <select id="select_db" name="database" style="width: 100%" required
+                                    <select id="s_database" name="database" style="width: 100%" required
                                             class="form-control selectpicker" title="选择库名...">
                                     </select>
                                 </div>
@@ -199,25 +199,12 @@
                         var comment = row.comment;
                         html += "<option value=" + host + ">" + comment + "</option>"
                     });
-                    $('#select_env').append(html);
+                    $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh')
                 }
             })
         });
 
-
-        $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>");
-
-        function infoChange() {
-            var op_info = $('select option:selected').val();
-            $("#info_append").empty();
-            if (op_info == 'op_schema') {
-                $("#info_append").append("<small>支持表结构、索引和变更，以及自动生成备份</small>")
-            }
-            else if (op_info == 'op_data') {
-                $("#info_append").append("<small>支持UPDATE|DELETE|INSERT语句，以及自动生成备份</small>")
-            }
-        }
 
         /**
          * 获取当前用户所属的项目组
@@ -232,12 +219,47 @@
                 success: function (data) {
                     console.log(data);
                     $.each(data, function (index, data) {
-                        $("#select_group").append(  //此处向select中循环绑定数据
+                        $("#s_group").append(  //此处向select中循环绑定数据
                             "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
                     });
                     $('.selectpicker').selectpicker('refresh');
                 }
             })
+        });
+
+         /**
+         * 提交线下审核内容
+         */
+
+        $('#ofAuditCommitForm').validator().on('submit', function (e) {
+            var contents = myCodeMirror.getValue();
+            if (contents.length < 10) {
+                displayPNotify(2, '审核内容不能为空或小于10个字符');
+                return false;
+            }
+            if (e.isDefaultPrevented()) {
+                // 验证不通过
+                displayPNotify(2, '表单无效，请完成填写');
+            } else {
+                // 验证通过
+                $(this).ajaxSubmit({
+                    data: {'contents': contents},
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === 0) {
+                            window.parent.location.href = result.jump_url
+                        } else {
+                            displayPNotify(result.status, result.msg)
+                        }
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
+                });
+                return false;
+            }
         });
 
     </script>

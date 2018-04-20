@@ -19,13 +19,13 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.conf.urls.static import static
 
-from apps.UserManager.views import IndexView
-
+from apps.user_manager.views import IndexView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path(r'', login_required(IndexView.as_view()), name="p_index"),
-    path(r'users/', include('UserManager.urls')),
-    path(r'projects/', include('ProjectManager.urls')),
-    path(r'mstats/', include('mstats.urls')),
+  path('admin/', admin.site.urls),
+  path(r'', login_required(IndexView.as_view()), name="p_index"),
+  path(r'users/', include('user_manager.urls')),
+  path(r'projects/', include('project_manager.urls')),
+  path(r'mstats/', include('mstats.urls')),
+  path(r'scheduled_tasks/', include('scheduled_tasks.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

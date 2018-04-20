@@ -5,9 +5,9 @@
 /**
  * 刷新当前页面
  */
-var refresh_page = function () {
+function refresh_page() {
     window.location.reload()
-};
+}
 
 /**
  * 移除初始化的通知
@@ -34,6 +34,10 @@ function displayPNotify(status, msg) {
     } else if (status === 2) {
         type = 'error';
         title = '错误'
+    } else if (status === 403) {
+        type = 'error';
+        title = '403';
+        msg = '权限拒绝，您没有权限操作'
     }
 
     PNotify.prototype.options.styling = "bootstrap3";
@@ -102,14 +106,14 @@ function beautifySQL() {
  */
 
 function incepSyntaxCheckForm() {
-    var sql_content = myCodeMirror.getValue();
-    var database = $("#select_db").val();
-    var host = $("#select_env").val();
-    var op_action = $("#select_op").val();
+    var contents = myCodeMirror.getValue();
+    var database = $("#s_database").val();
+    var host = $("#s_host").val();
+    var operate_type = $("#s_operate").val();
     var csrftoken = $.cookie('csrftoken');
 
     // 判断输入的SQL内容是否存在
-    if (!sql_content) {
+    if (!contents) {
         displayPNotify(2, '请输入要检测的SQL语句');
         return false
     }
@@ -119,10 +123,10 @@ function incepSyntaxCheckForm() {
         type: 'POST',
         dataType: 'json',
         data: {
-            'sql_content': sql_content,
+            'contents': contents,
             'database': database,
             'host': host,
-            'op_action': op_action,
+            'operate_type': operate_type,
             'csrfmiddlewaretoken': csrftoken
         },
         timeout: 5000,
@@ -172,43 +176,11 @@ function incepSyntaxCheckForm() {
 
 
 /**
- * 生成工单
- */
-
-<!-- 有效性验证 -->
-$('#auditCommitForm').validator().on('submit', function (e) {
-    var sql_content = myCodeMirror.getValue();
-    if (sql_content.length < 10) {
-        displayPNotify(2, '审核内容不能为空或小于10个字符');
-        return false;
-    }
-    if (e.isDefaultPrevented()) {
-        // 验证不通过
-        displayPNotify(2, '表单无效，请完成填写');
-    } else {
-        // 验证通过
-        $('#auditCommitForm').ajaxSubmit({
-            data: {'sql_content': sql_content},
-            dataType: 'json',
-            success: function (result) {
-                if (result.status === 0) {
-                    window.parent.location.href = result.jump_url
-                }
-                else {
-                    displayPNotify(result.status, result.msg)
-                }
-            }
-        });
-        return false;
-    }
-});
-
-/**
  * 获取指定主机的数据库库名列表
  */
 function getDatabaseList() {
-    $("#select_db").empty();
-    var host = $("#select_env").val();
+    $('#s_database').empty();
+    var host = $("#s_host").val();
     var csrftoken = $.cookie('csrftoken');
     $.ajax({
         url: '/projects/db_list/',
@@ -223,10 +195,12 @@ function getDatabaseList() {
                 $.each(result.data, function (index, db) {
                     html += "<option value=" + db + ">" + db + "</option>"
                 });
-                $('#select_db').append(html);
+                $('#s_database').append(html);
                 $('.selectpicker').selectpicker('refresh')
             }
             else {
+                // 此处必须刷新表格
+                $('.selectpicker').selectpicker('refresh');
                 displayPNotify(result.status, result.msg);
             }
         }

@@ -4,14 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <style>
         body {
-            font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+            font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 13px;
             line-height: 1.42857143;
             color: #333;
-        }
-
-        .box.box-primary {
-            border-top-color: #3c8dbc;
+            background-color: #fff;
         }
 
         .box {
@@ -24,78 +21,63 @@
             box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
         }
 
-        .panel-danger > .panel-heading {
-            color: #a94442;
-            background-color: #f2dede;
-            border-color: #ebccd1;
+        .box-header {
+            color: #444;
+            display: block;
+            padding: 10px;
+            position: relative;
         }
 
-        .panel-info > .panel-heading {
-            color: #31708f;
-            background-color: #d9edf7;
-            border-color: #bce8f1;
+        .box-header.with-border {
+            border-bottom: 1px solid #f4f4f4;
         }
 
-        .panel-success > .panel-heading {
-            color: #3c763d;
-            background-color: #dff0d8;
-            border-color: #d6e9c6;
-        }
-
-        .panel-heading {
-            padding: 6px 8px;
-            border-bottom: 1px solid transparent;
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-        }
-
-        .panel-body {
-            padding: 6px;
-            color: #3c763d;
-            background-color: #f5f5f5;
+        pre {
+            height: 200px;
+            width: 100%;
+            background: #fff;
+            border-radius: 3px;
+            line-height: 2em;
+            overflow-y: scroll;
+            border: none;
+            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
+            padding: 5px;
+            transition: height 2s ease;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
-<div class="box box-primary">
-    <p>各位同仁好：</p>
-    <p>&nbsp;&nbsp;表结构变更如下，请查阅，谢谢。</p>
+<div class="box">
+    <div class="box-header with-border">
+        <p>各位同仁好：</p>
+        <p>&nbsp;&nbsp;目标主机{{ host }}，目标库{{ schema }}表结构变更如下，请查阅，谢谢。</p>
 
-    {% if table_change_data %}
-        {% for row in table_change_data %}
-            {% if row.remove %}
-                <div class="panel panel-danger">
-                    <div class="panel-heading">删除的表</div>
-                    <div class="panel-body">
-                        {% for j in row.remove %}
-                            {{ j }}
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
+        {% if table_change_data %}
+            {% for row in table_change_data %}
+                {% if row.remove %}
+                    <h5 style="color: red">删除的表：</h5>
+                    {% for j in row.remove %}
+                        <p>{{ j }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
 
-        {% for row in table_change_data %}
-            {% if row.add %}
-                <div class="panel panel-info">
-                    <div class="panel-heading">新增的表：{{ row.add.table_name }}_[表结构]</div>
-                    <div class="panel-body">
-                        <pre>{{ row.add.table_stru }}</pre>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
+            {% for row in table_change_data %}
+                {% if row.add %}
+                    <h5 style="color: red">新增的表：</h5>
+                    <p>{{ row.add.table_name }}</p>
+                    <pre>{{ row.add.table_stru }}</pre>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
-    {% if html_data %}
-        <div class="panel panel-success">
-            <div class="panel-heading">变更的表结构[左侧为变更前表结构、右侧为变更后表结构、标色部分为差异]</div>
-            <div class="panel-body">
-                {{ html_data|safe }}
-            </div>
-        </div>
-    {% endif %}
-
+        {% if html_data %}
+            <h5 style="color: red">变更的表结构[左侧为变更前表结构、右侧为变更后表结构、标色部分为差异]</h5>
+            {{ html_data|safe }}
+        {% endif %}
+    </div>
 </div>
 </body>
 </html>

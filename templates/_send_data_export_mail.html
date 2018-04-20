@@ -9,129 +9,17 @@
             color: #333;
             background-color: #fff;
         }
-
-        .box {
-            position: relative;
-            border-radius: 3px;
-            background: #ffffff;
-            border-top: 3px solid #d2d6de;
-            margin-bottom: 20px;
-            width: 100%;
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .box-header {
-            color: #444;
-            display: block;
-            padding: 10px;
-            position: relative;
-        }
-
-        .box-header.with-border {
-            border-bottom: 1px solid #f4f4f4;
-        }
-
-        .box-body {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 3px;
-            border-bottom-left-radius: 3px;
-            padding: 10px;
-        }
-
-        .table > tbody > tr > td {
-            padding: 8px;
-            line-height: 1.42857143;
-            vertical-align: top;
-            border-top: 1px solid #ddd;
-        }
-
-        td, th {
-            display: table-cell;
-            vertical-align: inherit;
-        }
-
-        table {
-            border-spacing: 0;
-            border-collapse: collapse;
-        }
-
-        table {
-            white-space: normal;
-            font-weight: inherit;
-            font-size: inherit;
-            font-style: inherit;
-            text-align: start;
-            border-collapse: collapse;
-        }
-
-        pre {
-            height: 500px;
-            width: 100%;
-            background: #fff;
-            border-radius: 3px;
-            line-height: 2em;
-            overflow-y: scroll;
-            border: none;
-            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
-            padding: 5px;
-            transition: height 2s ease;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
     </style>
 </head>
 <body>
-<div class="box">
-    <div class="box-header with-border">
-        <table class="table">
-            <tbody>
-            <tr>
-                <td>标题:</td>
-                <td>{{ data.title }}</td>
-            </tr>
-            <tr>
-                <td>项目:</td>
-                <td>{{ data.group_name }}</td>
-            </tr>
-            <tr>
-                <td>类型:</td>
-                <td>数据导出</td>
-            </tr>
-             <tr>
-                <td>格式:</td>
-                <td>{{ data.file_format }}</td>
-            </tr>
-             <tr>
-                <td>编码:</td>
-                <td>{{ data.file_coding }}</td>
-            </tr>
-            <tr>
-                <td>主机:</td>
-                <td>{{ data.dst_host }}</td>
-            </tr>
-            <tr>
-                <td>库名:</td>
-                <td>{{ data.dst_database }}</td>
-            </tr>
-            <tr>
-                <td>申请人:</td>
-                <td>{{ data.proposer }}</td>
-            </tr>
-            <tr>
-                <td>执行DBA:</td>
-                <td>{{ data.operate_dba }}，请访问：http://{{ domain_name }}/projects/data_export_records/ 执行</td>
-            </tr>
-            <tr>
-                <td>提交时间:</td>
-                <td>{{ data.created_at|date:"Y-m-d H:i:s" }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="box-body">
-        <pre>{{ data.sql_contents }}</pre>
-    </div>
-</div>
+{% if file_size_mb <= 20 %}
+    <p>您好，任务已经处理完成，请查阅附件，谢谢。</p>
+    <p>解密密码：{{ data.encryption_key }}</p>
+{% else %}
+    <p>您好，任务已经处理完成。</p>
+    <p>由于数据大于20MB， 请访问：{{ domain_name }}/projects/data_export_records 进行下载</p>
+{% endif %}
+<p>Tips：</p>
+<b class="text-red">机密数据，请勿外传</b>
 </body>
 </html>
