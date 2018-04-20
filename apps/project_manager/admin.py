@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 
 # Register your models here.
-from project_manager.models import InceptionHostConfig, Remark, InceptionHostConfigDetail, DomainName
+from project_manager.models import InceptionHostConfig, InceptionHostConfigDetail, DomainName
 from project_manager.utils import check_mysql_conn
 
 
@@ -35,11 +35,6 @@ class InceptionHostConfigAdmin(admin.ModelAdmin):
                 self.message_user(request, f'{host}: {message_bit}', level=messages.ERROR)
 
     check_connection_status.short_description = u'测试账号到数据库的连接'
-
-
-@admin.register(Remark)
-class RemarkAdmin(admin.ModelAdmin):
-    list_display = ('id', 'remark', 'created_at', 'updated_at')
 
 
 @admin.register(DomainName)
