@@ -65,7 +65,14 @@
                     },
                     {
                         field: 'type',
-                        title: '分类'
+                        title: '分类',
+                        formatter: function (value) {
+                            if (value === '数据变更') {
+                                return '<a href="#" class=\'text-green\'>' + value + '</a>'
+                            } else {
+                                return '<a href="#" class=\'text-blue\'>' + value + '</a>'
+                            }
+                        }
                     },
                     {
                         field: 'title',
@@ -131,7 +138,11 @@
                         field: 'id',
                         title: '执行',
                         formatter: function (value, row) {
-                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                            if (row.type === '数据变更') {
+                                return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                            } else {
+                                return '<a href="#" onclick="generalExportFile(' + row.id + ')"><i class="fa fa-check-square-o fa-lg"></i></a> ';
+                            }
                         }
                     }
                 ]
@@ -195,6 +206,28 @@
                     ;
                 });
             })
+        }
+
+        <!-- 执行生成需要导出的文件 -->
+        function generalExportFile(id) {
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                type: 'post',
+                url: "{% url 'p_exec_data_export' %}",
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            });
         }
 
         /**

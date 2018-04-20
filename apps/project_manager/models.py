@@ -32,7 +32,8 @@ class AuditContents(models.Model):
     title = models.CharField(max_length=100, verbose_name=u'标题')
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'关联项目组表id')
     audit_type = models.CharField(max_length=10, default='0', choices=audit_type_choice, verbose_name=u'线上审核类型')
-    operate_type = models.CharField(max_length=5, default='DML', choices=operate_type_choice, verbose_name=u'操作类型: DDL or DML')
+    operate_type = models.CharField(max_length=5, default='DML', choices=operate_type_choice,
+                                    verbose_name=u'操作类型: DDL or DML')
     proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人， 一般为开发或者产品，存储username')
     verifier = models.CharField(max_length=30, default='', verbose_name=u'批准人，一般为项目经理或Leader， 存储username')
     operator = models.CharField(max_length=30, default='', verbose_name=u'执行人，一般为DBA， 存储username')
@@ -40,6 +41,11 @@ class AuditContents(models.Model):
     host = models.CharField(null=False, default='', max_length=30, verbose_name=u'操作数据库主机')
     database = models.CharField(null=False, default='', max_length=80, verbose_name=u'操作数据库')
     progress = models.CharField(max_length=10, default='0', choices=progress_choices, verbose_name=u'任务进度')
+    verifier_time = models.DateTimeField(auto_now_add=True, verbose_name=u'审批时间')
+    operate_time = models.DateTimeField(auto_now_add=True, verbose_name=u'执行的时间')
+    close_user = models.CharField(max_length=30, default='', verbose_name=u'关闭记录的用户')
+    close_reason = models.CharField(max_length=1024, default='', verbose_name=u'关闭原因')
+    close_time = models.DateTimeField(auto_now_add=True, verbose_name=u'关闭时间')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
@@ -64,12 +70,6 @@ class AuditContents(models.Model):
 class OlAuditDetail(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     ol = models.ForeignKey(AuditContents, on_delete=models.CASCADE, verbose_name=u'关联审核内容表id')
-    remark = models.CharField(default='', max_length=30, verbose_name=u'备注')
-    verifier_time = models.DateTimeField(auto_now_add=True, verbose_name=u'审批时间')
-    operate_time = models.DateTimeField(auto_now_add=True, verbose_name=u'执行的时间')
-    close_user = models.CharField(max_length=30, default='', verbose_name=u'关闭记录的用户')
-    close_reason = models.CharField(max_length=1024, default='', verbose_name=u'关闭原因')
-    close_time = models.DateTimeField(auto_now_add=True, verbose_name=u'关闭时间')
     contents = models.TextField(default='', verbose_name=u'提交的内容')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
@@ -81,15 +81,19 @@ class OlAuditDetail(models.Model):
         db_table = 'auditsql_ol_audit_detail'
 
 
+export_progress_choices = (
+    ('0', u'未执行'),
+    ('1', u'导出中'),
+    ('2', u'已生成')
+)
+
+
 class OlDataExportDetail(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     ol = models.ForeignKey(AuditContents, on_delete=models.CASCADE, verbose_name=u'关联审核内容表id')
     file_coding = models.CharField(max_length=256, default='', verbose_name=u'文件编码')
     file_format = models.CharField(max_length=256, default='', verbose_name=u'文件格式')
-    file_name = models.CharField(max_length=256, default='', verbose_name=u'文件名')
-    file_size = models.IntegerField(default=0, verbose_name=u'文件大小，单位B')
-    files = models.FileField(upload_to='files/%Y/%m/%d/', verbose_name=u'文件上传的路径url')
-    encryption_key = models.CharField(max_length=128, null=False, default='', verbose_name=u'加密秘钥')
+    progress = models.CharField(max_length=10, default='0', choices=export_progress_choices, verbose_name=u'导出进度')
     contents = models.TextField(default='', verbose_name=u'提交的内容')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
@@ -104,6 +108,26 @@ class OlDataExportDetail(models.Model):
 
         default_permissions = ()
         db_table = 'auditsql_ol_data_export_detail'
+
+
+class ExportFiles(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    export = models.ForeignKey(OlDataExportDetail, on_delete=models.CASCADE, verbose_name=u'管理导出文件id')
+    file_name = models.CharField(max_length=256, default='', verbose_name=u'文件名')
+    file_size = models.IntegerField(default=0, verbose_name=u'文件大小，单位B')
+    files = models.FileField(upload_to='files/%Y/%m/%d/')
+    encryption_key = models.CharField(max_length=128, null=False, default='', verbose_name=u'加密秘钥')
+
+    def size(self):
+        return ''.join((str(round(self.file_size / 1024 / 1024, 2)), 'MB')) if self.file_size > 1048576 else ''.join(
+            (str(round(self.file_size / 1024, 2)), 'KB'))
+
+    class Meta:
+        verbose_name = u'文件'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_files'
 
 
 class OlAuditContentsReply(models.Model):

@@ -23,9 +23,8 @@ from openpyxl.styles import Font, Alignment
 from AuditSQL.settings import EMAIL_FROM
 from project_manager.inception.inception_api import IncepSqlCheck
 from project_manager.models import AuditContents, OlAuditContentsReply, IncepMakeExecTask, \
-    DomainName, InceptionHostConfig, OlDataExportDetail, OlAuditDetail
+    DomainName, InceptionHostConfig, OlDataExportDetail, OlAuditDetail, ExportFiles
 from project_manager.utils import update_tasks_status
-from user_manager.models import UserAccount
 from user_manager.utils import GetEmailAddr
 
 channel_layer = get_channel_layer()
@@ -73,16 +72,14 @@ def send_verify_mail(**kwargs):
     latest_id = kwargs['latest_id']
     userinfo = GetEmailAddr(AuditContents, latest_id)
 
-    receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
+    receiver = userinfo.get_user_email('proposer', 'verifier', 'operator')
     cc = userinfo.get_contact_email()
     bcc = userinfo.get_bcc_email()
 
     # 向mail_template.html渲染data数据
     data = AuditContents.objects.get(pk=latest_id)
-    detail = OlAuditDetail.objects.get(ol=latest_id)
     email_html_body = render_to_string('_send_verify_mail.html', {
         'data': data,
-        'detail': detail,
         'type': kwargs.get('type'),
         'user_role': kwargs.get('user_role'),
         'username': kwargs.get('username'),
@@ -109,7 +106,7 @@ def send_reply_mail(**kwargs):
     reply_id = kwargs['reply_id']
     userinfo = GetEmailAddr(AuditContents, latest_id)
 
-    receiver = userinfo.get_user_email('proposer', 'verifier', 'operate_dba')
+    receiver = userinfo.get_user_email('proposer', 'verifier', 'operator')
     cc = userinfo.get_contact_email()
     bcc = userinfo.get_bcc_email()
 
@@ -222,22 +219,24 @@ def stop_incep_osc(user, redis_key=None, id=None):
 
 @shared_task
 def make_export_file(user, id):
-    obj = OlDataExportDetail.objects.get(pk=id)
-    config = InceptionHostConfig.objects.get(host=obj.dst_host, is_enable=0)
+    obj = AuditContents.objects.get(pk=id)
+    data = OlDataExportDetail.objects.get(ol=id)
+
+    config = InceptionHostConfig.objects.get(host=obj.host, is_enable=0)
 
     conn = pymysql.connect(host=config.host,
                            user=config.user,
                            password=config.password,
                            port=config.port,
-                           database=obj.dst_database,
+                           database=obj.database,
                            charset="utf8")
 
     # 创建目录和生成文件名
-    tmp_file = f'media/tmp/{obj.title}.{obj.file_format}'
+    tmp_file = f'media/tmp/{obj.title}.{data.file_format}'
     zip_file = tmp_file + '.zip'
 
     try:
-        sql = obj.sql_contents
+        sql = data.contents
         # 获取内容
         with conn.cursor() as cursor:
             cursor.execute(sql)
@@ -258,7 +257,7 @@ def make_export_file(user, id):
                 c_title.append(key)
 
         wb = Workbook()
-        wb.encoding = f'{obj.file_coding}'
+        wb.encoding = f'{data.file_coding}'
         ws = wb.active
         font = Font(name='Courier', size=14)
         align = Alignment(horizontal='right', vertical='center')
@@ -286,28 +285,27 @@ def make_export_file(user, id):
         # 将文件转换为File对象，便于存储
         with open(zip_file, 'rb') as f:
             myfile = File(f)
-
-            # 写入信息到表中
-            Files.objects.create(
-                export_id=id,
+            ExportFiles.objects.create(
+                export=data,
                 file_name=obj.title + '.xlsx.gz',
-                file_size=os.path.getsize(zip_file),
+                file_size=int(myfile.size/1024),
                 files=myfile,
-                encryption_key=salt,
-                content_type=obj.file_format
+                encryption_key=salt
             )
+
+        latest_id = ExportFiles.objects.latest('id').id
 
         # 删除文件，保留加密和压缩后的文件
         os.remove(tmp_file)
         os.remove(zip_file)
 
         # 更新进度
-        OlDataExportDetail.objects.filter(pk=id).update(status='2')
+        OlDataExportDetail.objects.filter(ol=id).update(progress='2')
 
-        send_data_export_reply_mail.delay(latest_id=id)
+        send_data_export_mail.delay(latest_id=latest_id, title=obj.title)
     except conn.InternalError as err:
         pull_msg = {'status': 2, 'msg': str(err)}
-        OlDataExportDetail.objects.filter(pk=id).update(status='0')
+        OlDataExportDetail.objects.filter(ol=id).update(progress='0')
         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
                                                        'text': json.dumps(pull_msg)})
 
@@ -318,50 +316,22 @@ def make_export_file(user, id):
 @shared_task
 def send_data_export_mail(**kwargs):
     latest_id = kwargs['latest_id']
-    userinfo = GetEmailAddr(OlDataExportDetail, latest_id)
+    userinfo = GetEmailAddr(AuditContents, latest_id)
 
-    receiver = userinfo.get_user_email('proposer', 'operate_dba')
-    cc = userinfo.get_contact_email()
-    bcc = userinfo.get_bcc_email()
-
-    # 向_send_data_export_mail.html渲染data数据
-    if DomainName.objects.filter().first():
-        domain_name = DomainName.objects.get().domain_name
-    record = OlDataExportDetail.objects.annotate(group_name=F('group__group_name')).get(pk=latest_id)
-    email_html_body = render_to_string('_send_data_export_mail.html', {'data': record, 'domain_name': domain_name})
-
-    # 发送邮件
-    msg = EmailMessage(subject=record.title,
-                       body=email_html_body,
-                       from_email=EMAIL_FROM,
-                       to=receiver,
-                       cc=cc,
-                       bcc=bcc,
-                       )
-    msg.content_subtype = "html"
-    msg.send()
-
-
-@shared_task
-def send_data_export_reply_mail(**kwargs):
-    latest_id = kwargs['latest_id']
-    userinfo = GetEmailAddr(OlDataExportDetail, latest_id)
-
-    obj = OlDataExportDetail.objects.get(pk=latest_id)
-    user_list = [obj.proposer, obj.operate_dba]
-    receiver = list(UserAccount.objects.filter(username__in=user_list).values_list('email', flat=True))
+    receiver = userinfo.get_user_email('proposer', 'verifier', 'operator')
     cc = userinfo.get_contact_email()
     bcc = userinfo.get_bcc_email()
 
     # 向mail_template.html渲染data数据
+    domain_name = ''
     if DomainName.objects.filter().first():
         domain_name = DomainName.objects.get().domain_name
-    record = Files.objects.get(export_id=latest_id)
-    title = OlDataExportDetail.objects.get(pk=latest_id).title
-    email_html_body = render_to_string('_send_data_export_reply_mail.html', {
-        'data': record,
+    detail = ExportFiles.objects.get(pk=latest_id)
+    title = kwargs.get('title')
+    email_html_body = render_to_string('_send_data_export_mail.html', {
+        'data': detail,
         'domain_name': domain_name,
-        'file_size_mb': int(record.file_size / 1024 / 1024),
+        'file_size_mb': int(detail.file_size / 1024),
     })
 
     # 发送邮件
@@ -376,7 +346,6 @@ def send_data_export_reply_mail(**kwargs):
                        headers=headers)
     msg.content_subtype = "html"
     # 如果文件的大小小于20MB，作为附件发送
-    if int(record.file_size / 1024 / 1024) <= 20:
-        if record:
-            msg.attach_file(record.files.path)
+    if int(detail.file_size / 1024) <= 20:
+        msg.attach_file(detail.files.path)
     msg.send()

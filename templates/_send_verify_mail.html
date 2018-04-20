@@ -15,9 +15,9 @@
 {% if type == 'close' %}
     {% if data.progress == '5' %}
         <p>您好，{{ user_role }}({{ username }})关闭了该记录。</p>
-        {% if detail.close_reason %}
+        {% if data.close_reason %}
             <p>#附加信息:</p>
-            <p>{{ detail.close_reason|safe }}</p>
+            <p>{{ data.close_reason|safe }}</p>
             <p>== END ==</p>
         {% endif %}
     {% endif %}

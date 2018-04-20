@@ -80,7 +80,6 @@ class IncepOlApproveForm(forms.Form):
         addition_info = cleaned_data.get('addition_info')
 
         data = AuditContents.objects.get(pk=id)
-        detail = OlAuditDetail.objects.get(ol=id)
 
         context = {}
         # 当记录关闭时
@@ -92,9 +91,8 @@ class IncepOlApproveForm(forms.Form):
                 # 当用户点击的是通过, 状态变为：已批准
                 if status == u'通过':
                     data.progress = '2'
-                    detail.verifier_time = timezone.now()
+                    data.verifier_time = timezone.now()
                     data.save()
-                    detail.save()
                     send_verify_mail.delay(latest_id=id,
                                            type='approve',
                                            username=request.user.username,
@@ -105,9 +103,8 @@ class IncepOlApproveForm(forms.Form):
                 # 当用户点击的是不通过, 状态变为：未批准
                 elif status == u'不通过':
                     data.progress = '1'
-                    detail.verifier_time = timezone.now()
+                    data.verifier_time = timezone.now()
                     data.save()
-                    detail.save()
                     send_verify_mail.delay(latest_id=id,
                                            type='approve',
                                            username=request.user.username,
@@ -133,7 +130,6 @@ class IncepOlFeedbackForm(forms.Form):
         addition_info = cleaned_data.get('addition_info')
 
         data = AuditContents.objects.get(pk=id)
-        detail = OlAuditDetail.objects.get(ol=id)
 
         context = {}
         # 当记录关闭时
@@ -157,9 +153,8 @@ class IncepOlFeedbackForm(forms.Form):
                 # 当用户点击的是已完成, 状态变为：已完成
                 elif status == u'已完成':
                     data.progress = '4'
-                    detail.operate_time = timezone.now()
+                    data.operate_time = timezone.now()
                     data.save()
-                    detail.save()
                     send_verify_mail.delay(latest_id=id,
                                            type='feedback',
                                            username=request.user.username,
@@ -188,7 +183,6 @@ class IncepOlCloseForm(forms.Form):
         addition_info = cleaned_data.get('addition_info')
 
         data = AuditContents.objects.get(pk=id)
-        detail = OlAuditDetail.objects.get(ol=id)
 
         context = {}
         # 当记录关闭时
@@ -203,11 +197,10 @@ class IncepOlCloseForm(forms.Form):
                         context = {'status': 2, 'msg': '操作失败、数据正在处理中或已完成'}
                     else:
                         data.progress = '5'
-                        detail.close_user = request.user.username
-                        detail.close_reason = addition_info
-                        detail.close_time = timezone.now()
+                        data.close_user = request.user.username
+                        data.close_reason = addition_info
+                        data.close_time = timezone.now()
                         data.save()
-                        detail.save()
                         send_verify_mail.delay(latest_id=id,
                                                type='close',
                                                username=request.user.username,

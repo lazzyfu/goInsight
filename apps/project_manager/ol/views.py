@@ -13,7 +13,8 @@ from django.views import View
 from django.views.generic import FormView
 
 from project_manager.inception.inception_api import IncepSqlCheck
-from project_manager.models import AuditContents, OlAuditContentsReply, IncepMakeExecTask, OlAuditDetail
+from project_manager.models import AuditContents, OlAuditContentsReply, IncepMakeExecTask, OlAuditDetail, \
+    OlDataExportDetail, ExportFiles
 from project_manager.ol.forms import OlAuditForm, IncepOlReplyForm, IncepOlApproveForm, OlAuditRecordForm, \
     IncepOlFeedbackForm, IncepOlCloseForm
 from project_manager.utils import check_incep_alive, check_sql_filter
@@ -23,6 +24,7 @@ from utils.tools import format_request
 
 class IncepOlAuditView(View):
     """线上审核内容提交"""
+
     def get(self, request):
         """渲染线上审核页面"""
         return render(request, 'incep_ol_audit.html')
@@ -188,16 +190,37 @@ class IncepOlDetailsView(View):
         )
 
         contents = obj.get(id=id)
-        sql_detail = OlAuditDetail.objects.get(ol=id)
-
         group = AuditContents.objects.filter(id=id).annotate(group_name=F('group__group_name')).values(
             'group_name').first()
         reply_contents = OlAuditContentsReply.objects.annotate(
             username=F('user__username'),
             avatar_file=F('user__avatar_file'),
         ).filter(reply__id=id).values('username', 'avatar_file', 'reply_contents', 'created_at')
+
+        export_file = ''
+        if contents.type == '数据变更':
+            detail = OlAuditDetail.objects.get(ol=id)
+        else:
+            detail = OlDataExportDetail.objects.annotate(
+                progress_value=Case(
+                    When(progress='0', then=Value('未执行')),
+                    When(progress='1', then=Value('导出中')),
+                    When(progress='2', then=Value('已生成')),
+                    output_field=CharField(),
+                ),
+                progress_percent=Case(
+                    When(progress='0', then=Value('20%')),
+                    When(progress='1', then=Value('60%')),
+                    When(progress='2', then=Value('100%')),
+                    output_field=CharField(),
+                ),
+            ).get(ol=id)
+            export_file = ExportFiles.objects.get(export=detail.id)
         return render(request, 'incep_ol_details.html',
-                      {'contents': contents, 'group': group, 'sql_detail': sql_detail,
+                      {'contents': contents,
+                       'group': group,
+                       'detail': detail,
+                       'export_file': export_file,
                        'reply_contents': reply_contents})
 
 
@@ -217,6 +240,7 @@ class IncepOlReplyView(FormView):
 
 
 class IncepGenerateTasksView(View):
+    """线上工单生成执行任务"""
     @method_decorator(check_group_permission)
     @permission_required('can_execute')
     def post(self, request):
@@ -228,18 +252,18 @@ class IncepGenerateTasksView(View):
                        'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
         else:
             obj = get_object_or_404(AuditContents, pk=id)
+            data = get_object_or_404(OlAuditDetail, ol=id)
 
             # 只要审核通过后，才能执行生成执行任务
             if obj.progress in ('2', '3', '4', '5'):
-                host = obj.dst_host
-                database = obj.dst_database
-                sql_content = obj.contents
+                host = obj.host
+                database = obj.database
+                sql_content = data.contents
 
                 # 实例化
                 incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
 
                 # 对OSC执行的SQL生成sqlsha1
-
                 result = incep_of_audit.make_sqlsha1()
                 taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
                 # 生成执行任务记录
@@ -253,7 +277,7 @@ class IncepGenerateTasksView(View):
                         sql_content=row['SQL'],
                         sqlsha1=row['sqlsha1'],
                         affected_row=row['Affected_rows'],
-                        type=obj.type,
+                        type=obj.operate_type,
                         category='1',
                         related_id=id,
                         group_id=obj.group_id

@@ -29,7 +29,7 @@
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal" id="auditCommitForm" action="{% url 'p_incep_ol_audit' %}"
+            <form class="form-horizontal" id="olAuditCommitForm" action="{% url 'p_incep_ol_audit' %}"
                   method="post" data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
@@ -331,7 +331,7 @@
          * 提交线上审核内容
          */
 
-        $('#auditCommitForm').validator().on('submit', function (e) {
+        $('#olAuditCommitForm').validator().on('submit', function (e) {
             var contents = myCodeMirror.getValue();
             if (contents.length < 10) {
                 displayPNotify(2, '审核内容不能为空或小于10个字符');

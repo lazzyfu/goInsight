@@ -22,29 +22,22 @@
                          alt="User profile picture">
 
                     <h3 class="profile-username text-center">{{ contents.proposer }}</h3>
-
                     <p class="text-muted text-center">{{ contents.proposer_info.user_role }}</p>
 
                     <ul class="list-group list-group-unbordered">
                         <li class="list-group-item">
                             <b>项目</b> <a class="pull-right">{{ group.group_name }}</a>
                         </li>
-                        {% if contents.fact_verifier %}
-                            <li class="list-group-item">
-                                <b>审批用户</b> <a class="pull-right">{{ contents.fact_verifier }}</a>
-                            <li class="list-group-item">
-                                <b>审批时间</b> <a class="pull-right">{{ contents.verifier_time }}</a>
-                            </li>
-                        {% endif %}
-
-
-                        {% if contents.fact_operate_dba %}
-                            <li class="list-group-item">
-                                <b>执行DBA</b> <a class="pull-right">{{ contents.fact_operate_dba }}</a>
-                            <li class="list-group-item">
-                                <b>执行时间</b> <a class="pull-right">{{ contents.operate_time }}</a>
-                            </li>
-                        {% endif %}
+                        <li class="list-group-item">
+                            <b>审核人</b> <a class="pull-right">{{ contents.verifier }}</a>
+                        <li class="list-group-item">
+                            <b>审核时间</b> <a class="pull-right">{{ contents.verifier_time }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>执行人</b> <a class="pull-right">{{ contents.operator }}</a>
+                        <li class="list-group-item">
+                            <b>执行时间</b> <a class="pull-right">{{ contents.operate_time }}</a>
+                        </li>
                         <li class="list-group-item">
                             <b>进度</b> <a class="pull-right">{{ contents.progress_value }}</a>
                         </li>
@@ -63,7 +56,7 @@
                 <div class="box-body">
                     <strong><i class="fa fa-tag margin-r-5"></i> 分类</strong>
                     <p>
-                        <span class="label label-info">{{ contents.type }}</span>
+                        <span class="label label-warning">{{ contents.type }}</span>
                     </p>
                     <hr>
 
@@ -72,6 +65,40 @@
                         {{ contents.email_cc_list }}
                     </p>
                     <hr>
+
+                    {% if contents.type == '数据导出' %}
+                        <strong><i class="fa  fa-hourglass-half margin-r-5"></i> 导出进度</strong>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"
+                                 aria-valuenow="60"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100" style="width: {{ detail.progress_percent }};">
+                                {{ detail.progress_value }}
+                            </div>
+                        </div>
+                        <hr>
+
+                        <strong><i class="fa fa-file-excel-o margin-r-5"></i> 文件格式</strong>
+                        <p class="text-muted">
+                            {{ detail.file_format }}
+                        </p>
+                        <hr>
+
+                        <strong><i class="fa fa-file-code-o margin-r-5"></i> 文件编码</strong>
+                        <p class="text-muted">
+                            {{ detail.file_coding }}
+                        </p>
+                        <hr>
+                    {% endif %}
+
+                    {% if contents.file_name %}
+                        <strong><i class="fa fa-file-code-o margin-r-5"></i> 密码</strong>
+                        <p class="text-muted">
+                            {{ detail.encryption_key }}
+                        </p>
+                        <hr>
+                        <hr>
+                    {% endif %}
 
                     {% if contents.close_user %}
                         <strong><i class="fa fa-user margin-r-5"></i> 记录关闭用户</strong>
@@ -86,9 +113,9 @@
                         </p>
                         <hr>
 
-                        <strong><i class="fa fa-file-text-o margin-r-5"></i> 关闭原因</strong>
+                        <strong><i class="fa fa-question-circle margin-r-5"></i> 关闭原因</strong>
                         <p class="text-muted">
-                            {{ sql_detail.close_reason|safe }}
+                            {{ contents.close_reason|safe }}
                         </p>
                     {% endif %}
                 </div>
@@ -113,10 +140,32 @@
 
                     <!-- /.mailbox-controls -->
                     <div class="mailbox-read-message">
-                        <textarea id="select_sql">{{ sql_detail.contents|safe }}</textarea>
+                        <textarea id="select_sql">{{ detail.contents|safe }}</textarea>
                     </div>
                     <!-- /.mailbox-read-message -->
                 </div>
+
+                {% if export_file.file_name %}
+                    <div class="box-footer">
+                        <ul class="mailbox-attachments clearfix">
+                            <li>
+                                <span class="mailbox-attachment-icon"><i class="fa fa-file-excel-o"></i></span>
+
+                                <div class="mailbox-attachment-info" style="word-wrap:break-word;">
+                                    <a href="{{ export_file.url }}" class="mailbox-attachment-name"><i
+                                            class="fa fa-paperclip"></i>
+                                        {{ export_file.file_name }}</a>
+                                    <span class="mailbox-attachment-size">
+                          {{ export_file.file_size }} KB
+                          <a href="{{ export_file.files.url }}" class="btn btn-default btn-xs pull-right"><i
+                                  class="fa fa-cloud-download"></i></a>
+                        </span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+
                 <!-- /.box-footer -->
                 <div class="box-footer">
                     <form class="form-horizontal" id="replyCommitForm" action="{% url 'p_online_reply' %}"
@@ -133,7 +182,6 @@
                         {% csrf_token %}
                     </form>
                 </div>
-
 
                 <div class="box-footer box-comments">
                     <!-- 回复内容 -->

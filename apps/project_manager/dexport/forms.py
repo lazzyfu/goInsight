@@ -54,5 +54,5 @@ class OlDataExportForm(forms.Form):
 
         latest_id = AuditContents.objects.latest('id').id
         send_commit_mail.delay(latest_id=latest_id)
-        context = {'status': 0, 'jump_url': '/projects/de/data_export_records/'}
+        context = {'status': 0, 'jump_url': '/projects/ol/incep_ol_records/'}
         return context

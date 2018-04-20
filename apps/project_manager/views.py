@@ -6,10 +6,10 @@ from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
+from apps.project_manager.inception.inception_api import GetDatabaseListApi, sql_filter, IncepSqlCheck
 from project_manager.forms import SyntaxCheckForm
 from project_manager.utils import check_mysql_conn
-from user_manager.models import GroupsDetail, UserAccount, Contacts, PermissionDetail, RolesDetail
-from apps.project_manager.inception.inception_api import GetDatabaseListApi, sql_filter, IncepSqlCheck
+from user_manager.models import GroupsDetail, Contacts, PermissionDetail, RolesDetail
 from utils.tools import format_request
 from .models import Remark, InceptionHostConfigDetail, InceptionHostConfig
 

@@ -11,18 +11,18 @@ from project_manager.models import IncepMakeExecTask
 class IncepOfAuditForm(forms.Form):
     host = forms.CharField(required=True)
     database = forms.CharField(required=True, max_length=64)
-    op_action = forms.CharField(required=True)
+    operate_type = forms.CharField(required=True)
     group_id = forms.IntegerField(required=True)
-    sql_content = forms.CharField(widget=forms.Textarea)
+    contents = forms.CharField(widget=forms.Textarea)
 
     def save(self, request):
         cleaned_data = super(IncepOfAuditForm, self).clean()
 
         host = cleaned_data['host']
         database = cleaned_data['database']
-        op_action = cleaned_data.get('op_action')
+        operate_type = cleaned_data.get('operate_type')
         group_id = cleaned_data['group_id']
-        sql_content = cleaned_data['sql_content']
+        sql_content = cleaned_data['contents']
 
         # 实例化
         incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
@@ -47,7 +47,7 @@ class IncepOfAuditForm(forms.Form):
                     sql_content=row['SQL'],
                     sqlsha1=row['sqlsha1'],
                     affected_row=row['Affected_rows'],
-                    type='DML' if op_action == 'op_data' else 'DDL',
+                    type=operate_type
                 )
             context = {'status': 0, 'msg': '',
                        'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}

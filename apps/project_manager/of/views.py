@@ -15,6 +15,7 @@ from utils.tools import format_request
 
 
 class IncepOfAuditView(View):
+    """线下工单生成执行任务"""
     def get(self, request):
         return render(request, 'incep_of_audit.html')
 
