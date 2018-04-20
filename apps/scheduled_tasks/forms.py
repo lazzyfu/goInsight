@@ -11,7 +11,7 @@ class PeriodicForm(forms.Form):
     host = forms.CharField(max_length=64, min_length=4, required=True)
     schema = forms.CharField(max_length=64, min_length=1, required=True)
     crontab = forms.IntegerField(required=True)
-    receiver = forms.CharField(max_length=256, min_length=1, required=True)
+    receiver = forms.CharField(max_length=20480, min_length=1, required=True)
     task = forms.CharField(max_length=256, min_length=1, required=True)
     enabled = forms.ChoiceField(choices=(('0', u'禁用'), ('1', u'启用')))
 
