@@ -197,20 +197,6 @@ class InceptionHostConfigDetail(models.Model):
         db_table = 'auditsql_inception_hostconfig_detail'
 
 
-class Remark(models.Model):
-    id = models.AutoField(primary_key=True, verbose_name=u'主键')
-    remark = models.CharField(default='', max_length=30, verbose_name=u'备注')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
-
-    class Meta:
-        verbose_name = u'线上操作备注'
-        verbose_name_plural = verbose_name
-
-        default_permissions = ()
-        db_table = 'auditsql_audit_remark'
-
-
 class MonitorSchema(models.Model):
     table_schema = models.CharField(null=False, max_length=512)
     table_name = models.CharField(null=False, max_length=512)

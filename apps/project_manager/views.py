@@ -11,7 +11,7 @@ from project_manager.forms import SyntaxCheckForm
 from project_manager.utils import check_mysql_conn
 from user_manager.models import GroupsDetail, Contacts, PermissionDetail, RolesDetail
 from utils.tools import format_request
-from .models import Remark, InceptionHostConfigDetail, InceptionHostConfig
+from .models import InceptionHostConfigDetail, InceptionHostConfig
 
 channel_layer = get_channel_layer()
 
@@ -88,12 +88,6 @@ class GetDBListView(View):
         else:
             context = {'status': 2, 'msg': f'获取列表失败，不能连接到mysql服务器：{host}'}
         return HttpResponse(json.dumps(context))
-
-
-class RemarkInfoView(View):
-    def post(self, request):
-        obj = Remark.objects.all().values('id', 'remark')
-        return JsonResponse(list(obj), safe=False)
 
 
 class GroupInfoView(View):

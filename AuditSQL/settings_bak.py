@@ -49,10 +49,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'user_manager',
-    'project_manager',
     'djcelery',
     'kombu.transport.django',
+    'user_manager',
+    'project_manager',
+    'mstats',
+    'scheduled_tasks',
 ]
 
 MIDDLEWARE = [
