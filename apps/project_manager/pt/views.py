@@ -16,7 +16,7 @@ from project_manager.models import IncepMakeExecTask
 from project_manager.tasks import get_osc_percent, incep_async_tasks, \
     stop_incep_osc
 from project_manager.utils import check_incep_alive
-from user_manager.permissions import permission_required
+from user_manager.permissions import permission_required, perform_tasks_permission_required
 from apps.project_manager.inception.inception_api import GetBackupApi, IncepSqlCheck
 from utils.tools import format_request
 
@@ -114,7 +114,7 @@ class IncepPerformView(View):
     """执行任务-执行"""
 
     @method_decorator(check_incep_alive)
-    @permission_required('can_execute')
+    @perform_tasks_permission_required('can_execute')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -179,7 +179,7 @@ class IncepStopView(View):
     """
 
     @method_decorator(check_incep_alive)
-    @permission_required('can_execute')
+    @perform_tasks_permission_required('can_execute')
     @transaction.atomic
     def post(self, request):
         id = request.POST.get('id')
@@ -205,7 +205,7 @@ class IncepRollbackView(View):
     """
 
     @method_decorator(check_incep_alive)
-    @permission_required('can_execute')
+    @perform_tasks_permission_required('can_execute')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
