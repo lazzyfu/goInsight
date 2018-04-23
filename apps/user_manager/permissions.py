@@ -8,7 +8,7 @@ from django.db.models import F
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from project_manager.models import AuditContents
+from project_manager.models import AuditContents, IncepMakeExecTask
 from user_manager.models import PermissionDetail
 
 
@@ -47,7 +47,7 @@ def permission_required(*perm):
     return decorator
 
 
-def check_group_permission(fun):
+def group_permission_required(fun):
     """
     验证项目组权限
     如果用户不属于该项目，则返回：PermissionDenied
@@ -92,3 +92,33 @@ def check_record_details_permission(fun):
             raise PermissionDenied
 
     return wapper
+
+
+def perform_tasks_permission_required(*perm):
+    """
+    执行任务权限检查
+    当执行任务未线下任务（category='0'）且有can_commit权限的用户，可以执行线下的执行任务
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if isinstance(perm, str):
+                perms = (perm,)
+            else:
+                perms = perm
+            user_role = request.request.user.user_role()
+            perm_list = list(PermissionDetail.objects.annotate(
+                permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
+                'permission_name', flat=True))
+            obj = IncepMakeExecTask.objects.get(id=request.request.POST.get('id'))
+            # 当执行任务未线下任务时，且用户有can_commit权限时
+            if obj.category == '0':
+                if 'can_commit' in perm_list:
+                    return view_func(request, *args, **kwargs)
+
+            if any(has_perm(perm_list, p) for p in perms):
+                return view_func(request, *args, **kwargs)
+            else:
+                raise PermissionDenied
+        return _wrapped_view
+    return decorator

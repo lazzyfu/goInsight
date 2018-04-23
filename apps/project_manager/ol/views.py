@@ -18,7 +18,7 @@ from project_manager.models import AuditContents, OlAuditContentsReply, IncepMak
 from project_manager.ol.forms import OlAuditForm, IncepOlReplyForm, IncepOlApproveForm, OlAuditRecordForm, \
     IncepOlFeedbackForm, IncepOlCloseForm
 from project_manager.utils import check_incep_alive, check_sql_filter
-from user_manager.permissions import permission_required, check_group_permission, check_record_details_permission
+from user_manager.permissions import permission_required, group_permission_required, check_record_details_permission
 from utils.tools import format_request
 
 
@@ -111,7 +111,7 @@ class IncepOlApproveView(FormView):
     """线上工单审批操作，需要can_approve权限"""
     form_class = IncepOlApproveForm
 
-    @method_decorator(check_group_permission)
+    @method_decorator(group_permission_required)
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlApproveView, self).dispatch(request, *args, **kwargs)
 
@@ -131,7 +131,7 @@ class IncepOlFeedbackView(FormView):
     """线上工单反馈，反馈执行进度"""
     form_class = IncepOlFeedbackForm
 
-    @method_decorator(check_group_permission)
+    @method_decorator(group_permission_required)
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlFeedbackView, self).dispatch(request, *args, **kwargs)
 
@@ -151,7 +151,7 @@ class IncepOlCloseView(FormView):
     """关闭记录"""
     form_class = IncepOlCloseForm
 
-    @method_decorator(check_group_permission)
+    @method_decorator(group_permission_required)
     def dispatch(self, request, *args, **kwargs):
         return super(IncepOlCloseView, self).dispatch(request, *args, **kwargs)
 
@@ -242,7 +242,7 @@ class IncepOlReplyView(FormView):
 
 class IncepGenerateTasksView(View):
     """线上工单生成执行任务"""
-    @method_decorator(check_group_permission)
+    @method_decorator(group_permission_required)
     @permission_required('can_execute')
     def post(self, request):
         id = request.POST.get('id')
