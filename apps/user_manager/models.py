@@ -87,7 +87,7 @@ class Permission(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     def __str__(self):
-        return self.permission_name
+        return self.permission_desc
 
     class Meta:
         verbose_name = u'角色权限'
