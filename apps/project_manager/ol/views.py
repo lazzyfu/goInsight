@@ -242,21 +242,22 @@ class IncepOlReplyView(FormView):
 
 class IncepGenerateTasksView(View):
     """线上工单生成执行任务"""
+
     @method_decorator(group_permission_required)
     @permission_required('can_execute')
     def post(self, request):
         id = request.POST.get('id')
 
-        if IncepMakeExecTask.objects.filter(related_id=id).first():
-            taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
-            context = {'status': 0,
-                       'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
-        else:
-            obj = get_object_or_404(AuditContents, pk=id)
-            data = get_object_or_404(OlAuditDetail, ol=id)
+        obj = get_object_or_404(AuditContents, pk=id)
+        data = get_object_or_404(OlAuditDetail, ol=id)
 
-            # 只要审核通过后，才能执行生成执行任务
-            if obj.progress in ('2', '3', '4', '5'):
+        # 只要审核通过后，才能执行生成执行任务
+        if obj.progress in ('2', '3', '4'):
+            if IncepMakeExecTask.objects.filter(related_id=id).first():
+                taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
+                context = {'status': 0,
+                           'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
+            else:
                 host = obj.host
                 database = obj.database
                 sql_content = data.contents
@@ -286,7 +287,7 @@ class IncepGenerateTasksView(View):
 
                 context = {'status': 0,
                            'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
-            else:
-                context = {'status': 2, 'msg': '审核未通过'}
+        else:
+            context = {'status': 2, 'msg': '审核未通过或任务已关闭'}
 
         return HttpResponse(json.dumps(context))
