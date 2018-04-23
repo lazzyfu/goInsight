@@ -77,7 +77,7 @@ AuditSQL介绍
 
 ## 简要流程图
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/gif/liuchengtu.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/lct.png)
 
 ## 页面展示(随便展示几处)
 
