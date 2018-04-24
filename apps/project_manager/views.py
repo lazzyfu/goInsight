@@ -124,7 +124,7 @@ class GetAuditUserView(View):
 
                 data = GroupsDetail.objects.annotate(
                     uid=F('user__uid'),
-                    username=F('user__displayname'),
+                    username=F('user__username'),
                     email=F('user__email'),
                 ).filter(group__group_id=group_id).filter(user__uid__in=uid).values('uid', 'username', 'email')
                 result.append({'priv': can_priv, 'user': list(data)})
