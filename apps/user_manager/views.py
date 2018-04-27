@@ -1,7 +1,7 @@
 import json
 
 from PIL import Image
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.hashers import make_password
 from django.db.models import F
 from django.urls import reverse, reverse_lazy
@@ -10,8 +10,8 @@ from django.shortcuts import render
 from django.views import View
 from django.views.generic import FormView, RedirectView
 
-from user_manager.models import UserAccount, PermissionDetail
-from .forms import LoginForm, ChangePasswordForm
+from user_manager.models import UserAccount, PermissionDetail, RolesDetail
+from .forms import ChangePasswordForm, LoginForm
 
 
 # Create your views here.
@@ -22,32 +22,48 @@ class LoginView(FormView):
     form_class = LoginForm
     success_url = reverse_lazy('p_incep_ol_records')
 
-    def form_valid(self, form):
-        user = form.is_verify()
-        if user is not None:
-            login(self.request, user)
-            # 将用户所属的组id写入到session中
-            groups = list(UserAccount.objects.get(uid=self.request.user.uid).groupsdetail_set.all().values_list(
-                'group__group_id', flat=True))
-            self.request.session['groups'] = groups
-            user_role = self.request.user.user_role()
+    def form_invalid(self, form):
+        print(form.errors.as_text())
 
-            # 将用户权限写入到session
-            perm_list = list(PermissionDetail.objects.annotate(
-                permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
-                'permission_name', flat=True))
-            self.request.session['perm_list'] = perm_list
-            # 判断用户是否激活
-            if self.request.user.is_active is True:
-                # 判断用户是否属于任何一个组
-                if len(list(groups)) > 0:
-                    return super(LoginView, self).form_valid(form)
-                else:
-                    return render(self.request, self.template_name, {'msg': '用户未被分配项目组，请联系管理员'})
-            else:
-                return render(self.request, self.template_name, {'msg': '用户未被激活，请联系管理员'})
-        else:
-            return render(self.request, self.template_name, {'msg': '用户名或密码错误，请重新输入'})
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        username = cleaned_data.get('username')
+        password = cleaned_data.get('password')
+
+        try:
+            obj = UserAccount.objects.get(username=username)
+            if make_password(password) != obj.password:
+                result = {'msg': '用户名或密码错误'}
+
+            if not obj.is_active:
+                print(obj.is_active)
+                result = {'msg': '用户未激活，请联系管理员'}
+
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                login(self.request, user)
+                # 将用户所属的组id写入到session中
+                groups = list(UserAccount.objects.get(uid=user.uid).groupsdetail_set.all().values_list(
+                    'group__group_id', flat=True))
+                self.request.session['groups'] = groups
+                try:
+                    user_role = self.request.user.user_role()
+                    # 将用户权限写入到session
+                    perm_list = list(PermissionDetail.objects.annotate(
+                        permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
+                        'permission_name', flat=True))
+                    self.request.session['perm_list'] = perm_list
+                    # 判断用户是否属于任何一个组
+                    if len(list(groups)) > 0:
+                        return super(LoginView, self).form_valid(form)
+                    else:
+                        result = {'msg': '用户未被分配项目组，请联系管理员'}
+                except RolesDetail.DoesNotExist:
+                    result = {'msg': '用户未被分配角色，请联系管理员'}
+        except UserAccount.DoesNotExist:
+            result = {'msg': '用户不存在，请联系管理员'}
+        return render(self.request, self.template_name, result)
 
 
 class LogoutView(RedirectView):

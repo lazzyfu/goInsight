@@ -1,20 +1,13 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 from django import forms
-from django.contrib.auth import authenticate
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True, max_length=30, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': u'用户名'}))
-    password = forms.CharField(required=True, max_length=30, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': u'密码'}))
-
-    def is_verify(self):
-        cleaned_data = super(LoginForm, self).clean()
-        username = cleaned_data.get('username')
-        password = cleaned_data.get('password')
-
-        user = authenticate(username=username, password=password)
-        return user
+    username = forms.CharField(required=True, max_length=30,
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': u'用户名'}))
+    password = forms.CharField(required=True, max_length=30,
+                               widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': u'密码'}))
 
 
 class ChangePasswordForm(forms.Form):

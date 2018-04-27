@@ -217,7 +217,6 @@
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    console.log(data);
                     $.each(data, function (index, data) {
                         $("#s_group").append(  //此处向select中循环绑定数据
                             "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");

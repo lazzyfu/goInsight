@@ -67,7 +67,6 @@ class UserAccountAdmin(admin.ModelAdmin):
         obj.user = request.user
         if change is False:
             data = form.clean()
-            print(data)
             username = data.get('username')
             password = data.get('password')
             email = data.get('email')
