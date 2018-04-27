@@ -91,6 +91,10 @@ WSGI_APPLICATION = 'AuditSQL.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+# 配置数据库信息
+# 存储审核系统的表结构和数据
+# 修改成自己的数据库地址
+# 权限：grant all privileges on auditsql.* to xxx
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -158,7 +162,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 使用redis缓存session
-# 不需要修改
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 CACHES = {
@@ -171,16 +174,7 @@ CACHES = {
     }
 }
 
-# 分页，插件：django-pure-pagination
-PAGINATION_SETTINGS = {
-    'PAGE_RANGE_DISPLAYED': 4,
-    'MARGIN_PAGES_DISPLAYED': 2,
-    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
-}
-
 # celery for redis
-# 使用docker内置的redis服务
-# 不需要修改
 BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -188,7 +182,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
-# 使用数据库来存放定时任务记录，通过后台admin来添加
+# 使用数据库来存放定时任务记录
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 # django-channels配置
@@ -201,28 +195,29 @@ CHANNEL_LAYERS = {
     },
 }
 
+# 配置ASGI
 ASGI_APPLICATION = "AuditSQL.routing.application"
 
-##############  此处需要修改  #############
+
 # LDAP配置
-## 若不使用LDAP进行认证，注释上面的'django_auth_ldap.backend.LDAPBackend'
-## ldap 服务器地址
+# 若不使用LDAP进行认证，注释上面的'django_auth_ldap.backend.LDAPBackend'
+# ldap 服务器地址
 AUTH_LDAP_SERVER_URI = "ldap://XXX.NET"
 # AUTH_LDAP_START_TLS = True
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
-## ldap绑定用户名，用户所在的绝对路径
+# ldap绑定用户名，用户所在的绝对路径
 AUTH_LDAP_BIND_DN = "CN=lazzyfu,OU=xx,DC=xx,DC=xx"
-## ldap绑定用户名的密码
+# ldap绑定用户名的密码
 AUTH_LDAP_BIND_PASSWORD = "123.com"
-## 搜索
+# 搜索
 AUTH_LDAP_USER_SEARCH = LDAPSearch("OU=xx科技,OU=xxx集团,DC=XXX,DC=NET", ldap.SCOPE_SUBTREE, "(CN=%(user)s)")
 
 # 下面字段必须存在
-## username：用户名
-## email：邮箱地址
-## displayname：对应的昵称或中文名
-## key：为数据库字段
-## value：为ldap对应字段
+# username：用户名
+# email：邮箱地址
+# displayname：对应的昵称或中文名
+# key：为数据库字段
+# value：为ldap对应字段
 AUTH_LDAP_USER_ATTR_MAP = {"username": "cn", 'email': 'mail', "displayname": 'displayName'}
 
 # 若需要调试ldap，不注释下面代码
@@ -231,19 +226,21 @@ AUTH_LDAP_USER_ATTR_MAP = {"username": "cn", 'email': 'mail', "displayname": 'di
 # logger.setLevel(logging.DEBUG)
 
 
-# Inception配置
-## 此处不需要修改
+# inception服务地址
 INCEPTION_HOST = '127.0.0.1'
 INCEPTION_PORT = 6033
-## 使用docker内的数据库进行备份
+
+# inception备份功能数据库地址
+# 和inception配置文件中指定的inception_remote_backup_host、inception_remote_system_user、inception_remote_backup_port
+# inception_remote_system_password一致
 INCEPTION_BACKUP_HOST = '127.0.0.1'
 INCEPTION_BACKUP_USER = 'root'
 INCEPTION_BACKUP_PASSWORD = '123.com'
 INCEPTION_BACKUP_PORT = 3306
 
 # 邮箱账号
-## 修改成自己公司的邮箱账户
-## 该账户用于实时发送审核邮件
+# 修改成自己邮箱账户
+# 该账户用于实时推送审核邮件
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'lazzyfu'
