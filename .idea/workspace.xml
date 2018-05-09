@@ -10,7 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/AuditSQL$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1525766189207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../xb_backup" />
+    <SUITE FILE_PATH="coverage/AuditSQL$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1525858245830" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../xb_backup" />
     <SUITE FILE_PATH="coverage/AuditSQL$tests.coverage" NAME="tests Coverage Results" MODIFIED="1522394295522" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/ProjectManager" />
     <SUITE FILE_PATH="coverage/AuditSQL$tests__1_.coverage" NAME="tests (1) Coverage Results" MODIFIED="1523328060333" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/mstats" />
     <SUITE FILE_PATH="coverage/AuditSQL$test.coverage" NAME="test Coverage Results" MODIFIED="1523246050356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -54,8 +54,8 @@
       <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/mstats/forms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="539">
-              <caret line="67" column="50" lean-forward="true" selection-start-line="67" selection-start-column="50" selection-end-line="67" selection-end-column="50" />
+            <state relative-caret-position="570">
+              <caret line="61" column="13" lean-forward="false" selection-start-line="61" selection-start-column="13" selection-end-line="61" selection-end-column="13" />
               <folding>
                 <element signature="e#43#54#0" expanded="true" />
               </folding>
@@ -66,40 +66,8 @@
       <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/mstats/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="123">
-              <caret line="20" column="41" lean-forward="true" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
-              <folding>
-                <element signature="e#43#73#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1440">
-              <caret line="88" column="25" lean-forward="false" selection-start-line="88" selection-start-column="25" selection-end-line="88" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="backup_task.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/backup_task.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="716">
-              <caret line="183" column="0" lean-forward="true" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/mstats/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="15" column="53" lean-forward="false" selection-start-line="15" selection-start-column="53" selection-end-line="15" selection-end-column="53" />
+            <state relative-caret-position="377">
+              <caret line="40" column="42" lean-forward="false" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -108,25 +76,48 @@
       <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/mstats/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-441">
-              <caret line="354" column="0" lean-forward="true" selection-start-line="354" selection-start-column="0" selection-end-line="354" selection-end-column="0" />
+            <state relative-caret-position="541">
+              <caret line="344" column="67" lean-forward="false" selection-start-line="344" selection-start-column="67" selection-end-line="344" selection-end-column="67" />
               <folding>
-                <element signature="e#43#62#0" expanded="true" />
-                <marker date="1525828526030" expanded="true" signature="967:994" ph="select user user" />
-                <marker date="1525828526030" expanded="true" signature="1451:1715" ph="select conca... user" />
-                <marker date="1525828526030" expanded="true" signature="1770:2007" ph="select conca... user" />
-                <marker date="1525828526030" expanded="true" signature="17567:17692" ph="select table... tables" />
+                <marker date="1525856934229" expanded="true" signature="967:994" ph="select user user" />
+                <marker date="1525856934229" expanded="true" signature="1451:1715" ph="select conca... user" />
+                <marker date="1525856934229" expanded="true" signature="1770:2007" ph="select conca... user" />
+                <marker date="1525856934229" expanded="true" signature="18402:18527" ph="select table... tables" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="contextlib.py" pinned="false" current-in-tab="false">
-        <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/contextlib.py">
+      <file leaf-file-name="backup_task_preview.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/backup_task_preview.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="940">
-              <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+            <state relative-caret-position="569">
+              <caret line="86" column="53" lean-forward="true" selection-start-line="86" selection-start-column="53" selection-end-line="86" selection-end-column="53" />
+              <folding>
+                <element signature="e#459#480#0#HTML" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/mstats/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="737">
+              <caret line="150" column="0" lean-forward="false" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../xb_backup/test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="392">
+              <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+              <folding>
+                <element signature="e#44#59#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -145,14 +136,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>enable</find>
-      <find>val()</find>
-      <find>再</find>
-      <find>paramiko_msg</find>
-      <find>GeneralConfigParser</find>
-      <find>bkp</find>
-      <find>BASE_DIR</find>
-      <find>2&gt;</find>
       <find>paramiko_output</find>
       <find>PeriodicTaskAdmin</find>
       <find>enable_tasks</find>
@@ -166,7 +149,6 @@
       <find>/usr/bin/xtrabackup</find>
       <find>xtrabackup_backupdir</find>
       <find>xtrabackup_cmd</find>
-      <find>print</find>
       <find>s_task</find>
       <find>check_cmd_valid</find>
       <find>check_files_exisit</find>
@@ -175,6 +157,15 @@
       <find>详情</find>
       <find>show_backup_modal</find>
       <find>s_backup_cmd</find>
+      <find>layui</find>
+      <find>lay</find>
+      <find>rece</find>
+      <find>receiver</find>
+      <find>s_re</find>
+      <find>启用</find>
+      <find>print</find>
+      <find>json</find>
+      <find>id</find>
     </findStrings>
     <replaceStrings>
       <replace>s_environment</replace>
@@ -212,9 +203,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/_send_data_export_mail.html" />
-        <option value="$PROJECT_DIR$/templates/incep_ol_records.html" />
-        <option value="$PROJECT_DIR$/apps/project_manager/pt/urls.py" />
         <option value="$PROJECT_DIR$/templates/incep_ol_audit.html" />
         <option value="$PROJECT_DIR$/apps/project_manager/of/forms.py" />
         <option value="$PROJECT_DIR$/templates/incep_perform_records.html" />
@@ -247,10 +235,7 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/../mschecksum/ms_checksum.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/templates/base.html" />
-        <option value="$PROJECT_DIR$/apps/mstats/urls.py" />
         <option value="$PROJECT_DIR$/templates/_send_backup_mail.html" />
-        <option value="$PROJECT_DIR$/apps/mstats/views.py" />
         <option value="$PROJECT_DIR$/../xb_backup/xb_backup.cnf" />
         <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
         <option value="$PROJECT_DIR$/AuditSQL/settings_bak.py" />
@@ -258,11 +243,17 @@
         <option value="$PROJECT_DIR$/apps/scheduled_tasks/admin.py" />
         <option value="$PROJECT_DIR$/apps/scheduled_tasks/views.py" />
         <option value="$PROJECT_DIR$/apps/scheduled_tasks/utils.py" />
-        <option value="$PROJECT_DIR$/../xb_backup/test.py" />
         <option value="$PROJECT_DIR$/apps/mstats/forms.py" />
-        <option value="$PROJECT_DIR$/apps/mstats/utils.py" />
         <option value="$PROJECT_DIR$/apps/mstats/tasks.py" />
+        <option value="$PROJECT_DIR$/templates/incep_ol_records.html" />
+        <option value="$PROJECT_DIR$/templates/base.html" />
+        <option value="$PROJECT_DIR$/static/self_public.js" />
+        <option value="$PROJECT_DIR$/../xb_backup/test.py" />
         <option value="$PROJECT_DIR$/templates/backup_task.html" />
+        <option value="$PROJECT_DIR$/apps/mstats/utils.py" />
+        <option value="$PROJECT_DIR$/apps/mstats/urls.py" />
+        <option value="$PROJECT_DIR$/apps/mstats/views.py" />
+        <option value="$PROJECT_DIR$/templates/backup_task_preview.html" />
       </list>
     </option>
   </component>
@@ -323,12 +314,6 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
-              <item name="project_manager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="scheduled_tasks" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -373,19 +358,19 @@
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/media/png" />
-      <recent name="$PROJECT_DIR$/templates" />
-      <recent name="$PROJECT_DIR$/apps/project_manager" />
-      <recent name="$PROJECT_DIR$/apps/user_manager" />
-      <recent name="$PROJECT_DIR$/apps" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/templates" />
       <recent name="$PROJECT_DIR$/media/png" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.2/bower_components" />
       <recent name="$PROJECT_DIR$/apps/mstats" />
       <recent name="$PROJECT_DIR$/apps/mstats/migrations" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/media/png" />
+      <recent name="$PROJECT_DIR$/templates" />
+      <recent name="$PROJECT_DIR$/apps/project_manager" />
+      <recent name="$PROJECT_DIR$/apps/user_manager" />
+      <recent name="$PROJECT_DIR$/apps" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -701,7 +686,7 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33231708" sideWeight="0.52129924" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33231708" sideWeight="0.47870076" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33231708" sideWeight="0.47870076" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32317072" sideWeight="0.49570817" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32825205" sideWeight="0.48296058" order="7" side_tool="false" content_ui="tabs" />
@@ -764,56 +749,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="184" />
+      <option name="time" value="186" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/ol/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="98" column="69" lean-forward="true" selection-start-line="98" selection-start-column="69" selection-end-line="98" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/tasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="252" column="55" lean-forward="true" selection-start-line="252" selection-start-column="55" selection-end-line="252" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/user_manager/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="460">
@@ -850,14 +790,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="577">
           <caret line="90" column="22" lean-forward="true" selection-start-line="90" selection-start-column="22" selection-end-line="90" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_ol_records.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="622">
-          <caret line="132" column="139" lean-forward="true" selection-start-line="132" selection-start-column="139" selection-end-line="132" selection-end-column="139" />
           <folding />
         </state>
       </provider>
@@ -939,14 +871,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/incep_ol_details.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logs/info.log" />
     <entry file="file://$PROJECT_DIR$/AuditSQL/settings_bak.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -975,13 +899,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="680">
           <caret line="34" column="3" lean-forward="true" selection-start-line="34" selection-start-column="3" selection-end-line="34" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/self_public.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1035,14 +952,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/contextlib.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="940">
-          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
@@ -1082,75 +991,156 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1440">
-          <caret line="88" column="25" lean-forward="false" selection-start-line="88" selection-start-column="25" selection-end-line="88" selection-end-column="25" />
+        <state relative-caret-position="120">
+          <caret line="131" column="0" lean-forward="true" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/tasks.py">
+    <entry file="file://$PROJECT_DIR$/static/self_public.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="123">
-          <caret line="20" column="41" lean-forward="true" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
-          <folding>
-            <element signature="e#43#73#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-930">
+          <caret line="46" column="20" lean-forward="true" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="56" column="14" lean-forward="true" selection-start-line="56" selection-start-column="14" selection-end-line="56" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/virtualenv_python3.6.2/lib/python3.6/site-packages/paramiko/client.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="319">
+          <caret line="522" column="8" lean-forward="false" selection-start-line="522" selection-start-column="8" selection-end-line="522" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/incep_ol_records.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="135" column="22" lean-forward="true" selection-start-line="135" selection-start-column="22" selection-end-line="135" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/project_manager/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/contextlib.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/mstats/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="539">
-          <caret line="67" column="50" lean-forward="true" selection-start-line="67" selection-start-column="50" selection-end-line="67" selection-end-column="50" />
+        <state relative-caret-position="570">
+          <caret line="61" column="13" lean-forward="false" selection-start-line="61" selection-start-column="13" selection-end-line="61" selection-end-column="13" />
           <folding>
             <element signature="e#43#54#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/urls.py">
+    <entry file="file://$PROJECT_DIR$/apps/project_manager/ol/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="15" column="53" lean-forward="false" selection-start-line="15" selection-start-column="53" selection-end-line="15" selection-end-column="53" />
+        <state relative-caret-position="335">
+          <caret line="181" column="54" lean-forward="false" selection-start-line="181" selection-start-column="54" selection-end-line="181" selection-end-column="54" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/views.py">
+    <entry file="file://$PROJECT_DIR$/apps/project_manager/ol/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="94" column="51" lean-forward="true" selection-start-line="94" selection-start-column="51" selection-end-line="94" selection-end-column="51" />
+        <state relative-caret-position="320">
+          <caret line="20" column="1" lean-forward="false" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../xb_backup/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="32" column="40" lean-forward="false" selection-start-line="32" selection-start-column="40" selection-end-line="32" selection-end-column="40" />
+        <state relative-caret-position="392">
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding>
+            <element signature="e#44#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/mstats/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/mstats/tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="377">
+          <caret line="40" column="42" lean-forward="false" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/backup_task.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1161">
+          <caret line="554" column="13" lean-forward="true" selection-start-line="554" selection-start-column="13" selection-end-line="554" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/mstats/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-441">
-          <caret line="354" column="0" lean-forward="true" selection-start-line="354" selection-start-column="0" selection-end-line="354" selection-end-column="0" />
+        <state relative-caret-position="541">
+          <caret line="344" column="67" lean-forward="false" selection-start-line="344" selection-start-column="67" selection-end-line="344" selection-end-column="67" />
           <folding>
-            <element signature="e#43#62#0" expanded="true" />
-            <marker date="1525828526030" expanded="true" signature="967:994" ph="select user user" />
-            <marker date="1525828526030" expanded="true" signature="1451:1715" ph="select conca... user" />
-            <marker date="1525828526030" expanded="true" signature="1770:2007" ph="select conca... user" />
-            <marker date="1525828526030" expanded="true" signature="17567:17692" ph="select table... tables" />
+            <marker date="1525856934229" expanded="true" signature="967:994" ph="select user user" />
+            <marker date="1525856934229" expanded="true" signature="1451:1715" ph="select conca... user" />
+            <marker date="1525856934229" expanded="true" signature="1770:2007" ph="select conca... user" />
+            <marker date="1525856934229" expanded="true" signature="18402:18527" ph="select table... tables" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/backup_task.html">
+    <entry file="file://$PROJECT_DIR$/templates/incep_ol_details.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="716">
-          <caret line="183" column="0" lean-forward="true" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
+        <state relative-caret-position="186">
+          <caret line="227" column="0" lean-forward="true" selection-start-line="227" selection-start-column="0" selection-end-line="227" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/mstats/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="737">
+          <caret line="150" column="0" lean-forward="false" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/backup_task_preview.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="569">
+          <caret line="86" column="53" lean-forward="true" selection-start-line="86" selection-start-column="53" selection-end-line="86" selection-end-column="53" />
+          <folding>
+            <element signature="e#459#480#0#HTML" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 500px;
+            height: 300px;
         }
     </style>
 {% endblock %}
@@ -16,7 +16,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h5 class="box-title"><i class="fa fa-cog"></i> 备份任务
+                        <h5 class="box-title"><i class="fa fa-cog"></i> 数据库备份定时任务
                         </h5>
                     </div>
                 </div>
@@ -53,91 +53,81 @@
                     </div>
 
                     <div class="modal-body">
-                        <div class="row">
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">任务描述</label>
-                                <div class="col-md-9 col-sm-9 col-xs-12">
-                                    <input type="text" maxlength="32" class="form-control" placeholder="任务描述内容, 最大32个字符"
-                                           name="name">
-                                </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">任务描述</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input type="text" maxlength="32" class="form-control"
+                                       placeholder="任务描述内容, 最大32个字符"
+                                       name="name">
                             </div>
 
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">备份方式</label>
-                                <div class="col-sm-9 col-sm-9 col-xs-12">
-                                    <select name="backup_method" id="s_method" onchange="changeMethodStatus()"
-                                            title="选择备份方式..."
-                                            style="width: 100%" class="selectpicker form-control dropup"
-                                            multiple required>
-                                        <option value="mysqldump">mysqldump</option>
-                                        <option value="xtrabackup">xtrabackup</option>
-                                    </select>
-                                </div>
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">备份方式</label>
+                            <div class="col-md-3 col-sm-3 col-xs-12">
+                                <select name="backup_method" id="s_method" onchange="changeMethodStatus()"
+                                        title="选择备份方式..."
+                                        style="width: 100%" class="selectpicker form-control dropup"
+                                        multiple required>
+                                    <option value="mysqldump">mysqldump</option>
+                                    <option value="xtrabackup">xtrabackup</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">备份目录</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input type="text" maxlength="32" class="form-control"
+                                       placeholder="备份目录, 如：/backup"
+                                       name="backup_dir">
                             </div>
 
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">备份目录</label>
-                                <div class="col-md-9 col-sm-9 col-xs-12">
-                                    <input type="text" maxlength="32" class="form-control" placeholder="备份目录, 如：/backup"
-                                           name="backup_dir">
-                                </div>
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">crontab</label>
+                            <div class="col-md-3 col-sm-3 col-xs-12">
+                                <select id="s_crontab" name="crontab" style="width: 100%" required
+                                        class="form-control selectpicker" title="选择crontab...">
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH主机</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input type="text" class="form-control" placeholder="ssh主机" name="ssh_host">
                             </div>
 
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">crontab</label>
-                                <div class="col-md-9 col-sm-9 col-xs-12">
-                                    <select id="s_crontab" name="crontab" style="width: 100%" required
-                                            class="form-control selectpicker" title="选择crontab...">
-                                    </select>
-                                </div>
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH端口</label>
+                            <div class="col-md-3 col-sm-3 col-xs-12">
+                                <input type="text" class="form-control" value="22" placeholder="ssh端口"
+                                       name="ssh_port">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH用户</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input type="text" class="form-control" placeholder="ssh用户" name="ssh_user">
                             </div>
 
-                            <hr>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH主机</label>
-                                <div class="col-md-4 col-sm-4 col-xs-12">
-                                    <input type="text" class="form-control" placeholder="ssh主机" name="ssh_host">
-                                </div>
-
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH端口</label>
-                                <div class="col-md-3 col-sm-3 col-xs-12">
-                                    <input type="text" class="form-control" value="22" placeholder="ssh端口"
-                                           name="ssh_port">
-                                </div>
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH密码</label>
+                            <div class="col-md-3 col-sm-3 col-xs-12">
+                                <input type="password" class="form-control" placeholder="ssh密码"
+                                       name="ssh_password">
                             </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH用户</label>
-                                <div class="col-md-4 col-sm-4 col-xs-12">
-                                    <input type="text" class="form-control" placeholder="ssh用户" name="ssh_user">
-                                </div>
+                        <hr>
 
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">SSH密码</label>
-                                <div class="col-md-3 col-sm-3 col-xs-12">
-                                    <input type="password" class="form-control" placeholder="ssh密码" name="ssh_password">
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">备份参数</label>
-                                <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="form-group">
+                            {#                                <label class="control-label col-md-2 col-sm-2 col-xs-12">备份参数</label>#}
+                            <div class="col-md-10 col-sm-10 col-xs-12 col-md-offset-1">
                                     <textarea id="s_backup_args" class="form-control"
                                               name="backup_args"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">收件人</label>
-                                <div class="col-md-9 col-sm-9 col-xs-12">
-                                    <textarea rows="5" style="resize: none" class="form-control" spellcheck="false"
-                                              placeholder="收件人邮箱, 以逗号分隔" name="receiver"></textarea>
-                                </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                         <button type="submit" class="btn btn-primary">提交</button>
@@ -156,7 +146,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title"><i class="fa fa-pencil"></i> 详情
+                    <h4 class="modal-title"><i class="fa fa-pencil"></i> 备份参数
                     </h4>
                 </div>
 
@@ -167,8 +157,6 @@
                     <p id="s_ssh_port"></p>
                     <h5><strong>ssh用户：</strong></h5>
                     <p id="s_ssh_user"></p>
-                    <h5><strong>通知联系人：</strong></h5>
-                    <p id="s_receiver"></p>
                     <br>
                     <h5><strong>备份命令：</strong></h5>
                     <p id="s_backup_cmd"></p>
@@ -229,7 +217,7 @@
                     },
                     {
                         field: 'enabled',
-                        title: '启用',
+                        title: '状态',
                         formatter: function (value, row) {
                             if (value === true) {
                                 return "<a href='#' onclick=changestatus(" + row.id + ",'0')><i class='fa fa-check-square' style='color:green'></i></a>"
@@ -256,32 +244,28 @@
                         }
                     },
                     {
-                        field: 'task',
-                        title: '任务',
-                        formatter: function (value) {
-                            return value.split('.')[2]
-                        }
-                    },
-                    {
                         field: 'ssh_host',
-                        title: 'SSH主机'
+                        title: '主机'
                     },
                     {
                         field: 'crontab_value',
                         title: '执行时间'
                     },
                     {
-                        field: 'last_run_at',
-                        title: '最后一次运行时间'
+                        field: 'id',
+                        title: '备份参数',
+                        formatter: function (value) {
+                            return "<button class=\"btn btn-xs btn-info\" " +
+                                "data-toggle=\"modal\" data-target=\"#show_backup_modal\" " +
+                                "data-whatever_id=" + value + " " +
+                                '>备份参数</button>'
+                        }
                     },
                     {
                         field: 'id',
-                        title: '详情',
+                        title: '备份详情',
                         formatter: function (value) {
-                            return "<button class=\"btn btn-xs btn-warning\" " +
-                                "data-toggle=\"modal\" data-target=\"#show_backup_modal\" " +
-                                "data-whatever_id=" + value + " " +
-                                '>详情</button>'
+                            return "<a href='backup_task_preview/" + value + "'><i class='fa fa-sliders fa-lg'></i></a>"
                         }
                     }
                 ],
@@ -316,6 +300,7 @@
 
         // 新建任务
         $('#periodicForm').submit(function () {
+            displayPNotify(1, '正在处理, 请稍后');
             $(this).ajaxSubmit({
                 dataType: 'json',
                 success: function (result) {
@@ -327,7 +312,6 @@
                     } else {
                         displayPNotify(result.status, result.msg);
                     }
-
                 },
                 error: function (jqXHR) {
                     if (jqXHR.status === 403) {
@@ -429,7 +413,6 @@
             $('#s_ssh_user').empty();
             $('#s_ssh_password').empty();
             $('#s_backup_cmd').empty();
-            $('#s_receiver').empty();
 
             $.ajax({
                 url: '{% url 'p_backup_task_detail' %}',
@@ -456,7 +439,6 @@
                     $('#s_ssh_port').append(json_data.ssh_port);
                     $('#s_ssh_user').append(json_data.ssh_user);
                     $('#s_backup_cmd').append(backup_cmd);
-                    $('#s_receiver').append(json_data.receiver);
                 },
                 error: function (jqXHR) {
                     if (jqXHR.status === 403) {

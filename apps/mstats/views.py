@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
@@ -11,7 +12,7 @@ from djcelery.models import PeriodicTask, CrontabSchedule
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
 from mstats.forms import PrivModifyForm, BackupForm
-from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager
+from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
 from utils.tools import format_request
 
 
@@ -106,7 +107,6 @@ class BackupTaskView(View):
             i['crontab_value'] = str(crontab_value)
             kwargs = json.loads(i['kwargs'])
             i['ssh_host'] = kwargs.get('ssh_host')
-            i['receiver'] = ',\n'.join(kwargs.get('receiver').split(','))
             result.append(i)
 
         return JsonResponse(result, safe=False)
@@ -123,3 +123,32 @@ class BackupTaskView(View):
             context = {'status': 2, 'msg': error}
 
         return HttpResponse(json.dumps(context))
+
+
+class BackupTaskPreviewView(View):
+    def get(self, request, id):
+        return render(request, 'backup_task_preview.html', {'id': id})
+
+
+class BackupTaskPreviewListView(View):
+    def get(self, request):
+        data = format_request(request)
+        id = data.get('id')
+        kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
+
+        cmd = f"tree {kwargs.get('backup_dir')} -fsi -L 2"
+
+        paramiko_conn = ParamikoOutput(ssh_user=kwargs.get('ssh_user'),
+                                       ssh_password=kwargs.get('ssh_password'),
+                                       ssh_host=kwargs.get('ssh_host'),
+                                       ssh_port=kwargs.get('ssh_port'))
+        data = paramiko_conn.run(cmd)
+        result = []
+        # 删除不必要的元素
+        del data[0]
+        del data[-2:]
+        for i in data:
+            dir = i.split(' ')[-1]
+            size = int(re.search(r'\d+', i).group()) / 1024 / 1024
+            result.append({'dir': dir, 'size': size})
+        return HttpResponse(json.dumps(result))

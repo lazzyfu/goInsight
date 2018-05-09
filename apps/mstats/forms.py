@@ -25,7 +25,6 @@ class BackupForm(forms.Form):
     ssh_password = forms.CharField(max_length=64, min_length=4, required=True)
     ssh_port = forms.IntegerField(required=True)
     crontab = forms.IntegerField(required=True)
-    receiver = forms.CharField(max_length=20480, min_length=1, required=True)
     backup_method = forms.ChoiceField(choices=(
         ('mysqldump', 'mysqldump'),
         ('xtrabackup', 'xtrabackup'),
@@ -42,7 +41,6 @@ class BackupForm(forms.Form):
         ssh_password = cleaned_data.get('ssh_password')
         ssh_port = cleaned_data.get('ssh_port')
         crontab = cleaned_data.get('crontab')
-        receiver = cleaned_data.get('receiver')
         task = 'mstats.tasks.backup_schema'
         backup_dir = cleaned_data.get('backup_dir')
         backup_args = cleaned_data.get('backup_args')
@@ -60,8 +58,7 @@ class BackupForm(forms.Form):
                 'ssh_password': ssh_password,
                 'ssh_port': ssh_port,
                 'backup_dir': backup_dir,
-                'backup_cmd': backup_cmd,
-                'receiver': receiver
+                'backup_cmd': backup_cmd
             }
 
             if PeriodicTask.objects.filter(name=name).first():

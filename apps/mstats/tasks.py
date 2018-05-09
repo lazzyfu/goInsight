@@ -20,14 +20,11 @@ def backup_schema(**kwargs):
     ssh_port = kwargs.get('ssh_port')
     backup_cmd = kwargs.get('backup_cmd')
 
-    receiver = kwargs.get('receiver').split(',')
-
     paramiko_output = ParamikoOutput(ssh_host, ssh_port, ssh_user, ssh_password)
 
     # 执行xtrabackup备份
     xtrabackup_cmd = backup_cmd.get('xtrabackup_cmd')
     if xtrabackup_cmd:
-        print(xtrabackup_cmd)
         res = paramiko_output.run(xtrabackup_cmd)
         logger.info(res)
 
@@ -35,7 +32,6 @@ def backup_schema(**kwargs):
     mysqldump_full_cmd = backup_cmd.get('mysqldump_full_cmd')
     if mysqldump_full_cmd:
         for cmd in mysqldump_full_cmd:
-            print(cmd)
             res = paramiko_output.run(cmd)
         logger.info(res)
 

@@ -201,6 +201,41 @@ def check_mysql_conn_status(fun):
     return wapper
 
 
+class ParamikoOutput(object):
+    def __init__(self, ssh_host=None, ssh_port=None, ssh_user=None, ssh_password=None):
+        self.ssh_host = ssh_host
+        self.ssh_port = ssh_port
+        self.ssh_user = ssh_user
+        self.ssh_password = ssh_password
+
+    def run(self, cmd):
+        s = paramiko.SSHClient()
+        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
+                  timeout=86400)
+
+        msg = [stdin, stdout, stderr] = s.exec_command(cmd)
+        out = []
+        for item in msg:
+            try:
+                for line in item:
+                    out.append(line.strip('\n'))
+            except Exception as err:
+                pass
+        s.close()
+        return out
+
+    def check_connection(self):
+        s = paramiko.SSHClient()
+        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
+                      timeout=5)
+            return True
+        except Exception as err:
+            return err
+
+
 class GeneralCParser(object):
     """从传入的字符串中读取配置并生成变量"""
 
@@ -309,13 +344,26 @@ class CheckCParserValid(GeneralCParser):
                                             ssh_host=self.ssh_host,
                                             ssh_port=self.ssh_port)
 
+    def check_ssh_conn(self):
+        result = self.paramiko_conn.check_connection()
+        if result is not True:
+            self.result = {'status': 2, 'msg': 'SSH Authentication Failed'}
+            return False
+        else:
+            return True
+
     def check_obj_exisit(self):
         """检测指定的命令文件和目录是否存在是否存在"""
+        is_true = []
         for i in self.check_obj:
             output = self.paramiko_conn.run(f"ls {i} && echo $?")
             if output[-1] != '0':
-                self.result = {'status': 2, 'msg': str(output[0])}
+                self.result = {'status': 2, 'msg': str(output[0]) + ', 请确认文件或目录存在'}
+                is_true.append(False)
                 break
+            else:
+                is_true.append(True)
+        return is_true
 
     def check_schema_exisit(self):
         """检测使用mysqldump时，备份的库是否存在"""
@@ -344,13 +392,17 @@ class CheckCParserValid(GeneralCParser):
         output = self.paramiko_conn.run(cmd)
         if output[0] != '1':
             self.result = {'status': 2, 'msg': str(output[-1])}
+            return False
+        else:
+            return True
 
     def run(self):
-        self.mkdir_backup_dir()
-        self.check_obj_exisit()
-        if self.config.has_section('mysqldump'):
-            self.check_schema_exisit()
-        self.check_mysql_conn()
+        if self.check_ssh_conn():
+            if all(self.check_obj_exisit()):
+                if self.check_mysql_conn():
+                    if self.config.has_section('mysqldump'):
+                        self.check_schema_exisit()
+            self.mkdir_backup_dir()
         return self.result if self.result else True
 
 
@@ -400,25 +452,6 @@ class GeneralBackupCmd(GeneralCParser):
 
         return self.backup_cmd
 
-
-# def mysqldump_cmd(self):
-#     try:
-#         mysqldump = self.config['mysqldump']
-#         backup_tool = mysqldump.get('backup_tool')
-#         backupdir = mysqldump.get('backupdir')
-#         backup_dbs = mysqldump.get('backup_dbs').split(',')
-#         single_table = mysqldump.get('single_table')
-#         dump_options = mysqldump.get('dump_options')
-#
-#         mysqldump_full_cmd = []
-#         for db in backup_dbs:
-#             mysqldump_full_cmd.append(' '.join((backup_tool,
-#                                                 self.get_mysql(),
-#                                                 db,
-#                                                 dump_options,
-#                                                 f'| gzip > {backupdir}/fullbackup_{db}_`date +%F_%T`.sql.gz '
-#                                                 f'2>/dev/null')))
-#         self.backup_cmd['mysqldump_full_cmd'] = mysqldump_full_cmd
 #         if single_table == 'enable':
 #             dbs = tuple(backup_dbs) if len(backup_dbs) > 1 else (repr(backup_dbs))
 #             query_cmd = " ".join(('mysql',
@@ -444,52 +477,3 @@ class GeneralBackupCmd(GeneralCParser):
 #     except KeyError as err:
 #         return ''
 #
-# def xtrabackup_cmd(self):
-#     try:
-#         xtrabackup = self.config['xtrabackup']
-#         backup_tool = xtrabackup.get('backup_tool')
-#         defaults_file = xtrabackup.get('defaults-file')
-#         backupdir = xtrabackup.get('backupdir')
-#         fmt_backupdir = '/'.join((backupdir, "`date +%F_%T`"))
-#         if 'xtra_options' in xtrabackup:
-#             xtra_options = xtrabackup.get('xtra_options')
-#
-#         xtrabackup_cmd = ' '.join((f"{backup_tool} --defaults-file={defaults_file} --backup "
-#                                    f"--target-dir={fmt_backupdir} {xtra_options}",
-#                                    self.get_mysql(), self.get_compress(), self.get_encrypt()))
-#         self.backup_cmd['xtrabackup_cmd'] = xtrabackup_cmd
-#     except KeyError as err:
-#         return ''
-#
-# def get_bkpuser_info(self):
-#     mysql = self.config['mysql']
-#     user = mysql.get('user')
-#     host = mysql.get('host')
-#     password = mysql.get('password')
-#     port = mysql.get('port')
-#     return {'bkp_user': user, 'bkp_host': host, 'bkp_password': password, 'bkp_port': port}
-
-
-class ParamikoOutput(object):
-    def __init__(self, ssh_host=None, ssh_port=None, ssh_user=None, ssh_password=None):
-        self.ssh_host = ssh_host
-        self.ssh_port = ssh_port
-        self.ssh_user = ssh_user
-        self.ssh_password = ssh_password
-
-    def run(self, cmd):
-        s = paramiko.SSHClient()
-        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
-                  timeout=86400)
-
-        msg = [stdin, stdout, stderr] = s.exec_command(cmd)
-        out = []
-        for item in msg:
-            try:
-                for line in item:
-                    out.append(line.strip('\n'))
-            except Exception as err:
-                pass
-        s.close()
-        return out
