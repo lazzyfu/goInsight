@@ -252,40 +252,35 @@ EMAIL_FROM = 'lazzyfu@163.com'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
+    'formatters': {  # 日志格式
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
     },
-    'filters': {
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'file': {
+    'handlers': {  # 处理器
+        'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/all.log',
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 5,
-            'formatter': 'verbose',
-        }
+            'filename': 'logs/all.log',  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'standard',  # 使用哪种formatters日志格式
+        },
+        'console': {  # 输出到控制台
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
     },
-    'loggers': {
+    'loggers': {  # logging管理器
         'django': {
-            'handlers': ['console', 'file'],
-            'propagate': True,
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False
         },
         'django.request': {
             'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': False,
+            'level': 'INFO',
+            'propagate': True,
         },
     }
 }

@@ -8,9 +8,10 @@ from celery import current_app
 
 # Create your views here.
 from django.views import View
-from djcelery.models import CrontabSchedule, PeriodicTask
+from djcelery.models import CrontabSchedule, PeriodicTask, PeriodicTasks
 from djcelery.schedulers import ModelEntry
 
+from scheduled_tasks.utils import update_periodic_tasks
 from user_manager.permissions import permission_required
 from scheduled_tasks.forms import PeriodicForm
 from utils.tools import format_request
@@ -45,11 +46,13 @@ class CrontabView(View):
             id = data.get('id')
             for i in id.split(','):
                 CrontabSchedule.objects.get(id=i).delete()
+            update_periodic_tasks()
             context = {'status': 0, 'msg': '删除成功'}
         elif action == 'edit_crontab':
             # 删除无用的元素
             del data['0']
             CrontabSchedule.objects.filter(id=data.get('id')).update(**data)
+            update_periodic_tasks()
             context = {'status': 0, 'msg': '修改成功'}
         else:
             context = {'status': 2, 'msg': '操作失败'}
@@ -117,6 +120,7 @@ class ModifyPeriodicTaskView(View):
         context = {}
         if action == 'modify_status':
             PeriodicTask.objects.filter(pk=id).update(enabled=status)
+            update_periodic_tasks()
             context = {'status': 0, 'msg': '状态切换成功'}
         elif action == 'edit_periodic':
             del data['csrfmiddlewaretoken']
@@ -124,6 +128,7 @@ class ModifyPeriodicTaskView(View):
             kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
             kwargs['receiver'] = data.get('receiver')
             PeriodicTask.objects.filter(pk=id).update(name=data.get('name'), kwargs=json.dumps(kwargs))
+            update_periodic_tasks()
 
             context = {'status': 0, 'msg': '修改成功'}
 
@@ -140,13 +145,10 @@ class GetCrontabView(View):
 
 
 class GetCeleryTasksView(View):
-    """
-    周期任务中的任务命名必须以:monitor开头
-    """
     @permission_required('can_scheduled_view')
     def get(self, post):
         # 获取任务列表
         celery_app = current_app
         celery_app.loader.import_default_modules()
-        tasks = list(sorted(name for name in celery_app.tasks if not name.startswith('celery.') if 'monitor' in name))
+        tasks = list(sorted(name for name in celery_app.tasks if not name.startswith('celery.')))
         return HttpResponse(json.dumps(tasks))

@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+import configparser
 import re
 
+import paramiko
 import pymysql
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -197,3 +199,297 @@ def check_mysql_conn_status(fun):
             raise Http404
 
     return wapper
+
+
+class GeneralCParser(object):
+    """从传入的字符串中读取配置并生成变量"""
+
+    def __init__(self, backup_dir=None, parser_string=None):
+        if isinstance(parser_string, str):
+            self.config = configparser.ConfigParser(allow_no_value=True)
+            self.config.read_string(parser_string)
+            self.backup_dir = backup_dir
+            self.check_obj = []
+
+            # 获取mysql backup user
+            mysql = self.config['mysql']
+            self.mysql_cmd = mysql.get('mysql_tool')
+            self.mysql_user = mysql.get('user')
+            self.mysql_host = mysql.get('host')
+            self.mysql_password = mysql.get('password')
+            self.mysql_port = mysql.get('port')
+
+            self.check_obj.append(self.mysql_cmd)
+            self.check_obj.append(self.backup_dir)
+
+            # 是否启用compress
+            try:
+                xb_compress = self.config['compress']
+                try:
+                    if 'compress' in xb_compress:
+                        self.compress = xb_compress.get('compress')
+                    if 'compress_chunk_size' in xb_compress:
+                        self.compress_chunk_size = xb_compress.get('compress_chunk_size')
+                    if 'compress_threads' in xb_compress:
+                        self.compress_threads = xb_compress.get('compress_threads')
+                    if self.compress and self.compress_chunk_size and self.compress_threads:
+                        self.compress_args = f"--compress={self.compress} " \
+                                             f"--compress-chunk-size={self.compress_chunk_size} " \
+                                             f"--compress-threads={self.compress_threads}"
+                except AttributeError as err:
+                    self.compress_args = ''
+            except KeyError as err:
+                self.compress_args = ''
+
+            # 是否启用encrypt
+            try:
+                xb_encrypt = self.config['encrypt']
+                try:
+                    if 'encrypt' in xb_encrypt:
+                        self.encrypt = xb_encrypt.get('encrypt')
+                    if 'encrypt_key' in xb_encrypt:
+                        self.encrypt_key = xb_encrypt.get('encrypt_key')
+                    if 'encrypt_threads' in xb_encrypt:
+                        self.encrypt_threads = xb_encrypt.get('encrypt_threads')
+                    if 'encrypt_chunk_size' in xb_encrypt:
+                        self.encrypt_chunk_size = xb_encrypt.get('encrypt_chunk_size')
+                    if self.encrypt and self.encrypt_key and self.encrypt_threads and self.encrypt_chunk_size:
+                        self.encrypt_args = f"--encrypt={self.encrypt} --encrypt-key={self.encrypt_key} " \
+                                            f"--encrypt-threads={self.encrypt_threads} " \
+                                            f"--encrypt-chunk-size={self.encrypt_chunk_size}"
+                except AttributeError as err:
+                    self.encrypt_args = ''
+            except KeyError as err:
+                self.encrypt_args = ''
+
+            # 获取mysqldump
+            try:
+                mysqldump = self.config['mysqldump']
+                self.mysqldump_cmd = mysqldump.get('backup_tool')
+                self.mysqldump_backupdir = '/'.join((self.backup_dir, 'mysqldump'))
+                self.backup_dbs = mysqldump.get('backup_dbs').split(',')
+                self.single_table = mysqldump.get('single_table')
+                self.dump_options = mysqldump.get('dump_options')
+
+                self.check_obj.append(self.mysqldump_cmd)
+
+            except KeyError as err:
+                pass
+
+            # 获取xtrabackup
+            try:
+                xtrabackup = self.config['xtrabackup']
+                self.xtrabackup_cmd = xtrabackup.get('backup_tool')
+                self.defaults_file = xtrabackup.get('defaults-file')
+                self.xtrabackup_backupdir = '/'.join((self.backup_dir, 'xtrabackup', "`date +%F_%T`"))
+                self.xtra_options = xtrabackup.get('xtra_options')
+
+                self.check_obj.append(self.xtrabackup_cmd)
+
+            except KeyError as err:
+                pass
+
+
+class CheckCParserValid(GeneralCParser):
+    """检测备份配置文件在目标主机的有效性"""
+
+    def __init__(self, ssh_user=None, ssh_password=None, ssh_host=None, ssh_port=None, backup_dir=None,
+                 parser_string=None):
+        # 获取ssh
+        self.ssh_user = ssh_user
+        self.ssh_password = ssh_password
+        self.ssh_host = ssh_host
+        self.ssh_port = ssh_port
+        self.parser_string = parser_string
+        GeneralCParser.__init__(self, backup_dir, self.parser_string)
+        self.result = {}
+
+        self.paramiko_conn = ParamikoOutput(ssh_user=self.ssh_user,
+                                            ssh_password=self.ssh_password,
+                                            ssh_host=self.ssh_host,
+                                            ssh_port=self.ssh_port)
+
+    def check_obj_exisit(self):
+        """检测指定的命令文件和目录是否存在是否存在"""
+        for i in self.check_obj:
+            output = self.paramiko_conn.run(f"ls {i} && echo $?")
+            if output[-1] != '0':
+                self.result = {'status': 2, 'msg': str(output[0])}
+                break
+
+    def check_schema_exisit(self):
+        """检测使用mysqldump时，备份的库是否存在"""
+        for db in self.backup_dbs:
+            cmd = f"{self.mysql_cmd} --user={self.mysql_user} --password='{self.mysql_password}' " \
+                  f"--host={self.mysql_host} --port={self.mysql_port} " \
+                  f"-e \"select count(*) from information_schema.SCHEMATA where SCHEMA_NAME='{db}'\""
+
+            output = self.paramiko_conn.run(cmd)
+            if output[1] == '0':
+                self.result = {'status': 2, 'msg': f'mysqldump指定备份的库不存在：{db}'}
+                break
+
+    def mkdir_backup_dir(self):
+        """创建备份目录，自动创建self.backup_dir/{mysqldump,xtrabackup}"""
+        cmd1 = f"if [ ! -d {self.backup_dir}/mysqldump ]; then mkdir {self.backup_dir}/mysqldump;fi "
+        cmd2 = f"if [ ! -d {self.backup_dir}/xtrabackup ]; then mkdir {self.backup_dir}/xtrabackup;fi "
+
+        self.paramiko_conn.run(cmd1)
+        self.paramiko_conn.run(cmd2)
+
+    def check_mysql_conn(self):
+        """检测mysql备份用户是否可以连接到数据库"""
+        cmd = f"{self.mysql_cmd} --user={self.mysql_user} --password='{self.mysql_password}' " \
+              f"--host={self.mysql_host} --port={self.mysql_port} -e 'select 1'"
+        output = self.paramiko_conn.run(cmd)
+        if output[0] != '1':
+            self.result = {'status': 2, 'msg': str(output[-1])}
+
+    def run(self):
+        self.mkdir_backup_dir()
+        self.check_obj_exisit()
+        if self.config.has_section('mysqldump'):
+            self.check_schema_exisit()
+        self.check_mysql_conn()
+        return self.result if self.result else True
+
+
+class GeneralBackupCmd(GeneralCParser):
+    """生成备份命令并返回"""
+
+    def __init__(self, ssh_user=None, ssh_password=None, ssh_host=None, ssh_port=None, backup_dir=None,
+                 parser_string=None):
+        # 获取ssh
+        self.ssh_user = ssh_user
+        self.ssh_password = ssh_password
+        self.ssh_host = ssh_host
+        self.ssh_port = ssh_port
+        self.parser_string = parser_string
+        GeneralCParser.__init__(self, backup_dir, self.parser_string)
+
+        self.mysql_args = f"--user={self.mysql_user} --password='{self.mysql_password}' " \
+                          f"--host={self.mysql_host} --port={self.mysql_port}"
+
+        self.backup_cmd = {}
+
+    def general_xtrabackup_cmd(self):
+        """生成xtrabackup备份命令"""
+        cmd = ' '.join((f"{self.xtrabackup_cmd} --defaults-file={self.defaults_file} "
+                        f"--backup --target-dir={self.xtrabackup_backupdir} {self.xtra_options}",
+                        self.mysql_args, self.compress_args, self.encrypt_args))
+        self.backup_cmd['xtrabackup_cmd'] = cmd
+
+    def general_mysqldump_cmd(self):
+        """生成mysqldump备份命令"""
+        cmd = []
+        for db in self.backup_dbs:
+            cmd.append(' '.join((self.mysqldump_cmd,
+                                 self.mysql_args,
+                                 self.dump_options,
+                                 db,
+                                 f'| gzip > {self.mysqldump_backupdir}/full_{db}_`date +%F_%T`.sql.gz '
+                                 f'2>/dev/null')))
+        self.backup_cmd['mysqldump_full_cmd'] = cmd
+
+    def run(self):
+        if self.config.has_section('mysqldump'):
+            self.general_mysqldump_cmd()
+
+        if self.config.has_section('xtrabackup'):
+            self.general_xtrabackup_cmd()
+
+        return self.backup_cmd
+
+
+# def mysqldump_cmd(self):
+#     try:
+#         mysqldump = self.config['mysqldump']
+#         backup_tool = mysqldump.get('backup_tool')
+#         backupdir = mysqldump.get('backupdir')
+#         backup_dbs = mysqldump.get('backup_dbs').split(',')
+#         single_table = mysqldump.get('single_table')
+#         dump_options = mysqldump.get('dump_options')
+#
+#         mysqldump_full_cmd = []
+#         for db in backup_dbs:
+#             mysqldump_full_cmd.append(' '.join((backup_tool,
+#                                                 self.get_mysql(),
+#                                                 db,
+#                                                 dump_options,
+#                                                 f'| gzip > {backupdir}/fullbackup_{db}_`date +%F_%T`.sql.gz '
+#                                                 f'2>/dev/null')))
+#         self.backup_cmd['mysqldump_full_cmd'] = mysqldump_full_cmd
+#         if single_table == 'enable':
+#             dbs = tuple(backup_dbs) if len(backup_dbs) > 1 else (repr(backup_dbs))
+#             query_cmd = " ".join(('mysql',
+#                                   self.get_mysql(),
+#                                   "-e",
+#                                   f"\"select table_schema, table_name from information_schema.tables "
+#                                   f"where table_schema in {dbs}\" 2>/dev/null"))
+#             paramiko_output = ParamikoOutput(self.ssh_host, self.ssh_port, self.ssh_user, self.ssh_password)
+#             query_output = paramiko_output.run(query_cmd)
+#             del query_output[0]
+#             mysqldump_single_cmd = []
+#             for i in query_output:
+#                 schema = i.split('\t')[0]
+#                 table = i.split('\t')[1]
+#                 mysqldump_single_cmd.append(' '.join((backup_tool,
+#                                                       self.get_mysql(),
+#                                                       schema,
+#                                                       table,
+#                                                       dump_options,
+#                                                       f'| gzip > {backupdir}/singlebackup_'
+#                                                       f'{schema}_{table}_`date +%F_%T`.sql.gz 2>/dev/null')))
+#             self.backup_cmd['mysqldump_single_cmd'] = mysqldump_single_cmd
+#     except KeyError as err:
+#         return ''
+#
+# def xtrabackup_cmd(self):
+#     try:
+#         xtrabackup = self.config['xtrabackup']
+#         backup_tool = xtrabackup.get('backup_tool')
+#         defaults_file = xtrabackup.get('defaults-file')
+#         backupdir = xtrabackup.get('backupdir')
+#         fmt_backupdir = '/'.join((backupdir, "`date +%F_%T`"))
+#         if 'xtra_options' in xtrabackup:
+#             xtra_options = xtrabackup.get('xtra_options')
+#
+#         xtrabackup_cmd = ' '.join((f"{backup_tool} --defaults-file={defaults_file} --backup "
+#                                    f"--target-dir={fmt_backupdir} {xtra_options}",
+#                                    self.get_mysql(), self.get_compress(), self.get_encrypt()))
+#         self.backup_cmd['xtrabackup_cmd'] = xtrabackup_cmd
+#     except KeyError as err:
+#         return ''
+#
+# def get_bkpuser_info(self):
+#     mysql = self.config['mysql']
+#     user = mysql.get('user')
+#     host = mysql.get('host')
+#     password = mysql.get('password')
+#     port = mysql.get('port')
+#     return {'bkp_user': user, 'bkp_host': host, 'bkp_password': password, 'bkp_port': port}
+
+
+class ParamikoOutput(object):
+    def __init__(self, ssh_host=None, ssh_port=None, ssh_user=None, ssh_password=None):
+        self.ssh_host = ssh_host
+        self.ssh_port = ssh_port
+        self.ssh_user = ssh_user
+        self.ssh_password = ssh_password
+
+    def run(self, cmd):
+        s = paramiko.SSHClient()
+        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
+                  timeout=86400)
+
+        msg = [stdin, stdout, stderr] = s.exec_command(cmd)
+        out = []
+        for item in msg:
+            try:
+                for line in item:
+                    out.append(line.strip('\n'))
+            except Exception as err:
+                pass
+        s.close()
+        return out

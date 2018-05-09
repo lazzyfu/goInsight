@@ -95,11 +95,7 @@ AuditSQL介绍
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/7.png)
 
-执行任务截图：
-
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/8.png)
-
-邮件截图：
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/9.png)
 ## 联系方式

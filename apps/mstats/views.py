@@ -1,15 +1,16 @@
 import json
 
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 # Create your views here.
 from django.utils.decorators import method_decorator
 from django.views import View
+from djcelery.models import PeriodicTask, CrontabSchedule
 
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
-from mstats.forms import PrivModifyForm
+from mstats.forms import PrivModifyForm, BackupForm
 from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager
 from utils.tools import format_request
 
@@ -79,3 +80,46 @@ class MysqlUserManager(View):
             error = form.errors.as_text()
             context = {'status': 2, 'msg': error}
             return HttpResponse(json.dumps(context))
+
+
+class RBackupTaskView(View):
+    @permission_required('can_scheduled_view')
+    def get(self, request):
+        return render(request, 'backup_task.html')
+
+
+class BackupTaskDetailView(View):
+    @permission_required('can_scheduled_view')
+    def get(self, request):
+        data = format_request(request)
+        kwargs = PeriodicTask.objects.get(pk=data.get('id')).kwargs
+        return HttpResponse(json.dumps(kwargs))
+
+
+class BackupTaskView(View):
+    @permission_required('can_scheduled_view')
+    def get(self, request):
+        data = PeriodicTask.objects.filter(description=u'数据库备份').values()
+        result = []
+        for i in data:
+            crontab_value = CrontabSchedule.objects.get(id=i.get('crontab_id'))
+            i['crontab_value'] = str(crontab_value)
+            kwargs = json.loads(i['kwargs'])
+            i['ssh_host'] = kwargs.get('ssh_host')
+            i['receiver'] = ',\n'.join(kwargs.get('receiver').split(','))
+            result.append(i)
+
+        return JsonResponse(result, safe=False)
+
+    @permission_required('can_scheduled_edit')
+    @transaction.atomic
+    def post(self, request):
+        data = format_request(request)
+        form = BackupForm(data)
+        if form.is_valid():
+            context = form.is_save()
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
+
+        return HttpResponse(json.dumps(context))

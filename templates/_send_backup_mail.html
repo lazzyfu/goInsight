@@ -1,0 +1,59 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .box {
+            position: relative;
+            border-radius: 3px;
+            background: #ffffff;
+            border-top: 3px solid #d2d6de;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        pre {
+            height: 700px;
+            width: 100%;
+            line-height: 2em;
+            overflow-y: scroll;
+            padding: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+        <pre style="word-wrap:break-word;">
+            uuid: c2a4cee1-4f62-11e8-9d46-5254008815b6
+            name: NULL
+       tool_name: xtrabackup
+    tool_command: --defaults-file=/etc/my.cnf --backup --target-dir=/data/xtrabackup/ --no-version-check --rsync --binlog-info=ON --user=root --password=... --host=127.0.0.1 --port=3306 --compress=quicklz --compress-chunk-size=64k --compress-threads=4 --encrypt=AES256 --encrypt-key=... --encrypt-threads=4 --encrypt-chunk-size=64k --history
+    tool_version: 2.4.11
+ibbackup_version: 2.4.11
+  server_version: 5.7.21-20-57
+      start_time: 2018-05-04 14:17:00
+        end_time: 2018-05-04 14:17:02
+       lock_time: 0
+      binlog_pos: NULL
+ innodb_from_lsn: 0
+   innodb_to_lsn: 2580537
+         partial: N
+     incremental: N
+          format: file
+         compact: N
+      compressed: Y
+       encrypted: Y
+        </pre>
+    </div>
+</body>
+</html>
