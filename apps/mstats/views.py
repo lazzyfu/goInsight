@@ -131,12 +131,16 @@ class BackupTaskPreviewView(View):
 
 
 class BackupTaskPreviewListView(View):
+    """获取备份主机的备份目录列表"""
+
     def get(self, request):
         data = format_request(request)
         id = data.get('id')
+        show_type = data.get('type')
         kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
+        backup_dir = '/'.join((kwargs.get('backup_dir'), show_type))
 
-        cmd = f"tree {kwargs.get('backup_dir')} -fsi -L 2"
+        cmd = f"du -sh {backup_dir}/* --time"
 
         paramiko_conn = ParamikoOutput(ssh_user=kwargs.get('ssh_user'),
                                        ssh_password=kwargs.get('ssh_password'),
@@ -144,11 +148,45 @@ class BackupTaskPreviewListView(View):
                                        ssh_port=kwargs.get('ssh_port'))
         data = paramiko_conn.run(cmd)
         result = []
-        # 删除不必要的元素
-        del data[0]
-        del data[-2:]
         for i in data:
-            dir = i.split(' ')[-1]
-            size = int(re.search(r'\d+', i).group()) / 1024 / 1024
-            result.append({'dir': dir, 'size': size})
+            split_i = i.split('\t')
+            file_size = split_i[0]
+            file_time = split_i[1]
+            file_name = split_i[2]
+            result.append({'file_name': file_name, 'file_size': file_size, 'file_time': file_time})
+        result.reverse()
+        return HttpResponse(json.dumps(result))
+
+
+class GetBackupDiskUsedView(View):
+    """获取指定主机备份目录磁盘空间的使用详情"""
+
+    def get(self, request):
+        data = format_request(request)
+        id = data.get('id')
+        kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
+        backup_dir = kwargs.get('backup_dir')
+        mysqldump_backup_dir = '/'.join((backup_dir, 'mysqldump'))
+        xtrabackup_backup_dir = '/'.join((backup_dir, 'xtrabackup'))
+
+        paramiko_conn = ParamikoOutput(ssh_user=kwargs.get('ssh_user'),
+                                       ssh_password=kwargs.get('ssh_password'),
+                                       ssh_host=kwargs.get('ssh_host'),
+                                       ssh_port=kwargs.get('ssh_port'))
+
+        cmd = f"du -sh {mysqldump_backup_dir} {xtrabackup_backup_dir} && df -h {backup_dir}"
+        data = paramiko_conn.run(cmd)
+
+        result = {}
+        for i in data[:2]:
+            result[i.split('\t')[1]] = i.split('\t')[0]
+
+        df = [i for i in data[-1].split(' ') if i != '']
+        result.update({'total_size': df[1],
+                       'used_size': df[2],
+                       'free_size': df[3],
+                       'used_percent (%)': int(df[4].split('%')[0]),
+                       'free_percent (%)': 100 - int(df[4].split('%')[0])
+                       })
+
         return HttpResponse(json.dumps(result))
