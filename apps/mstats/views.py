@@ -1,6 +1,7 @@
 import json
 import re
 
+import os
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -127,7 +128,9 @@ class BackupTaskView(View):
 
 class BackupTaskPreviewView(View):
     def get(self, request, id):
-        return render(request, 'backup_task_preview.html', {'id': id})
+        kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
+        host = kwargs.get('ssh_host')
+        return render(request, 'backup_task_preview.html', {'id': id, 'host': host})
 
 
 class BackupTaskPreviewListView(View):
@@ -138,7 +141,7 @@ class BackupTaskPreviewListView(View):
         id = data.get('id')
         show_type = data.get('type')
         kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
-        backup_dir = '/'.join((kwargs.get('backup_dir'), show_type))
+        backup_dir = os.path.join(kwargs.get('backup_dir'), show_type)
 
         cmd = f"du -sh {backup_dir}/* --time"
 
@@ -166,8 +169,8 @@ class GetBackupDiskUsedView(View):
         id = data.get('id')
         kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
         backup_dir = kwargs.get('backup_dir')
-        mysqldump_backup_dir = '/'.join((backup_dir, 'mysqldump'))
-        xtrabackup_backup_dir = '/'.join((backup_dir, 'xtrabackup'))
+        mysqldump_backup_dir = os.path.join(backup_dir, 'mysqldump')
+        xtrabackup_backup_dir = os.path.join(backup_dir, 'xtrabackup')
 
         paramiko_conn = ParamikoOutput(ssh_user=kwargs.get('ssh_user'),
                                        ssh_password=kwargs.get('ssh_password'),

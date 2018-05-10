@@ -7,7 +7,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h5 class="box-title"><i class="fa fa-cog"></i> 数据库备份记录
+                        <h5 class="box-title"><i class="fa fa-cog"></i> {{ host }}_备份记录
                         </h5>
                         <!-- 隐藏id，下面ajax调用 -->
                         <h5 id="s_id" style="display: none">{{ id }}</h5>
@@ -94,6 +94,14 @@
                     {
                         field: 'file_size',
                         title: '文件大小'
+                    },
+                    {
+                        field: 'file_time',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
                     }
                 ]
             });

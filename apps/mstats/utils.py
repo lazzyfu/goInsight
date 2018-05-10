@@ -3,6 +3,7 @@
 import configparser
 import re
 
+import os
 import paramiko
 import pymysql
 from django.http import Http404
@@ -301,7 +302,7 @@ class GeneralCParser(object):
             try:
                 mysqldump = self.config['mysqldump']
                 self.mysqldump_cmd = mysqldump.get('backup_tool')
-                self.mysqldump_backupdir = '/'.join((self.backup_dir, 'mysqldump'))
+                self.mysqldump_backupdir = os.path.join(self.backup_dir, 'mysqldump')
                 self.backup_dbs = mysqldump.get('backup_dbs').split(',')
                 self.single_table = mysqldump.get('single_table')
                 self.dump_options = mysqldump.get('dump_options')
@@ -316,7 +317,7 @@ class GeneralCParser(object):
                 xtrabackup = self.config['xtrabackup']
                 self.xtrabackup_cmd = xtrabackup.get('backup_tool')
                 self.defaults_file = xtrabackup.get('defaults-file')
-                self.xtrabackup_backupdir = '/'.join((self.backup_dir, 'xtrabackup', "`date +%F_%T`"))
+                self.xtrabackup_backupdir = os.path.join(self.backup_dir, 'xtrabackup', "`date +%F_%T`")
                 self.xtra_options = xtrabackup.get('xtra_options')
 
                 self.check_obj.append(self.xtrabackup_cmd)
