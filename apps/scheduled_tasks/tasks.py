@@ -17,6 +17,7 @@ from scheduled_tasks.models import DeadLockRecords
 
 @shared_task
 def monitor_deadlocks(**kwargs):
+    """暂时不使用"""
     # 计算时间差
     # 全量同步时，一天之前的数据is_sign设置为：is_sign=1
     now = datetime.now()

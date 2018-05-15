@@ -1,19 +1,17 @@
 import json
 
+from celery import current_app
 from celery import schedules
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from celery import current_app
-
 # Create your views here.
 from django.views import View
-from djcelery.models import CrontabSchedule, PeriodicTask, PeriodicTasks
-from djcelery.schedulers import ModelEntry
+from django_celery_beat.models import CrontabSchedule, PeriodicTask, PeriodicTasks
+from django_celery_beat.schedulers import ModelEntry
 
-from scheduled_tasks.utils import update_periodic_tasks
+from scheduled_tasks.utils import refresh_periodic_tasks
 from user_manager.permissions import permission_required
-from scheduled_tasks.forms import PeriodicForm
 from utils.tools import format_request
 
 
@@ -46,52 +44,16 @@ class CrontabView(View):
             id = data.get('id')
             for i in id.split(','):
                 CrontabSchedule.objects.get(id=i).delete()
-            update_periodic_tasks()
+            # refresh_periodic_tasks()
             context = {'status': 0, 'msg': '删除成功'}
         elif action == 'edit_crontab':
             # 删除无用的元素
             del data['0']
             CrontabSchedule.objects.filter(id=data.get('id')).update(**data)
-            update_periodic_tasks()
+            # refresh_periodic_tasks()
             context = {'status': 0, 'msg': '修改成功'}
         else:
             context = {'status': 2, 'msg': '操作失败'}
-
-        return HttpResponse(json.dumps(context))
-
-
-class RPeriodicTaskView(View):
-    @permission_required('can_scheduled_view')
-    def get(self, request):
-        return render(request, 'periodic_task.html')
-
-
-class PeriodicTaskView(View):
-    @permission_required('can_scheduled_view')
-    def get(self, request):
-        data = PeriodicTask.objects.values()
-        result = []
-        for i in data:
-            crontab_value = CrontabSchedule.objects.get(id=i.get('crontab_id'))
-            i['crontab_value'] = str(crontab_value)
-            result.append(i)
-            kwargs = json.loads(i['kwargs'])
-            i['host'] = kwargs.get('host')
-            i['schema'] = kwargs.get('schema')
-            i['receiver'] = kwargs.get('receiver')
-
-        return JsonResponse(result, safe=False)
-
-    @permission_required('can_scheduled_edit')
-    @transaction.atomic
-    def post(self, request):
-        data = format_request(request)
-        form = PeriodicForm(data)
-        if form.is_valid():
-            context = form.is_save()
-        else:
-            error = form.errors.as_text()
-            context = {'status': 2, 'msg': error}
 
         return HttpResponse(json.dumps(context))
 
@@ -120,7 +82,7 @@ class ModifyPeriodicTaskView(View):
         context = {}
         if action == 'modify_status':
             PeriodicTask.objects.filter(pk=id).update(enabled=status)
-            update_periodic_tasks()
+            refresh_periodic_tasks()
             context = {'status': 0, 'msg': '状态切换成功'}
         elif action == 'edit_periodic':
             del data['csrfmiddlewaretoken']
@@ -128,7 +90,7 @@ class ModifyPeriodicTaskView(View):
             kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
             kwargs['receiver'] = data.get('receiver')
             PeriodicTask.objects.filter(pk=id).update(name=data.get('name'), kwargs=json.dumps(kwargs))
-            update_periodic_tasks()
+            refresh_periodic_tasks()
 
             context = {'status': 0, 'msg': '修改成功'}
 

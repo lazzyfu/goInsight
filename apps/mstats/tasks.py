@@ -1,6 +1,9 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-from celery import shared_task
+import time
+
+import sys
+from celery import shared_task, states, task
 import logging
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -60,3 +63,22 @@ def backup_schema(**kwargs):
     # msg.content_subtype = "html"
     #
     # msg.send()
+
+
+@shared_task(bind=True)
+def test_mes(self):
+    self.update_state(state="PROGRESS")
+    return 'task finish.'
+
+
+def on_raw_message(body):
+    if body.get('status') == 'PROGRESS':
+        for i in range(1, 11):
+            time.sleep(1)
+            print('\r任务进度: {0}%'.format(i * 10))
+    print(body.get('status'))
+
+
+@shared_task
+def add_x(x, y):
+    print(x + y)

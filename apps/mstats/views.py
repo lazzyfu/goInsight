@@ -1,21 +1,21 @@
 import json
-import re
-
 import os
+
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 # Create your views here.
 from django.utils.decorators import method_decorator
 from django.views import View
-from djcelery.models import PeriodicTask, CrontabSchedule
+# from djcelery.models import PeriodicTask, CrontabSchedule
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
+from mstats.forms import PrivModifyForm, BackupTaskForm, SchemaMonitorForm
+from mstats.tasks import on_raw_message, test_mes
+from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
-from mstats.forms import PrivModifyForm, BackupForm
-from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
 from utils.tools import format_request
-
 
 class RenderMySQLUserView(View):
     @permission_required('can_mysqluser_view')
@@ -84,18 +84,49 @@ class MysqlUserManager(View):
             return HttpResponse(json.dumps(context))
 
 
+class RSchemaMonitorTaskView(View):
+    """渲染schema monitor页面"""
+    @permission_required('can_scheduled_view')
+    def get(self, request):
+        return render(request, 'periodic_task.html')
+
+
+class SchemaMonitorTaskView(View):
+    """处理schema monitor数据"""
+    @permission_required('can_scheduled_view')
+    def get(self, request):
+        data = PeriodicTask.objects.filter(description=u'表结构监控').values()
+        result = []
+        for i in data:
+            crontab_value = CrontabSchedule.objects.get(id=i.get('crontab_id'))
+            i['crontab_value'] = str(crontab_value)
+            result.append(i)
+            kwargs = json.loads(i['kwargs'])
+            i['host'] = kwargs.get('host')
+            i['schema'] = kwargs.get('schema')
+            i['receiver'] = kwargs.get('receiver')
+
+        return JsonResponse(result, safe=False)
+
+    @permission_required('can_scheduled_edit')
+    @transaction.atomic
+    def post(self, request):
+        data = format_request(request)
+        form = SchemaMonitorForm(data)
+        if form.is_valid():
+            context = form.is_save()
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
+
+        return HttpResponse(json.dumps(context))
+
+
 class RBackupTaskView(View):
+    """渲染backup task页面"""
     @permission_required('can_scheduled_view')
     def get(self, request):
         return render(request, 'backup_task.html')
-
-
-class BackupTaskDetailView(View):
-    @permission_required('can_scheduled_view')
-    def get(self, request):
-        data = format_request(request)
-        kwargs = PeriodicTask.objects.get(pk=data.get('id')).kwargs
-        return HttpResponse(json.dumps(kwargs))
 
 
 class BackupTaskView(View):
@@ -116,7 +147,7 @@ class BackupTaskView(View):
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
-        form = BackupForm(data)
+        form = BackupTaskForm(data)
         if form.is_valid():
             context = form.is_save()
         else:
@@ -126,7 +157,18 @@ class BackupTaskView(View):
         return HttpResponse(json.dumps(context))
 
 
+class BackupTaskDetailView(View):
+    """获取备份任务详情"""
+    @permission_required('can_scheduled_view')
+    def get(self, request):
+        data = format_request(request)
+        kwargs = PeriodicTask.objects.get(pk=data.get('id')).kwargs
+        return HttpResponse(json.dumps(kwargs))
+
+
 class BackupTaskPreviewView(View):
+    """渲染备份数据预览页面数据"""
+    @permission_required('can_scheduled_view')
     def get(self, request, id):
         kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
         host = kwargs.get('ssh_host')
@@ -136,6 +178,7 @@ class BackupTaskPreviewView(View):
 class BackupTaskPreviewListView(View):
     """获取备份主机的备份目录列表"""
 
+    @permission_required('can_scheduled_view')
     def get(self, request):
         data = format_request(request)
         id = data.get('id')
@@ -164,6 +207,7 @@ class BackupTaskPreviewListView(View):
 class GetBackupDiskUsedView(View):
     """获取指定主机备份目录磁盘空间的使用详情"""
 
+    @permission_required('can_scheduled_view')
     def get(self, request):
         data = format_request(request)
         id = data.get('id')

@@ -120,7 +120,6 @@
                         <hr>
 
                         <div class="form-group">
-                            {#                                <label class="control-label col-md-2 col-sm-2 col-xs-12">备份参数</label>#}
                             <div class="col-md-10 col-sm-10 col-xs-12 col-md-offset-1">
                                     <textarea id="s_backup_args" class="form-control"
                                               name="backup_args"></textarea>
@@ -253,7 +252,7 @@
                     },
                     {
                         field: 'id',
-                        title: '备份参数',
+                        title: '脚本参数',
                         formatter: function (value) {
                             return "<button class=\"btn btn-xs btn-info\" " +
                                 "data-toggle=\"modal\" data-target=\"#show_backup_modal\" " +
@@ -265,7 +264,7 @@
                         field: 'id',
                         title: '备份详情',
                         formatter: function (value) {
-                            return "<a href='backup_task_preview/" + value + "'><i class='fa fa-sliders fa-lg'></i></a>"
+                            return "<a href='backup_task_preview/" + value + "'>备份详情</a>"
                         }
                     }
                 ],
