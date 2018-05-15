@@ -44,7 +44,7 @@ class CrontabView(View):
             id = data.get('id')
             for i in id.split(','):
                 CrontabSchedule.objects.get(id=i).delete()
-            # refresh_periodic_tasks()
+            refresh_periodic_tasks()
             context = {'status': 0, 'msg': '删除成功'}
         elif action == 'edit_crontab':
             # 删除无用的元素

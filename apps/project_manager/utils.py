@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+import json
+import socket
+
 import pymysql
 from django.http import HttpResponse
-import socket
-import json
-from AuditSQL import settings
-from project_manager.inception.inception_api import sql_filter, IncepSqlCheck
 
+from AuditSQL import settings
+from project_manager.inception.inception_api import sql_filter
 from project_manager.models import IncepMakeExecTask
 
 
@@ -74,6 +75,7 @@ def check_incep_alive(fun):
 
 def check_sql_filter(fun):
     """检查SQL类型，DML还是DDL操作"""
+
     def wapper(request, *args, **kwargs):
         sql = request.POST.get('contents')
         operate_type = request.POST.get('operate_type')
@@ -86,3 +88,4 @@ def check_sql_filter(fun):
             return fun(request, *args, **kwargs)
 
     return wapper
+

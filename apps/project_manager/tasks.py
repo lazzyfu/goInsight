@@ -11,6 +11,7 @@ import time
 import pymysql
 from asgiref.sync import async_to_sync
 from celery import shared_task
+from celery.result import AsyncResult
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.core.files import File
@@ -139,38 +140,70 @@ statu = 1: 推送执行进度
 """
 
 
+# @shared_task
+# def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
+#     obj = IncepMakeExecTask.objects.get(id=id)
+#     if sqlsha1 is None:
+#         sqlsha1 = obj.sqlsha1
+#
+#     host = obj.dst_host
+#     database = obj.dst_database
+#
+#     while True:
+#         if redis_key in cache:
+#             data = cache.get(redis_key)
+#             if data == 'start':
+#                 sql = f"inception get osc_percent '{sqlsha1}'"
+#                 incep_of_audit = IncepSqlCheck(sql, host, database, user)
+#
+#                 # 执行SQL
+#                 incep_of_audit.run_status(1)
+#
+#                 # 每2s获取一次
+#                 time.sleep(2)
+#
+#             elif data == 'end':
+#                 # 删除key
+#                 cache.delete_pattern(redis_key)
+#                 break
+#         else:
+#             break
+
 @shared_task
-def get_osc_percent(user, id, redis_key=None, sqlsha1=None):
+def get_osc_percent(task_id):
+    """实时获取pt-online-schema-change执行进度"""
+    task = AsyncResult(task_id)
+    print(task)
+    print(task.result)
+    id = task.result.get('id')
+    user = task.result.get('user')
+    sqlsha1 = task.result.get('sqlsha1')
+
+    print(sqlsha1)
+    print(user)
+    print(id)
+
     obj = IncepMakeExecTask.objects.get(id=id)
-    if sqlsha1 is None:
-        sqlsha1 = obj.sqlsha1
 
     host = obj.dst_host
     database = obj.dst_database
 
-    while True:
-        if redis_key in cache:
-            data = cache.get(redis_key)
-            if data == 'start':
-                sql = f"inception get osc_percent '{sqlsha1}'"
-                incep_of_audit = IncepSqlCheck(sql, host, database, user)
+    sql = f"inception get osc_percent '{sqlsha1}'"
+    incep_of_audit = IncepSqlCheck(sql, host, database, user)
 
-                # 执行SQL
-                incep_of_audit.run_status(1)
+    while task.state == 'PROGRESS':
+        # 执行SQL
+        incep_of_audit.run_status(1)
 
-                # 每2s获取一次
-                time.sleep(2)
-
-            elif data == 'end':
-                # 删除key
-                cache.delete_pattern(redis_key)
-                break
-        else:
-            break
+        # 每1s获取一次
+        time.sleep(1)
 
 
-@shared_task
-def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None, backup=None):
+@shared_task(bind=True)
+def incep_async_tasks(self, user, sql=None, sqlsha1=None, id=None, exec_status=None, backup=None):
+    # 更新任务状态，on_message回调使用
+    self.update_state(state="PROGRESS", meta={'user': user, 'id': id, 'sqlsha1': sqlsha1})
+
     obj = IncepMakeExecTask.objects.get(id=id)
     if sql is None:
         sql = obj.sql_content + ';'
@@ -182,9 +215,6 @@ def incep_async_tasks(user, redis_key=None, sql=None, id=None, exec_status=None,
 
     # 执行SQL
     exec_result = incep_of_audit.run_exec(0, backup)
-
-    # 告诉获取进度的线程退出
-    cache.set(redis_key, 'end')
 
     # 更新任务进度
     update_tasks_status(id=id, exec_result=exec_result, exec_status=exec_status)
@@ -288,7 +318,7 @@ def make_export_file(user, id):
             ExportFiles.objects.create(
                 export=data,
                 file_name=obj.title + '.xlsx.gz',
-                file_size=int(myfile.size/1024),
+                file_size=int(myfile.size / 1024),
                 files=myfile,
                 encryption_key=salt
             )

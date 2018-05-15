@@ -11,11 +11,12 @@ from django.views import View
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from mstats.forms import PrivModifyForm, BackupTaskForm, SchemaMonitorForm
-from mstats.tasks import on_raw_message, test_mes
+from mstats.tasks import test_mes, aaa
 from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
 from utils.tools import format_request
+
 
 class RenderMySQLUserView(View):
     @permission_required('can_mysqluser_view')
@@ -86,6 +87,7 @@ class MysqlUserManager(View):
 
 class RSchemaMonitorTaskView(View):
     """渲染schema monitor页面"""
+
     @permission_required('can_scheduled_view')
     def get(self, request):
         return render(request, 'periodic_task.html')
@@ -93,6 +95,7 @@ class RSchemaMonitorTaskView(View):
 
 class SchemaMonitorTaskView(View):
     """处理schema monitor数据"""
+
     @permission_required('can_scheduled_view')
     def get(self, request):
         data = PeriodicTask.objects.filter(description=u'表结构监控').values()
@@ -124,6 +127,7 @@ class SchemaMonitorTaskView(View):
 
 class RBackupTaskView(View):
     """渲染backup task页面"""
+
     @permission_required('can_scheduled_view')
     def get(self, request):
         return render(request, 'backup_task.html')
@@ -132,6 +136,8 @@ class RBackupTaskView(View):
 class BackupTaskView(View):
     @permission_required('can_scheduled_view')
     def get(self, request):
+        r = test_mes.delay(id=10, user='zs')
+        aaa.delay(task_id=r.task_id)
         data = PeriodicTask.objects.filter(description=u'数据库备份').values()
         result = []
         for i in data:
@@ -159,6 +165,7 @@ class BackupTaskView(View):
 
 class BackupTaskDetailView(View):
     """获取备份任务详情"""
+
     @permission_required('can_scheduled_view')
     def get(self, request):
         data = format_request(request)
@@ -168,6 +175,7 @@ class BackupTaskDetailView(View):
 
 class BackupTaskPreviewView(View):
     """渲染备份数据预览页面数据"""
+
     @permission_required('can_scheduled_view')
     def get(self, request, id):
         kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)

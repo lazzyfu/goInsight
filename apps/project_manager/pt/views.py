@@ -13,8 +13,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from project_manager.models import IncepMakeExecTask
-from project_manager.tasks import get_osc_percent, incep_async_tasks, \
-    stop_incep_osc
+from project_manager.tasks import incep_async_tasks, \
+    stop_incep_osc, get_osc_percent
 from project_manager.utils import check_incep_alive
 from user_manager.permissions import permission_required, perform_tasks_permission_required
 from apps.project_manager.inception.inception_api import GetBackupApi, IncepSqlCheck
@@ -142,20 +142,23 @@ class IncepPerformView(View):
 
                 # 如果sqlsha1存在，执行获取OSC进度
                 if obj.sqlsha1:
-                    # 在redis里面存储key，用于celery后台线程通信
-                    cache.set(key, 'start', timeout=None)
+                    # # 在redis里面存储key，用于celery后台线程通信
+                    # cache.set(key, 'start', timeout=None)
 
                     # 执行异步线程
                     # 执行SQL任务
-                    incep_async_tasks.delay(user=request.user.username,
-                                            redis_key=key,
-                                            id=id,
-                                            backup='yes',
-                                            exec_status=1)
-                    # 执行获取进度任务
-                    get_osc_percent.delay(user=request.user.username,
-                                          id=id,
-                                          redis_key=key)
+                    r = incep_async_tasks.delay(user=request.user.username,
+                                                id=id,
+                                                sqlsha1=obj.sqlsha1,
+                                                backup='yes',
+                                                exec_status=1)
+                    task_id = r.task_id
+                    get_osc_percent.delay(task_id=task_id)
+                    # r.get(on_message=get_osc_percent, propagate=False)
+                    # # 执行获取进度任务
+                    # get_osc_percent.delay(user=request.user.username,
+                    #                       id=id,
+                    #                       redis_key=key)
 
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
 
@@ -201,7 +204,7 @@ class IncepStopView(View):
 class IncepRollbackView(View):
     """
     执行任务-回滚操作
-    回滚操作不需要进行备份
+    回滚操作不会进行再次进行备份
     """
 
     @method_decorator(check_incep_alive)

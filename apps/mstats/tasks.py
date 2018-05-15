@@ -5,6 +5,8 @@ import time
 import sys
 from celery import shared_task, states, task
 import logging
+
+from celery.result import AsyncResult
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
@@ -66,19 +68,25 @@ def backup_schema(**kwargs):
 
 
 @shared_task(bind=True)
-def test_mes(self):
-    self.update_state(state="PROGRESS")
-    return 'task finish.'
+def test_mes(self, id, user):
+    self.update_state(state="PROGRESS", meta={'user': user, 'id': id, 'gas': 'ddd'})
+    print('start...')
+    time.sleep(10)
+    print('end...')
+    return 'ss'
 
 
-def on_raw_message(body):
-    if body.get('status') == 'PROGRESS':
+@shared_task()
+def aaa(task_id):
+    print(task_id)
+    task = AsyncResult(task_id)
+    print(task.result)
+    print(task.state)
+    if task.state == 'PROGRESS':
+        id = task.result['id']
+        user = task.result['user']
         for i in range(1, 11):
             time.sleep(1)
-            print('\r任务进度: {0}%'.format(i * 10))
-    print(body.get('status'))
+            print(f'\r{user} 任务ID:{id} 进度: {i*10}%')
 
-
-@shared_task
-def add_x(x, y):
-    print(x + y)
+    # result.get(on_message=on_raw_message, propagate=False)

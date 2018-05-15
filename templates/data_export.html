@@ -28,7 +28,7 @@
                   data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
-                    <div class="box box-info">
+                    <div class="box box-success">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写下面信息</h5>
@@ -195,9 +195,10 @@
         var myTextarea = document.getElementById('select_sql');
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
+            indentUnit: 4,
+            lineWrapping: true,
             mode: "text/x-mysql",
-            extraKeys: {"Alt-Space": "autocomplete"},
-            hint: CodeMirror.hint.sql
+            autoRefresh: true
         });
 
 
