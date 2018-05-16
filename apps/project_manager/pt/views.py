@@ -5,19 +5,18 @@ import json
 from ast import literal_eval
 
 from channels.layers import get_channel_layer
-from django.core.cache import cache
 from django.db import transaction
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
 
+from apps.project_manager.inception.inception_api import GetBackupApi, IncepSqlCheck
 from project_manager.models import IncepMakeExecTask
 from project_manager.tasks import incep_async_tasks, \
     stop_incep_osc, get_osc_percent
 from project_manager.utils import check_incep_alive
-from user_manager.permissions import permission_required, perform_tasks_permission_required
-from apps.project_manager.inception.inception_api import GetBackupApi, IncepSqlCheck
+from user_manager.permissions import perform_tasks_permission_required
 from utils.tools import format_request
 
 channel_layer = get_channel_layer()
@@ -111,7 +110,7 @@ class IncepOfDetailsListView(View):
 
 
 class IncepPerformView(View):
-    """执行任务-执行"""
+    """执行任务-开始执行"""
 
     @method_decorator(check_incep_alive)
     @perform_tasks_permission_required('can_execute')
@@ -120,17 +119,19 @@ class IncepPerformView(View):
         data = format_request(request)
         id = data.get('id')
         obj = IncepMakeExecTask.objects.get(id=id)
-        status = ''
+        host = obj.dst_host
+        database = obj.dst_database
+        sql = obj.sql_content + ';'
 
+        status = ''
         query = f"select id,group_concat(exec_status) as exec_status from auditsql_incep_tasks " \
                 f"where taskid={obj.taskid} group by taskid"
         for row in IncepMakeExecTask.objects.raw(query):
             status = row.exec_status.split(',')
 
         # 每次只能执行一条任务，不可同时执行，避免数据库压力
-        key = '-'.join(('django', str(request.user.uid), obj.sqlsha1))
         if '2' in status or '3' in status:
-            context = {'status': 2, 'msg': '请等待当前其他任务执行完成'}
+            context = {'status': 2, 'msg': '请等待当前任务执行完成'}
         else:
             # 避免任务重复点击执行
             if obj.exec_status != '0':
@@ -140,25 +141,23 @@ class IncepPerformView(View):
                 obj.exec_status = 2
                 obj.save()
 
-                # 如果sqlsha1存在，执行获取OSC进度
+                # 如果sqlsha1存在，使用pt-online-schema-change执行
                 if obj.sqlsha1:
-                    # # 在redis里面存储key，用于celery后台线程通信
-                    # cache.set(key, 'start', timeout=None)
-
-                    # 执行异步线程
-                    # 执行SQL任务
+                    # 异步执行SQL任务
                     r = incep_async_tasks.delay(user=request.user.username,
                                                 id=id,
+                                                sql=sql,
+                                                host=host,
+                                                database=database,
                                                 sqlsha1=obj.sqlsha1,
                                                 backup='yes',
                                                 exec_status=1)
                     task_id = r.task_id
+                    # 将celery task_id写入到表
+                    obj.celery_task_id = task_id
+                    obj.save()
+                    # 获取OSC执行进度
                     get_osc_percent.delay(task_id=task_id)
-                    # r.get(on_message=get_osc_percent, propagate=False)
-                    # # 执行获取进度任务
-                    # get_osc_percent.delay(user=request.user.username,
-                    #                       id=id,
-                    #                       redis_key=key)
 
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
 
@@ -166,10 +165,20 @@ class IncepPerformView(View):
                     # 当affected_row>2000时，只执行不备份
                     if obj.affected_row > 2000:
                         incep_async_tasks.delay(user=request.user.username,
-                                                id=id, exec_status=1)
+                                                id=id,
+                                                sql=sql,
+                                                host=host,
+                                                database=database,
+                                                exec_status=1)
                     else:
-                        # 当affected_row<=2000时，执行且备份
-                        incep_async_tasks.delay(user=request.user.username, backup='yes', id=id, exec_status=1)
+                        # 当affected_row<=2000时，执行并备份
+                        incep_async_tasks.delay(user=request.user.username,
+                                                id=id,
+                                                backup='yes',
+                                                sql=sql,
+                                                host=host,
+                                                database=database,
+                                                exec_status=1)
 
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
         return HttpResponse(json.dumps(context))
@@ -186,17 +195,16 @@ class IncepStopView(View):
     @transaction.atomic
     def post(self, request):
         id = request.POST.get('id')
-
         obj = IncepMakeExecTask.objects.get(id=id)
-        key = '-'.join(('django', str(request.user.uid), obj.sqlsha1))
+        celery_task_id = obj.celery_task_id
 
         if obj.exec_status in ('0', '1', '4'):
             context = {'status': 2, 'msg': '请不要重复操作任务'}
         else:
             # 关闭正在执行的任务
             stop_incep_osc.delay(user=request.user.username,
-                                 redis_key=key,
-                                 id=id)
+                                 id=id,
+                                 celery_task_id=celery_task_id)
             context = {'status': 0, 'msg': '提交处理，请查看输出'}
         return HttpResponse(json.dumps(context))
 
@@ -213,8 +221,10 @@ class IncepRollbackView(View):
     def post(self, request):
         data = format_request(request)
         id = data.get('id')
-
         obj = IncepMakeExecTask.objects.get(id=id)
+        host = obj.dst_host
+        database = obj.dst_database
+
         if obj.exec_status in ('0', '3', '4'):
             context = {'status': 2, 'msg': '请不要重复操作'}
         else:
@@ -227,33 +237,37 @@ class IncepRollbackView(View):
                 incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
                 result = incep_of_audit.make_sqlsha1()[1]
 
+                rollback_sql = result['SQL'] + ';'
+                rollback_sqlsha1 = result['sqlsha1']
+
                 # 将任务进度设置为：回滚中
                 obj.exec_status = 3
-                obj.rollback_sqlsha1 = result['sqlsha1']
+                obj.rollback_sqlsha1 = rollback_sqlsha1
                 obj.save()
 
                 if result['sqlsha1']:
-                    key = '-'.join(('django', str(request.user.uid), result['sqlsha1']))
-                    # 在redis里面存储key，用于celery后台线程通信
-                    cache.set(key, 'start', timeout=None)
+                    # 异步执行SQL任务
+                    r = incep_async_tasks.delay(user=request.user.username,
+                                                id=id,
+                                                host=host,
+                                                database=database,
+                                                sql=rollback_sql,
+                                                sqlsha1=rollback_sqlsha1,
+                                                exec_status=4)
+                    task_id = r.task_id
+                    # 将celery task_id写入到表
+                    obj.celery_task_id = task_id
+                    obj.save()
+                    # 获取OSC执行进度
+                    get_osc_percent.delay(task_id=task_id)
 
-                    # 执行SQL任务
-                    incep_async_tasks.delay(user=request.user.username,
-                                            redis_key=key,
-                                            sql=result['SQL'] + ';',
-                                            id=id,
-                                            exec_status=4)
-
-                    # 执行获取进度任务
-                    get_osc_percent.delay(user=request.user.username,
-                                          sqlsha1=result['sqlsha1'],
-                                          id=id,
-                                          redis_key=key)
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}
                 else:
                     incep_async_tasks.delay(user=request.user.username,
-                                            sql=result['SQL'] + ';',
                                             id=id,
+                                            sql=rollback_sql,
+                                            host=host,
+                                            database=database,
                                             exec_status=4)
 
                     context = {'status': 0, 'msg': '提交处理，请查看输出'}

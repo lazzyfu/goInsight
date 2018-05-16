@@ -70,23 +70,22 @@ def backup_schema(**kwargs):
 @shared_task(bind=True)
 def test_mes(self, id, user):
     self.update_state(state="PROGRESS", meta={'user': user, 'id': id, 'gas': 'ddd'})
-    print('start...')
-    time.sleep(10)
-    print('end...')
     return 'ss'
 
 
 @shared_task()
 def aaa(task_id):
-    print(task_id)
     task = AsyncResult(task_id)
     print(task.result)
-    print(task.state)
-    if task.state == 'PROGRESS':
-        id = task.result['id']
-        user = task.result['user']
-        for i in range(1, 11):
+    while task.state in ('PENDING', 'STARTED', 'PROGRESS'):
+        print(task.state)
+        i = 1
+        while task.state == 'PROGRESS':
+            id = task.result['id']
+            user = task.result['user']
             time.sleep(1)
             print(f'\r{user} 任务ID:{id} 进度: {i*10}%')
-
+            i += 1
+        else:
+            continue
     # result.get(on_message=on_raw_message, propagate=False)

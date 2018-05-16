@@ -176,27 +176,29 @@ function incepSyntaxCheckForm() {
 
 
 /**
- * 获取指定主机的数据库库名列表
+ * 获取指定主机的schema信息和tables信息
  */
 function getDatabaseList() {
     $('#s_database').empty();
     var host = $("#s_host").val();
     var csrftoken = $.cookie('csrftoken');
     $.ajax({
-        url: '/projects/db_list/',
+        url: '/projects/schema_info/',
         type: 'POST',
         dataType: 'json',
         data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
         timeout: 5000,
-        cache: false,
+        cache: true,
         success: function (result) {
             if (result.status === 0) {
                 var html = '';
-                $.each(result.data, function (index, db) {
+                $.each(result.data.schema, function (index, db) {
                     html += "<option value=" + db + ">" + db + "</option>"
                 });
                 $('#s_database').append(html);
                 $('.selectpicker').selectpicker('refresh')
+
+                myCodeMirror.setOption("hintOptions", {tables: result.data.tables});
             }
             else {
                 // 此处必须刷新表格
@@ -204,5 +206,5 @@ function getDatabaseList() {
                 displayPNotify(result.status, result.msg);
             }
         }
-    })
+    });
 }

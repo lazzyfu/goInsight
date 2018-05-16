@@ -70,40 +70,47 @@ class GetBackupApi(object):
                 conn.close()
 
 
-class GetDatabaseListApi(object):
+class GetSchemaInfo(object):
     """获取目标主机的所有库"""
 
     def __init__(self, host):
         self.host = host
-
-    IGNORED_PARAMS = ['information_schema', 'mysql', 'percona']
-
-    def get_dbname(self):
         config = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
         host = config.host
         user = config.user
         password = config.password
         port = config.port
+        self.conn = pymysql.connect(host=host, user=user,
+                                    password=password,
+                                    port=port, use_unicode=True, charset="utf8")
 
+    IGNORED_PARAMS = ('information_schema', 'mysql', 'percona')
+
+    def get_values(self):
+        result = {}
         try:
-            conn = pymysql.connect(host=host, user=user,
-                                   password=password,
-                                   port=port, use_unicode=True, charset="utf8")
-            cur = conn.cursor()
-            cur.execute("select schema_name from information_schema.schemata")
-            db_list = []
-            for i in cur.fetchall():
-                db_list.append(i[0])
+            with self.conn.cursor() as cursor:
+                schema_query = f"select schema_name from information_schema.schemata " \
+                               f"where SCHEMA_NAME not in {self.IGNORED_PARAMS}"
+                cursor.execute(schema_query)
+                schema = []
+                for schema_name in cursor.fetchall():
+                    schema.append(schema_name)
+                result['schema'] = schema
 
-            for i in self.IGNORED_PARAMS:
-                if i in db_list:
-                    db_list.remove(i)
+            with self.conn.cursor() as cursor:
+                tables_query = f"select TABLE_NAME,group_concat(COLUMN_NAME) from information_schema.COLUMNS " \
+                               f"where table_schema not in {self.IGNORED_PARAMS} group by TABLE_NAME"
+                cursor.execute(tables_query)
+                tables = {}
+                for table_name, column_name in cursor.fetchall():
+                    tables[table_name] = list(column_name.split(','))
 
-            cur.close()
-            conn.close()
-            return db_list
-        except Exception as err:
-            logger.warning(err)
+                result['tables'] = tables
+        finally:
+            self.conn.close()
+
+        return result
 
 
 # DDL和DML过滤

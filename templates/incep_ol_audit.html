@@ -13,10 +13,6 @@
         .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
         }
-
-        .box-size {
-            font-size: 12px;
-        }
     </style>
 {% endblock %}
 
@@ -149,7 +145,7 @@
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写SQL语句
-                                    <small class="text-danger">使用：/* 这是注释 */ 或 # 这是注释</small>
+                                    <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
                                 </h5>
                             </div>
                         </div>
@@ -201,11 +197,15 @@
             lineNumbers: true,
             mode: "text/x-mysql",
             autoRefresh: true,
-            indentUnit: 4,
+            smartIndent: true,
+            matchBrackets: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
             lineWrapping: true,
-            extraKeys: {"Alt-Space": "autocomplete"},
+            extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql,
-            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
+            placeholder: "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
         });
 
         /**
