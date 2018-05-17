@@ -178,7 +178,7 @@ function incepSyntaxCheckForm() {
 /**
  * 获取指定主机的schema信息和tables信息
  */
-function getDatabaseList() {
+function getTablesList() {
     $('#s_database').empty();
     var host = $("#s_host").val();
     var csrftoken = $.cookie('csrftoken');
@@ -196,7 +196,7 @@ function getDatabaseList() {
                     html += "<option value=" + db + ">" + db + "</option>"
                 });
                 $('#s_database').append(html);
-                $('.selectpicker').selectpicker('refresh')
+                $('.selectpicker').selectpicker('refresh');
 
                 myCodeMirror.setOption("hintOptions", {tables: result.data.tables});
             }

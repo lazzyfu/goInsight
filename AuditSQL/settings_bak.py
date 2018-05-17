@@ -10,10 +10,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 
-import djcelery
-import logging
 import ldap
-from celery.schedules import crontab
 from django_auth_ldap.config import LDAPSearch
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -182,9 +179,6 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-# 使用数据库来存放定时任务记录
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 # django-channels配置
 CHANNEL_LAYERS = {
