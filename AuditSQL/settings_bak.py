@@ -49,8 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'djcelery',
-    'kombu.transport.django',
+    'django_celery_results',
+    'django_celery_beat',
     'user_manager',
     'project_manager',
     'mstats',
@@ -144,7 +144,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+# 由于celery-4.1.0存在时区bug，必须启用USE_TZ
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -175,12 +176,12 @@ CACHES = {
 }
 
 # celery for redis
-BROKER_URL = 'redis://localhost:6379'
+# 由于celery-4.1.0存在时区bug，必须使用UTC时区
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # 使用数据库来存放定时任务记录
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
@@ -197,7 +198,6 @@ CHANNEL_LAYERS = {
 
 # 配置ASGI
 ASGI_APPLICATION = "AuditSQL.routing.application"
-
 
 # LDAP配置
 # 若不使用LDAP进行认证，注释上面的'django_auth_ldap.backend.LDAPBackend'
