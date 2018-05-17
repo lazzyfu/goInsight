@@ -6,12 +6,6 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 530px;
-            font-size: 14px;
-            font-family: monospace;
-        }
-
-        .CodeMirror pre.CodeMirror-placeholder {
-            color: #999;
         }
     </style>
 {% endblock %}
@@ -62,7 +56,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-3">主机</label>
                                 <div class="col-sm-9">
-                                    <select id="s_host" name="host" onchange="getDatabaseList()"
+                                    <select id="s_host" name="host" onchange="getTablesList()"
                                             style="width: 100%"
                                             required
                                             class="form-control selectpicker" title="选择主机...">

@@ -60,7 +60,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">主机</label>
                                 <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <select id="s_host" name="host" onchange="getDatabaseList()"
+                                    <select id="s_host" name="host" onchange="getSchemaList()"
                                             style="width: 100%"
                                             required
                                             class="form-control selectpicker" title="选择主机...">
@@ -362,6 +362,39 @@
                     }
                 }
             })
+        }
+
+
+        /**
+         * 获取指定主机的schema信息和tables信息
+         */
+        function getSchemaList() {
+            $('#s_database').empty();
+            var host = $("#s_host").val();
+            var csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '/projects/schema_info/',
+                type: 'POST',
+                dataType: 'json',
+                data: {'host': host, 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: true,
+                success: function (result) {
+                    if (result.status === 0) {
+                        var html = '';
+                        $.each(result.data.schema, function (index, db) {
+                            html += "<option value=" + db + ">" + db + "</option>"
+                        });
+                        $('#s_database').append(html);
+                        $('.selectpicker').selectpicker('refresh')
+                    }
+                    else {
+                        // 此处必须刷新表格
+                        $('.selectpicker').selectpicker('refresh');
+                        displayPNotify(result.status, result.msg);
+                    }
+                }
+            });
         }
     </script>
 {% endblock %}

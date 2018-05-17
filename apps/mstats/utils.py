@@ -235,7 +235,7 @@ class ParamikoOutput(object):
                 except Exception as err:
                     pass
             s.close()
-            return {'status':0, 'data': out}
+            return {'status': 0, 'data': out}
         except Exception as err:
             return {'status': 2, 'msg': '连接超时，请检查SSH或网络'}
 
@@ -360,7 +360,8 @@ class CheckCParserValid(GeneralCParser):
         """检测指定的命令文件和目录是否存在是否存在"""
         is_true = []
         for i in self.check_obj:
-            output = self.paramiko_conn.run(f"ls {i} && echo $?")
+            output = self.paramiko_conn.run(f"ls {i} && echo $?")['data']
+            print(output)
             if output[-1] != '0':
                 self.result = {'status': 2, 'msg': str(output[0]) + ', 请确认文件或目录存在'}
                 is_true.append(False)
@@ -376,7 +377,7 @@ class CheckCParserValid(GeneralCParser):
                   f"--host={self.mysql_host} --port={self.mysql_port} " \
                   f"-e \"select count(*) from information_schema.SCHEMATA where SCHEMA_NAME='{db}'\""
 
-            output = self.paramiko_conn.run(cmd)
+            output = self.paramiko_conn.run(cmd)['data']
             if output[1] == '0':
                 self.result = {'status': 2, 'msg': f'mysqldump指定备份的库不存在：{db}'}
                 break
@@ -393,7 +394,7 @@ class CheckCParserValid(GeneralCParser):
         """检测mysql备份用户是否可以连接到数据库"""
         cmd = f"{self.mysql_cmd} --user={self.mysql_user} --password='{self.mysql_password}' " \
               f"--host={self.mysql_host} --port={self.mysql_port} -e 'select 1'"
-        output = self.paramiko_conn.run(cmd)
+        output = self.paramiko_conn.run(cmd)['data']
         if output[0] != '1':
             self.result = {'status': 2, 'msg': str(output[-1])}
             return False
