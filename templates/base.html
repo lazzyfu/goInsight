@@ -42,6 +42,10 @@
         .table > tbody > tr > td {
             vertical-align: middle !important;
         }
+
+        .body {
+            font-family: lucida grande, lucida sans unicode, lucida, helvetica, Hiragino Sans GB, Microsoft YaHei, WenQuanYi Micro Hei, sa;
+        }
     </style>
 
     <!-- 定义 css block -->
@@ -135,7 +139,6 @@
                         <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-file-text"></i>审核记录</a>
                         </li>
                         <li><a href="{% url 'p_incep_perform_records' %}"><i class="fa fa-file-text"></i>执行任务</a></li>
-                        {#                        <li><a href="{% url 'p_data_export_records' %}"><i class="fa fa-file-text"></i>导出记录</a></li>#}
                     </ul>
                 </li>
 
@@ -251,6 +254,7 @@
 <script src="{% static 'AdminLTE-2.4.2/dist/js/adminlte.min.js' %}"></script>
 <!-- CodeMirror -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/lib/codemirror.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/mode/clike/clike.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/mode/sql/sql.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/placeholder.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/autorefresh.js' %}"></script>

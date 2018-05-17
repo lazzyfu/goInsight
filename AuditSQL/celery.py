@@ -11,7 +11,10 @@ class MyCelery(Celery):
     def now(self):
         """Return the current time and date as a datetime."""
         from datetime import datetime
-        return datetime.now(self.timezone)
+        import pytz
+        # 由于celery-4.1.0存在时区bug， 此处写死时区，不受系统时区影响
+        tz = pytz.timezone('Asia/Shanghai')
+        return datetime.now(tz)
 
 
 # set the default Django settings module for the 'celery' program.

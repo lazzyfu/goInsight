@@ -159,65 +159,71 @@
             url: '{% url 'p_get_backup_disk_used' %}',
             dataType: 'json',
             data: {'id': id}
-        }).done(function (result) {
-            var labels = [], data = [], html = '';
-            for (var i in result) {
-                if (i.indexOf('percent') > -1) {
-                    labels.push(i);
-                    data.push(result[i])
-                } else {
-                    html += ("<tr>\n" +
-                        "<th style=\"width:50%\">" + i + "</th>\n" +
-                        "<td>" + result[i] + "</td>\n" +
-                        "</tr>\n")
+        }).done(function (json_data) {
+            if (json_data.status === 0) {
+                var labels = [], data = [], html = '';
+                var result = json_data.data;
+                for (var i in result) {
+                    if (i.indexOf('percent') > -1) {
+                        labels.push(i);
+                        data.push(result[i])
+                    } else {
+                        html += ("<tr>\n" +
+                            "<th style=\"width:50%\">" + i + "</th>\n" +
+                            "<td>" + result[i] + "</td>\n" +
+                            "</tr>\n")
+                    }
                 }
-            }
-            $('#add_disk_used').append("<table class=\"table table-hover table-no-bordered\">" + html + "</table>");
-            var config = {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: data,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor:
-                            [
-                                'rgba(255,99,132,1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
+                $('#add_disk_used').append("<table class=\"table table-hover table-no-bordered\">" + html + "</table>");
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
                             ],
-                        borderWidth:
-                            1
-                    }],
-                    labels: labels
-                },
-                options: {
-                    responsive: true,
-                    legend:
-                        {
-                            position: 'top'
-                        },
-                    title: {
-                        display: true,
-                        text:
-                            '备份目录空间使用详情'
+                            borderColor:
+                                [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                            borderWidth:
+                                1
+                        }],
+                        labels: labels
+                    },
+                    options: {
+                        responsive: true,
+                        legend:
+                            {
+                                position: 'top'
+                            },
+                        title: {
+                            display: true,
+                            text:
+                                '备份目录空间使用详情'
+                        }
+                        ,
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        }
                     }
-                    ,
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true
-                    }
-                }
-            };
+                };
+            }
+            else {
+                displayPNotify(json_data.status, json_data.msg)
+            }
 
             var ctx = document.getElementById('doughnutChart').getContext('2d');
             var myChart = new Chart(ctx, config);

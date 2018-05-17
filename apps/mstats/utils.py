@@ -209,32 +209,35 @@ class ParamikoOutput(object):
         self.ssh_user = ssh_user
         self.ssh_password = ssh_password
 
-    def run(self, cmd):
-        s = paramiko.SSHClient()
-        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
-                  timeout=86400)
-
-        msg = [stdin, stdout, stderr] = s.exec_command(cmd)
-        out = []
-        for item in msg:
-            try:
-                for line in item:
-                    out.append(line.strip('\n'))
-            except Exception as err:
-                pass
-        s.close()
-        return out
-
     def check_connection(self):
         s = paramiko.SSHClient()
         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
             s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
-                      timeout=5)
+                      timeout=1)
             return True
         except Exception as err:
             return err
+
+    def run(self, cmd):
+        try:
+            s = paramiko.SSHClient()
+            s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
+                      timeout=1)
+
+            msg = [stdin, stdout, stderr] = s.exec_command(cmd)
+            out = []
+            for item in msg:
+                try:
+                    for line in item:
+                        out.append(line.strip('\n'))
+                except Exception as err:
+                    pass
+            s.close()
+            return {'status':0, 'data': out}
+        except Exception as err:
+            return {'status': 2, 'msg': '连接超时，请检查SSH或网络'}
 
 
 class GeneralCParser(object):

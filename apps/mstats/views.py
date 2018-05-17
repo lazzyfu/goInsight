@@ -11,7 +11,6 @@ from django.views import View
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from mstats.forms import PrivModifyForm, BackupTaskForm, SchemaMonitorForm
-from mstats.tasks import test_mes, aaa
 from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
@@ -136,8 +135,6 @@ class RBackupTaskView(View):
 class BackupTaskView(View):
     @permission_required('can_scheduled_view')
     def get(self, request):
-        r = test_mes.delay(id=10, user='zs')
-        aaa.delay(task_id=r.task_id)
         data = PeriodicTask.objects.filter(description=u'数据库备份').values()
         result = []
         for i in data:
@@ -201,15 +198,19 @@ class BackupTaskPreviewListView(View):
                                        ssh_host=kwargs.get('ssh_host'),
                                        ssh_port=kwargs.get('ssh_port'))
         data = paramiko_conn.run(cmd)
-        result = []
-        for i in data:
-            split_i = i.split('\t')
-            file_size = split_i[0]
-            file_time = split_i[1]
-            file_name = split_i[2]
-            result.append({'file_name': file_name, 'file_size': file_size, 'file_time': file_time})
-        result.reverse()
-        return HttpResponse(json.dumps(result))
+        if data['status'] == 0:
+            result = []
+            for i in data['data']:
+                split_i = i.split('\t')
+                file_size = split_i[0]
+                file_time = split_i[1]
+                file_name = split_i[2]
+                result.append({'file_name': file_name, 'file_size': file_size, 'file_time': file_time})
+            result.reverse()
+            context = result
+        else:
+            context = []
+        return HttpResponse(json.dumps(context))
 
 
 class GetBackupDiskUsedView(View):
@@ -231,17 +232,19 @@ class GetBackupDiskUsedView(View):
 
         cmd = f"du -sh {mysqldump_backup_dir} {xtrabackup_backup_dir} && df -h {backup_dir}"
         data = paramiko_conn.run(cmd)
+        if data['status'] == 0:
+            result = {}
+            for i in data['data'][:2]:
+                result[i.split('\t')[1]] = i.split('\t')[0]
 
-        result = {}
-        for i in data[:2]:
-            result[i.split('\t')[1]] = i.split('\t')[0]
-
-        df = [i for i in data[-1].split(' ') if i != '']
-        result.update({'total_size': df[1],
-                       'used_size': df[2],
-                       'free_size': df[3],
-                       'used_percent (%)': int(df[4].split('%')[0]),
-                       'free_percent (%)': 100 - int(df[4].split('%')[0])
-                       })
-
-        return HttpResponse(json.dumps(result))
+            df = [i for i in data['data'][-1].split(' ') if i != '']
+            result.update({'total_size': df[1],
+                           'used_size': df[2],
+                           'free_size': df[3],
+                           'used_percent (%)': int(df[4].split('%')[0]),
+                           'free_percent (%)': 100 - int(df[4].split('%')[0])
+                           })
+            context = {'status': 0, 'data': result}
+        else:
+            context = data
+        return HttpResponse(json.dumps(context))

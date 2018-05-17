@@ -173,12 +173,15 @@
     <script>
         var myTextarea = document.getElementById('s_backup_args');
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
-            mode: "text/x-mysql",
             lineNumbers: true,
-            autofocus: true,
+            mode: "text/x-mysql",
             autoRefresh: true,
+            smartIndent: true,
             matchBrackets: true,
-            tabMode: "indent"
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            lineWrapping: true
         });
 
         /**
