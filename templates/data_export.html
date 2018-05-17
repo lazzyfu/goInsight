@@ -9,8 +9,8 @@
             font-size: 14px;
         }
 
-        .box-size {
-            font-size: 12px;
+        .CodeMirror pre.CodeMirror-placeholder {
+            color: #999;
         }
     </style>
 {% endblock %}
@@ -28,7 +28,7 @@
                   data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
-                    <div class="box box-info">
+                    <div class="box box-success">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写下面信息</h5>
@@ -145,8 +145,9 @@
                     <div class="box box-primary">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
-                                <B>填写SELECT语句，仅支持单条SELECT导出语句
-                                </B>
+                                <h5>填写SELECT语句
+                                    <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
+                                </h5>
                             </div>
                         </div>
                         <div class="box-body no-padding">
@@ -196,8 +197,16 @@
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
-            extraKeys: {"Alt-Space": "autocomplete"},
-            hint: CodeMirror.hint.sql
+            autoRefresh: true,
+            smartIndent: true,
+            matchBrackets: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            lineWrapping: true,
+            extraKeys: {"Tab": "autocomplete"},
+            hint: CodeMirror.hint.sql,
+            placeholder: "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
         });
 
 

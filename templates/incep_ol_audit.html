@@ -7,14 +7,11 @@
             border: 1px solid #eee;
             height: 530px;
             font-size: 14px;
+            font-family: monospace;
         }
 
         .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
-        }
-
-        .box-size {
-            font-size: 12px;
         }
     </style>
 {% endblock %}
@@ -33,7 +30,7 @@
                   method="post" data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
-                    <div class="box box-info">
+                    <div class="box box-success">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>选择环境</h5>
@@ -148,7 +145,7 @@
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写SQL语句
-                                    <small class="text-danger">使用：/* 这是注释 */ 或 # 这是注释</small>
+                                    <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
                                 </h5>
                             </div>
                         </div>
@@ -199,9 +196,17 @@
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
-            extraKeys: {"Alt-Space": "autocomplete"},
+            autoRefresh: true,
+            smartIndent: true,
+            matchBrackets: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            lineWrapping: true,
+            extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql,
-            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
+            placeholder:
+                "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
         });
 
         /**

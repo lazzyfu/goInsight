@@ -22,10 +22,9 @@
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/dist/css/skins/_all-skins.min.css' %}">
     <!-- CodeMirror -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/lib/codemirror.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/theme/material.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/lib/codemirror.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/hint/show-hint.css' %}">
+          href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/show-hint.css' %}">
     <!-- bootstrap-select -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
@@ -42,6 +41,10 @@
     <style>
         .table > tbody > tr > td {
             vertical-align: middle !important;
+        }
+
+        .body {
+            font-family: lucida grande, lucida sans unicode, lucida, helvetica, Hiragino Sans GB, Microsoft YaHei, WenQuanYi Micro Hei, sa;
         }
     </style>
 
@@ -136,7 +139,6 @@
                         <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-file-text"></i>审核记录</a>
                         </li>
                         <li><a href="{% url 'p_incep_perform_records' %}"><i class="fa fa-file-text"></i>执行任务</a></li>
-{#                        <li><a href="{% url 'p_data_export_records' %}"><i class="fa fa-file-text"></i>导出记录</a></li>#}
                     </ul>
                 </li>
 
@@ -177,7 +179,8 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="{% url 'p_rcrontab' %}"><i class="fa fa-clock-o"></i>Crontabs</a></li>
-                            <li><a href="{% url 'p_rperiodic_task' %}"><i class="fa fa-hourglass-2"></i>周期任务</a></li>
+                            <li><a href="{% url 'p_rschema_monitor_task' %}"><i class="fa fa-eye"></i>表结构监控</a></li>
+                            <li><a href="{% url 'p_rbackup_task' %}"><i class="fa fa-hourglass-2"></i>数据库备份</a></li>
                         </ul>
                     </li>
                 {% endif %}
@@ -227,6 +230,19 @@
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
     $.widget.bridge('uibutton', $.ui.button);
+
+    /** add active class and stay opened when selected */
+    var url = window.location;
+
+    // for sidebar menu entirely but not cover treeview
+    $('ul.sidebar-menu a').filter(function () {
+        return this.href == url;
+    }).parent().addClass('active');
+
+    // for treeview
+    $('ul.treeview-menu a').filter(function () {
+        return this.href == url;
+    }).parentsUntil(".sidebar-menu > .treeview-menu").addClass('active');
 </script>
 <!-- Bootstrap 3.3.7 -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
@@ -237,13 +253,15 @@
 <!-- AdminLTE App -->
 <script src="{% static 'AdminLTE-2.4.2/dist/js/adminlte.min.js' %}"></script>
 <!-- CodeMirror -->
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/lib/codemirror.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/mode/sql/sql.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/display/placeholder.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/display/autorefresh.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/hint/show-hint.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/hint/anyword-hint.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.34.0/addon/hint/sql-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/lib/codemirror.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/mode/clike/clike.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/mode/sql/sql.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/placeholder.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/autorefresh.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/show-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/anyword-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/sql-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/selection/active-line.js' %}"></script>
 <!-- bootstrap-select -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
 <!-- jquery-form -->
@@ -256,6 +274,8 @@
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-validation/validator.min.js' %}"></script>
 <!-- layer -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/layer/layui.js' %}"></script>
+<!-- Chartjs -->
+<script src="{% static 'Chart.min.js' %}"></script>
 <!-- bootstrap-table -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>

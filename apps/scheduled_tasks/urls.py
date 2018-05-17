@@ -4,14 +4,12 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import path
 
-from .views import CrontabView, RCrontabView, RPeriodicTaskView, PeriodicTaskView, \
+from .views import CrontabView, RCrontabView, \
     GetCeleryTasksView, GetCrontabView, DeletePeriodicTaskView, ModifyPeriodicTaskView
 
 urlpatterns = [
     path(r'rcrontab/', login_required(RCrontabView.as_view()), name='p_rcrontab'),
     path(r'crontab/', login_required(CrontabView.as_view()), name='p_crontab'),
-    path(r'rperiodic_task/', login_required(RPeriodicTaskView.as_view()), name='p_rperiodic_task'),
-    path(r'periodic_task/', login_required(PeriodicTaskView.as_view()), name='p_periodic_task'),
     path(r'delete_periodic_task/', login_required(DeletePeriodicTaskView.as_view()), name='p_delete_periodic_task'),
     path(r'modify_periodic_task/', login_required(ModifyPeriodicTaskView.as_view()), name='p_modify_periodic_task'),
     path(r'get_crontab/', login_required(GetCrontabView.as_view()), name='p_get_crontab'),

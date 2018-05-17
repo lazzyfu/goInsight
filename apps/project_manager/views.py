@@ -6,7 +6,7 @@ from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
-from apps.project_manager.inception.inception_api import GetDatabaseListApi, sql_filter, IncepSqlCheck
+from apps.project_manager.inception.inception_api import GetSchemaInfo, sql_filter, IncepSqlCheck
 from project_manager.forms import SyntaxCheckForm
 from project_manager.utils import check_mysql_conn
 from user_manager.models import GroupsDetail, Contacts, PermissionDetail, RolesDetail
@@ -74,8 +74,8 @@ class IncepHostConfigView(View):
         return JsonResponse(list(result), safe=False)
 
 
-class GetDBListView(View):
-    """列出选中环境的数据库库名"""
+class GetSchemaView(View):
+    """获取选中环境的数据库库名"""
 
     def post(self, request):
         data = format_request(request)
@@ -83,7 +83,7 @@ class GetDBListView(View):
         obj = InceptionHostConfig.objects.get(host=host)
         result = check_mysql_conn(obj.user, host, obj.password, obj.port)
         if result['status'] == 'INFO':
-            db_list = GetDatabaseListApi(host).get_dbname()
+            db_list = GetSchemaInfo(host).get_values()
             context = {'status': 0, 'msg': '', 'data': db_list}
         else:
             context = {'status': 2, 'msg': f'获取列表失败，不能连接到mysql服务器：{host}'}

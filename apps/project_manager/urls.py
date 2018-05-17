@@ -5,12 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path, include
 
 from .views import BeautifySQLView, IncepHostConfigView, \
-    GetDBListView, GroupInfoView, GetAuditUserView, ContactsInfoView, SyntaxCheckView
+    GetSchemaView, GroupInfoView, GetAuditUserView, ContactsInfoView, SyntaxCheckView
 
 urlpatterns = [
     path(r'host_config/', login_required(IncepHostConfigView.as_view()),
          name='p_host_config'),
-    path(r'db_list/', login_required(GetDBListView.as_view()), name='p_db_list'),
+    path(r'schema_info/', login_required(GetSchemaView.as_view())),
     path(r'group_info/', login_required(GroupInfoView.as_view())),
     path(r'get_audit_user/', login_required(GetAuditUserView.as_view())),
     path(r'contacts_info/', login_required(ContactsInfoView.as_view())),

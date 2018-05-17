@@ -11,7 +11,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> 周期任务
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 表结构监控定时任务
                         </h3>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form class="form-horizontal" id="periodicForm" method="post"
-                      action="{% url 'p_periodic_task' %}">
+                      action="{% url 'p_schema_monitor_task' %}">
                     {% csrf_token %}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -56,28 +56,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">任务</label>
-                                <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <select id="s_task" name="task"
-                                            title="选择任务"
-                                            style="width: 100%" class="selectpicker form-control dropup"
-                                            required>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-sm-2 col-xs-12">是否启用</label>
-                                <div class="col-md-8 col-sm-8 col-xs-12">
-                                    <select name="enabled"
-                                            style="width: 100%" class="selectpicker form-control dropup"
-                                            required>
-                                        <option value="1" selected>启用</option>
-                                        <option value="0">禁用</option>
-                                    </select>
-                                </div>
-                            </div>
 
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-sm-2 col-xs-12">主机</label>
@@ -140,7 +118,7 @@
             $table.bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_periodic_task' %}",
+                url: "{% url 'p_schema_monitor_task' %}",
                 search: true,
                 cache: false,
                 showColumns: true,
@@ -152,8 +130,8 @@
                 pageList: [10, 20, 30],
                 toolbar: '#toolbar',
                 sidePagination: "client",
-                classes: 'table table-hover',
                 uniqueId: 'id',
+                classes: 'table table-hover table-no-bordered',
                 formatLoadingMessage: function () {
                     return "请稍等，正在加载中...";
                 },
@@ -193,19 +171,12 @@
                         }
                     },
                     {
-                        field: 'task',
-                        title: '任务',
-                        formatter: function (value) {
-                            return value.split('.')[2]
-                        }
-                    },
-                    {
                         field: 'host',
                         title: '主机'
                     },
                     {
                         field: 'schema',
-                        title: 'schema'
+                        title: '库'
                     },
                     {
                         field: 'receiver',
@@ -223,10 +194,6 @@
                     {
                         field: 'crontab_value',
                         title: '执行时间'
-                    },
-                    {
-                        field: 'last_run_at',
-                        title: '最后一次运行时间'
                     }
                 ],
                 // 编辑保存，上面的editable统一调用此方法

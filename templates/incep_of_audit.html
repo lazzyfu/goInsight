@@ -5,16 +5,12 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 520px;
+            height: 550px;
             font-size: 14px;
         }
 
         .CodeMirror pre.CodeMirror-placeholder {
             color: #999;
-        }
-
-        .box-size {
-            font-size: 12px;
         }
     </style>
 {% endblock %}
@@ -32,7 +28,7 @@
             <form class="form-horizontal" id="ofAuditCommitForm" action="{% url 'p_incep_of_audit' %}" method="post">
                 <div class="col-md-4">
                     <!-- Profile Image -->
-                    <div class="box">
+                    <div class="box box-success">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>选择环境</h5>
@@ -120,11 +116,11 @@
                     </div>
                 </div>
                 <div class="col-md-8">
-                    <div class="box">
+                    <div class="box box-primary">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
                                 <h5>填写SQL语句
-                                    <small class="text-danger">使用：/* 这是注释 */ 或 # 这是注释, 使用Alt + Space 组合键启用提示</small>
+                                    <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
                                 </h5>
                             </div>
                         </div>
@@ -175,9 +171,16 @@
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
-            extraKeys: {"Alt-Space": "autocomplete"},
+            autoRefresh: true,
+            smartIndent: true,
+            matchBrackets: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            lineWrapping: true,
+            extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql,
-            placeholder: "# 插入数据:\ninsert into tbl(id,name) values(1,'zs');\n\n/* 建表 */:\ncreate table tbl(...);"
+            placeholder: "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
         });
 
         /**
@@ -215,7 +218,7 @@
                 type: 'GET',
                 dataType: 'json',
                 timeout: 5000,
-                cache: false,
+                cache: true,
                 success: function (data) {
                     $.each(data, function (index, data) {
                         $("#s_group").append(  //此处向select中循环绑定数据
@@ -226,7 +229,7 @@
             })
         });
 
-         /**
+        /**
          * 提交线下审核内容
          */
 

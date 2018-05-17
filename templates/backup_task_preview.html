@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h5 class="box-title"><i class="fa fa-cog"></i> {{ host }}_备份记录
+                        </h5>
+                        <!-- 隐藏id，下面ajax调用 -->
+                        <h5 id="s_id" style="display: none">{{ id }}</h5>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <div class="col-md-6">
+                        <div class="box-body">
+                            <div class="chart">
+                                <canvas id="doughnutChart" style="height:200px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="box-body">
+                            <div class="table-responsive" id="add_disk_used">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <!-- Custom Tabs -->
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab">mysqldump</a></li>
+                            <li><a href="#tab_2" data-toggle="tab" onclick="load_table_2()">xtrabackup</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <table id="table-1"></table>
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="tab_2">
+                                <table id="table-2"></table>
+                            </div>
+                            <!-- /.tab-pane -->
+                        </div>
+                        <!-- /.tab-content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var id = $('#s_id').text();
+
+        var $table_1 = $('#table-1');
+        $(function () {
+            $table_1.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_backup_task_preview_list' %}",
+                search: true,
+                showRefresh: true,
+                pageNumber: 1,
+                pageSize: 20,
+                locale: 'zh-CN',
+                pagination: true,
+                pageList: [10, 20, 30],
+                sidePagination: "client",
+                queryParams: function (params) {
+                    return {'id': id, 'type': 'mysqldump'}
+                },
+                classes: 'table table-hover table-no-bordered',
+
+                formatLoadingMessage:
+                    function () {
+                        return "请稍等，正在加载中...";
+                    },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+                columns: [
+                    {
+                        field: 'file_name',
+                        title: '文件名'
+                    },
+                    {
+                        field: 'file_size',
+                        title: '文件大小'
+                    },
+                    {
+                        field: 'file_time',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    }
+                ]
+            });
+        });
+
+        function load_table_2() {
+            var $table_2 = $('#table-2');
+            $table_2.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_backup_task_preview_list' %}",
+                search: true,
+                showRefresh: true,
+                pageNumber: 1,
+                pageSize: 20,
+                locale: 'zh-CN',
+                pagination: true,
+                pageList: [10, 20, 30],
+                sidePagination: "client",
+                queryParams: function (params) {
+                    return {'id': id, 'type': 'xtrabackup'}
+                },
+                classes: 'table table-hover table-no-bordered',
+
+                formatLoadingMessage:
+                    function () {
+                        return "请稍等，正在加载中...";
+                    },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+                columns: [
+                    {
+                        field: 'file_name',
+                        title: '文件名'
+                    },
+                    {
+                        field: 'file_size',
+                        title: '文件大小'
+                    },
+                    {
+                        field: 'file_time',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    }
+                ]
+            })
+        }
+
+        $.ajax({
+            type: 'get',
+            url: '{% url 'p_get_backup_disk_used' %}',
+            dataType: 'json',
+            data: {'id': id}
+        }).done(function (json_data) {
+            if (json_data.status === 0) {
+                var labels = [], data = [], html = '';
+                var result = json_data.data;
+                for (var i in result) {
+                    if (i.indexOf('percent') > -1) {
+                        labels.push(i);
+                        data.push(result[i])
+                    } else {
+                        html += ("<tr>\n" +
+                            "<th style=\"width:50%\">" + i + "</th>\n" +
+                            "<td>" + result[i] + "</td>\n" +
+                            "</tr>\n")
+                    }
+                }
+                $('#add_disk_used').append("<table class=\"table table-hover table-no-bordered\">" + html + "</table>");
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor:
+                                [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                            borderWidth:
+                                1
+                        }],
+                        labels: labels
+                    },
+                    options: {
+                        responsive: true,
+                        legend:
+                            {
+                                position: 'top'
+                            },
+                        title: {
+                            display: true,
+                            text:
+                                '备份目录空间使用详情'
+                        }
+                        ,
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        }
+                    }
+                };
+            }
+            else {
+                displayPNotify(json_data.status, json_data.msg)
+            }
+
+            var ctx = document.getElementById('doughnutChart').getContext('2d');
+            var myChart = new Chart(ctx, config);
+        });
+
+
+    </script>
+{% endblock %}
