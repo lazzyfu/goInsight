@@ -48,7 +48,7 @@ AuditSQL介绍
    - SQL检测功能
    - 语法高亮功能
    - 注释识别功能
-   - SQL语法自动补全(包括表名和库名)
+   - SQL语法自动补全(包括表名和列名)
 
 - 数据导出功能
    - 根据提供的select语句，自动异步导出xlsx格式的数据
@@ -75,7 +75,7 @@ AuditSQL介绍
    - 支持修改密码
 
 
-## 简要流程图
+## 线上审核简要流程图
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/lct.png)
 
@@ -87,8 +87,6 @@ AuditSQL介绍
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/3.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/4.png)
-
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/5.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/6.png)
@@ -97,7 +95,7 @@ AuditSQL介绍
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup-list.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup-create.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup_create.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup-preview.png)
 
