@@ -1,13 +1,13 @@
 AuditSQL介绍
 ===============
 
-**AuditSQL(命名确实是个问题，^_^)是基于Inception开发的一款web审核平台，旨在降低DBA的运维成本。**
+**AuditSQL(命名确实是个问题，^_^)是一个web审核平台，集成了inception，旨在降低DBA的运维成本。**
 
 **欢迎大家的使用和好评，同时使用中遇到的问题，请指出，谢谢。**
 
 **本项目会持续进行维护。**
 
-## Wiki地址（详细使用说明，请务必参考）
+## Wiki地址（详细部署和使用说明，请务必参考）
 
 **https://github.com/lazzyfu/AuditSQL/wiki**
 
@@ -15,7 +15,7 @@ AuditSQL介绍
 
 - Python 3.6
 - Django 2.0 
-- django-celery
+- celery 4.1.0
 - django-channels
 - AdminLTE
 
@@ -34,7 +34,8 @@ AuditSQL介绍
 
 - 定时任务
   - crontab：自定义crontab
-  - 周期任务：支持定义死锁检测和表结构变更检测
+  - 表结构监控
+  - 数据库备份（mysqldump和xtrabackup）
 
 - 数据库管理
    - 数据库账号的友好显示
@@ -47,6 +48,7 @@ AuditSQL介绍
    - SQL检测功能
    - 语法高亮功能
    - 注释识别功能
+   - SQL语法自动补全(包括表名和库名)
 
 - 数据导出功能
    - 根据提供的select语句，自动异步导出xlsx格式的数据
@@ -65,12 +67,10 @@ AuditSQL介绍
 - 权限系统：
   - 独立`项目组`控制，每个`项目组`之间互相隔离（包括：用户、联系人，主机、角色等）
   - 自定义用户角色：如：DBA、项目经理、开发、产品等角色
-  - 提供8种权限，可对用户角色进行绑定
+  - 提供8种权限，可绑定到任意用户角色
 
 - 其他
    - 支持LDAP认证登陆
-   - 项目权限控制
-   - 角色权限控制
    - 支持修改头像
    - 支持修改密码
 
@@ -93,11 +93,16 @@ AuditSQL介绍
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/6.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/7.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/sql_tips.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/8.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup-list.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/9.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup-create.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/backup-preview.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/email_notice.png)
+
 ## 联系方式
    
 QQ群: 710797678
