@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 450px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL查询</h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <form class="form-inline" id="SqlQueryForm" action="{% url 'p_query' %}"
+                          method="post">
+                        <div class="form-group">
+                            <select id="s_host" name="host" onchange="getTablesList()"
+                                    required class="selectpicker" title="请选择主机...">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="s_database" name="database" required
+                                    class="form-control selectpicker" title="选择库名...">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn bg-info btn-sm">执行</button>
+                        </div>
+
+                        <div class="form-group pull-right">
+                            <select onchange="selectTheme()" id=select class="form-control col-md-1 selectpicker"
+                                    title="选择主题...">
+                                <option>default</option>
+                                <option>material</option>
+                                <option>monokai</option>
+                                <option>solarized</option>
+                                <option>idea</option>
+                            </select>
+                        </div>
+
+                        {% csrf_token %}
+                    </form>
+                </div>
+
+                <div class="box-body">
+                    <textarea id="s_sql" autofocus class="form-control"></textarea>
+                </div>
+            </div>
+
+            <div class="box" id="typediv1" style="visibility: hidden">
+                <div class="box-body">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs" id="li_append"></ul>
+                        <div class="tab-content" id="table_append"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var myTextarea = document.getElementById('s_sql');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            smartIndent: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            keyMap: "sublime",
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            showCursorWhenSelecting: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            extraKeys: {"Tab": "autocomplete"},
+            hint: CodeMirror.hint.sql
+        });
+
+        var input = document.getElementById("select");
+
+        function selectTheme() {
+            var theme = input.options[input.selectedIndex].textContent;
+            myCodeMirror.setOption("theme", theme);
+            location.hash = "#" + theme;
+        }
+
+        var choice = (location.hash && location.hash.slice(1)) ||
+            (document.location.search &&
+                decodeURIComponent(document.location.search.slice(1)));
+        if (choice) {
+            input.value = choice;
+            myCodeMirror.setOption("theme", choice);
+        }
+        CodeMirror.on(window, "hashchange", function () {
+            var theme = location.hash.slice(1);
+            if (theme) {
+                input.value = theme;
+                selectTheme();
+            }
+        });
+
+        /**
+         * 获取用户所在项目组的所有主机信息
+         */
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_host_config' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, row) {
+                        var host = row.host;
+                        var comment = row.comment;
+                        html += "<option value=" + host + ">" + comment + "</option>"
+                    });
+                    $('#s_host').append(html);
+                    $('.selectpicker').selectpicker('refresh', {silent: true})
+                }
+            })
+        });
+
+        /**
+         * 执行查询
+         */
+
+        $('#SqlQueryForm').on('submit', function (e) {
+            // 获取选中的内容，否则为全部内容
+            var contents = '';
+            if (myCodeMirror.somethingSelected()) {
+                contents = myCodeMirror.getSelection()
+            } else {
+                contents = myCodeMirror.getValue();
+            }
+
+            if (contents.length < 1) {
+                displayPNotify(2, '内容不能为空');
+                return false;
+            }
+            else {
+                $(this).ajaxSubmit({
+                    data: {'contents': contents},
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === 0) {
+                            var data = result.data;
+                            document.getElementById('typediv1').style.visibility = "visible";
+                            $('#li_append').empty();
+                            $('#table_append').empty();
+
+                            var li_html = '';
+                            var table_html = '';
+                            for (var i in data) {
+                                li_html += "<li><a href=\"#tab_" + i + "\" data-toggle=\"tab\">" + "结果" + i + "</a></li>";
+                                table_html += "<div class=\"tab-pane\" id=\"tab_" + i + "\">\n" +
+                                    "<table id=\"table" + i + "\"></table>\n" +
+                                    "</div>"
+                            }
+
+                            $('#table_append').append(table_html);
+                            $('#li_append').append(li_html);
+
+                            for (var key in data) {
+                                var d = data[key];
+                                var $table = $("#table" + key);
+
+                                $table.bootstrapTable({
+                                    columns: d.columnDefinition,
+                                    data: d.data,
+                                    search: true,
+                                    showColumns: true,
+                                    showRefresh: true,
+                                    showToggle: true,
+                                    pageNumber: 1,
+                                    pageSize: 20,
+                                    locale: 'zh-CN',
+                                    pageList: [20, 30, 50],
+                                    sidePagination: "client",
+                                    pagination: true,
+                                    singleSelect: true,
+                                    minimumCountColumns: 2,
+                                    matchBrackets: true,
+                                    lineWrapping: true,
+                                    foldGutter: true,
+                                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                                    keyMap: "vim",
+                                    classes: 'table table-hover'
+                                });
+                            }
+                        }
+                        else {
+                            displayPNotify(result.status, result.msg)
+                        }
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+
+
+    </script>
+{% endblock %}

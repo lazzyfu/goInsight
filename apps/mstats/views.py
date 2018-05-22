@@ -1,6 +1,7 @@
 import json
 import os
 
+import pymysql
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -11,7 +12,7 @@ from django.views import View
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from mstats.forms import PrivModifyForm, BackupTaskForm, SchemaMonitorForm
-from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
+from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput, MySQLQuery
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
 from utils.tools import format_request
@@ -248,3 +249,20 @@ class GetBackupDiskUsedView(View):
         else:
             context = data
         return HttpResponse(json.dumps(context))
+
+
+class RMySQLQueryView(View):
+    def get(self, request):
+        return render(request, 'sql_query.html')
+
+
+class MySQLQueryView(View):
+    def post(self, request):
+        data = format_request(request)
+        querys = data.get('contents')
+        host = data.get('host')
+        database = data.get('database')
+        mysql_query = MySQLQuery(querys, host, database)
+        result = mysql_query.query()
+        print(result)
+        return JsonResponse(result, safe=False)

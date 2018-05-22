@@ -6,6 +6,7 @@ import re
 import os
 import paramiko
 import pymysql
+import sqlparse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
@@ -361,7 +362,6 @@ class CheckCParserValid(GeneralCParser):
         is_true = []
         for i in self.check_obj:
             output = self.paramiko_conn.run(f"ls {i} && echo $?")['data']
-            print(output)
             if output[-1] != '0':
                 self.result = {'status': 2, 'msg': str(output[0]) + ', 请确认文件或目录存在'}
                 is_true.append(False)
@@ -457,6 +457,7 @@ class GeneralBackupCmd(GeneralCParser):
 
         return self.backup_cmd
 
+
 #         if single_table == 'enable':
 #             dbs = tuple(backup_dbs) if len(backup_dbs) > 1 else (repr(backup_dbs))
 #             query_cmd = " ".join(('mysql',
@@ -482,3 +483,67 @@ class GeneralBackupCmd(GeneralCParser):
 #     except KeyError as err:
 #         return ''
 #
+
+
+class MySQLQuery(object):
+    def __init__(self, querys, host, database):
+        self.querys = []
+        # 去掉空格
+        for i in [i for i in querys.strip().split(';') if i != '']:
+            # 去掉开头的\n
+            self.querys.append(re.sub('^(\n+)', '', i))
+        self.host = host
+        self.database = database
+
+        obj = InceptionHostConfig.objects.get(host=self.host)
+        self.conn = pymysql.connect(host=obj.host,
+                                    user=obj.user,
+                                    password=obj.password,
+                                    port=obj.port,
+                                    charset='utf8',
+                                    database=self.database,
+                                    cursorclass=pymysql.cursors.DictCursor)
+
+    def query(self):
+        try:
+            dynamic_table = {}
+            i = 1
+            print(self.querys)
+
+            # 对语句类型进行判断
+            # 支持select、show create、desc等
+            support_query = ['select', 'show create', 'desc', 'show index']
+
+            support = []
+            for sql in self.querys:
+                for s in support_query:
+                    if re.search("^{0}".format(s), sql, re.I):
+                        support.append(True)
+                    # 此处逻辑错误
+            print(support)
+            for sql in self.querys:
+                # 获取字段
+                with self.conn.cursor() as cursor:
+                    cursor.execute(sql)
+                    keys = cursor.fetchone().keys()
+                    field = [{'field': j, 'title': j} for j in keys]
+
+                # 获取数据
+                with self.conn.cursor() as cursor:
+                    cursor.execute(sql)
+                    data = []
+                    for j in cursor.fetchall():
+                        for k in j:
+                            if isinstance(j[k], str):
+                                j[k] = j[k].replace('\n', '<br>')
+                        data.append(j)
+
+                dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
+                i += 1
+            result = {'status': 0, 'data': dynamic_table}
+        except Exception as err:
+            result = {'status': 2, 'msg': str(err)}
+        finally:
+            self.conn.close()
+
+        return result

@@ -50,8 +50,7 @@ class BeautifySQLView(View):
                     beautify_sql_list.append(comment + sql_format)
             context = {'data': '\n\n'.join(beautify_sql_list)}
         except Exception as err:
-            context = {'status': 2, 'msg': "注释不合法, 请检查"}
-            raise OSError(err)
+            context = {'status': 2, 'msg': '注释或语法错误'}
 
         return HttpResponse(json.dumps(context))
 
