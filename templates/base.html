@@ -182,7 +182,7 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_rquery' %}"><i class="fa fa-circle-o"></i>查询</a></li>
+                        <li><a href="{% url 'p_rquery' %}"><i class="fa fa-circle-o"></i>线上查询</a></li>
                     </ul>
                 </li>
 
@@ -206,7 +206,7 @@
                 {% if 'can_mysqluser_view' in request.session.perm_list %}
                     <li class="treeview">
                         <a href="#">
-                            <i class="fa fa-cog"></i>
+                            <i class="fa fa-database"></i>
                             <span>数据库管理</span>
                             <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>

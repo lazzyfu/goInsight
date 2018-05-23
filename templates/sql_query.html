@@ -129,6 +129,7 @@
                 url: '{% url 'p_host_config' %}',
                 type: 'GET',
                 dataType: 'json',
+                data: {'type': '1','purpose': '1'},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {

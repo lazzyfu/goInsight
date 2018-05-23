@@ -518,7 +518,7 @@ class MySQLQuery(object):
         self.host = host
         self.database = database
 
-        obj = InceptionHostConfig.objects.get(host=self.host)
+        obj = InceptionHostConfig.objects.get(host=self.host, purpose='1', is_enable=0)
         self.conn = pymysql.connect(host=obj.host,
                                     user=obj.user,
                                     password=obj.password,

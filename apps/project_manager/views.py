@@ -60,16 +60,19 @@ class IncepHostConfigView(View):
 
     def get(self, request):
         data = format_request(request)
-        config_type = data.get('type')
+        print(data)
+        config_type = 0 if data.get('type') is None else data.get('type')
+        purpose = 0 if data.get('purpose') is None else data.get('purpose')
         user_in_group = request.session.get('groups')
-        if config_type:
-            result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
-                                                                comment=F('config__comment')).filter(
-                config__type=config_type).filter(group__group_id__in=user_in_group).values('host', 'comment')
-        else:
-            result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
-                                                                comment=F('config__comment')).filter(
-                group__group_id__in=user_in_group).values('host', 'comment')
+        result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
+                                                            comment=F('config__comment')
+                                                            ).filter(config__type=config_type). \
+            filter(config__purpose=purpose). \
+            filter(config__is_enable=0). \
+            filter(group__group_id__in=user_in_group). \
+            values('host', 'comment')
+        print(result)
+        print(purpose)
         return JsonResponse(list(result), safe=False)
 
 
@@ -111,7 +114,7 @@ class GetAuditUserView(View):
                 role_name=F('role__role_name'),
                 permission_name=F('permission__permission_name')).filter(
                 permission__permission_name__in=('can_approve', 'can_execute')
-                ).values_list('role_name', 'permission_name')
+            ).values_list('role_name', 'permission_name')
 
             for i in role_list:
                 role_name = i[0]
@@ -152,6 +155,7 @@ class ContactsInfoView(View):
 
 class SyntaxCheckView(View):
     """语法检查"""
+
     def post(self, request):
         form = SyntaxCheckForm(request.POST)
         if form.is_valid():
