@@ -6,6 +6,8 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 400px;
+            font-size: 14px;
+        {#line-height: 1em;#}
         }
     </style>
 {% endblock %}
@@ -49,6 +51,7 @@
                                 <option>monokai</option>
                                 <option>solarized</option>
                                 <option>idea</option>
+                                <option>seti</option>
                             </select>
                         </div>
 
@@ -144,14 +147,6 @@
         /**
          * 执行查询
          */
-
-        function showLoadingScreen() {
-            $('body').loading()
-        }
-
-        function hideLoadingScreen() {
-            $('body').loading('stop');
-        }
 
         $('#SqlQueryForm').on('submit', function (e) {
             $('#li_append').empty();

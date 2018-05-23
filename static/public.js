@@ -246,3 +246,14 @@ function getTablesList() {
         }
     });
 }
+
+/**
+ * jquery loading
+ */
+function showLoadingScreen() {
+    $('body').loading()
+}
+
+function hideLoadingScreen() {
+    $('body').loading('stop');
+}

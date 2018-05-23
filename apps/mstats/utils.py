@@ -494,16 +494,16 @@ def mysql_query_format(querys):
     sql_list = []
     match_first = []
 
-    # 去掉空格
-    for i in [i for i in querys.strip().split(';') if i != '']:
+    # 匹配以\n开通和结尾且只包括\n的转换为''
+    # 删除''
+    for i in [i for i in querys.strip().split(';') if re.sub('^(\n+)$', '', i) != '']:
         # 去掉开头的\n
         j = re.sub('^(\n+)', '', i)
         # 匹配不以#开头的，此类为注释，不执行
-        if re.search('^(?!#).*$', j, re.I):
+        if re.search('^(?!#)', j, re.I):
             sql_list.append(j)
             match_first.append(j.split(' ', 1)[0])
 
-    print(match_first)
     # 判断SQL语句是否为支持的语句
     if not set(support_query) >= set(match_first):
         no_support_query = list(set(match_first).difference(set(support_query)))

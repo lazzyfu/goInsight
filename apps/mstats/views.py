@@ -238,12 +238,13 @@ class GetBackupDiskUsedView(View):
             for i in data['data'][:2]:
                 result[i.split('\t')[1]] = i.split('\t')[0]
 
-            df = [i for i in data['data'][-1].split(' ') if i != '']
-            result.update({'total_size': df[1],
-                           'used_size': df[2],
-                           'free_size': df[3],
-                           'used_percent (%)': int(df[4].split('%')[0]),
-                           'free_percent (%)': 100 - int(df[4].split('%')[0])
+            df = [i for i in data['data'][-1].split()]
+            print(df)
+            result.update({'total_size': df[-5],
+                           'used_size': df[-4],
+                           'free_size': df[-3],
+                           'used_percent (%)': int(df[-2].split('%')[0]),
+                           'free_percent (%)': 100 - int(df[-2].split('%')[0])
                            })
             context = {'status': 0, 'data': result}
         else:

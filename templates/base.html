@@ -24,19 +24,17 @@
     <!-- CodeMirror -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/lib/codemirror.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/fullscreen.css' %}">
-    <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/show-hint.css' %}">
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/fold/foldgutter.css' %}">
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/dialog/dialog.css' %}">
-
+    <!--CodeMirror theme -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/theme/material.css' %}">
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/theme/monokai.css' %}">
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/theme/solarized.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/theme/seti.css' %}">
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/theme/idea.css' %}">
-
     <!-- bootstrap-select -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
@@ -234,7 +232,7 @@
     <!-- /.content-wrapper -->
     <footer class="main-footer">
         <div class="pull-right hidden-xs">
-            <b>Version</b> 2.4.0
+            <b>MySQL Audit Version</b> 2.1.0
         </div>
         <strong>Copyright &copy; 2014-2016 <a href="#">Almsaeed Studio</a>.</strong> All rights
         reserved.
@@ -277,7 +275,6 @@
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/mode/sql/sql.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/placeholder.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/autorefresh.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/display/fullscreen.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/show-hint.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/anyword-hint.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.2/bower_components/codemirror-5.37.0/addon/hint/sql-hint.js' %}"></script>
@@ -316,7 +313,7 @@
 <!-- jquery loading -->
 <script src="{% static 'AdminLTE-2.4.2/bower_components/jquery-loading/jquery.loading.min.js' %}"></script>
 <!-- general js file -->
-<script src="{% static 'self_public.js' %}"></script>
+<script src="{% static 'public.js' %}"></script>
 
 <!-- 定义 javascript block -->
 {% block link_javascripts %}
