@@ -54,21 +54,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/mstats/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="277">
-              <caret line="250" column="26" lean-forward="true" selection-start-line="250" selection-start-column="26" selection-end-line="250" selection-end-column="26" />
+              <caret line="250" column="26" lean-forward="false" selection-start-line="250" selection-start-column="26" selection-end-line="250" selection-end-column="26" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="base.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="239" column="6" lean-forward="false" selection-start-line="239" selection-start-column="6" selection-end-line="239" selection-end-column="6" />
+            <state relative-caret-position="187">
+              <caret line="150" column="71" lean-forward="true" selection-start-line="150" selection-start-column="71" selection-end-line="150" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -214,8 +214,8 @@
         <option value="$PROJECT_DIR$/templates/incep_of_audit.html" />
         <option value="$PROJECT_DIR$/templates/data_export.html" />
         <option value="$PROJECT_DIR$/apps/mstats/utils.py" />
-        <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/apps/mstats/views.py" />
+        <option value="$PROJECT_DIR$/templates/base.html" />
       </list>
     </option>
   </component>
@@ -1099,14 +1099,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="239" column="6" lean-forward="false" selection-start-line="239" selection-start-column="6" selection-end-line="239" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/mstats/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="313">
@@ -1123,7 +1115,15 @@
     <entry file="file://$PROJECT_DIR$/apps/mstats/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="277">
-          <caret line="250" column="26" lean-forward="true" selection-start-line="250" selection-start-column="26" selection-end-line="250" selection-end-column="26" />
+          <caret line="250" column="26" lean-forward="false" selection-start-line="250" selection-start-column="26" selection-end-line="250" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="150" column="71" lean-forward="true" selection-start-line="150" selection-start-column="71" selection-end-line="150" selection-end-column="71" />
           <folding />
         </state>
       </provider>
