@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 450px;
+            height: 400px;
         }
     </style>
 {% endblock %}
@@ -91,7 +91,6 @@
             autoCloseBrackets: true,
             matchBrackets: true,
             showCursorWhenSelecting: true,
-            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql
         });
@@ -146,7 +145,18 @@
          * 执行查询
          */
 
+        function showLoadingScreen() {
+            $('body').loading()
+        }
+
+        function hideLoadingScreen() {
+            $('body').loading('stop');
+        }
+
         $('#SqlQueryForm').on('submit', function (e) {
+            $('#li_append').empty();
+            $('#table_append').empty();
+
             // 获取选中的内容，否则为全部内容
             var contents = '';
             if (myCodeMirror.somethingSelected()) {
@@ -163,12 +173,12 @@
                 $(this).ajaxSubmit({
                     data: {'contents': contents},
                     dataType: 'json',
+                    beforeSubmit: showLoadingScreen,
                     success: function (result) {
+                        hideLoadingScreen();
                         if (result.status === 0) {
                             var data = result.data;
                             document.getElementById('typediv1').style.visibility = "visible";
-                            $('#li_append').empty();
-                            $('#table_append').empty();
 
                             var li_html = '';
                             var table_html = '';
@@ -203,9 +213,6 @@
                                     minimumCountColumns: 2,
                                     matchBrackets: true,
                                     lineWrapping: true,
-                                    foldGutter: true,
-                                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-                                    keyMap: "vim",
                                     classes: 'table table-hover'
                                 });
                             }

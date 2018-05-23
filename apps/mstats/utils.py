@@ -484,14 +484,37 @@ class GeneralBackupCmd(GeneralCParser):
 #         return ''
 #
 
+def mysql_query_format(querys):
+    """
+    接收原始SQL
+    格式化SQL语句，对提交的SQL语法进行检测
+    返回格式化后的SQL列表
+    """
+    support_query = ['select', 'show', 'desc', 'explain']
+    sql_list = []
+    match_first = []
+
+    # 去掉空格
+    for i in [i for i in querys.strip().split(';') if i != '']:
+        # 去掉开头的\n
+        j = re.sub('^(\n+)', '', i)
+        # 匹配不以#开头的，此类为注释，不执行
+        if re.search('^(?!#).*$', j, re.I):
+            sql_list.append(j)
+            match_first.append(j.split(' ', 1)[0])
+
+    print(match_first)
+    # 判断SQL语句是否为支持的语句
+    if not set(support_query) >= set(match_first):
+        no_support_query = list(set(match_first).difference(set(support_query)))
+        return False, no_support_query
+    else:
+        return True, sql_list
+
 
 class MySQLQuery(object):
     def __init__(self, querys, host, database):
-        self.querys = []
-        # 去掉空格
-        for i in [i for i in querys.strip().split(';') if i != '']:
-            # 去掉开头的\n
-            self.querys.append(re.sub('^(\n+)', '', i))
+        self.status, self.data = mysql_query_format(querys)
         self.host = host
         self.database = database
 
@@ -505,45 +528,35 @@ class MySQLQuery(object):
                                     cursorclass=pymysql.cursors.DictCursor)
 
     def query(self):
-        try:
-            dynamic_table = {}
-            i = 1
-            print(self.querys)
+        if not self.status:
+            result = {'status': 2, 'msg': '不支持如下SQL语句：{}'.format(','.join(self.data))}
+        else:
+            try:
+                dynamic_table = {}
+                i = 1
+                for sql in self.data:
+                    # 获取字段
+                    with self.conn.cursor() as cursor:
+                        cursor.execute(sql)
+                        keys = cursor.fetchone().keys()
+                        field = [{'field': j, 'title': j} for j in keys]
 
-            # 对语句类型进行判断
-            # 支持select、show create、desc等
-            support_query = ['select', 'show create', 'desc', 'show index']
+                    # 获取数据
+                    with self.conn.cursor() as cursor:
+                        cursor.execute(sql)
+                        data = []
+                        for j in cursor.fetchall():
+                            for k in j:
+                                if isinstance(j[k], str):
+                                    j[k] = j[k].replace('\n', '<br>')
+                            data.append(j)
 
-            support = []
-            for sql in self.querys:
-                for s in support_query:
-                    if re.search("^{0}".format(s), sql, re.I):
-                        support.append(True)
-                    # 此处逻辑错误
-            print(support)
-            for sql in self.querys:
-                # 获取字段
-                with self.conn.cursor() as cursor:
-                    cursor.execute(sql)
-                    keys = cursor.fetchone().keys()
-                    field = [{'field': j, 'title': j} for j in keys]
-
-                # 获取数据
-                with self.conn.cursor() as cursor:
-                    cursor.execute(sql)
-                    data = []
-                    for j in cursor.fetchall():
-                        for k in j:
-                            if isinstance(j[k], str):
-                                j[k] = j[k].replace('\n', '<br>')
-                        data.append(j)
-
-                dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
-                i += 1
-            result = {'status': 0, 'data': dynamic_table}
-        except Exception as err:
-            result = {'status': 2, 'msg': str(err)}
-        finally:
-            self.conn.close()
+                    dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
+                    i += 1
+                result = {'status': 0, 'data': dynamic_table}
+            except Exception as err:
+                result = {'status': 2, 'msg': str(err)}
+            finally:
+                self.conn.close()
 
         return result

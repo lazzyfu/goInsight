@@ -264,5 +264,4 @@ class MySQLQueryView(View):
         database = data.get('database')
         mysql_query = MySQLQuery(querys, host, database)
         result = mysql_query.query()
-        print(result)
         return JsonResponse(result, safe=False)
