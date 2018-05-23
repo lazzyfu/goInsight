@@ -501,14 +501,36 @@ def mysql_query_format(querys):
         j = re.sub('^(\n+)', '', i)
         # 匹配不以#开头的，此类为注释，不执行
         if re.search('^(?!#)', j, re.I):
-            sql_list.append(j)
+            # 将语句中间的\n都处理成' '
+            sql_list.append(j.replace('\n', ' '))
             match_first.append(j.split(' ', 1)[0])
+
+    # 判断是否有limit、没有增加limit 1000
+    for i in sql_list:
+        limit = re.compile('^SELECT (.*) FROM (.*) WHERE (.*) LIMIT (.*)', re.I)
+        no_limit = re.compile('^SELECT (.*) FROM (.*) WHERE (.*)', re.I)
+        # select语句
+        if re.match('^select', i, re.I) and limit.match(i) is None:
+            # 当未匹配到select ... limit ...语句，重写查询
+            sql_list[sql_list.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 WHERE \3 LIMIT 1000", i)
+
+    # 定义正则规则
+    deny_rules = ['^SELECT .*\w+\.\*.* FROM .*', '^SELECT \*.* FROM .*']
+
+    print(sql_list)
 
     # 判断SQL语句是否为支持的语句
     if not set(support_query) >= set(match_first):
         no_support_query = list(set(match_first).difference(set(support_query)))
-        return False, no_support_query
+        msg = '不支持如下SQL语句：{}'.format(','.join(no_support_query))
+        return False, msg
     else:
+        for i in sql_list:
+            for r in deny_rules:
+                pattern = re.compile(r, re.I)
+                if pattern.match(i):
+                    msg = '查询拒绝，不允许 * '
+                    return False, msg
         return True, sql_list
 
 
@@ -529,11 +551,12 @@ class MySQLQuery(object):
 
     def query(self):
         if not self.status:
-            result = {'status': 2, 'msg': '不支持如下SQL语句：{}'.format(','.join(self.data))}
+            result = {'status': 2, 'msg': self.data}
         else:
             try:
                 dynamic_table = {}
                 i = 1
+                print(self.data)
                 for sql in self.data:
                     # 获取字段
                     with self.conn.cursor() as cursor:

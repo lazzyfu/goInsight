@@ -42,11 +42,12 @@ class BeautifySQLView(View):
                 comment = row['comment']
                 sql = row['sql']
                 res = sqlparse.parse(sql)
-                if res[0].tokens[0].ttype[1] == 'DML':
-                    sql_format = sqlparse.format(sql, reindent=True)
-                    beautify_sql_list.append(comment + sql_format)
-                elif res[0].tokens[0].ttype[1] == 'DDL':
+                # if res[0].tokens[0].ttype[1] == 'DML':
+                if res[0].tokens[0].ttype[1] == 'DDL':
                     sql_format = sqlparse.format(sql)
+                    beautify_sql_list.append(comment + sql_format)
+                else:
+                    sql_format = sqlparse.format(sql, reindent=True)
                     beautify_sql_list.append(comment + sql_format)
             context = {'data': '\n\n'.join(beautify_sql_list)}
         except Exception as err:
@@ -71,8 +72,6 @@ class IncepHostConfigView(View):
             filter(config__is_enable=0). \
             filter(group__group_id__in=user_in_group). \
             values('host', 'comment')
-        print(result)
-        print(purpose)
         return JsonResponse(list(result), safe=False)
 
 
