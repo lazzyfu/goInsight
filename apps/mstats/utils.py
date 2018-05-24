@@ -494,30 +494,28 @@ def mysql_query_format(querys):
     sql_list = []
     match_first = []
 
-    # 匹配以\n开通和结尾且只包括\n的转换为''
-    # 删除''
-    for i in [i for i in querys.strip().split(';') if re.sub('^(\n+)$', '', i) != '']:
-        # 去掉开头的\n
-        j = re.sub('^(\n+)', '', i)
+    # 匹配以\n开头和结尾且只包括\n的转换为''
+    # 删除列表中的''元素
+    for i in [re.sub('^\s+', '', i, re.S, re.I) for i in querys.strip().split(';') if
+              re.sub('^\s+', '', i, re.S, re.I) != '']:
+        # 多行匹配\n、\t、空格并替换为' '
+        j = re.sub('\s+', ' ', i, re.S, re.I)
         # 匹配不以#开头的，此类为注释，不执行
         if re.search('^(?!#)', j, re.I):
-            # 将语句中间的\n都处理成' '
-            sql_list.append(j.replace('\n', ' '))
+            sql_list.append(j)
             match_first.append(j.split(' ', 1)[0])
 
     # 判断是否有limit、没有增加limit 1000
     for i in sql_list:
-        limit = re.compile('^SELECT (.*) FROM (.*) WHERE (.*) LIMIT (.*)', re.I)
-        no_limit = re.compile('^SELECT (.*) FROM (.*) WHERE (.*)', re.I)
+        limit = re.compile('^SELECT (.*) FROM (.*) LIMIT (.*)', re.I)
+        no_limit = re.compile('^SELECT (.*) FROM (.*)', re.I)
         # select语句
         if re.match('^select', i, re.I) and limit.match(i) is None:
             # 当未匹配到select ... limit ...语句，重写查询
-            sql_list[sql_list.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 WHERE \3 LIMIT 1000", i)
+            sql_list[sql_list.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT 1000", i)
 
     # 定义正则规则
     deny_rules = ['^SELECT .*\w+\.\*.* FROM .*', '^SELECT \*.* FROM .*']
-
-    print(sql_list)
 
     # 判断SQL语句是否为支持的语句
     if not set(support_query) >= set(match_first):
