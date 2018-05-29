@@ -42,7 +42,6 @@ class BeautifySQLView(View):
                 comment = row['comment']
                 sql = row['sql']
                 res = sqlparse.parse(sql)
-                # if res[0].tokens[0].ttype[1] == 'DML':
                 if res[0].tokens[0].ttype[1] == 'DDL':
                     sql_format = sqlparse.format(sql)
                     beautify_sql_list.append(comment + sql_format)

@@ -1,16 +1,21 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import configparser
+import json
+import os
 import re
 
-import os
 import paramiko
 import pymysql
-import sqlparse
+from asgiref.sync import async_to_sync
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
+from mstats.models import MySQLQueryLog
 from project_manager.models import InceptionHostConfig
+from channels.layers import get_channel_layer
+
+channel_layer = get_channel_layer()
 
 
 def get_mysql_user_info(host):
@@ -517,9 +522,12 @@ def mysql_query_format(querys):
     # 定义正则规则
     deny_rules = ['^SELECT .*\w+\.\*.* FROM .*', '^SELECT \*.* FROM .*']
 
+    # 转换为小写
+    lower_match_first = [i.lower() for i in match_first]
+
     # 判断SQL语句是否为支持的语句
-    if not set(support_query) >= set(match_first):
-        no_support_query = list(set(match_first).difference(set(support_query)))
+    if not set(support_query) >= set(lower_match_first):
+        no_support_query = list(set(lower_match_first).difference(set(support_query)))
         msg = '不支持如下SQL语句：{}'.format(','.join(no_support_query))
         return False, msg
     else:
@@ -534,7 +542,8 @@ def mysql_query_format(querys):
 
 class MySQLQuery(object):
     def __init__(self, querys, host, database):
-        self.status, self.data = mysql_query_format(querys)
+        self.querys = querys
+        self.status, self.data = mysql_query_format(self.querys)
         self.host = host
         self.database = database
 
@@ -547,14 +556,21 @@ class MySQLQuery(object):
                                     database=self.database,
                                     cursorclass=pymysql.cursors.DictCursor)
 
-    def query(self):
+    def query(self, request):
+        obj = MySQLQueryLog.objects.create(user=request.user.username,
+                                           host=self.host,
+                                           database=self.database,
+                                           query_sql=self.querys)
         if not self.status:
+            obj.query_status = self.data
+            obj.save()
+            json_pull_data = {'type': 1, 'msg': self.data}
             result = {'status': 2, 'msg': self.data}
         else:
             try:
                 dynamic_table = {}
+                pull_msg = []
                 i = 1
-                print(self.data)
                 for sql in self.data:
                     # 获取字段
                     with self.conn.cursor() as cursor:
@@ -565,6 +581,10 @@ class MySQLQuery(object):
                     # 获取数据
                     with self.conn.cursor() as cursor:
                         cursor.execute(sql)
+                        obj.affect_rows = cursor.rowcount
+                        obj.query_status = '成功'
+                        obj.save()
+                        pull_msg.append(f'{sql[:20]} ...\n执行成功，影响行数：{obj.affect_rows}\n')
                         data = []
                         for j in cursor.fetchall():
                             for k in j:
@@ -574,10 +594,16 @@ class MySQLQuery(object):
 
                     dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
                     i += 1
+                json_pull_data = {'type': 1, 'msg': pull_msg}
+                print(json_pull_data)
                 result = {'status': 0, 'data': dynamic_table}
             except Exception as err:
+                obj.query_status = str(err)
+                obj.save()
+                json_pull_data = {'type': 1, 'msg': str(err)}
                 result = {'status': 2, 'msg': str(err)}
             finally:
                 self.conn.close()
-
+        async_to_sync(channel_layer.group_send)('zhangsan', {"type": "user.message",
+                                                             'text': json.dumps(json_pull_data)})
         return result

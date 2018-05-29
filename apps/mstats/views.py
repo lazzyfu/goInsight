@@ -239,7 +239,6 @@ class GetBackupDiskUsedView(View):
                 result[i.split('\t')[1]] = i.split('\t')[0]
 
             df = [i for i in data['data'][-1].split()]
-            print(df)
             result.update({'total_size': df[-5],
                            'used_size': df[-4],
                            'free_size': df[-3],
@@ -264,5 +263,5 @@ class MySQLQueryView(View):
         host = data.get('host')
         database = data.get('database')
         mysql_query = MySQLQuery(querys, host, database)
-        result = mysql_query.query()
+        result = mysql_query.query(request)
         return JsonResponse(result, safe=False)

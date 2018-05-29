@@ -5,24 +5,21 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 400px;
-            font-size: 14px;
-        {#line-height: 1em;#}
+            height: 450px;
         }
     </style>
 {% endblock %}
-
 
 {% block right_content %}
     <div class="row">
         <div class="col-md-12">
             <div class="box box-info">
-                <div class="box-header">
+                <div class="box-header box-border">
                     <div class="mailbox-read-info">
                         <h3 class="box-title"><i class="fa fa-cog"></i> SQL查询</h3>
                     </div>
                 </div>
-                <div class="box-body">
+                <div class="box-body box-border">
                     <form class="form-inline" id="SqlQueryForm" action="{% url 'p_query' %}"
                           method="post">
                         <div class="form-group">
@@ -54,13 +51,18 @@
                                 <option>seti</option>
                             </select>
                         </div>
-
                         {% csrf_token %}
                     </form>
                 </div>
-
-                <div class="box-body">
-                    <textarea id="s_sql" autofocus class="form-control"></textarea>
+                <div class="row">
+                    <div class="box-body box-border">
+                        <div class="col-md-9">
+                            <textarea id="s_sql"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <textarea id="query_log"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -72,9 +74,7 @@
                     </div>
                 </div>
             </div>
-            <!-- /.box-body -->
         </div>
-        <!-- /.box -->
     </div>
 
 {% endblock %}
@@ -93,6 +93,7 @@
             keyMap: "sublime",
             autoCloseBrackets: true,
             matchBrackets: true,
+            lineWrapping: true,
             showCursorWhenSelecting: true,
             extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql
@@ -121,6 +122,16 @@
             }
         });
 
+        var myQueryLog = CodeMirror.fromTextArea(document.getElementById('query_log'), {
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            readOnly: true,
+            theme: 'material',
+            autofocus: false,
+            lineWrapping: true,
+            placeholder: '执行输出 ...'
+        });
+
         /**
          * 获取用户所在项目组的所有主机信息
          */
@@ -129,7 +140,7 @@
                 url: '{% url 'p_host_config' %}',
                 type: 'GET',
                 dataType: 'json',
-                data: {'type': '1','purpose': '1'},
+                data: {'type': '1', 'purpose': '1'},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
@@ -187,6 +198,8 @@
 
                             $('#table_append').append(table_html);
                             $('#li_append').append(li_html);
+                            $('.nav-tabs>li>a').first().trigger('click');
+
 
                             for (var key in data) {
                                 var d = data[key];
@@ -214,6 +227,7 @@
                             }
                         }
                         else {
+                            document.getElementById('typediv1').style.visibility = "hidden";
                             displayPNotify(result.status, result.msg)
                         }
                     },
@@ -227,6 +241,25 @@
             }
         });
 
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/');
+        socket.onmessage = function (message) {
+            var result = JSON.parse(message.data);
+            var msg = result.msg;
+            var currentDate = new Date();
+            var mytime = currentDate.toLocaleString();
 
+
+            if (result.type === 1) {
+                var query_log_html = '';
+                if (msg instanceof Array) {
+                    query_log_html = '时间：' + mytime + '\n' + msg.join('\n') + '\n';
+                } else {
+                    query_log_html = '时间：' + mytime + '\n' + msg + '\n\n'
+                }
+
+                myQueryLog.replaceRange(query_log_html, CodeMirror.Pos(myQueryLog.lastLine()));
+                myQueryLog.setCursor(myQueryLog.lineCount(), 0);
+            }
+        }
     </script>
 {% endblock %}
