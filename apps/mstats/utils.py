@@ -1,15 +1,21 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import configparser
+import json
+import os
 import re
 
-import os
 import paramiko
 import pymysql
+from asgiref.sync import async_to_sync
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
+from mstats.models import MySQLQueryLog
 from project_manager.models import InceptionHostConfig
+from channels.layers import get_channel_layer
+
+channel_layer = get_channel_layer()
 
 
 def get_mysql_user_info(host):
@@ -361,7 +367,6 @@ class CheckCParserValid(GeneralCParser):
         is_true = []
         for i in self.check_obj:
             output = self.paramiko_conn.run(f"ls {i} && echo $?")['data']
-            print(output)
             if output[-1] != '0':
                 self.result = {'status': 2, 'msg': str(output[0]) + ', 请确认文件或目录存在'}
                 is_true.append(False)
@@ -457,6 +462,7 @@ class GeneralBackupCmd(GeneralCParser):
 
         return self.backup_cmd
 
+
 #         if single_table == 'enable':
 #             dbs = tuple(backup_dbs) if len(backup_dbs) > 1 else (repr(backup_dbs))
 #             query_cmd = " ".join(('mysql',
@@ -482,3 +488,122 @@ class GeneralBackupCmd(GeneralCParser):
 #     except KeyError as err:
 #         return ''
 #
+
+def mysql_query_format(querys):
+    """
+    接收原始SQL
+    格式化SQL语句，对提交的SQL语法进行检测
+    返回格式化后的SQL列表
+    """
+    support_query = ['select', 'show', 'desc', 'explain']
+    sql_list = []
+    match_first = []
+
+    # 匹配以\n开头和结尾且只包括\n的转换为''
+    # 删除列表中的''元素
+    for i in [re.sub('^\s+', '', i, re.S, re.I) for i in querys.strip().split(';') if
+              re.sub('^\s+', '', i, re.S, re.I) != '']:
+        # 多行匹配\n、\t、空格并替换为' '
+        j = re.sub('\s+', ' ', i, re.S, re.I)
+        # 匹配不以#开头的，此类为注释，不执行
+        if re.search('^(?!#)', j, re.I):
+            sql_list.append(j)
+            match_first.append(j.split(' ', 1)[0])
+
+    # 判断是否有limit、没有增加limit 1000
+    for i in sql_list:
+        limit = re.compile('^SELECT (.*) FROM (.*) LIMIT (.*)', re.I)
+        no_limit = re.compile('^SELECT (.*) FROM (.*)', re.I)
+        # select语句
+        if re.match('^select', i, re.I) and limit.match(i) is None:
+            # 当未匹配到select ... limit ...语句，重写查询
+            sql_list[sql_list.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT 1000", i)
+
+    # 定义正则规则
+    deny_rules = ['^SELECT .*\w+\.\*.* FROM .*', '^SELECT \*.* FROM .*']
+
+    # 转换为小写
+    lower_match_first = [i.lower() for i in match_first]
+
+    # 判断SQL语句是否为支持的语句
+    if not set(support_query) >= set(lower_match_first):
+        no_support_query = list(set(lower_match_first).difference(set(support_query)))
+        msg = '不支持如下SQL语句：{}'.format(','.join(no_support_query))
+        return False, msg
+    else:
+        for i in sql_list:
+            for r in deny_rules:
+                pattern = re.compile(r, re.I)
+                if pattern.match(i):
+                    msg = '查询拒绝，不允许 * '
+                    return False, msg
+        return True, sql_list
+
+
+class MySQLQuery(object):
+    def __init__(self, querys, host, database):
+        self.querys = querys
+        self.status, self.data = mysql_query_format(self.querys)
+        self.host = host
+        self.database = database
+
+        obj = InceptionHostConfig.objects.get(host=self.host, purpose='1', is_enable=0)
+        self.conn = pymysql.connect(host=obj.host,
+                                    user=obj.user,
+                                    password=obj.password,
+                                    port=obj.port,
+                                    charset='utf8',
+                                    database=self.database,
+                                    cursorclass=pymysql.cursors.DictCursor)
+
+    def query(self, request):
+        obj = MySQLQueryLog.objects.create(user=request.user.username,
+                                           host=self.host,
+                                           database=self.database,
+                                           query_sql=self.querys)
+        if not self.status:
+            obj.query_status = self.data
+            obj.save()
+            json_pull_data = {'type': 1, 'msg': self.data}
+            result = {'status': 2, 'msg': self.data}
+        else:
+            try:
+                dynamic_table = {}
+                pull_msg = []
+                i = 1
+                for sql in self.data:
+                    # 获取字段
+                    with self.conn.cursor() as cursor:
+                        cursor.execute(sql)
+                        keys = cursor.fetchone().keys()
+                        field = [{'field': j, 'title': j} for j in keys]
+
+                    # 获取数据
+                    with self.conn.cursor() as cursor:
+                        cursor.execute(sql)
+                        obj.affect_rows = cursor.rowcount
+                        obj.query_status = '成功'
+                        obj.save()
+                        pull_msg.append(f'{sql[:20]} ...\n执行成功，影响行数：{obj.affect_rows}\n')
+                        data = []
+                        for j in cursor.fetchall():
+                            for k in j:
+                                if isinstance(j[k], str):
+                                    j[k] = j[k].replace('\n', '<br>')
+                            data.append(j)
+
+                    dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
+                    i += 1
+                json_pull_data = {'type': 1, 'msg': pull_msg}
+                print(json_pull_data)
+                result = {'status': 0, 'data': dynamic_table}
+            except Exception as err:
+                obj.query_status = str(err)
+                obj.save()
+                json_pull_data = {'type': 1, 'msg': str(err)}
+                result = {'status': 2, 'msg': str(err)}
+            finally:
+                self.conn.close()
+        async_to_sync(channel_layer.group_send)('zhangsan', {"type": "user.message",
+                                                             'text': json.dumps(json_pull_data)})
+        return result

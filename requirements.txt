@@ -10,7 +10,7 @@ Automat==0.6.0
 Babel==2.5.3
 bcrypt==3.1.4
 billiard==3.5.0.3
-celery==4.1.0
+celery==4.1.1
 cffi==1.11.5
 channels==2.1.1
 channels-redis==2.1.1
@@ -33,7 +33,7 @@ hyperlink==18.0.0
 idna==2.6
 incremental==17.5.0
 jdcal==1.3
-kombu==4.1.0
+kombu==4.2.0
 ldap3==2.5
 msgpack==0.5.6
 msgpack-python==0.5.5

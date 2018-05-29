@@ -1,6 +1,7 @@
 import json
 import os
 
+import pymysql
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -11,7 +12,7 @@ from django.views import View
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from mstats.forms import PrivModifyForm, BackupTaskForm, SchemaMonitorForm
-from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput
+from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput, MySQLQuery
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
 from utils.tools import format_request
@@ -237,14 +238,30 @@ class GetBackupDiskUsedView(View):
             for i in data['data'][:2]:
                 result[i.split('\t')[1]] = i.split('\t')[0]
 
-            df = [i for i in data['data'][-1].split(' ') if i != '']
-            result.update({'total_size': df[1],
-                           'used_size': df[2],
-                           'free_size': df[3],
-                           'used_percent (%)': int(df[4].split('%')[0]),
-                           'free_percent (%)': 100 - int(df[4].split('%')[0])
+            df = [i for i in data['data'][-1].split()]
+            result.update({'total_size': df[-5],
+                           'used_size': df[-4],
+                           'free_size': df[-3],
+                           'used_percent (%)': int(df[-2].split('%')[0]),
+                           'free_percent (%)': 100 - int(df[-2].split('%')[0])
                            })
             context = {'status': 0, 'data': result}
         else:
             context = data
         return HttpResponse(json.dumps(context))
+
+
+class RMySQLQueryView(View):
+    def get(self, request):
+        return render(request, 'sql_query.html')
+
+
+class MySQLQueryView(View):
+    def post(self, request):
+        data = format_request(request)
+        querys = data.get('contents')
+        host = data.get('host')
+        database = data.get('database')
+        mysql_query = MySQLQuery(querys, host, database)
+        result = mysql_query.query(request)
+        return JsonResponse(result, safe=False)

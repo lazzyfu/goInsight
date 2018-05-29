@@ -6,7 +6,7 @@ from django.urls import path, re_path
 
 from mstats.views import RenderMySQLUserView, MySQLUserView, MysqlUserManager, RBackupTaskView, BackupTaskView, \
     BackupTaskDetailView, BackupTaskPreviewView, BackupTaskPreviewListView, GetBackupDiskUsedView, \
-    RSchemaMonitorTaskView, SchemaMonitorTaskView
+    RSchemaMonitorTaskView, SchemaMonitorTaskView, MySQLQueryView, RMySQLQueryView
 
 urlpatterns = [
     path(r'r_mysql_user_manager/', login_required(RenderMySQLUserView.as_view()), name='p_r_mysql_user_manager'),
@@ -25,4 +25,6 @@ urlpatterns = [
             name='p_backup_task_preview_list'),
     re_path(r'get_backup_disk_used', login_required(GetBackupDiskUsedView.as_view()),
             name='p_get_backup_disk_used'),
+    path(r'rquery/', login_required(RMySQLQueryView.as_view()), name='p_rquery'),
+    path(r'query/', login_required(MySQLQueryView.as_view()), name='p_query')
 ]

@@ -11,7 +11,7 @@ class InceptionHostConfigDetailInline(admin.StackedInline):
 
 
 class InceptionHostConfigAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'password', 'host', 'port', 'type', 'is_enable', 'group_name', 'comment')
+    list_display = ('id', 'user', 'password', 'host', 'port', 'type', 'purpose', 'is_enable', 'group_name', 'comment')
     list_display_links = ('user',)
     search_fields = ('user',)
     ordering = ('id',)
