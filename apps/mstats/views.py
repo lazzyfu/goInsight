@@ -19,13 +19,13 @@ from utils.tools import format_request
 
 
 class RenderMySQLUserView(View):
-    @permission_required('can_mysqluser_view')
+    @permission_required('can_mysql_user')
     def get(self, request):
         return render(request, 'mysql_user_manager.html')
 
 
 class MySQLUserView(View):
-    @permission_required('can_mysqluser_view')
+    @permission_required('can_mysql_user')
     @method_decorator(check_mysql_conn_status)
     def get(self, request):
         data = format_request(request)
@@ -36,7 +36,7 @@ class MySQLUserView(View):
 
 
 class MysqlUserManager(View):
-    @permission_required('can_mysqluser_edit')
+    @permission_required('can_mysql_user')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -88,7 +88,7 @@ class MysqlUserManager(View):
 class RSchemaMonitorTaskView(View):
     """渲染schema monitor页面"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         return render(request, 'periodic_task.html')
 
@@ -96,7 +96,7 @@ class RSchemaMonitorTaskView(View):
 class SchemaMonitorTaskView(View):
     """处理schema monitor数据"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         data = PeriodicTask.objects.filter(description=u'表结构监控').values()
         result = []
@@ -111,7 +111,7 @@ class SchemaMonitorTaskView(View):
 
         return JsonResponse(result, safe=False)
 
-    @permission_required('can_scheduled_edit')
+    @permission_required('can_scheduled')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -128,13 +128,13 @@ class SchemaMonitorTaskView(View):
 class RBackupTaskView(View):
     """渲染backup task页面"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         return render(request, 'backup_task.html')
 
 
 class BackupTaskView(View):
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         data = PeriodicTask.objects.filter(description=u'数据库备份').values()
         result = []
@@ -147,7 +147,7 @@ class BackupTaskView(View):
 
         return JsonResponse(result, safe=False)
 
-    @permission_required('can_scheduled_edit')
+    @permission_required('can_scheduled')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -164,7 +164,7 @@ class BackupTaskView(View):
 class BackupTaskDetailView(View):
     """获取备份任务详情"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         data = format_request(request)
         kwargs = PeriodicTask.objects.get(pk=data.get('id')).kwargs
@@ -174,7 +174,7 @@ class BackupTaskDetailView(View):
 class BackupTaskPreviewView(View):
     """渲染备份数据预览页面数据"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request, id):
         kwargs = json.loads(PeriodicTask.objects.get(pk=id).kwargs)
         host = kwargs.get('ssh_host')
@@ -184,7 +184,7 @@ class BackupTaskPreviewView(View):
 class BackupTaskPreviewListView(View):
     """获取备份主机的备份目录列表"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         data = format_request(request)
         id = data.get('id')
@@ -217,7 +217,7 @@ class BackupTaskPreviewListView(View):
 class GetBackupDiskUsedView(View):
     """获取指定主机备份目录磁盘空间的使用详情"""
 
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         data = format_request(request)
         id = data.get('id')
@@ -252,11 +252,13 @@ class GetBackupDiskUsedView(View):
 
 
 class RMySQLQueryView(View):
+    @permission_required('can_mysql_query')
     def get(self, request):
         return render(request, 'sql_query.html')
 
 
 class MySQLQueryView(View):
+    @permission_required('can_mysql_query')
     def post(self, request):
         data = format_request(request)
         querys = data.get('contents')

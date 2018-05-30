@@ -233,7 +233,8 @@
                     },
                     error: function (jqXHR) {
                         if (jqXHR.status === 403) {
-                            displayPNotify(jqXHR.status)
+                            displayPNotify(jqXHR.status);
+                            hideLoadingScreen();
                         }
                     }
                 });

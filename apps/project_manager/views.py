@@ -167,13 +167,13 @@ class SyntaxCheckView(View):
             filter_result = sql_filter(contents, operate_type)
 
             # 实例化
-            incep_of_audit = IncepSqlCheck(contents, host, database, request.user.username)
+            of_audit = IncepSqlCheck(contents, host, database, request.user.username)
 
             if filter_result['status'] == 2:
                 context = filter_result
             else:
                 # SQL语法检查
-                context = incep_of_audit.run_check()
+                context = of_audit.run_check()
 
             return HttpResponse(json.dumps(context))
         else:

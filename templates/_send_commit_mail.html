@@ -95,24 +95,6 @@
                 <td>{{ data.group_name }}</td>
             </tr>
             <tr>
-                <td>分类:</td>
-                {% if data.audit_type == '0' %}
-                    <td>数据变更</td>
-                {% elif data.audit_type == '1' %}
-                    <td>数据导出</td>
-                {% endif %}
-            </tr>
-            {% if data.audit_type == '1' %}
-                <tr>
-                    <td>格式:</td>
-                    <td>{{ detail.file_format }}</td>
-                </tr>
-                <tr>
-                    <td>编码:</td>
-                    <td>{{ detail.file_coding }}</td>
-                </tr>
-            {% endif %}
-            <tr>
                 <td>主机:</td>
                 <td>{{ data.host }}</td>
             </tr>

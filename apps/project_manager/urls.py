@@ -23,6 +23,6 @@ urlpatterns = [
     path(r'ol/', include('project_manager.of.urls')),
     # 执行任务
     path(r'pt/', include('project_manager.pt.urls')),
-    # 数据导出
-    path(r'de/', include('project_manager.dexport.urls')),
+    # 系统配置
+    path(r'sys/', include('project_manager.sys.urls')),
 ]

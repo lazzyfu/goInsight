@@ -28,7 +28,7 @@
                 method: 'get',
                 dataType: 'json',
                 contentType: "application/x-www-form-urlencoded",
-                url: "{% url 'p_incep_ol_records_l' %}",
+                url: "{% url 'p_ol_records_list' %}",
                 cache: false,
                 queryParams: function (params) {
                     return {
@@ -62,17 +62,6 @@
                     {
                         field: 'group_name',
                         title: '项目'
-                    },
-                    {
-                        field: 'type',
-                        title: '分类',
-                        formatter: function (value) {
-                            if (value === '数据变更') {
-                                return '<a href="#" class=\'text-green\'>' + value + '</a>'
-                            } else {
-                                return '<a href="#" class=\'text-blue\'>' + value + '</a>'
-                            }
-                        }
                     },
                     {
                         field: 'title',
@@ -109,28 +98,28 @@
                         field: 'id',
                         title: '审批',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '反馈',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '关闭',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/incep_ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
+                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '详情',
                         formatter: function (value, row, index) {
-                            return "<a href='incep_ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders fa-lg'></i></a>"
+                            return "<a href='ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders fa-lg'></i></a>"
                         }
 
                     },
@@ -138,11 +127,7 @@
                         field: 'id',
                         title: '执行',
                         formatter: function (value, row) {
-                            if (row.type === '数据变更') {
-                                return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
-                            } else {
-                                return '<a href="#" onclick="generalExportFile(' + row.id + ')"><i class="fa fa-check-square-o fa-lg"></i></a> ';
-                            }
+                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
                         }
                     }
                 ]
@@ -169,7 +154,7 @@
                                 'csrfmiddlewaretoken': csrftoken
                             },
                             success: function (result) {
-                                displayPNotify(result.status, result.msg, refresh_page);
+                                displayPNotify(result.status, result.msg);
                             },
                             error: function (jqXHR) {
                                 if (jqXHR.status === 403) {
@@ -208,28 +193,6 @@
             })
         }
 
-        <!-- 执行生成需要导出的文件 -->
-        function generalExportFile(id) {
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                type: 'post',
-                url: "{% url 'p_exec_data_export' %}",
-                dataType: 'json',
-                data: {
-                    'id': id,
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                success: function (result) {
-                    displayPNotify(result.status, result.msg);
-                },
-                error: function (jqXHR) {
-                    if (jqXHR.status === 403) {
-                        displayPNotify(jqXHR.status)
-                    }
-                }
-            });
-        }
-
         /**
          * 每5s刷新一次表格
          */
@@ -247,7 +210,7 @@
             var csrftoken = $.cookie('csrftoken');
             $.ajax({
                 type: 'post',
-                url: "{% url 'p_incep_generate_tasks' %}",
+                url: "{% url 'p_ol_generate_tasks' %}",
                 dataType: 'json',
                 data: {
                     'id': id,

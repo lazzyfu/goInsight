@@ -14,12 +14,6 @@ progress_choices = (
     ('5', u'已关闭')
 )
 
-# 审核类型选择
-audit_type_choice = (
-    ('0', u'数据变更'),
-    ('1', u'数据导出')
-)
-
 # 操作类型选择
 operate_type_choice = (
     ('DDL', u'数据库定义语言'),
@@ -31,7 +25,6 @@ class AuditContents(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     title = models.CharField(max_length=100, verbose_name=u'标题')
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name=u'关联项目组表id')
-    audit_type = models.CharField(max_length=10, default='0', choices=audit_type_choice, verbose_name=u'线上审核类型')
     operate_type = models.CharField(max_length=5, default='DML', choices=operate_type_choice,
                                     verbose_name=u'操作类型: DDL or DML')
     proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人， 一般为开发或者产品，存储username')
@@ -86,48 +79,6 @@ export_progress_choices = (
     ('1', u'导出中'),
     ('2', u'已生成')
 )
-
-
-class OlDataExportDetail(models.Model):
-    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
-    ol = models.ForeignKey(AuditContents, on_delete=models.CASCADE, verbose_name=u'关联审核内容表id')
-    file_coding = models.CharField(max_length=256, default='', verbose_name=u'文件编码')
-    file_format = models.CharField(max_length=256, default='', verbose_name=u'文件格式')
-    progress = models.CharField(max_length=10, default='0', choices=export_progress_choices, verbose_name=u'导出进度')
-    contents = models.TextField(default='', verbose_name=u'提交的内容')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
-
-    def size(self):
-        return ''.join((str(round(self.file_size / 1024 / 1024, 2)), 'MB')) if self.file_size > 1048576 else ''.join(
-            (str(round(self.file_size / 1024, 2)), 'KB'))
-
-    class Meta:
-        verbose_name = u'线上数据导出详情表'
-        verbose_name_plural = verbose_name
-
-        default_permissions = ()
-        db_table = 'auditsql_ol_data_export_detail'
-
-
-class ExportFiles(models.Model):
-    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
-    export = models.ForeignKey(OlDataExportDetail, on_delete=models.CASCADE, verbose_name=u'管理导出文件id')
-    file_name = models.CharField(max_length=256, default='', verbose_name=u'文件名')
-    file_size = models.IntegerField(default=0, verbose_name=u'文件大小，单位B')
-    files = models.FileField(upload_to='files/%Y/%m/%d/')
-    encryption_key = models.CharField(max_length=128, null=False, default='', verbose_name=u'加密秘钥')
-
-    def size(self):
-        return ''.join((str(round(self.file_size / 1024 / 1024, 2)), 'MB')) if self.file_size > 1048576 else ''.join(
-            (str(round(self.file_size / 1024, 2)), 'KB'))
-
-    class Meta:
-        verbose_name = u'文件'
-        verbose_name_plural = verbose_name
-
-        default_permissions = ()
-        db_table = 'sqlaudit_export_files'
 
 
 class OlAuditContentsReply(models.Model):

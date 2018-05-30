@@ -6,7 +6,7 @@
  * 刷新当前页面
  */
 function refresh_page() {
-    window.location.reload()
+    setTimeout(window.location.reload(), 1000)
 }
 
 /**

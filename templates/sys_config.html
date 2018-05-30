@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 系统配置编辑</h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab">域名配置</a></li>
+                            <li><a href="#tab_2" data-toggle="tab">数据库连接账号配置</a></li>
+                            <li><a href="#tab_3" data-toggle="tab">webhook配置</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <b>当前域名：<i id="domain_name"></i></b>
+                                <hr>
+                                <form class="form-horizontal" id="domainChangeForm"
+                                      action="{% url 'p_get_domain' %}" method="post">
+                                    <div class="form-group">
+                                        <label class="col-sm-1 control-label" style="text-align: left">新域名</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" name="domain_name"
+                                                   placeholder="auditsql.example.com">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-default">提交</button>
+                                    {% csrf_token %}
+                                </form>
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="tab_2">
+                                <table id="db-table"></table>
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="tab_3">
+
+                            </div>
+                            <!-- /.tab-pane -->
+                        </div>
+                        <!-- /.tab-content -->
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        $(function () {
+            $('#db-table').bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_get_db_account' %}",
+                cache: false,
+                sidePagination: "client",
+                showColumns: true,
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                singleSelect: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                        //每页的记录行数（*）
+                pageList: [10, 20, 30],        //可供选择的每页的行数（*）
+                uniqueId: "taskid",                     //每一行的唯一标识，一般为主键列
+                classes: 'table table-hover table-no-bordered',
+
+                columns: [
+                    {
+                        field: 'user',
+                        title: '用户'
+                    },
+                    {
+                        field: 'password',
+                        title: '密码'
+                    },
+                    {
+                        field: 'host',
+                        title: '主机'
+                    },
+                    {
+                        field: 'port',
+                        title: '端口'
+                    },
+                    {
+                        field: '线上/线下',
+                        title: 'type'
+                    },
+                    {
+                        field: '是否启用',
+                        title: 'is_enable'
+                    },
+                    {
+                        field: 'make_time',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    },
+                    {
+                        field: 'comment',
+                        title: "描述"
+                    }
+                ]
+            })
+        });
+
+
+        /**
+         * 获取域名
+         */
+        function get_domain_name() {
+            $('#domain_name').empty();
+            $.ajax({
+                url: '{% url 'p_get_domain' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    $('#domain_name').append(result.data)
+                }
+            })
+        }
+        get_domain_name();
+
+        function validate(formData, jqForm, options) {
+            var form = jqForm[0];
+            if (!form.domain_name.value) {
+                displayPNotify(2, '输入不能为空.');
+                return false;
+            }
+        }
+
+        $('#domainChangeForm').submit(function () {
+            var csrftoken = $.cookie('csrftoken');
+            $(this).ajaxSubmit({
+                dataType: 'json',
+                resetForm: true,
+                beforeSubmit: validate,
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                    get_domain_name()
+                }
+            });
+            return false //阻止表单自动提交数据
+        });
+    </script>
+{% endblock %}
