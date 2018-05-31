@@ -305,11 +305,11 @@
             displayPNotify(1, '正在处理, 请稍后');
             $(this).ajaxSubmit({
                 dataType: 'json',
+                resetForm: true,
                 success: function (result) {
                     if (result.status === 0) {
                         displayPNotify(result.status, result.msg);
                         $('#modal_new_periodic').modal('hide');
-                        $('#periodicForm').resetForm();
                         $table.bootstrapTable('refresh', {silent: true});
                     } else {
                         displayPNotify(result.status, result.msg);
@@ -332,7 +332,6 @@
             selectedContent.forEach(function (val) {
                 id.push(val['id'])
             });
-            console.log(id);
             if (id.length === 0) {
                 displayPNotify(2, '请至少勾选一行数据');
                 return false;

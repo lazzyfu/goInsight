@@ -13,7 +13,7 @@
 
 {% block right_content %}
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
             <!-- Profile Image -->
             <div class="box box-primary">
                 <div class="box-body box-profile">
@@ -30,11 +30,13 @@
                         </li>
                         <li class="list-group-item">
                             <b>审核人</b> <a class="pull-right">{{ contents.verifier }}</a>
+                        </li>
                         <li class="list-group-item">
                             <b>审核时间</b> <a class="pull-right">{{ contents.verifier_time }}</a>
                         </li>
                         <li class="list-group-item">
                             <b>执行人</b> <a class="pull-right">{{ contents.operator }}</a>
+                        </li>
                         <li class="list-group-item">
                             <b>执行时间</b> <a class="pull-right">{{ contents.operate_time }}</a>
                         </li>
@@ -84,7 +86,7 @@
             <!-- /.box -->
         </div>
         <!-- /.col -->
-        <div class="col-md-9">
+        <div class="col-md-8">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ contents.title }}</h3>

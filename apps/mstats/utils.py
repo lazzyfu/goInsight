@@ -8,13 +8,12 @@ import re
 import paramiko
 import pymysql
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
 from mstats.models import MySQLQueryLog
 from project_manager.models import InceptionHostConfig
-from channels.layers import get_channel_layer
-from dingtalkchatbot.chatbot import DingtalkChatbot
 
 channel_layer = get_channel_layer()
 
@@ -541,11 +540,6 @@ def mysql_query_format(querys):
         return True, sql_list
 
 
-webhook = 'https://oapi.dingtalk.com/robot/send?access_token=74fc2cb89dea792ad276b336dec5e9fed0ee7484791abba93c65f68fd689dc7b'
-xiaoding = DingtalkChatbot(webhook)
-at_mobiles = ['18810487655']
-
-
 class MySQLQuery(object):
     def __init__(self, querys, host, database):
         self.querys = querys
@@ -609,7 +603,6 @@ class MySQLQuery(object):
                 result = {'status': 2, 'msg': str(err)}
             finally:
                 self.conn.close()
-        xiaoding.send_text(msg='\n'.join(json_pull_data['msg']), at_mobiles=at_mobiles)
         async_to_sync(channel_layer.group_send)(request.user.username, {"type": "user.message",
                                                                         'text': json.dumps(json_pull_data)})
 

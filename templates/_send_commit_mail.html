@@ -109,7 +109,7 @@
             <tr>
                 <td>批准人:</td>
                 {% if domain_name %}
-                    <td>{{ data.verifier }}, 请访问：http://{{ domain_name }}/ 审批</td>
+                    <td>{{ data.verifier }}, 请访问：{{ domain_name }} 审批</td>
                 {% else %}
                     <td>{{ data.verifier }}</td>
                 {% endif %}

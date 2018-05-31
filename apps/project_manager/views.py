@@ -60,7 +60,6 @@ class IncepHostConfigView(View):
 
     def get(self, request):
         data = format_request(request)
-        print(data)
         config_type = 0 if data.get('type') is None else data.get('type')
         purpose = 0 if data.get('purpose') is None else data.get('purpose')
         user_in_group = request.session.get('groups')

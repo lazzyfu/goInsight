@@ -13,17 +13,38 @@ from django.template.loader import render_to_string
 from AuditSQL.settings import EMAIL_FROM
 from project_manager.inception.inception_api import IncepSqlCheck
 from project_manager.models import AuditContents, OlAuditContentsReply, IncepMakeExecTask, \
-    DomainName, OlAuditDetail
+    DomainName, OlAuditDetail, Webhook
 from project_manager.utils import update_tasks_status
 from user_manager.utils import GetEmailAddr
+from dingtalkchatbot.chatbot import DingtalkChatbot
 
 channel_layer = get_channel_layer()
 
 
 @shared_task
-def xiaoding_pull_commit(latest_id):
-    latest_id = latest_id
-    data = AuditContents.objects.annotate(group_name=F('group__group_name')).get(pk=latest_id)
+def xiaoding_pull(user, title, type, progress=None):
+    """
+    type: commit、 close、approve、feedback
+    """
+    if Webhook.objects.filter().first():
+        webhook_addr = Webhook.objects.get().webhook_addr
+        xiaoding = DingtalkChatbot(webhook_addr)
+
+        if type == 'commit':
+            xiaoding.send_text(msg=f"您好、{user}提交了审核内容\n标题：{title}")
+        elif type == 'approve':
+            if progress == '2':
+                xiaoding.send_text(msg=f"您好、{user}已批准，请DBA处理\n标题：{title}")
+            elif progress == '1':
+                xiaoding.send_text(msg=f"您好、{user}审核未通过\n标题：{title}")
+        elif type == 'feedback':
+            if progress == '3':
+                xiaoding.send_text(msg=f"您好、{user}正在处理中，请稍后\n标题：{title}")
+            elif progress == '4':
+                xiaoding.send_text(msg=f"您好、{user}处理完成\n标题：{title}")
+        elif type == 'close':
+            if progress == '5':
+                xiaoding.send_text(msg=f"您好、{user}关闭了记录，请DBA不要处理\n标题：{title}")
 
 
 @shared_task
@@ -196,5 +217,3 @@ def stop_incep_osc(user, id=None, celery_task_id=None):
 
         # 更新任务进度
         update_tasks_status(id=id, exec_status=exec_status)
-
-

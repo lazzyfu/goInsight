@@ -8,7 +8,7 @@ from django.utils import timezone
 from project_manager.inception.inception_api import IncepSqlCheck
 from project_manager.models import AuditContents, OlAuditDetail, OlAuditContentsReply
 from project_manager.models import operate_type_choice
-from project_manager.tasks import send_commit_mail, send_verify_mail, send_reply_mail
+from project_manager.tasks import send_commit_mail, send_verify_mail, send_reply_mail, xiaoding_pull
 
 
 class OnlineAuditForm(forms.Form):
@@ -57,6 +57,7 @@ class OnlineAuditForm(forms.Form):
             send_commit_mail.delay(latest_id=latest_id)
 
             # 发送钉钉推送
+            xiaoding_pull.delay(user=request.user.username, title=title, type='commit')
 
             context = {'status': 0, 'jump_url': '/projects/ol/ol_records/'}
         return context
@@ -98,6 +99,8 @@ class OnlineApproveForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='approve', progress='2')
                     context = {'status': 0, 'msg': '操作成功、审核通过'}
 
                 # 当用户点击的是不通过, 状态变为：未批准
@@ -110,6 +113,8 @@ class OnlineApproveForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='approve', progress='1')
                     context = {'status': 0, 'msg': '操作成功、审核未通过'}
 
             # 其他情况
@@ -148,6 +153,8 @@ class OnlineFeedbackForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='feedback', progress='3')
                     context = {'status': 0, 'msg': '操作成功、正在处理中'}
 
                 # 当用户点击的是已完成, 状态变为：已完成
@@ -160,6 +167,8 @@ class OnlineFeedbackForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='feedback', progress='4')
                     context = {'status': 0, 'msg': '操作成功、处理完成'}
 
             # 未批准
@@ -206,6 +215,8 @@ class OnlineCloseForm(forms.Form):
                                                username=request.user.username,
                                                user_role=request.user.user_role(),
                                                addition_info=addition_info)
+                        # 发送钉钉推送
+                        xiaoding_pull.delay(user=request.user.username, title=data.title, type='close', progress='5')
                         context = {'status': 0, 'msg': '操作成功、记录关闭成功'}
 
                 elif status == u'结束':

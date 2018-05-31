@@ -125,7 +125,7 @@ class InceptionHostConfig(models.Model):
         verbose_name = u'数据库连接账号'
         verbose_name_plural = verbose_name
 
-        unique_together = ('host',)
+        unique_together = ('host', 'port')
 
         default_permissions = ()
         db_table = 'auditsql_inception_hostconfig'
@@ -212,3 +212,15 @@ class DomainName(models.Model):
 
         default_permissions = ()
         db_table = 'auditsql_domain_name'
+
+
+class Webhook(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    webhook_addr = models.CharField(max_length=256, default='', null=False, verbose_name=u'webhook地址')
+
+    class Meta:
+        verbose_name = u'钉钉机器人'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'auditsql_webhook'
