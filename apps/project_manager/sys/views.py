@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.views import View
 
 from project_manager.models import DomainName, InceptionHostConfig, Webhook
+from project_manager.utils import check_db_account
 from user_manager.permissions import permission_required
 from utils.tools import format_request
 
@@ -73,21 +74,33 @@ class ModifyDBAccountView(View):
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
-        del data['csrfmiddlewaretoken']
-        if data.get('action') == 'modify_value':
-            del data['0']
-            del data['action']
-            InceptionHostConfig.objects.filter(id=data.get('id')).update(**data)
-            context = {'status': 0, 'msg': '修改成功'}
-        elif data.get('action') == 'modify_status':
-            InceptionHostConfig.objects.filter(id=data.get('id')).update(is_enable=data.get('status'))
-            context = {'status': 0, 'msg': '状态修改成功'}
-        elif data.get('action') == 'new_row':
-            del data['action']
-            InceptionHostConfig.objects.create(**data)
-            context = {'status': 0, 'msg': '创建成功'}
-        elif data.get('action') == 'delete_row':
+        user = data.get('user')
+        host = data.get('host')
+        password = data.get('password')
+        port = data.get('port')
+        status, msg = check_db_account(user, host, password, port)
+
+        if data.get('action') == 'delete_row':
             for i in data.get('id').split(','):
                 InceptionHostConfig.objects.get(pk=i).delete()
             context = {'status': 0, 'msg': '删除成功'}
+
+        elif data.get('action') == 'modify_status':
+            InceptionHostConfig.objects.filter(id=data.get('id')).update(is_enable=data.get('status'))
+            context = {'status': 0, 'msg': '状态修改成功'}
+        else:
+            if status:
+                del data['csrfmiddlewaretoken']
+                if data.get('action') == 'modify_value':
+                    del data['0']
+                    del data['action']
+                    InceptionHostConfig.objects.filter(id=data.get('id')).update(**data)
+                    context = {'status': 0, 'msg': '修改成功'}
+
+                elif data.get('action') == 'new_row':
+                    del data['action']
+                    InceptionHostConfig.objects.create(**data)
+                    context = {'status': 0, 'msg': '创建成功'}
+            else:
+                context = {'status': 2, 'msg': msg}
         return HttpResponse(json.dumps(context))

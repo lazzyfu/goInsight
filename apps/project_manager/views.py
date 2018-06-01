@@ -8,7 +8,7 @@ from django.views import View
 
 from apps.project_manager.inception.inception_api import GetSchemaInfo, sql_filter, IncepSqlCheck
 from project_manager.forms import SyntaxCheckForm
-from project_manager.utils import check_mysql_conn
+from project_manager.utils import check_db_account
 from user_manager.models import GroupsDetail, Contacts, PermissionDetail, RolesDetail
 from utils.tools import format_request
 from .models import InceptionHostConfigDetail, InceptionHostConfig
@@ -80,12 +80,12 @@ class GetSchemaView(View):
         data = format_request(request)
         host = data['host']
         obj = InceptionHostConfig.objects.get(host=host)
-        result = check_mysql_conn(obj.user, host, obj.password, obj.port)
-        if result['status'] == 'INFO':
+        status, msg = check_db_account(obj.user, host, obj.password, obj.port)
+        if status:
             db_list = GetSchemaInfo(host).get_values()
             context = {'status': 0, 'msg': '', 'data': db_list}
         else:
-            context = {'status': 2, 'msg': f'获取列表失败，不能连接到mysql服务器：{host}'}
+            context = {'status': 2, 'msg': msg}
         return HttpResponse(json.dumps(context))
 
 

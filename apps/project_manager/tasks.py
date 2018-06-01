@@ -30,21 +30,24 @@ def xiaoding_pull(user, title, type, progress=None):
         webhook_addr = Webhook.objects.get().webhook_addr
         xiaoding = DingtalkChatbot(webhook_addr)
 
+        if DomainName.objects.filter().first():
+            domain_name = DomainName.objects.get().domain_name
+
         if type == 'commit':
-            xiaoding.send_text(msg=f"您好、{user}提交了审核内容\n标题：{title}")
+            xiaoding.send_link(title=f"您好、{user}提交了审核内容", text=f'{title}', message_url=f'{domain_name}')
         elif type == 'approve':
             if progress == '2':
-                xiaoding.send_text(msg=f"您好、{user}已批准，请DBA处理\n标题：{title}")
+                xiaoding.send_link(title=f"您好、{user}已批准，请DBA处理", text=f'{title}', message_url=f'{domain_name}')
             elif progress == '1':
-                xiaoding.send_text(msg=f"您好、{user}审核未通过\n标题：{title}")
+                xiaoding.send_link(title=f"您好、{user}审核未通过", text=f'{title}', message_url=f'{domain_name}')
         elif type == 'feedback':
             if progress == '3':
-                xiaoding.send_text(msg=f"您好、{user}正在处理中，请稍后\n标题：{title}")
+                xiaoding.send_link(title=f"您好、{user}正在处理中，请稍后", text=f'{title}', message_url=f'{domain_name}')
             elif progress == '4':
-                xiaoding.send_text(msg=f"您好、{user}处理完成\n标题：{title}")
+                xiaoding.send_link(title=f"您好、{user}处理完成", text=f'{title}', message_url=f'{domain_name}')
         elif type == 'close':
             if progress == '5':
-                xiaoding.send_text(msg=f"您好、{user}关闭了记录，请DBA不要处理\n标题：{title}")
+                xiaoding.send_link(title=f"您好、{user}关闭了记录，请DBA不要处理", text=f'{title}', message_url=f'{domain_name}')
 
 
 @shared_task
