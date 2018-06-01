@@ -25,6 +25,4 @@ urlpatterns = [
     path(r'pt/', include('project_manager.pt.urls')),
     # 系统配置
     path(r'sys/', include('project_manager.sys.urls')),
-    # 用户配置
-    path(r'user/', include('project_manager.user.urls')),
 ]
