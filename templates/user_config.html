@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 用户配置</h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab">内置用户权限</a></li>
+                            <li><a href="#tab_2" data-toggle="tab">项目组</a></li>
+                            <li><a href="#tab_3" data-toggle="tab">用户角色</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <b><i>Tips：该权限属于系统内置的用户权限，被用来绑定到不同的用户角色上，不可修改</i></b>
+                                <hr>
+                                <table id="permission_table"></table>
+                            </div>
+                            <div class="tab-pane" id="tab_2">
+                                <div id="project_toolbar">
+                                    <div class="form-inline" role="form">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#modal_new_project"><i class="fa fa-plus"></i>
+                                            新建
+                                        </button>
+                                        <button type="button" onclick="delete_project()" class="btn btn-primary"><i
+                                                class="fa fa-minus"></i> 删除
+                                        </button>
+                                    </div>
+                                </div>
+                                <b><i>Tips：用来标识不同项目或业务线</i></b>
+                                <hr>
+                                <table id="project_table"></table>
+                            </div>
+                            <div class="tab-pane" id="tab_3">
+                                <div id="role_toolbar">
+                                    <div class="form-inline" role="form">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#modal_new_role"><i class="fa fa-plus"></i>
+                                            新建
+                                        </button>
+                                        <button type="button" onclick="delete_role()" class="btn btn-primary"><i
+                                                class="fa fa-minus"></i> 删除
+                                        </button>
+                                    </div>
+                                </div>
+                                <table id="role_table"></table>
+                            </div>
+                            <!-- /.tab-pane -->
+                        </div>
+                        <!-- /.tab-content -->
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_new_project" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form class="form-horizontal" id="ProjectForm" method="post"
+                      action="{% url 'p_get_project' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"><i class="fa fa-pencil"></i> 新建项目
+                        </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">项目名</label>
+                            <div class="col-md-8 col-sm-8 col-xs-12">
+                                <input type="text" maxlength="32" class="form-control"
+                                       placeholder="输入项目名" required
+                                       name="group_name">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_new_role" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form class="form-horizontal" id="RoleForm" method="post"
+                      action="{% url 'p_get_role' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"><i class="fa fa-pencil"></i> 新建角色
+                        </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">角色名</label>
+                            <div class="col-md-8 col-sm-8 col-xs-12">
+                                <input type="text" maxlength="32" class="form-control"
+                                       placeholder="输入角色名" required
+                                       name="role_name">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var $permission_table = $('#permission_table');
+        $(function () {
+            $permission_table.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_get_user_permission' %}",
+                cache: false,
+                uniqueId: "id",
+                classes: 'table table-hover table-no-bordered',
+                formatLoadingMessage: function () {
+                    return "请稍等，正在加载中...";
+                },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+
+                columns: [
+                    {
+                        field: 'permission_name',
+                        title: '权限名'
+                    },
+                    {
+                        field: 'permission_desc',
+                        title: '描述'
+                    },
+                    {
+                        field: 'created_at',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    }
+                ]
+            })
+        });
+
+        var $project_table = $('#project_table');
+        $(function () {
+            $project_table.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_get_project' %}",
+                cache: false,
+                sidePagination: "client",
+                showColumns: true,
+                clickToSelect: true,
+                toolbar: '#project_toolbar',
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                        //每页的记录行数（*）
+                pageList: [10, 20, 30],        //可供选择的每页的行数（*）
+                uniqueId: "group_id",                     //每一行的唯一标识，一般为主键列
+                classes: 'table table-hover table-no-bordered',
+                formatLoadingMessage: function () {
+                    return "请稍等，正在加载中...";
+                },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+
+                columns: [
+                    {
+                        checkbox: true
+                    },
+                    {
+                        field: 'group_id',
+                        title: 'ID',
+                        visible: false
+                    },
+                    {
+                        field: 'group_name',
+                        title: '项目名',
+                        editable: {
+                            type: 'text',
+                            title: '项目名',
+                            validate: function (v) {
+                                if (!v) {
+                                    return '输入不能为空';
+                                }
+                            }
+                        }
+                    },
+                    {
+                        field: 'created_at',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            var date = new Date(value);
+                            return date.toLocaleString();
+                        }
+                    }
+                ],
+                // 编辑保存，上面的editable统一调用此方法
+                onEditableSave: function (field, row, oldValue, $el) {
+                    var csrftoken = $.cookie('csrftoken');
+                    row.csrfmiddlewaretoken = csrftoken;
+                    row.action = 'modify_value';
+
+                    $.ajax({
+                        type: "post",
+                        url: "{% url 'p_get_project' %}",
+                        data: row,
+                        dataType: 'JSON',
+                        success: function (result) {
+                            displayPNotify(result.status, result.msg)
+                        },
+                        error: function (jqXHR) {
+                            if (jqXHR.status === 403) {
+                                displayPNotify(jqXHR.status)
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+        // 新建任务
+        $('#ProjectForm').submit(function () {
+            $(this).ajaxSubmit({
+                dataType: 'json',
+                resetForm: true,
+                data: {'action': 'new_row'},
+                success: function (result) {
+                    if (result.status === 0) {
+                        displayPNotify(result.status, result.msg);
+                        $('#modal_new_project').modal('hide');
+                        $project_table.bootstrapTable('refresh', {silent: true});
+                    } else {
+                        displayPNotify(result.status, result.msg);
+                    }
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        $('#modal_new_project').modal('hide');
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            });
+            return false
+        });
+
+
+        // 删除选择的数据
+        function delete_project() {
+            var selectedContent = $project_table.bootstrapTable('getAllSelections');
+            var id = [];
+            selectedContent.forEach(function (val) {
+                id.push(val['group_id'])
+            });
+            if (id.length === 0) {
+                displayPNotify(2, '请至少勾选一行数据');
+                return false;
+            } else {
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: '{% url 'p_get_project' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 1000,
+                    data: {
+                        'action': 'delete_row',
+                        'group_id': id.toString(),
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    cache: false,
+                    success: function (result) {
+                        displayPNotify(result.status, result.msg);
+                        $project_table.bootstrapTable('refresh', {silent: true});
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
+                })
+            }
+        }
+
+
+        var $role_table = $('#role_table');
+        $(function () {
+            $role_table.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_get_role' %}",
+                cache: false,
+                sidePagination: "client",
+                showColumns: true,
+                clickToSelect: true,
+                toolbar: '#role_toolbar',
+                pagination: true,
+                search: true,
+                showRefresh: true,
+                minimumCountColumns: 2,
+                pageNumber: 1,                       //初始化加载第一页，默认第一页
+                pageSize: 10,                        //每页的记录行数（*）
+                pageList: [10, 20, 30],        //可供选择的每页的行数（*）
+                uniqueId: "role_id",                     //每一行的唯一标识，一般为主键列
+                classes: 'table table-hover table-no-bordered',
+                formatLoadingMessage: function () {
+                    return "请稍等，正在加载中...";
+                },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+
+                columns: [
+                    {
+                        checkbox: true
+                    },
+                    {
+                        field: 'role_id',
+                        title: 'ID',
+                        visible: false
+                    },
+                    {
+                        field: 'role_name',
+                        title: '角色名',
+                        editable: {
+                            type: 'text',
+                            title: '描述',
+                            validate: function (v) {
+                                if (!v) {
+                                    return '输入不能为空';
+                                }
+                            }
+                        }
+                    },
+                    {
+                        field: 'permission_desc',
+                        title: '权限',
+                        editable: {
+                            type: 'text',
+                            title: '输入内置用户权限，以逗号分隔',
+                            validate: function (v) {
+                                if (!v) {
+                                    return '输入不能为空';
+                                }
+                            }
+                        }
+                    }
+                ],
+                // 编辑保存，上面的editable统一调用此方法
+                onEditableSave: function (field, row, oldValue, $el) {
+                    var csrftoken = $.cookie('csrftoken');
+                    row.csrfmiddlewaretoken = csrftoken;
+                    row.action = 'modify_value';
+
+                    $.ajax({
+                        type: "post",
+                        url: "{% url 'p_get_role' %}",
+                        data: row,
+                        dataType: 'JSON',
+                        success: function (result) {
+                            displayPNotify(result.status, result.msg)
+                        },
+                        error: function (jqXHR) {
+                            if (jqXHR.status === 403) {
+                                displayPNotify(jqXHR.status)
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+
+        // 新建任务
+        $('#RoleForm').submit(function () {
+            $(this).ajaxSubmit({
+                dataType: 'json',
+                resetForm: true,
+                data: {'action': 'new_row'},
+                success: function (result) {
+                    if (result.status === 0) {
+                        displayPNotify(result.status, result.msg);
+                        $('#modal_new_role').modal('hide');
+                        $role_table.bootstrapTable('refresh', {silent: true});
+                    } else {
+                        displayPNotify(result.status, result.msg);
+                    }
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        $('#modal_new_role').modal('hide');
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            });
+            return false
+        });
+
+
+        // 删除选择的数据
+        function delete_role() {
+            var selectedContent = $role_table.bootstrapTable('getAllSelections');
+            var id = [];
+            selectedContent.forEach(function (val) {
+                id.push(val['role_id'])
+            });
+            if (id.length === 0) {
+                displayPNotify(2, '请至少勾选一行数据');
+                return false;
+            } else {
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: '{% url 'p_get_role' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 1000,
+                    data: {
+                        'action': 'delete_row',
+                        'role_id': id.toString(),
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    cache: false,
+                    success: function (result) {
+                        displayPNotify(result.status, result.msg);
+                        $role_table.bootstrapTable('refresh', {silent: true});
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+{% endblock %}

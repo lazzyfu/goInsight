@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 550px;
+            height: 450px;
         }
     </style>
 {% endblock %}
@@ -100,12 +100,8 @@
                         </div>
                         <div class="box-body">
                             <div class="text-muted">
-                                <p>SET NAMES CHARSET</p>
-                                <p>创建数据库语句</p>
-                                <p>插入语句（包括多值插入）</p>
-                                <p>删除语句（包括多表删除）</p>
-                                <p>更新语句（包括多表更新）</p>
-                                <p>创建、删除、修改、Truncate表语句</p>
+                                <p>* DDL语句</p>
+                                <p>* DML语句（不包括SELECT查询）</p>
                             </div>
                         </div>
                     </div>
@@ -175,6 +171,7 @@
             autoCloseBrackets: true,
             matchBrackets: true,
             showCursorWhenSelecting: true,
+            lineWrapping: true,
             extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql,
             placeholder: "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
