@@ -17,4 +17,5 @@ class InceptionHostConfigAdmin(admin.ModelAdmin):
 
     inlines = [InceptionHostConfigDetailInline, ]
 
+
 admin.site.register(InceptionHostConfig, InceptionHostConfigAdmin)

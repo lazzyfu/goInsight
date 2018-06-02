@@ -27,7 +27,7 @@ class UserAccount(AbstractUser):
         return ', '.join(group)
 
     class Meta:
-        verbose_name = u'用户账户'
+        verbose_name = u'账户'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -50,7 +50,7 @@ class Roles(models.Model):
         return ', '.join(permission_desc)
 
     class Meta:
-        verbose_name = u'用户角色'
+        verbose_name = u'角色'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -90,7 +90,7 @@ class Permission(models.Model):
         return self.permission_desc
 
     class Meta:
-        verbose_name = u'角色权限'
+        verbose_name = u'内置权限'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -126,7 +126,7 @@ class Groups(models.Model):
         return self.group_name
 
     class Meta:
-        verbose_name = u'项目分组'
+        verbose_name = u'项目'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
