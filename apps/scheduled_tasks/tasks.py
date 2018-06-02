@@ -34,7 +34,7 @@ def monitor_deadlocks(**kwargs):
     except IndexError as err:
         latest_ts = '0000-01-01 01:01:01'
 
-    config = InceptionHostConfig.objects.get(host=host, is_enable=0)
+    config = InceptionHostConfig.objects.get(comment=host, is_enable=0)
 
     cnx = pymysql.connect(host=config.host,
                           user=config.user,
@@ -95,7 +95,7 @@ def monitor_schema_modify(**kwargs):
     receiver = kwargs.get('receiver')
     check_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    config = InceptionHostConfig.objects.get(host=host, is_enable=0)
+    config = InceptionHostConfig.objects.get(comment=host, is_enable=0)
 
     cnx = pymysql.connect(host=config.host,
                           user=config.user,

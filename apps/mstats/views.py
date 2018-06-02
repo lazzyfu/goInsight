@@ -12,7 +12,7 @@ from django.views import View
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from mstats.forms import PrivModifyForm, BackupTaskForm, SchemaMonitorForm
-from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MySQLuser_manager, ParamikoOutput, MySQLQuery
+from mstats.utils import get_mysql_user_info, check_mysql_conn_status, MysqlUserManager, ParamikoOutput, MySQLQuery
 from project_manager.models import InceptionHostConfig
 from user_manager.permissions import permission_required
 from utils.tools import format_request
@@ -35,7 +35,7 @@ class MySQLUserView(View):
         return HttpResponse(json.dumps(data))
 
 
-class MysqlUserManager(View):
+class MysqlUserManagerView(View):
     @permission_required('can_mysql_user')
     @transaction.atomic
     def post(self, request):
@@ -55,7 +55,7 @@ class MysqlUserManager(View):
 
             username = user + '@' + '"' + host + '"'
 
-            data = InceptionHostConfig.objects.get(host=db_host)
+            data = InceptionHostConfig.objects.get(comment=db_host)
             protection_user = []
             if len(list(data.protection_user.split(','))) == 1:
                 protection_user = data.protection_user.split(',')
@@ -67,7 +67,7 @@ class MysqlUserManager(View):
             if user in protection_user_tuple:
                 context = {'status': 1, 'msg': f'该用户({user})已被保护，无法操作'}
             else:
-                mysql_user_mamager = MySQLuser_manager(locals())
+                mysql_user_mamager = MysqlUserManager(locals())
                 if action == "modify_privileges":
                     context = mysql_user_mamager.priv_modify()
                 elif action == "new_host":

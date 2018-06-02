@@ -125,7 +125,7 @@ class InceptionHostConfig(models.Model):
         verbose_name = u'数据库连接账号'
         verbose_name_plural = verbose_name
 
-        unique_together = ('host', 'port')
+        unique_together = [('host', 'port'), ('is_enable', 'comment')]
 
         default_permissions = ()
         db_table = 'auditsql_inception_hostconfig'

@@ -4,14 +4,14 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import path, re_path
 
-from mstats.views import RenderMySQLUserView, MySQLUserView, MysqlUserManager, RBackupTaskView, BackupTaskView, \
+from mstats.views import RenderMySQLUserView, MySQLUserView, MysqlUserManagerView, RBackupTaskView, BackupTaskView, \
     BackupTaskDetailView, BackupTaskPreviewView, BackupTaskPreviewListView, GetBackupDiskUsedView, \
     RSchemaMonitorTaskView, SchemaMonitorTaskView, MySQLQueryView, RMySQLQueryView
 
 urlpatterns = [
     path(r'r_mysql_user_manager/', login_required(RenderMySQLUserView.as_view()), name='p_r_mysql_user_manager'),
     path(r'mysql_user/', login_required(MySQLUserView.as_view()), name='p_mysql_user'),
-    path(r'mysql_user_manager/', login_required(MysqlUserManager.as_view()), name='p_mysql_user_manager'),
+    path(r'mysql_user_manager/', login_required(MysqlUserManagerView.as_view()), name='p_mysql_user_manager'),
     # 监控表结构定时任务
     path(r'rperiodic_task/', login_required(RSchemaMonitorTaskView.as_view()), name='p_rschema_monitor_task'),
     path(r'periodic_task/', login_required(SchemaMonitorTaskView.as_view()), name='p_schema_monitor_task'),

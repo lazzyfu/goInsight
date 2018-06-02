@@ -35,6 +35,7 @@
                                 <label class="control-label col-sm-3">项目</label>
                                 <div class="col-sm-9">
                                     <select id="s_group" name="group_id" style="width: 100%" required
+                                            onchange="get_online_host_info()"
                                             class="selectpicker form-control" title="请选择一个可用的项目...">
                                     </select>
                                 </div>
@@ -207,29 +208,32 @@
 
         /**
          * 获取线上环境主机信息
-         * type=1
+         * type=1：线上环境
+         * purpose=0：审核目的
          */
-        $(function () {
+        var selected_group = '';
+
+        function get_online_host_info() {
+            $('#s_host').empty();
+            selected_group = $('#s_group').val();
             $.ajax({
                 url: '{% url 'p_host_config' %}',
                 type: 'GET',
-                data: {'type': 1},
+                data: {'type': 1, 'purpose': 0, 'selected_group': selected_group},
                 dataType: 'json',
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
                     var html = '';
                     $.each(data, function (index, row) {
-                        var host = row.host;
                         var comment = row.comment;
-                        html += "<option value=" + host + ">" + comment + "</option>"
+                        html += "<option value=" + comment + ">" + comment + "</option>"
                     });
                     $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh')
                 }
             })
-        });
-
+        }
 
         /**
          * 获取当前用户所属的项目组

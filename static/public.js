@@ -58,44 +58,6 @@ function displayPNotify(status, msg) {
     new PNotify(opts);
 }
 
-// function displayPNotify(status, msg) {
-//     var type = '';
-//     var title = '';
-//
-//     // 接收后端返回的状态值
-//     if (status === 0) {
-//         type = 'success';
-//         title = '成功'
-//     } else if (status === 1) {
-//         type = 'notice';
-//         title = '通知'
-//     } else if (status === 2) {
-//         type = 'error';
-//         title = '错误'
-//     } else if (status === 403) {
-//         type = 'info';
-//         title = '403';
-//         msg = '权限拒绝，您没有权限操作'
-//     }
-//
-//     new PNotify({
-//         title: title,
-//         text: msg,
-//         type: type,
-//         delay: 2000,
-//         shadow: true,
-//         // styling: 'bootstrap3',
-//         nonblock: {
-//             nonblock: true
-//         },
-//         animate: {
-//             animate: true,
-//             in_class: 'zoomInLeft',
-//             out_class: 'zoomOutRight'
-//         }
-//     });
-// }
-
 
 /**
  * 生成随机字符串

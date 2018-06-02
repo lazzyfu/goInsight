@@ -19,8 +19,8 @@ channel_layer = get_channel_layer()
 
 
 def get_mysql_user_info(host):
-    data = InceptionHostConfig.objects.get(host=host)
-    conn = pymysql.connect(host=host,
+    data = InceptionHostConfig.objects.get(comment=host)
+    conn = pymysql.connect(host=data.host,
                            user=data.user,
                            password=data.password,
                            charset='utf8',
@@ -99,7 +99,7 @@ def get_mysql_user_info(host):
         conn.close()
 
 
-class MySQLuser_manager(object):
+class MysqlUserManager(object):
     def __init__(self, kwargs):
         self.db_host = kwargs.get('db_host')
         # username = user@host
@@ -108,12 +108,12 @@ class MySQLuser_manager(object):
         self.password = kwargs.get('password')
         self.privileges = kwargs.get('privileges')
 
-        data = InceptionHostConfig.objects.get(host=self.db_host)
+        data = InceptionHostConfig.objects.get(comment=self.db_host)
         self.dst_user = '@'.join((data.user, data.host))
         self.conn = pymysql.connect(host=data.host,
+                                    port=data.port,
                                     user=data.user,
                                     password=data.password,
-                                    port=data.port,
                                     charset='utf8')
 
     def flush_privileges(self):
@@ -189,12 +189,12 @@ class MySQLuser_manager(object):
 def check_mysql_conn_status(fun):
     def wapper(request, *args, **kwargs):
         host = request.GET.get('host')
-        data = get_object_or_404(InceptionHostConfig, host=host)
+        data = get_object_or_404(InceptionHostConfig, comment=host)
 
         try:
             conn = pymysql.connect(user=data.user,
-                                   host=host,
                                    password=data.password,
+                                   host=data.host,
                                    port=data.port,
                                    use_unicode=True,
                                    connect_timeout=1)
@@ -544,10 +544,10 @@ class MySQLQuery(object):
     def __init__(self, querys, host, database):
         self.querys = querys
         self.status, self.data = mysql_query_format(self.querys)
-        self.host = host
+        self.comment = host
         self.database = database
 
-        obj = InceptionHostConfig.objects.get(host=self.host, purpose='1', is_enable=0)
+        obj = InceptionHostConfig.objects.get(comment=self.comment, purpose='1', is_enable=0)
         self.conn = pymysql.connect(host=obj.host,
                                     user=obj.user,
                                     password=obj.password,
@@ -558,7 +558,7 @@ class MySQLQuery(object):
 
     def query(self, request):
         obj = MySQLQueryLog.objects.create(user=request.user.username,
-                                           host=self.host,
+                                           host=self.comment,
                                            database=self.database,
                                            query_sql=self.querys)
         if not self.status:

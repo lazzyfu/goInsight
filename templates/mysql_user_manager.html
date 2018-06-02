@@ -134,9 +134,10 @@
         /**
          * 初始化bootstrap-table，生成表格
          */
-        var $table = $('#table');
+        var $mysql_user_table = $('#table');
         $(function () {
             $table.bootstrapTable({
+            $mysql_user_table.bootstrapTable({
                 method: 'get',
                 dataType: 'json',
                 url: "{% url 'p_mysql_user' %}",
@@ -162,15 +163,15 @@
                     }
                 },
                 onSearch: function (text) {
-                    $table.bootstrapTable('refresh', {silent: true})
+                    $mysql_user_table.bootstrapTable('refresh', {silent: true})
                 },
                 onLoadSuccess: function (data) {
-                    $table.treegrid({
+                    $mysql_user_table.treegrid({
                         treeColumn: 1,
                         expanderExpandedClass: 'glyphicon glyphicon-chevron-down',
                         expanderCollapsedClass: 'glyphicon glyphicon-chevron-right',
                         onChange: function () {
-                            $table.bootstrapTable('resetWidth');
+                            $mysql_user_table.bootstrapTable('resetWidth');
                         }
                     });
                 },
@@ -178,7 +179,7 @@
                     if (status === 403) {
                         displayPNotify(status);
                     }
-                    $table.bootstrapTable('removeAll');
+                    $mysql_user_table.bootstrapTable('removeAll');
                 },
                 columns: [
                     {
@@ -262,8 +263,9 @@
         var current_select_host = '';
 
         function load_s_host_host() {
-            $table.bootstrapTable('refresh', {silent: true});
+            $mysql_user_table.bootstrapTable('refresh', {silent: true});
             current_select_host = $('#s_host').val();
+            console.log(current_select_host);
         }
 
         /**
@@ -281,7 +283,7 @@
                     $.each(data, function (index, row) {
                         var host = row.host;
                         var comment = row.comment;
-                        html += "<option value=" + host + ">" + comment + "</option>"
+                        html += "<option value=" + comment + ">" + comment + "</option>"
                     });
                     $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh', {silent: true})
@@ -376,7 +378,7 @@
                 success: function (result) {
                     displayPNotify(result.status, result.msg);
                     $('#modal_user_modify').modal('hide');
-                    $table.bootstrapTable('refresh', {silent: true});
+                    $mysql_user_table.bootstrapTable('refresh', {silent: true});
                 },
                 error: function (jqXHR) {
                     if (jqXHR.status === 403) {

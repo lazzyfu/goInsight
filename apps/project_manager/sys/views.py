@@ -2,13 +2,11 @@
 # edit by fuzongfei
 import json
 
-from django.db import transaction
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
-from project_manager.models import DomainName, InceptionHostConfig, Webhook
-from project_manager.utils import check_db_account
+from project_manager.models import DomainName, Webhook
 from user_manager.permissions import permission_required
 from utils.tools import format_request
 

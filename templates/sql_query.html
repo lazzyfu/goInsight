@@ -23,6 +23,12 @@
                     <form class="form-inline" id="SqlQueryForm" action="{% url 'p_query' %}"
                           method="post">
                         <div class="form-group">
+                            <select id="s_group" name="group_id" required
+                                    onchange="get_query_host_info()"
+                                    class="selectpicker" title="请选择一个可用的项目...">
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <select id="s_host" name="host" onchange="getTablesList()"
                                     required class="selectpicker" title="请选择主机...">
                             </select>
@@ -133,28 +139,54 @@
         });
 
         /**
-         * 获取用户所在项目组的所有主机信息
+         * 获取线下环境主机信息
+         * type=1：线上环境
+         * purpose=0：审核目的
          */
-        $(function () {
+        var selected_group = '';
+
+        function get_query_host_info() {
+            $('#s_host').empty();
+            selected_group = $('#s_group').val();
             $.ajax({
                 url: '{% url 'p_host_config' %}',
                 type: 'GET',
+                data: {'type': 1, 'purpose': 1, 'selected_group': selected_group},
                 dataType: 'json',
-                data: {'type': '1', 'purpose': '1'},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
                     var html = '';
                     $.each(data, function (index, row) {
-                        var host = row.host;
                         var comment = row.comment;
-                        html += "<option value=" + host + ">" + comment + "</option>"
+                        html += "<option value=" + comment + ">" + comment + "</option>"
                     });
                     $('#s_host').append(html);
-                    $('.selectpicker').selectpicker('refresh', {silent: true})
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            })
+        }
+
+        /**
+         * 获取当前用户所属的项目组
+         */
+        $(function () {
+            $.ajax({
+                url: '/projects/group_info/',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: true,
+                success: function (data) {
+                    $.each(data, function (index, data) {
+                        $("#s_group").append(  //此处向select中循环绑定数据
+                            "<option data-icon='fa fa-th-large' value=" + data.group_id + ">" + data.group_name + "</option>");
+                    });
+                    $('.selectpicker').selectpicker('refresh');
                 }
             })
         });
+
 
         /**
          * 执行查询

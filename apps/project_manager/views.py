@@ -2,7 +2,7 @@ import json
 
 import sqlparse
 from channels.layers import get_channel_layer
-from django.db.models import F
+from django.db.models import F, Count
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
@@ -56,20 +56,34 @@ class BeautifySQLView(View):
 
 
 class IncepHostConfigView(View):
-    """获取指定的数据库配置"""
+    """获取当前用户所属项目的所有数据库主机，筛选指定项目的主机"""
 
     def get(self, request):
+        """
+        type=0：线下数据库
+        type=1：线上数据库
+        purpose=0：审核目的
+        purpose=1：查询目的
+        group: 筛选指定项目的主机
+        """
         data = format_request(request)
-        config_type = 0 if data.get('type') is None else data.get('type')
-        purpose = 0 if data.get('purpose') is None else data.get('purpose')
+        type = data.get('type')
+        purpose = data.get('purpose')
         user_in_group = request.session.get('groups')
-        result = InceptionHostConfigDetail.objects.annotate(host=F('config__host'),
-                                                            comment=F('config__comment')
-                                                            ).filter(config__type=config_type). \
-            filter(config__purpose=purpose). \
-            filter(config__is_enable=0). \
-            filter(group__group_id__in=user_in_group). \
-            values('host', 'comment')
+        selected_group = data.get('selected_group')
+        if type and purpose:
+            result = InceptionHostConfigDetail.objects.annotate(comment=F('config__comment'),
+                                                                ).filter(config__type=type). \
+                filter(config__purpose=purpose). \
+                filter(config__is_enable=0). \
+                filter(group__group_id=selected_group). \
+                values('comment').annotate(Count('id'))
+        else:
+            result = InceptionHostConfigDetail.objects.annotate(comment=F('config__comment')
+                                                                ).filter(config__is_enable=0). \
+                filter(group__group_id__in=user_in_group). \
+                values('comment').annotate(Count('id'))
+
         return JsonResponse(list(result), safe=False)
 
 
@@ -79,8 +93,8 @@ class GetSchemaView(View):
     def post(self, request):
         data = format_request(request)
         host = data['host']
-        obj = InceptionHostConfig.objects.get(host=host)
-        status, msg = check_db_account(obj.user, host, obj.password, obj.port)
+        obj = InceptionHostConfig.objects.get(comment=host)
+        status, msg = check_db_account(obj.user, obj.host, obj.password, obj.port)
         if status:
             db_list = GetSchemaInfo(host).get_values()
             context = {'status': 0, 'msg': '', 'data': db_list}
