@@ -7,23 +7,22 @@ from django.utils import timezone
 
 from project_manager.inception.inception_api import IncepSqlCheck
 from project_manager.models import AuditContents, OlAuditDetail, OlAuditContentsReply
-from project_manager.tasks import send_commit_mail, send_verify_mail, send_reply_mail
-from project_manager.models import audit_type_choice, operate_type_choice
+from project_manager.models import operate_type_choice
+from project_manager.tasks import send_commit_mail, send_verify_mail, send_reply_mail, xiaoding_pull
 
 
-class OlAuditForm(forms.Form):
+class OnlineAuditForm(forms.Form):
     title = forms.CharField(max_length=100, required=True, label=u'标题')
     verifier = forms.CharField(required=True, label=u'批准人')
     operator = forms.CharField(required=True, label=u'执行人')
     group_id = forms.CharField(required=True, label=u'项目组id')
     host = forms.CharField(required=True, label=u'数据库主机')
     database = forms.CharField(required=True, max_length=64, label=u'数据库')
-    audit_type = forms.ChoiceField(choices=audit_type_choice, label=u'审核类型')
     operate_type = forms.ChoiceField(choices=operate_type_choice, label=u'操作类型，是DDL还是DML')
     contents = forms.CharField(widget=forms.Textarea, label=u'审核内容')
 
     def is_save(self, request):
-        cleaned_data = super(OlAuditForm, self).clean()
+        cleaned_data = super(OnlineAuditForm, self).clean()
         title = cleaned_data.get('title') + '_[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']'
         verifier = cleaned_data.get('verifier')
         operator = cleaned_data.get('operator')
@@ -31,7 +30,6 @@ class OlAuditForm(forms.Form):
         group_id = cleaned_data.get('group_id')
         host = cleaned_data.get('host')
         database = cleaned_data.get('database')
-        audit_type = cleaned_data.get('audit_type')
         operate_type = cleaned_data.get('operate_type')
         contents = cleaned_data.get('contents')
 
@@ -41,7 +39,6 @@ class OlAuditForm(forms.Form):
         else:
             AuditContents.objects.create(
                 title=title,
-                audit_type=audit_type,
                 operate_type=operate_type,
                 host=host,
                 database=database,
@@ -58,23 +55,27 @@ class OlAuditForm(forms.Form):
             # 发送通知邮件
             latest_id = AuditContents.objects.latest('id').id
             send_commit_mail.delay(latest_id=latest_id)
-            context = {'status': 0, 'jump_url': '/projects/ol/incep_ol_records/'}
+
+            # 发送钉钉推送
+            xiaoding_pull.delay(user=request.user.username, title=title, type='commit')
+
+            context = {'status': 0, 'jump_url': '/projects/ol/ol_records/'}
         return context
 
 
-class OlAuditRecordForm(forms.Form):
+class OnlineAuditRecordForm(forms.Form):
     limit_size = forms.IntegerField(required=True, label=u'每页显示数量')
     offset_size = forms.IntegerField(required=True, label=u'分页偏移量')
     search_content = forms.CharField(max_length=128, required=False, label='搜索内容')
 
 
-class IncepOlApproveForm(forms.Form):
+class OnlineApproveForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
 
     def is_save(self, request):
-        cleaned_data = super(IncepOlApproveForm, self).clean()
+        cleaned_data = super(OnlineApproveForm, self).clean()
         id = cleaned_data.get('id')
         status = cleaned_data.get('status')
         addition_info = cleaned_data.get('addition_info')
@@ -98,6 +99,8 @@ class IncepOlApproveForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='approve', progress='2')
                     context = {'status': 0, 'msg': '操作成功、审核通过'}
 
                 # 当用户点击的是不通过, 状态变为：未批准
@@ -110,6 +113,8 @@ class IncepOlApproveForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='approve', progress='1')
                     context = {'status': 0, 'msg': '操作成功、审核未通过'}
 
             # 其他情况
@@ -118,13 +123,13 @@ class IncepOlApproveForm(forms.Form):
         return context
 
 
-class IncepOlFeedbackForm(forms.Form):
+class OnlineFeedbackForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
 
     def is_save(self, request):
-        cleaned_data = super(IncepOlFeedbackForm, self).clean()
+        cleaned_data = super(OnlineFeedbackForm, self).clean()
         id = cleaned_data.get('id')
         status = cleaned_data.get('status')
         addition_info = cleaned_data.get('addition_info')
@@ -148,6 +153,8 @@ class IncepOlFeedbackForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='feedback', progress='3')
                     context = {'status': 0, 'msg': '操作成功、正在处理中'}
 
                 # 当用户点击的是已完成, 状态变为：已完成
@@ -160,6 +167,8 @@ class IncepOlFeedbackForm(forms.Form):
                                            username=request.user.username,
                                            user_role=request.user.user_role(),
                                            addition_info=addition_info)
+                    # 发送钉钉推送
+                    xiaoding_pull.delay(user=request.user.username, title=data.title, type='feedback', progress='4')
                     context = {'status': 0, 'msg': '操作成功、处理完成'}
 
             # 未批准
@@ -171,13 +180,13 @@ class IncepOlFeedbackForm(forms.Form):
         return context
 
 
-class IncepOlCloseForm(forms.Form):
+class OnlineCloseForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
 
     def is_save(self, request):
-        cleaned_data = super(IncepOlCloseForm, self).clean()
+        cleaned_data = super(OnlineCloseForm, self).clean()
         id = cleaned_data.get('id')
         status = cleaned_data.get('status')
         addition_info = cleaned_data.get('addition_info')
@@ -206,6 +215,8 @@ class IncepOlCloseForm(forms.Form):
                                                username=request.user.username,
                                                user_role=request.user.user_role(),
                                                addition_info=addition_info)
+                        # 发送钉钉推送
+                        xiaoding_pull.delay(user=request.user.username, title=data.title, type='close', progress='5')
                         context = {'status': 0, 'msg': '操作成功、记录关闭成功'}
 
                 elif status == u'结束':
@@ -215,12 +226,12 @@ class IncepOlCloseForm(forms.Form):
         return context
 
 
-class IncepOlReplyForm(forms.Form):
+class OnlineReplyForm(forms.Form):
     reply_id = forms.IntegerField(required=True)
     reply_contents = forms.CharField(widget=forms.Textarea, min_length=5)
 
     def is_save(self, request):
-        cleaned_data = super(IncepOlReplyForm, self).clean()
+        cleaned_data = super(OnlineReplyForm, self).clean()
         reply_id = cleaned_data.get('reply_id')
         reply_contents = cleaned_data.get('reply_contents')
         OlAuditContentsReply.objects.create(

@@ -102,7 +102,7 @@
             $('#demo-table').bootstrapTable({
                 method: 'get',
                 dataType: 'json',
-                url: "{% url 'p_incep_perform_details_l' %}",
+                url: "{% url 'p_perform_details_list' %}",
                 queryParams: function queryParams() {
                     return {'taskid': taskid};
                 },
@@ -221,7 +221,7 @@
         <!-- 获取回滚语句和执行结果日志 -->
         function getTasksResult(id) {
             $.ajax({
-                url: "{% url 'p_incep_perform_results' %}",
+                url: "{% url 'p_perform_results' %}",
                 type: 'GET',
                 dataType: 'json',
                 data: {'id': id},
@@ -255,7 +255,7 @@
             var csrftoken = $.cookie('csrftoken');
 
             $.ajax({
-                url: "{% url 'p_incep_perform' %}",
+                url: "{% url 'p_perform_exec' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -280,7 +280,7 @@
             var csrftoken = $.cookie('csrftoken');
 
             $.ajax({
-                url: "{% url 'p_incep_stop' %}",
+                url: "{% url 'p_perform_stop' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -305,7 +305,7 @@
             var csrftoken = $.cookie('csrftoken');
 
             $.ajax({
-                url: "{% url 'p_incep_rollback' %}",
+                url: "{% url 'p_perform_rollback' %}",
                 type: 'POST',
                 dataType: 'json',
                 data: {

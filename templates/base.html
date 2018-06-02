@@ -152,9 +152,9 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_ol_records' %}"><i class="fa fa-circle-o"></i>审核记录</a>
+                        <li><a href="{% url 'p_ol_records' %}"><i class="fa fa-circle-o"></i>审核记录</a>
                         </li>
-                        <li><a href="{% url 'p_incep_perform_records' %}"><i class="fa fa-circle-o"></i>执行任务</a></li>
+                        <li><a href="{% url 'p_perform_records' %}"><i class="fa fa-circle-o"></i>执行任务</a></li>
                     </ul>
                 </li>
 
@@ -167,26 +167,27 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_incep_ol_audit' %}"><i class="fa fa-circle-o"></i>线上工单</a></li>
-                        <li><a href="{% url 'p_incep_of_audit' %}"><i class="fa fa-circle-o"></i>线下工单</a></li>
-                        <li><a href="{% url 'p_data_export' %}"><i class="fa fa-circle-o"></i>数据导出</a></li>
+                        <li><a href="{% url 'p_ol_audit' %}"><i class="fa fa-circle-o"></i>线上工单</a></li>
+                        <li><a href="{% url 'p_of_audit' %}"><i class="fa fa-circle-o"></i>线下工单</a></li>
                     </ul>
                 </li>
 
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-search-minus"></i>
-                        <span>数据查询</span>
-                        <span class="pull-right-container">
+                {% if 'can_mysql_query' in request.session.perm_list %}
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-search-minus"></i>
+                            <span>数据查询</span>
+                            <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="{% url 'p_rquery' %}"><i class="fa fa-circle-o"></i>线上查询</a></li>
-                    </ul>
-                </li>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{% url 'p_rquery' %}"><i class="fa fa-circle-o"></i>线上查询</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
 
-                {% if 'can_scheduled_view' in request.session.perm_list %}
+                {% if 'can_scheduled' in request.session.perm_list %}
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-tasks"></i>
@@ -203,7 +204,8 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if 'can_mysqluser_view' in request.session.perm_list %}
+
+                {% if 'can_mysql_user' in request.session.perm_list %}
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-database"></i>
@@ -214,6 +216,21 @@
                         </a>
                         <ul class="treeview-menu">
                             <li><a href="{% url 'p_r_mysql_user_manager' %}"><i class="fa fa-circle-o"></i>账号管理</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if 'can_admin' in request.session.perm_list %}
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-cog"></i>
+                            <span>系统管理</span>
+                            <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{% url 'p_config' %}"><i class="fa fa-circle-o"></i>系统配置</a></li>
                         </ul>
                     </li>
                 {% endif %}

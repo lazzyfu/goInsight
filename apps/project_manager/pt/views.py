@@ -22,14 +22,14 @@ from utils.tools import format_request
 channel_layer = get_channel_layer()
 
 
-class IncepOfRecordsView(View):
+class PerformRecordsView(View):
     """渲染执行任务列表页"""
 
     def get(self, request):
-        return render(request, 'incep_perform_records.html')
+        return render(request, 'perform_records.html')
 
 
-class IncepOfRecordsListView(View):
+class PerformRecordsListView(View):
     """渲染执行任务列表页表格数据"""
 
     def get(self, request):
@@ -52,7 +52,7 @@ class IncepOfRecordsListView(View):
         return JsonResponse(list(exec_tasks), safe=False)
 
 
-class IncepOfResultsView(View):
+class PerformResultsView(View):
     """返回执行任务执行结果和备份信息"""
 
     def get(self, request):
@@ -73,14 +73,14 @@ class IncepOfResultsView(View):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOfDetailsView(View):
+class PerformDetailsView(View):
     """渲染指定执行任务详情页面"""
 
     def get(self, request, taskid):
-        return render(request, 'incep_perform_details.html', {'taskid': taskid})
+        return render(request, 'perform_details.html', {'taskid': taskid})
 
 
-class IncepOfDetailsListView(View):
+class PerformDetailsListView(View):
     """渲染指定执行任务页面数据"""
 
     def get(self, request):
@@ -109,7 +109,7 @@ class IncepOfDetailsListView(View):
         return HttpResponse(json.dumps(task_details))
 
 
-class IncepPerformView(View):
+class PerformExecView(View):
     """执行任务-开始执行"""
 
     @method_decorator(check_incep_alive)
@@ -184,7 +184,7 @@ class IncepPerformView(View):
         return HttpResponse(json.dumps(context))
 
 
-class IncepStopView(View):
+class PerformStopView(View):
     """
     执行任务-停止OSC执行
     只支持停止修改表结构的操作
@@ -209,7 +209,7 @@ class IncepStopView(View):
         return HttpResponse(json.dumps(context))
 
 
-class IncepRollbackView(View):
+class PerformRollbackView(View):
     """
     执行任务-回滚操作
     回滚操作不会进行再次进行备份
@@ -234,8 +234,8 @@ class IncepRollbackView(View):
             if rollback_sql is None:
                 context = {'status': 2, 'msg': '没有找到备份记录，回滚失败'}
             else:
-                incep_of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
-                result = incep_of_audit.make_sqlsha1()[1]
+                of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_database, request.user.username)
+                result = of_audit.make_sqlsha1()[1]
 
                 rollback_sql = result['SQL'] + ';'
                 rollback_sqlsha1 = result['sqlsha1']

@@ -19,6 +19,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="mschecksum" />
     <orderEntry type="module" module-name="xb_backup" />
+    <orderEntry type="module" module-name="auditdb" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

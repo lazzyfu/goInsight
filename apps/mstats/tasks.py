@@ -1,18 +1,11 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-import time
 
-import sys
-from celery import shared_task, states, task
 import logging
 
-from celery.result import AsyncResult
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
+from celery import shared_task
 
-from AuditSQL.settings import EMAIL_FROM
 from mstats.utils import ParamikoOutput
-from multiprocessing import Pool
 
 logger = logging.getLogger('django')
 

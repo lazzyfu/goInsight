@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 530px;
+            height: 450px;
         }
     </style>
 {% endblock %}
@@ -13,15 +13,14 @@
 {% block right_content %}
     <section class="content-header">
         <h1>
-            线上业务-SQL语法审核
+            线下业务-SQL语法审核
             <small>支持DDL和DML语句检测</small>
         </h1>
     </section>
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal" id="olAuditCommitForm" action="{% url 'p_incep_ol_audit' %}"
-                  method="post" data-toggle="validator">
+            <form class="form-horizontal" id="ofAuditCommitForm" action="{% url 'p_of_audit' %}" method="post">
                 <div class="col-md-4">
                     <!-- Profile Image -->
                     <div class="box box-success">
@@ -34,7 +33,7 @@
                             <div class="form-group has-feedback">
                                 <label class="control-label col-sm-3">项目</label>
                                 <div class="col-sm-9">
-                                    <select id="s_group" name="group_id" style="width: 100%" required
+                                    <select id="s_group" name="group_id" style="width: 100%" required onchange="get_ofline_host_info()"
                                             class="selectpicker form-control" title="请选择一个可用的项目...">
                                     </select>
                                 </div>
@@ -73,65 +72,38 @@
                                 </div>
                             </div>
 
-                            <div class="form-group has-feedback">
-                                <label class="control-label col-sm-3">标题</label>
-                                <div class="col-sm-9">
-                                    <input type="text" id="s_title" name="title" data-minlength="5"
-                                           class="form-control"
-                                           placeholder="请输入描述性文字" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group has-feedback">
-                                <label class="control-label col-sm-3">执行人</label>
-                                <div class="col-sm-9">
-                                    <select id="s_operator" name="operator" style="width: 100%" required
-                                            class="selectpicker form-control">
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group has-feedback">
-                                <label class="control-label col-sm-3">批准人</label>
-                                <div class="col-sm-9">
-                                    <select id="s_verifier" name="verifier" style="width: 100%" required
-                                            class="selectpicker form-control">
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group has-feedback">
-                                <label class="control-label col-sm-3">抄送</label>
-                                <div class="col-sm-9">
-                                    <select id="s_contact" name="email_cc_id" data-live-search="true"
-                                            title="选择需要抄送的联系人..."
-                                            data-actions-box="true"
-                                            style="width: 100%" class="selectpicker form-control dropup"
-                                            multiple required>
-                                    </select>
-                                </div>
-                            </div>
-
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
                                     </button>
-
                                     <button type="button" onclick="incepSyntaxCheckForm()"
                                             class="btn bg-info btn-sm">语法检测
                                     </button>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <button type="submit" class="btn bg-info btn-sm">生成工单</button>
+                                    <button type="submit" class="btn bg-info btn-sm">
+                                        生成执行任务
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <!-- /.box-body -->
+                    </div>
+
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h5 class="box-title">支持的语句类型</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="text-muted">
+                                <p>* DDL语句</p>
+                                <p>* DML语句（不包括SELECT查询）</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -146,7 +118,7 @@
                         <div class="box-body no-padding">
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <textarea id="s_sql" autofocus class="form-control"></textarea>
+                                    <textarea id="select_sql" class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +126,6 @@
                 </div>
                 {% csrf_token %}
             </form>
-            <!-- /.col -->
         </div>
 
         <div class="box-size" id="typediv1" style="visibility: hidden">
@@ -182,11 +153,12 @@
             </div>
         </div>
     </section>
+
 {% endblock %}
 
 {% block link_javascripts %}
     <script>
-        var myTextarea = document.getElementById('s_sql');
+        var myTextarea = document.getElementById('select_sql');
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
@@ -199,37 +171,40 @@
             autoCloseBrackets: true,
             matchBrackets: true,
             showCursorWhenSelecting: true,
+            lineWrapping: true,
             extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql,
-            placeholder:
-                "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
+            placeholder: "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
         });
 
         /**
-         * 获取线上环境主机信息
-         * type=1
+         * 获取线下环境主机信息
+         * type=0：线上环境
+         * purpose=0：审核目的
          */
-        $(function () {
+        var selected_group = '';
+
+        function get_ofline_host_info() {
+            $('#s_host').empty();
+            selected_group = $('#s_group').val();
             $.ajax({
                 url: '{% url 'p_host_config' %}',
                 type: 'GET',
-                data: {'type': 1},
+                data: {'type': 0, 'purpose': 0, 'selected_group': selected_group},
                 dataType: 'json',
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
                     var html = '';
                     $.each(data, function (index, row) {
-                        var host = row.host;
                         var comment = row.comment;
-                        html += "<option value=" + host + ">" + comment + "</option>"
+                        html += "<option value=" + comment + ">" + comment + "</option>"
                     });
                     $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh')
                 }
             })
-        });
-
+        }
 
         /**
          * 获取当前用户所属的项目组
@@ -240,7 +215,7 @@
                 type: 'GET',
                 dataType: 'json',
                 timeout: 5000,
-                cache: false,
+                cache: true,
                 success: function (data) {
                     $.each(data, function (index, data) {
                         $("#s_group").append(  //此处向select中循环绑定数据
@@ -252,87 +227,10 @@
         });
 
         /**
-         *获取被选中项目的的批准人和执行人信息
-         */
-        $(function () {
-            $("#s_group").change(function () {
-                var group_id = $(this).val();
-                var csrftoken = $.cookie('csrftoken');
-                $.ajax({
-                    url: '/projects/get_audit_user/',
-                    type: 'POST',
-                    dataType: 'json',
-                    timeout: 5000,
-                    data: {
-                        'group_id': group_id,
-                        'csrfmiddlewaretoken': csrftoken
-                    },
-                    cache: false,
-                    success: function (result) {
-                        $("#s_operator").empty();
-                        $("#s_verifier").empty();
-                        $.each(result, function (index, row) {
-                            if (row.priv === 'can_execute') {
-                                $.each(row.user, function (index, data) {
-                                    $("#s_operator").append(
-                                        "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.username + ">" + data.username + "</option>");
-                                })
-                            }
-                            else if (row.priv === 'can_approve') {
-                                $.each(row.user, function (index, data) {
-                                    $("#s_verifier").append(
-                                        "<option data-icon='fa fa-user' data-subtext=" + data.email + " value=" + data.username + ">" + data.username + "</option>");
-                                })
-                            }
-                        });
-                        $('.selectpicker').selectpicker('refresh');
-                    }
-                })
-            });
-            $("s_group").validator('update');
-        });
-
-        /**
-         * 获取指定项目的联系人
-         */
-        $(function () {
-            $("#s_group").change(function () {
-                var group_id = $(this).val();
-                var csrftoken = $.cookie('csrftoken');
-                $.ajax({
-                    url: '/projects/contacts_info/',
-                    type: 'POST',
-                    dataType: 'json',
-                    timeout: 5000,
-                    data: {
-                        'group_id': group_id,
-                        'csrfmiddlewaretoken': csrftoken
-                    },
-                    cache: false,
-                    success: function (data) {
-                        $("#s_contact").empty();
-                        $.each(data, function (index, row) {
-                            var html = '';
-                            for (var i = 0; i < row.split(",").length; i++) {
-                                var result = row.split(",")[i];
-                                var username = result.split(":")[0];
-                                var contact_id = result.split(":")[1];
-                                var email = result.split(":")[2];
-                                html += "<option data-icon='fa fa-user' data-subtext=" + email + " value=" + contact_id + ">" + username + "</option>";
-                            }
-                            $("#s_contact").append(html)
-                        });
-                        $('.selectpicker').selectpicker('refresh');
-                    }
-                })
-            })
-        });
-
-        /**
-         * 提交线上审核内容
+         * 提交线下审核内容
          */
 
-        $('#olAuditCommitForm').validator().on('submit', function (e) {
+        $('#ofAuditCommitForm').validator().on('submit', function (e) {
             var contents = myCodeMirror.getValue();
             if (contents.length < 10) {
                 displayPNotify(2, '审核内容不能为空或小于10个字符');
@@ -344,7 +242,7 @@
             } else {
                 // 验证通过
                 $(this).ajaxSubmit({
-                    data: {'contents': contents, 'audit_type': '0'},
+                    data: {'contents': contents},
                     dataType: 'json',
                     success: function (result) {
                         if (result.status === 0) {
@@ -362,8 +260,6 @@
                 return false;
             }
         });
+
     </script>
 {% endblock %}
-
-
-

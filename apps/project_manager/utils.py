@@ -11,16 +11,17 @@ from project_manager.inception.inception_api import sql_filter
 from project_manager.models import IncepMakeExecTask
 
 
-def check_mysql_conn(user, host, password, port):
+def check_db_account(user, host, password, port):
+    port = int(port) if isinstance(port, str) else port
     try:
         conn = pymysql.connect(user=user, host=host, password=password,
                                port=port, use_unicode=True, connect_timeout=1)
 
         if conn:
-            return {'status': 'INFO', 'msg': 'connect test is ok.'}
+            return True, None
         conn.close()
     except pymysql.Error as err:
-        return {'status': 'ERROR', 'msg': err}
+        return False, str(err)
 
 
 def update_tasks_status(id=None, exec_result=None, exec_status=None):
@@ -88,4 +89,3 @@ def check_sql_filter(fun):
             return fun(request, *args, **kwargs)
 
     return wapper
-

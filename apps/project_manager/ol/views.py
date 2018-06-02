@@ -13,21 +13,20 @@ from django.views import View
 from django.views.generic import FormView
 
 from project_manager.inception.inception_api import IncepSqlCheck
-from project_manager.models import AuditContents, OlAuditContentsReply, IncepMakeExecTask, OlAuditDetail, \
-    OlDataExportDetail, ExportFiles
-from project_manager.ol.forms import OlAuditForm, IncepOlReplyForm, IncepOlApproveForm, OlAuditRecordForm, \
-    IncepOlFeedbackForm, IncepOlCloseForm
+from project_manager.models import AuditContents, OlAuditContentsReply, IncepMakeExecTask, OlAuditDetail
+from project_manager.ol.forms import OnlineAuditForm, OnlineReplyForm, OnlineApproveForm, OnlineAuditRecordForm, \
+    OnlineFeedbackForm, OnlineCloseForm
 from project_manager.utils import check_incep_alive, check_sql_filter
 from user_manager.permissions import permission_required, group_permission_required, check_record_details_permission
 from utils.tools import format_request
 
 
-class IncepOlAuditView(View):
+class OnlineAuditView(View):
     """线上审核内容提交"""
 
     def get(self, request):
         """渲染线上审核页面"""
-        return render(request, 'incep_ol_audit.html')
+        return render(request, 'ol_audit.html')
 
     @permission_required('can_commit')
     @method_decorator(check_incep_alive)
@@ -36,28 +35,27 @@ class IncepOlAuditView(View):
     def post(self, request):
         """线上审核内容提交处理"""
         data = format_request(request)
-        form = OlAuditForm(data)
+        form = OnlineAuditForm(data)
         if form.is_valid():
             context = form.is_save(request)
             return HttpResponse(json.dumps(context))
         else:
             error = form.errors.as_text()
-            print(error)
             context = {'status': 2, 'msg': error}
             return HttpResponse(json.dumps(context))
 
 
-class IncepOlRecordsView(View):
+class OnlineRecordsView(View):
     def get(self, request):
-        return render(request, 'incep_ol_records.html')
+        return render(request, 'ol_records.html')
 
 
-class IncepOlRecordsListView(View):
+class OnlineRecordsListView(View):
     """显示当前用户所在项目组的审核记录"""
 
     def get(self, request):
         data = format_request(request)
-        form = OlAuditRecordForm(data)
+        form = OnlineAuditRecordForm(data)
         result = {}
         if form.is_valid():
             cleaned_data = form.cleaned_data
@@ -83,11 +81,6 @@ class IncepOlRecordsListView(View):
                     When(progress__in=('4',), then=Value('btn-success')),
                     output_field=CharField(),
                 ),
-                type=Case(
-                    When(audit_type='0', then=Value('数据变更')),
-                    When(audit_type='1', then=Value('数据导出')),
-                    output_field=CharField(),
-                ),
                 group_name=F('group__group_name'),
                 group_id=F('group__group_id'),
             )
@@ -98,7 +91,7 @@ class IncepOlRecordsListView(View):
 
             ol_total = obj.filter(group_id__in=user_in_group).count()
 
-            ol_records = obj.filter(group_id__in=user_in_group).values('group_name', 'progress_color', 'type',
+            ol_records = obj.filter(group_id__in=user_in_group).values('group_name', 'progress_color',
                                                                        'progress_value', 'id', 'group_id', 'title',
                                                                        'proposer', 'operator', 'verifier', 'created_at'
                                                                        ).order_by('-created_at')[offset_size:limit_size]
@@ -107,13 +100,13 @@ class IncepOlRecordsListView(View):
         return JsonResponse(result, safe=False)
 
 
-class IncepOlApproveView(FormView):
+class OnlineApproveView(FormView):
     """线上工单审批操作，需要can_approve权限"""
-    form_class = IncepOlApproveForm
+    form_class = OnlineApproveForm
 
     @method_decorator(group_permission_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(IncepOlApproveView, self).dispatch(request, *args, **kwargs)
+        return super(OnlineApproveView, self).dispatch(request, *args, **kwargs)
 
     @permission_required('can_approve')
     @transaction.atomic
@@ -127,13 +120,13 @@ class IncepOlApproveView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOlFeedbackView(FormView):
+class OnlineFeedbackView(FormView):
     """线上工单反馈，反馈执行进度"""
-    form_class = IncepOlFeedbackForm
+    form_class = OnlineFeedbackForm
 
     @method_decorator(group_permission_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(IncepOlFeedbackView, self).dispatch(request, *args, **kwargs)
+        return super(OnlineFeedbackView, self).dispatch(request, *args, **kwargs)
 
     @permission_required('can_execute')
     @transaction.atomic
@@ -147,13 +140,13 @@ class IncepOlFeedbackView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOlCloseView(FormView):
+class OnlineCloseView(FormView):
     """关闭记录"""
-    form_class = IncepOlCloseForm
+    form_class = OnlineCloseForm
 
     @method_decorator(group_permission_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(IncepOlCloseView, self).dispatch(request, *args, **kwargs)
+        return super(OnlineCloseView, self).dispatch(request, *args, **kwargs)
 
     @permission_required('can_approve', 'can_execute')
     @transaction.atomic
@@ -167,7 +160,7 @@ class IncepOlCloseView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepOlDetailsView(View):
+class OnlineDetailsView(View):
     """查看线上审核记录的详情"""
 
     @method_decorator(check_record_details_permission)
@@ -182,11 +175,6 @@ class IncepOlDetailsView(View):
                 When(progress='5', then=Value('已关闭')),
                 output_field=CharField(),
             ),
-            type=Case(
-                When(audit_type='0', then=Value('数据变更')),
-                When(audit_type='1', then=Value('数据导出')),
-                output_field=CharField(),
-            ),
         )
 
         contents = obj.get(id=id)
@@ -197,38 +185,18 @@ class IncepOlDetailsView(View):
             avatar_file=F('user__avatar_file'),
         ).filter(reply__id=id).values('username', 'avatar_file', 'reply_contents', 'created_at')
 
-        export_file = ''
-        if contents.type == '数据变更':
-            detail = OlAuditDetail.objects.get(ol=id)
-        else:
-            detail = OlDataExportDetail.objects.annotate(
-                progress_value=Case(
-                    When(progress='0', then=Value('未执行')),
-                    When(progress='1', then=Value('导出中')),
-                    When(progress='2', then=Value('已生成')),
-                    output_field=CharField(),
-                ),
-                progress_percent=Case(
-                    When(progress='0', then=Value('20%')),
-                    When(progress='1', then=Value('60%')),
-                    When(progress='2', then=Value('100%')),
-                    output_field=CharField(),
-                ),
-            ).get(ol=id)
-            if detail.progress == '2':
-                export_file = ExportFiles.objects.get(export=detail.id)
-        return render(request, 'incep_ol_details.html',
+        detail = OlAuditDetail.objects.get(ol=id)
+        return render(request, 'ol_details.html',
                       {'contents': contents,
                        'group': group,
                        'detail': detail,
-                       'export_file': export_file,
                        'reply_contents': reply_contents})
 
 
-class IncepOlReplyView(FormView):
+class OnlineReplyView(FormView):
     """处理用户的回复信息"""
 
-    form_class = IncepOlReplyForm
+    form_class = OnlineReplyForm
 
     def form_valid(self, form):
         context = form.is_save(self.request)
@@ -240,7 +208,7 @@ class IncepOlReplyView(FormView):
         return HttpResponse(json.dumps(context))
 
 
-class IncepGenerateTasksView(View):
+class OnlineGenerateTasksView(View):
     """线上工单生成执行任务"""
 
     @method_decorator(group_permission_required)
@@ -256,17 +224,17 @@ class IncepGenerateTasksView(View):
             if IncepMakeExecTask.objects.filter(related_id=id).first():
                 taskid = IncepMakeExecTask.objects.filter(related_id=id).first().taskid
                 context = {'status': 0,
-                           'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
+                           'jump_url': f'/projects/pt/perform_records/perform_details/{taskid}'}
             else:
                 host = obj.host
                 database = obj.database
                 sql_content = data.contents
 
                 # 实例化
-                incep_of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
+                of_audit = IncepSqlCheck(sql_content, host, database, request.user.username)
 
                 # 对OSC执行的SQL生成sqlsha1
-                result = incep_of_audit.make_sqlsha1()
+                result = of_audit.make_sqlsha1()
                 taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
                 # 生成执行任务记录
                 for row in result:
@@ -286,7 +254,7 @@ class IncepGenerateTasksView(View):
                     )
 
                 context = {'status': 0,
-                           'jump_url': f'/projects/pt/incep_perform_records/incep_perform_details/{taskid}'}
+                           'jump_url': f'/projects/pt/perform_records/perform_details/{taskid}'}
         else:
             context = {'status': 2, 'msg': '审核未通过或任务已关闭'}
 

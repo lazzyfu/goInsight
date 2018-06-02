@@ -74,8 +74,8 @@ class GetSchemaInfo(object):
     """获取目标主机的所有库"""
 
     def __init__(self, host):
-        self.host = host
-        config = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+        self.comment = host
+        config = InceptionHostConfig.objects.get(comment=self.comment, is_enable=0)
         host = config.host
         user = config.user
         password = config.password
@@ -136,13 +136,13 @@ def sql_filter(sql, operate_type):
 class IncepSqlCheck(object):
     def __init__(self, sql_content, host, database, user):
         self.sql_content = sql_content
-        self.host = host
+        self.comment = host
         self.database = database
         self.user = user
         self.inception_host = getattr(settings, 'INCEPTION_HOST')
         self.inception_port = int(getattr(settings, 'INCEPTION_PORT'))
 
-        dst_server = InceptionHostConfig.objects.get(host=self.host, is_enable=0)
+        dst_server = InceptionHostConfig.objects.get(comment=self.comment, is_enable=0)
         self.dst_host = dst_server.host
         self.dst_user = dst_server.user
         self.dst_password = dst_server.password

@@ -20,7 +20,7 @@ class LoginView(FormView):
     """用户登录视图， success_url登陆成功后访问的页面"""
     template_name = 'login.html'
     form_class = LoginForm
-    success_url = reverse_lazy('p_incep_ol_records')
+    success_url = reverse_lazy('p_ol_records')
 
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
@@ -76,7 +76,7 @@ class IndexView(View):
     """访问首页，重定向的页面"""
 
     def get(self, request):
-        return HttpResponseRedirect(reverse('p_incep_ol_records'))
+        return HttpResponseRedirect(reverse('p_ol_records'))
 
 
 class UserProfileView(View):

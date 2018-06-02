@@ -4,20 +4,22 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import path, re_path
 
-from project_manager.pt.views import IncepPerformView, IncepRollbackView, IncepStopView, IncepOfRecordsView, \
-    IncepOfRecordsListView, IncepOfDetailsView, IncepOfDetailsListView, IncepOfResultsView
+from project_manager.pt.views import PerformExecView, PerformRollbackView, PerformStopView, PerformRecordsView, \
+    PerformRecordsListView, PerformDetailsView, PerformDetailsListView, PerformResultsView
 
 urlpatterns = [
     # 执行任务记录
-    path(r'incep_perform_records/', login_required(IncepOfRecordsView.as_view()), name='p_incep_perform_records'),
-    path(r'incep_perform_records_l/', login_required(IncepOfRecordsListView.as_view()),
-         name='p_incep_perform_records_l'),
-    re_path(r'incep_perform_details/(?P<taskid>.*)/', login_required(IncepOfDetailsView.as_view())),
-    path(r'incep_perform_details_l/', login_required(IncepOfDetailsListView.as_view()),
-         name='p_incep_perform_details_l'),
-    path(r'incep_perform_results/', login_required(IncepOfResultsView.as_view()), name='p_incep_perform_results'),
+    path(r'perform_records/', login_required(PerformRecordsView.as_view()), name='p_perform_records'),
+    path(r'perform_records_list/', login_required(PerformRecordsListView.as_view()),
+         name='p_perform_records_list'),
+    # 执行任务详情
+    re_path(r'perform_details/(?P<taskid>.*)/', login_required(PerformDetailsView.as_view())),
+    path(r'perform_details_list/', login_required(PerformDetailsListView.as_view()),
+         name='p_perform_details_list'),
+    # 执行任务结果
+    path(r'perform_results/', login_required(PerformResultsView.as_view()), name='p_perform_results'),
     # 执行任务操作
-    path(r'incep_perform/', login_required(IncepPerformView.as_view()), name='p_incep_perform'),
-    re_path(r'incep_rollback/', login_required(IncepRollbackView.as_view()), name='p_incep_rollback'),
-    re_path(r'incep_stop/', login_required(IncepStopView.as_view()), name='p_incep_stop'),
+    path(r'perform_exec/', login_required(PerformExecView.as_view()), name='p_perform_exec'),
+    re_path(r'perform_rollback/', login_required(PerformRollbackView.as_view()), name='p_perform_rollback'),
+    re_path(r'perform_stop/', login_required(PerformStopView.as_view()), name='p_perform_stop'),
 ]

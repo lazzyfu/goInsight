@@ -297,9 +297,8 @@
                 success: function (data) {
                     var html = '';
                     $.each(data, function (index, row) {
-                        var host = row.host;
                         var comment = row.comment;
-                        html += "<option value=" + host + ">" + comment + "</option>"
+                        html += "<option value=" + comment + ">" + comment + "</option>"
                     });
                     $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh', {silent: true})

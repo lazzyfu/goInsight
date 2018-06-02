@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 500px;
+            height: 530px;
         }
     </style>
 {% endblock %}
@@ -13,20 +13,21 @@
 {% block right_content %}
     <section class="content-header">
         <h1>
-            线上业务-数据导出申请
+            线上业务-SQL语法审核
+            <small>支持DDL和DML语句检测</small>
         </h1>
     </section>
 
     <section class="content">
         <div class="row">
-            <form class="form-horizontal" id="dataExportCommitForm" action="{% url 'p_data_export' %}" method="post"
-                  data-toggle="validator">
+            <form class="form-horizontal" id="olAuditCommitForm" action="{% url 'p_ol_audit' %}"
+                  method="post" data-toggle="validator">
                 <div class="col-md-4">
                     <!-- Profile Image -->
                     <div class="box box-success">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
-                                <h5>填写下面信息</h5>
+                                <h5>选择环境</h5>
                             </div>
                         </div>
                         <div class="box-body box-profile">
@@ -34,7 +35,21 @@
                                 <label class="control-label col-sm-3">项目</label>
                                 <div class="col-sm-9">
                                     <select id="s_group" name="group_id" style="width: 100%" required
+                                            onchange="get_online_host_info()"
                                             class="selectpicker form-control" title="请选择一个可用的项目...">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">操作</label>
+                                <div class="col-sm-9">
+                                    <select id="s_operate" name="operate_type"
+                                            style="width: 100%"
+                                            required
+                                            class="selectpicker form-control" title="请选择...">
+                                        <option selected value="DDL">表结构修改</option>
+                                        <option value="DML">数据修改</option>
                                     </select>
                                 </div>
                             </div>
@@ -62,34 +77,9 @@
                             <div class="form-group has-feedback">
                                 <label class="control-label col-sm-3">标题</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="title" data-minlength="5"
-                                           class="form-control"
+                                    <input type="text" id="s_title" name="title" data-minlength="5"
+                                           class="form-control" spellcheck="false"
                                            placeholder="请输入描述性文字" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-sm-3">格式</label>
-                                <div class="col-sm-9">
-                                    <select name="file_format"
-                                            style="width: 100%"
-                                            required
-                                            class="selectpicker form-control" title="请选择...">
-                                        <option value="xlsx" selected>xlsx</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label col-sm-3">编码</label>
-                                <div class="col-sm-9">
-                                    <select name="file_coding"
-                                            style="width: 100%"
-                                            required
-                                            class="selectpicker form-control" title="请选择...">
-                                        <option selected value="utf-8">utf-8</option>
-                                        <option value="gbk">gbk</option>
-                                    </select>
                                 </div>
                             </div>
 
@@ -129,6 +119,15 @@
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm">美化SQL
                                     </button>
 
+                                    <button type="button" onclick="incepSyntaxCheckForm()"
+                                            class="btn bg-info btn-sm">语法检测
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-3"></label>
+                                <div class="col-sm-9">
                                     <button type="submit" class="btn bg-info btn-sm">生成工单</button>
                                 </div>
                             </div>
@@ -140,7 +139,7 @@
                     <div class="box box-primary">
                         <div class="box-body no-padding">
                             <div class="mailbox-read-info">
-                                <h5>填写SELECT语句
+                                <h5>填写SQL语句
                                     <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
                                 </h5>
                             </div>
@@ -148,7 +147,7 @@
                         <div class="box-body no-padding">
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <textarea id="select_sql" autofocus class="form-control"></textarea>
+                                    <textarea id="s_sql" autofocus class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +171,7 @@
                                 <th class="col-sm-1 text-red">级别</th>
                                 <th class="col-sm-2 text-red">信息</th>
                                 <th class="col-sm-4 text-red">SQL</th>
-                                <th class="col-sm-1 text-red">行数</th>
+                                <th class="col-sm-1 text-red">扫描/影响行数</th>
                                 <th class="col-sm-1 text-red">耗时</th>
                             </tr>
                             </thead>
@@ -188,7 +187,7 @@
 
 {% block link_javascripts %}
     <script>
-        var myTextarea = document.getElementById('select_sql');
+        var myTextarea = document.getElementById('s_sql');
         var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
             mode: "text/x-mysql",
@@ -203,35 +202,38 @@
             showCursorWhenSelecting: true,
             extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql,
-            placeholder: "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
+            placeholder:
+                "# 插入数据(这是注释)\n/* 插入数据(这也是注释) */\ninsert into tbl(id,name) values(1,'zs');"
         });
-
 
         /**
          * 获取线上环境主机信息
-         * type=1
+         * type=1：线上环境
+         * purpose=0：审核目的
          */
-        $(function () {
+        var selected_group = '';
+
+        function get_online_host_info() {
+            $('#s_host').empty();
+            selected_group = $('#s_group').val();
             $.ajax({
                 url: '{% url 'p_host_config' %}',
                 type: 'GET',
-                data: {'type': 1},
+                data: {'type': 1, 'purpose': 0, 'selected_group': selected_group},
                 dataType: 'json',
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
                     var html = '';
                     $.each(data, function (index, row) {
-                        var host = row.host;
                         var comment = row.comment;
-                        html += "<option value=" + host + ">" + comment + "</option>"
+                        html += "<option value=" + comment + ">" + comment + "</option>"
                     });
                     $('#s_host').append(html);
                     $('.selectpicker').selectpicker('refresh')
                 }
             })
-        });
-
+        }
 
         /**
          * 获取当前用户所属的项目组
@@ -331,11 +333,10 @@
         });
 
         /**
-         * 提交数据导出工单
+         * 提交线上审核内容
          */
 
-        <!-- 有效性验证 -->
-        $('#dataExportCommitForm').validator().on('submit', function (e) {
+        $('#olAuditCommitForm').validator().on('submit', function (e) {
             var contents = myCodeMirror.getValue();
             if (contents.length < 10) {
                 displayPNotify(2, '审核内容不能为空或小于10个字符');
@@ -347,11 +348,11 @@
             } else {
                 // 验证通过
                 $(this).ajaxSubmit({
-                    data: {'contents': contents, 'audit_type': '1'},
+                    data: {'contents': contents},
                     dataType: 'json',
                     success: function (result) {
                         if (result.status === 0) {
-                            window.parent.location.href = result.jump_url;
+                            window.parent.location.href = result.jump_url
                         } else {
                             displayPNotify(result.status, result.msg)
                         }
@@ -365,7 +366,6 @@
                 return false;
             }
         });
-
     </script>
 {% endblock %}
 

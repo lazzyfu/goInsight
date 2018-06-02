@@ -16,18 +16,18 @@ from utils.tools import format_request
 
 
 class RCrontabView(View):
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         return render(request, 'crontab.html')
 
 
 class CrontabView(View):
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         data = CrontabSchedule.objects.values()
         return JsonResponse(list(data), safe=False)
 
-    @permission_required('can_scheduled_edit')
+    @permission_required('can_scheduled')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -59,7 +59,7 @@ class CrontabView(View):
 
 
 class DeletePeriodicTaskView(View):
-    @permission_required('can_scheduled_edit')
+    @permission_required('can_scheduled')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -71,7 +71,7 @@ class DeletePeriodicTaskView(View):
 
 
 class ModifyPeriodicTaskView(View):
-    @permission_required('can_scheduled_edit')
+    @permission_required('can_scheduled')
     @transaction.atomic
     def post(self, request):
         data = format_request(request)
@@ -98,7 +98,7 @@ class ModifyPeriodicTaskView(View):
 
 
 class GetCrontabView(View):
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, request):
         result = []
         for i in CrontabSchedule.objects.all():
@@ -107,7 +107,7 @@ class GetCrontabView(View):
 
 
 class GetCeleryTasksView(View):
-    @permission_required('can_scheduled_view')
+    @permission_required('can_scheduled')
     def get(self, post):
         # 获取任务列表
         celery_app = current_app
