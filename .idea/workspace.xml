@@ -87,17 +87,26 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="481">
-              <caret line="242" column="23" lean-forward="true" selection-start-line="242" selection-start-column="23" selection-end-line="242" selection-end-column="23" />
+            <state relative-caret-position="804">
+              <caret line="261" column="21" lean-forward="true" selection-end-line="273" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="_monitor_table.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/_monitor_table.html">
+      <file leaf-file-name="settings_bak.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AuditSQL/settings_bak.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="799">
-              <caret line="81" column="7" lean-forward="true" selection-start-line="81" selection-start-column="7" selection-end-line="81" selection-end-column="7" />
+            <state relative-caret-position="697">
+              <caret line="273" column="10" lean-forward="true" selection-start-line="273" selection-start-column="10" selection-end-line="273" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="12" column="29" lean-forward="true" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -183,7 +192,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/AuditSQL/celery.py" />
         <option value="$PROJECT_DIR$/AuditSQL/consumers.py" />
         <option value="$PROJECT_DIR$/AuditSQL/routing.py" />
         <option value="$PROJECT_DIR$/templates/incep_of_audit.html" />
@@ -234,6 +242,7 @@
         <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
         <option value="$PROJECT_DIR$/apps/project_manager/ol/views.py" />
         <option value="$PROJECT_DIR$/apps/project_manager/inception/inception_api.py" />
+        <option value="$PROJECT_DIR$/AuditSQL/settings_bak.py" />
       </list>
     </option>
   </component>
@@ -795,9 +804,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/user/urls.py" />
-    <entry file="file://$PROJECT_DIR$/templates/user_config.html" />
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/user/views.py" />
     <entry file="file://$PROJECT_DIR$/../auditdb/templates/users.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="467">
@@ -1124,17 +1130,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+    <entry file="file://$PROJECT_DIR$/templates/_monitor_table.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="242" column="23" lean-forward="true" selection-start-line="242" selection-start-column="23" selection-end-line="242" selection-end-column="23" />
+        <state relative-caret-position="544">
+          <caret line="66" column="46" lean-forward="true" selection-start-line="66" selection-start-column="46" selection-end-line="66" selection-end-column="46" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/_monitor_table.html">
+    <entry file="file://$PROJECT_DIR$/manage.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="799">
-          <caret line="81" column="7" lean-forward="true" selection-start-line="81" selection-start-column="7" selection-end-line="81" selection-end-column="7" />
+        <state relative-caret-position="238">
+          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="29" lean-forward="true" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="804">
+          <caret line="261" column="21" lean-forward="true" selection-end-line="273" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AuditSQL/settings_bak.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="697">
+          <caret line="273" column="10" lean-forward="true" selection-start-line="273" selection-start-column="10" selection-end-line="273" selection-end-column="10" />
         </state>
       </provider>
     </entry>
