@@ -27,5 +27,4 @@ urlpatterns = [
   path(r'users/', include('user_manager.urls')),
   path(r'projects/', include('project_manager.urls')),
   path(r'mstats/', include('mstats.urls')),
-  path(r'scheduled_tasks/', include('scheduled_tasks.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

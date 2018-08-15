@@ -9,7 +9,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 from AuditSQL import settings
-from project_manager.models import InceptionHostConfig
+from mstats.models import MysqlSchemaInfo
 
 channel_layer = get_channel_layer()
 logger = logging.getLogger(__name__)
@@ -70,34 +70,27 @@ class GetBackupApi(object):
                 conn.close()
 
 
-class GetSchemaInfo(object):
-    """获取目标主机的所有库"""
+class GetTableMetaInfo(object):
+    """获取指定主机的所有表"""
 
-    def __init__(self, host):
-        self.comment = host
-        config = InceptionHostConfig.objects.get(comment=self.comment, is_enable=0)
-        host = config.host
-        user = config.user
-        password = config.password
-        port = config.port
-        self.conn = pymysql.connect(host=host, user=user,
-                                    password=password,
-                                    port=port, use_unicode=True, charset="utf8")
+    def __init__(self, host, port, schema=None):
+        # self.schema可以是单个库也可以是tuple
+        self.host = host
+        self.port = port
+        self.schema = schema
+        config = MysqlSchemaInfo.objects.filter(host=self.host, port=self.port).first()
+        self.conn = pymysql.connect(host=config.host,
+                                    user=config.user,
+                                    password=config.password,
+                                    port=config.port,
+                                    use_unicode=True,
+                                    charset="utf8")
 
     IGNORED_PARAMS = ('information_schema', 'mysql', 'percona')
 
-    def get_values(self):
+    def get_column_info(self):
         result = {}
         try:
-            with self.conn.cursor() as cursor:
-                schema_query = f"select schema_name from information_schema.schemata " \
-                               f"where SCHEMA_NAME not in {self.IGNORED_PARAMS}"
-                cursor.execute(schema_query)
-                schema = []
-                for schema_name in cursor.fetchall():
-                    schema.append(schema_name)
-                result['schema'] = schema
-
             with self.conn.cursor() as cursor:
                 tables_query = f"select TABLE_NAME,group_concat(COLUMN_NAME) from information_schema.COLUMNS " \
                                f"where table_schema not in {self.IGNORED_PARAMS} group by TABLE_NAME"
@@ -112,11 +105,123 @@ class GetSchemaInfo(object):
 
         return result
 
+    def get_online_tables(self):
+        """
+        返回格式：
+        [{
+        "id": 'test.tbl1',
+        "icon": 'fa fa-table text-blue',
+        "text": "tbl"
+        }, ...]
+        """
+        result = []
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"select TABLE_NAME, concat_ws('.',TABLE_SCHEMA,TABLE_NAME) " \
+                        f"from information_schema.COLUMNS where table_schema='{self.schema}' " \
+                        f"group by TABLE_SCHEMA,TABLE_NAME"
+                cursor.execute(query)
+                for text, id in cursor.fetchall():
+                    id = '-'.join((self.host, str(self.port), id))
+                    result.append({'id': id,
+                                   'text': text,
+                                   "icon": 'fa fa-table text-blue'
+                                   })
+        finally:
+            self.conn.close()
+        return result
+
+    def get_offline_tables(self):
+        """
+        返回格式：
+        [{"id": 'host-port-schema', 'schema', 'children':
+        {
+        "id": 'test.tbl1',
+        "icon": 'fa fa-table text-blue',
+        "text": "tbl"
+        }, ...}]
+        """
+        try:
+            with self.conn.cursor() as cursor:
+                result = []
+                if len(self.schema) > 1:
+                    query = f"select table_schema, TABLE_NAME from information_schema.COLUMNS" \
+                            f" where table_schema in {self.schema}  group by TABLE_SCHEMA, TABLE_NAME"
+                else:
+                    query = f"select table_schema, TABLE_NAME from information_schema.COLUMNS" \
+                            f" where table_schema='{self.schema[0]}'  group by TABLE_SCHEMA, TABLE_NAME"
+                cursor.execute(query)
+
+                data = {}
+                s_schema = ''
+                for schema, table in cursor.fetchall():
+                    if schema == s_schema:
+                        data[schema].append(table)
+                    else:
+                        data[schema] = [table]
+                        s_schema = schema
+
+                for k, v in data.items():
+                    p_id = '-'.join((self.host, self.port, k))
+                    p_text = k
+
+                    c_data = []
+                    for t in v:
+                        c_id = '-'.join((self.host, str(self.port), '.'.join((k, t))))
+                        c_text = t
+                        c_data.append({'id': c_id,
+                                       'text': c_text,
+                                       "icon": 'fa fa-table text-blue'
+                                       })
+                    result.append({
+                        'id': p_id,
+                        'text': p_text,
+                        'children': c_data
+                    })
+
+        finally:
+            self.conn.close()
+        return result
+
+    def get_stru_info(self):
+        """
+        返回表结构和索引等信息
+        """
+
+        result = {}
+        try:
+            with self.conn.cursor() as cursor:
+                stru_query = f"show create table {self.schema}"
+                cursor.execute(stru_query)
+                result['stru'] = cursor.fetchone()[1]
+
+            self.conn.cursorclass = pymysql.cursors.DictCursor
+            with self.conn.cursor() as cursor:
+                try:
+                    index_query = f"show index from {self.schema}"
+                    # 获取字段
+                    cursor.execute(index_query)
+                    keys = cursor.fetchone().keys()
+                    field = [{'field': j, 'title': j} for j in keys]
+
+                    index_data = []
+                    cursor.execute(index_query)
+                    for i in cursor.fetchall():
+                        index_data.append(i)
+
+                    result['index'] = {'columnDefinition': field, 'data': index_data}
+                except AttributeError as err:
+                    result['index'] = {'columnDefinition': False, 'data': False}
+        finally:
+            self.conn.close()
+        return result
+
 
 # DDL和DML过滤
 def sql_filter(sql, operate_type):
-    ddl_filter = 'ALTER TABLE|CREATE TABLE|TRUNCATE TABLE'
-    dml_filter = 'INSERT INTO|;UPDATE|^UPDATE|DELETE FROM|\nUPDATE|\nDELETE|\nINSERT'
+    # \s+ 匹配多个空字符，防止绕过
+    ddl_filter = 'ALTER(\s+)TABLE|CREATE(\s+)TABLE|TRUNCATE(\s+)TABLE'
+    dml_filter = 'INSERT(\s+)INTO|;UPDATE|^UPDATE|DELETE(\s+)FROM|\nUPDATE|\nDELETE|\nINSERT'
 
     if operate_type == 'DDL':
         if re.search(dml_filter, sql, re.I):
@@ -134,15 +239,17 @@ def sql_filter(sql, operate_type):
 
 
 class IncepSqlCheck(object):
-    def __init__(self, sql_content, host, database, user):
-        self.sql_content = sql_content
-        self.comment = host
+    def __init__(self, sql_content=None, host=None, port=None, database=None, user=None):
+        self.host = host
+        self.port = port
         self.database = database
+        self.sql_content = sql_content
         self.user = user
+
         self.inception_host = getattr(settings, 'INCEPTION_HOST')
         self.inception_port = int(getattr(settings, 'INCEPTION_PORT'))
 
-        dst_server = InceptionHostConfig.objects.get(comment=self.comment, is_enable=0)
+        dst_server = MysqlSchemaInfo.objects.get(host=self.host, port=self.port, schema=self.database)
         self.dst_host = dst_server.host
         self.dst_user = dst_server.user
         self.dst_password = dst_server.password

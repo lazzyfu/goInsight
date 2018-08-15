@@ -1,58 +1,38 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import logging
 import socket
 
 import pymysql
 from django.http import HttpResponse
 
 from AuditSQL import settings
+from mstats.models import MysqlSchemaInfo
 from project_manager.inception.inception_api import sql_filter
-from project_manager.models import IncepMakeExecTask
+
+logger = logging.getLogger(__name__)
 
 
-def check_db_account(user, host, password, port):
+def check_db_conn_status(host=None, port=None):
+    """检测数据库是否可以连接"""
     port = int(port) if isinstance(port, str) else port
+    obj = MysqlSchemaInfo.objects.filter(host=host, port=port).first()
+
     try:
-        conn = pymysql.connect(user=user, host=host, password=password,
-                               port=port, use_unicode=True, connect_timeout=1)
+        conn = pymysql.connect(user=obj.user,
+                               host=obj.host,
+                               password=obj.password,
+                               port=obj.port,
+                               use_unicode=True,
+                               connect_timeout=1)
 
         if conn:
             return True, None
         conn.close()
     except pymysql.Error as err:
+        logger.error(str(err))
         return False, str(err)
-
-
-def update_tasks_status(id=None, exec_result=None, exec_status=None):
-    """
-    更新任务进度
-    更新备份信息
-    """
-
-    data = IncepMakeExecTask.objects.get(id=id)
-    errlevel = [x['errlevel'] for x in exec_result] if exec_result is not None else []
-    stagestatus = [x['stagestatus'] for x in exec_result] if exec_result is not None else []
-
-    if 1 in errlevel or 2 in errlevel:
-        if 'Execute Successfully' in stagestatus[1]:
-            data.exec_status = 1
-            data.save()
-        else:
-            if data.exec_status == '2':
-                data.exec_status = 0
-                data.save()
-            elif data.exec_status == '3':
-                data.exec_status = 1
-                data.save()
-    else:
-        data.exec_status = exec_status
-
-        if exec_status == 1:
-            data.sequence = exec_result[1]['sequence']
-            data.backup_dbname = exec_result[1]['backup_dbname']
-            data.exec_log = exec_result
-        data.save()
 
 
 def check_incep_alive(fun):

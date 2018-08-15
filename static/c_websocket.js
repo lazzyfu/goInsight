@@ -27,7 +27,12 @@ function CreateWebSocket() {
         }
 
         $("#output_append").append(output_html);
-    }
+    };
+    socket.onclose = function () {
+        setTimeout(function () {
+            CreateWebSocket()
+        }, 2000);
+    };
 }
 
 /**

@@ -7,7 +7,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务记录</h3>
+                        <h3 class="box-title"><i class="fa fa-code"></i> SQL执行任务记录(个人)</h3>
                     </div>
                 </div>
                 <div class="box-body">
@@ -48,45 +48,48 @@
                 columns: [
                     {
                         field: 'taskid',
-                        title: '任务工单号'
+                        title: '工单号'
                     },
                     {
-                        field: 'group_name',
-                        title: '项目',
-                        sortable: true
-                    },
-                    {
-                        field: 'category',
-                        title: '任务分类',
+                        field: 'envi_desc',
+                        title: '环境',
                         sortable: true,
-                        formatter: function (value, row, index) {
-                            if (value === '线上任务') {
-                                return "<a href='#' class='text-blue'>" + value + "</a>"
-                            }
-                            else if (value === '线下任务') {
-                                return "<a href='#' class='text-muted'>" + value + "</a>"
+                        formatter: function (value) {
+                            if (value === 0) {
+                                return 'M1环境'
+                            } else if (value === 1) {
+                                return 'Staging环境'
+                            } else if (value === 2) {
+                                return '生产环境'
+                            } else if (value === 3) {
+                                return '线下其他环境'
                             }
                         }
-
+                    },
+                    {
+                        field: 'title',
+                        title: '标题'
+                    },
+                    {
+                        field: 'tasks',
+                        title: '部署步骤'
                     },
                     {
                         field: 'user',
-                        title: '创建用户'
+                        title: '申请人'
                     },
                     {
                         field: 'dst_host',
-                        title: '主机'
-                    },
-                    {
-                        field: 'dst_database',
-                        title: '数据库'
+                        title: '主机/库',
+                        formatter: function (value, row) {
+                            return value + '<br>' + row.dst_database
+                        }
                     },
                     {
                         field: 'make_time',
                         title: '创建时间',
                         formatter: function winLOSSFormatter(value) {
-                            var date = new Date(value);
-                            return date.toLocaleString();
+                            return moment(value).format('YYYY-MM-DD HH:mm:ss');
                         }
                     },
                     {

@@ -5,7 +5,7 @@ jump_url：返回的目标url
 
 status:
 0 : success
-1 : warning
+1 : notice
 2 : error
 403: permission deny
 

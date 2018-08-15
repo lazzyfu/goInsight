@@ -7,11 +7,45 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> 线上数据审核记录</h3>
+                        <h3 class="box-title"><i class="fa fa-code"></i> 历史工单-生产环境</h3>
                     </div>
                 </div>
                 <div class="box-body">
                     <table id="demo-table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 任务进度模态框 -->
+    <div class="modal fade" id="modal_tasks_show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title" id="myModalLabel">任务进度:
+                        <b id="s_tasks" class="text-danger"></b>
+                       &nbsp;&nbsp;&nbsp;<a href="#" onclick="dingNotice()"><i class="fa fa-bell-o" style="color: red">钉一下</i></a>
+                    </h5>
+                    <h5><small><cite>
+                            <i class="fa fa-check" style="color: green"></i>: 表示已经执行，
+                            <i class="fa fa-close" style="color: red"></i>: 表示未推到该环境，
+                            其他状态: 表示该任务的进度
+                        </cite></small>
+                    </h5>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="box-body">
+                            <table id="tasks-table"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>
@@ -28,10 +62,11 @@
                 method: 'get',
                 dataType: 'json',
                 contentType: "application/x-www-form-urlencoded",
-                url: "{% url 'p_ol_records_list' %}",
+                url: "{% url 'p_audit_records_list' %}",
                 cache: false,
                 queryParams: function (params) {
                     return {
+                        envi_desc: 2,
                         limit_size: params.limit + params.offset,
                         offset_size: params.offset,
                         search_content: params.search
@@ -60,27 +95,37 @@
                         }
                     },
                     {
-                        field: 'group_name',
-                        title: '项目'
-                    },
-                    {
                         field: 'title',
                         title: '标题',
                         formatter: function (value, row) {
                             if (value.length >= 16) {
-                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 16) + '&nbsp;...' + '</a>'
+                                return '<a target="_blank" href="work_order_details/' + row.id + '" title=\"' + value + '\">' + value.slice(0, 16) + '</a>'
                             }
                             else {
-                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value + '</a>'
+                                return '<a target="_blank" href="work_order_details/' + row.id + '" title=\"' + value + '\">' + value + '</a>'
                             }
                         }
                     },
                     {
-                        field: 'created_at',
-                        title: '创建时间',
-                        formatter: function winLOSSFormatter(value) {
-                            var date = new Date(value);
-                            return date.toLocaleString();
+                        field: 'operate_type',
+                        title: '类型'
+                    },
+                    {
+                        field: 'remark_desc',
+                        title: '备注'
+                    },
+                    {
+                        field: 'tasks',
+                        title: '任务',
+                        formatter: function (value) {
+                            return "<a href='#' onclick='deploy_tasks_table(" + "\"" + value + "\"" + ")'>" + value + "</a>"
+                        }
+                    },
+                    {
+                        field: 'host',
+                        title: '主机/库',
+                        formatter: function (value, row) {
+                            return value + '<br>' + row.database
                         }
                     },
                     {
@@ -88,113 +133,50 @@
                         title: '申请人'
                     },
                     {
-                        field: 'verifier',
-                        title: '批准人'
-                    }, {
                         field: 'operator',
-                        title: '执行人'
+                        title: '审批人'
+                    },
+                    {
+                        field: 'created_at',
+                        title: '提交时间',
+                        formatter: function (value) {
+                            return moment(value).format('YYYY-MM-DD HH:mm:ss');
+                        }
                     },
                     {
                         field: 'id',
                         title: '审批',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/ol_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
+                            return "<a href='#' onclick='work_order_operate_form(" + row.id + "," + '\"/projects/ol/work_order_approve/\"' + ",\"通过\", \"不通过\")'><i class='fa fa-pencil-square-o fa-lg'></i></a>"
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: '执行',
+                        formatter: function (value, row) {
+                            return "<a href='#' onclick='general_perform_tasks(" + row.id + "," + row.envi_desc + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '反馈',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/ol_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all fa-lg'></i></a>"
+                            return "<a href='#' onclick='work_order_operate_form(" + row.id + "," + '\"/projects/ol/work_order_feedback/\"' + ",\"处理中\", \"已完成\")'><i class='fa fa-mail-reply-all fa-lg'></i></a>"
                         }
                     },
                     {
                         field: 'id',
                         title: '关闭',
                         formatter: function (value, row, index) {
-                            return "<a href='#' onclick='verifyForm(" + row.id + "," + row.group_id + "," + '\"/projects/ol/ol_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
-                        }
-                    },
-                    {
-                        field: 'id',
-                        title: '详情',
-                        formatter: function (value, row, index) {
-                            return "<a href='ol_details/" + row.id + "/" + row.group_id + "'><i class='fa fa-sliders fa-lg'></i></a>"
-                        }
-
-                    },
-                    {
-                        field: 'id',
-                        title: '执行',
-                        formatter: function (value, row) {
-                            return "<a href='#' onclick='createTasks(" + row.id + "," + row.group_id + ")'><i class='fa fa-check-square-o fa-lg'></i></a>"
+                            return "<a href='#' onclick='work_order_operate_form(" + row.id + "," + '\"/projects/ol/work_order_close/\"' + ",\"提交\", \"结束\")'><i class='fa fa-close fa-lg'></i></a>"
                         }
                     }
                 ]
             })
         });
 
-        // 确认操作
-        function verifyForm(id, group_id, url, btn_left, btn_right) {
-            layui.use('layedit', function () {
-                layui.use('layer', function () {
-                    var layer = layui.layer;
-                    var csrftoken = $.cookie('csrftoken');
-
-                    function ajaxCommit(addition_info, status) {
-                        $.ajax({
-                            type: 'post',
-                            url: url,
-                            dataType: 'json',
-                            data: {
-                                'id': id,
-                                'group_id': group_id,
-                                'status': status,
-                                'addition_info': addition_info,
-                                'csrfmiddlewaretoken': csrftoken
-                            },
-                            success: function (result) {
-                                displayPNotify(result.status, result.msg);
-                            },
-                            error: function (jqXHR) {
-                                if (jqXHR.status === 403) {
-                                    displayPNotify(jqXHR.status)
-                                }
-                            }
-                        });
-                    }
-
-                    layer.open({
-                        title: '附加信息：',
-                        type: 0,
-                        resize: false,
-                        content: '<input type="text" id="addition_info" style="margin: 0px; width: 250px;">',
-                        btn: [btn_left, btn_right],
-                        btnAlign: 'c',
-
-                        yes: function () {
-                            var addition_info = $('#addition_info').val();
-                            var status = btn_left;
-                            layer.close(layer.index);
-                            ajaxCommit(addition_info, status)
-                        },
-
-                        btn2: function () {
-                            var addition_info = $('#addition_info').val();
-                            var status = btn_right;
-                            ajaxCommit(addition_info, status)
-                        },
-                        // 右上角关闭回调
-                        cancel: function () {
-                        }
-                    })
-                    ;
-                });
-            })
-        }
-
         /**
-         * 每5s刷新一次表格
+         * 每3s刷新一次表格
          */
 
         $(function () {
@@ -202,35 +184,7 @@
                 $('#demo-table').bootstrapTable('refresh', {silent: true});
             }
 
-            setInterval(refreshTable, 5000);
+            setInterval(refreshTable, 3000);
         });
-
-        // 创建任务
-        function createTasks(id, group_id) {
-            var csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                type: 'post',
-                url: "{% url 'p_ol_generate_tasks' %}",
-                dataType: 'json',
-                data: {
-                    'id': id,
-                    'group_id': group_id,
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                success: function (result) {
-                    if (result.status === 0) {
-                        window.location.href = result.jump_url
-                    }
-                    else {
-                        displayPNotify(result.status, result.msg)
-                    }
-                },
-                error: function (jqXHR) {
-                    if (jqXHR.status === 403) {
-                        displayPNotify(jqXHR.status)
-                    }
-                }
-            });
-        }
     </script>
 {% endblock %}

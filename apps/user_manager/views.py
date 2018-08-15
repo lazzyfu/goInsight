@@ -5,12 +5,13 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.hashers import make_password
 from django.db.models import F
 from django.urls import reverse, reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import FormView, RedirectView
 
-from user_manager.models import UserAccount, PermissionDetail, RolesDetail
+from user_manager.models import UserAccount, PermissionDetail, RolesDetail, SystemMsgDetails, SystemMsg
+from utils.tools import format_request
 from .forms import ChangePasswordForm, LoginForm
 
 
@@ -32,31 +33,28 @@ class LoginView(FormView):
 
             obj = UserAccount.objects.get(username=username)
             if make_password(password) != obj.password:
-                result = {'msg': '用户名或密码错误'}
-
-            if not obj.is_active:
-                result = {'msg': '用户未激活，请联系管理员'}
-            else:
-                if user is not None:
-                    login(self.request, user)
-                    # 将用户所属的组id写入到session中
-                    groups = list(UserAccount.objects.get(uid=user.uid).groupsdetail_set.all().values_list(
-                        'group__group_id', flat=True))
-                    self.request.session['groups'] = groups
-                    try:
-                        user_role = self.request.user.user_role()
-                        # 将用户权限写入到session
-                        perm_list = list(PermissionDetail.objects.annotate(
-                            permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
-                            'permission_name', flat=True))
-                        self.request.session['perm_list'] = perm_list
-                        # 判断用户是否属于任何一个组
-                        if len(list(groups)) > 0:
-                            return super(LoginView, self).form_valid(form)
-                        else:
-                            result = {'msg': '用户未被分配项目组，请联系管理员'}
-                    except RolesDetail.DoesNotExist:
-                        result = {'msg': '用户未被分配角色，请联系管理员'}
+                result = {'msg': '用户密码输入错误'}
+            # 激活用户
+            obj.is_active = True
+            obj.save()
+            # 如果用户首次登陆，没有角色，分配个开发的角色，role_id=2
+            RolesDetail.objects.get_or_create(user_id=obj.uid, defaults={'role_id': 2})
+            # if not obj.is_active:
+            #     result = {'msg': '用户被禁用，请联系管理员'}
+            # else:
+            if user is not None:
+                login(self.request, user)
+                try:
+                    user_role = self.request.user.user_role()
+                    # 将用户权限写入到session
+                    perm_list = list(PermissionDetail.objects.annotate(
+                        permission_name=F('permission__permission_name')).filter(
+                        role__role_name=user_role).values_list(
+                        'permission_name', flat=True))
+                    self.request.session['perm_list'] = perm_list
+                    return super(LoginView, self).form_valid(form)
+                except RolesDetail.DoesNotExist:
+                    result = {'msg': '用户未被分配角色，请联系管理员'}
         except UserAccount.DoesNotExist:
             result = {'msg': '用户不存在，请联系管理员'}
         return render(self.request, self.template_name, result)
@@ -82,6 +80,14 @@ class IndexView(View):
 class UserProfileView(View):
     def get(self, request):
         return render(request, 'profile.html')
+
+
+class ChangeMobileView(View):
+    def post(self, request):
+        data = format_request(request)
+        UserAccount.objects.filter(uid=request.user.uid).update(mobile=data.get('mobile'))
+        context = {'status': 0, 'msg': '修改成功'}
+        return HttpResponse(json.dumps(context))
 
 
 class ChangePasswordView(View):
@@ -145,3 +151,24 @@ class ChangePicView(View):
         result = {'state': 200}
 
         return HttpResponse(json.dumps(result))
+
+
+class SystemMsgView(View):
+    def get(self, request):
+        is_read_data = SystemMsgDetails.objects.filter(user__uid=request.user.uid).annotate(
+            msg_id=F('msg__id')).values_list('msg_id', flat=True)
+
+        all_data = SystemMsg.objects.values('id', 'title', 'content')
+        result = []
+        for x in all_data:
+            is_read = 1 if x['id'] in is_read_data else 0
+            result.append({'title': x['title'], 'id': x['id'], 'is_read': is_read})
+
+        return HttpResponse(json.dumps(result))
+
+    def post(self, request):
+        id = format_request(request).get('id')
+        data = SystemMsg.objects.filter(pk=id).values('title', 'content')
+        if not SystemMsgDetails.objects.filter(msg_id=id, user_id=request.user.uid).first():
+            SystemMsgDetails.objects.create(msg_id=id, user_id=request.user.uid)
+        return JsonResponse(list(data), safe=False)

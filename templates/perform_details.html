@@ -22,7 +22,6 @@
             font-size: 13px;
             color: #999;
         }
-
     </style>
 {% endblock %}
 
@@ -37,6 +36,20 @@
                     </div>
                 </div>
                 <div class="box-body">
+                    <div id="toolbar">
+                        <div class="form-inline" role="form">
+                            <button type="button"
+                                    class="btn btn-primary" onclick="start_full_execute()"><i
+                                    class="fa fa-hand-pointer-o"></i>
+                                全部执行
+                            </button>
+                            <button type="button"
+                                    class="btn btn-primary" onclick="preview_sql()"><i
+                                    class="fa fa-eye"></i>
+                                SQL预览
+                            </button>
+                        </div>
+                    </div>
                     <table id="demo-table"></table>
                 </div>
             </div>
@@ -58,6 +71,7 @@
         </div>
     </div>
 
+    <!-- 执行结果模态框 -->
     <div class="modal fade modal-wide" id="rollbackupModal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -88,6 +102,32 @@
             </div>
         </div>
     </div>
+
+    <!-- SQL预览模态框 -->
+    <div class="modal fade" id="modal_preview_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-eye"></i> SQL预览
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="box-body">
+                            <textarea id="preview_sql_contents"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block link_javascripts %}
@@ -113,6 +153,7 @@
                 search: true,
                 showRefresh: true,
                 singleSelect: true,
+                toolbar: '#toolbar',
                 minimumCountColumns: 2,
                 pageNumber: 1,
                 pageSize: 20,
@@ -127,9 +168,19 @@
                         sortable: true
                     },
                     {
-                        field: 'category',
-                        title: '任务分类',
-                        sortable: true
+                        field: 'envi_desc',
+                        title: '环境',
+                        formatter: function (value) {
+                            if (value === 0) {
+                                return 'M1环境'
+                            } else if (value === 1) {
+                                return 'Staging环境'
+                            } else if (value === 2) {
+                                return '生产环境'
+                            } else if (value === 3) {
+                                return '线下其他环境'
+                            }
+                        }
                     },
                     {
                         field: 'user',
@@ -172,6 +223,12 @@
                             else if (value === '未执行') {
                                 return "<p class='text-red'>" + value + "</p>"
                             }
+                            else if (value === '失败') {
+                                return "<p class='text-red'>" + value + "</p>"
+                            }
+                            else if (value === '异常') {
+                                return "<p class='text-red'>" + value + "</p>"
+                            }
                         }
                     },
                     {
@@ -207,7 +264,7 @@
         });
 
         /**
-         * 每5s刷新一次表格
+         * 每3s刷新一次表格
          */
 
         $(function () {
@@ -215,7 +272,7 @@
                 $('#demo-table').bootstrapTable('refresh', {silent: true});
             }
 
-            setInterval(refreshTable, 5000);
+            setInterval(refreshTable, 3000);
         });
 
         <!-- 获取回滚语句和执行结果日志 -->
@@ -250,6 +307,31 @@
             })
         }
 
+        <!-- 全部执行 -->
+        function start_full_execute() {
+            var csrftoken = $.cookie('csrftoken');
+
+            $.ajax({
+                url: "{% url 'p_perform_full_exec' %}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'taskid': taskid,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            })
+        }
+
         <!-- 执行 -->
         function execTask(id) {
             var csrftoken = $.cookie('csrftoken');
@@ -260,6 +342,7 @@
                 dataType: 'json',
                 data: {
                     'id': id,
+                    'taskid': taskid,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,
@@ -285,6 +368,7 @@
                 dataType: 'json',
                 data: {
                     'id': id,
+                    'taskid': taskid,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,
@@ -310,6 +394,7 @@
                 dataType: 'json',
                 data: {
                     'id': id,
+                    'taskid': taskid,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 timeout: 5000,
@@ -325,10 +410,58 @@
             })
         }
 
+        <!-- 预览SQL -->
+        var myTextarea = document.getElementById('preview_sql_contents');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            readOnly: true,
+            theme: 'material'
+        });
+
+        function preview_sql() {
+            $('#preview_sql_contents').empty();
+            $.ajax({
+                url: "{% url 'p_perform_records_sqlpre' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    'taskid': taskid
+                },
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    var data = result.data.join(';\n\n');
+                    myCodeMirror.setValue(data);
+                    $('#modal_preview_sql').modal('show')
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            })
+        }
+
         <!-- 创建websocket -->
         $(document).ready(function () {
             CreateWebSocket();
         });
 
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+        <!-- 初始化Tippy -->
+        tippy('.btn', {
+            theme: 'translucent',
+            arrow: true,
+            placement: 'top-start',
+            arrowType: 'round',
+            size: 'large',
+            duration: 500,
+            animation: 'scale'
+        })
     </script>
 {% endblock %}

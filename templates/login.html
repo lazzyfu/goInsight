@@ -9,15 +9,15 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/font-awesome/css/font-awesome.min.css' %}">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/bower_components/Ionicons/css/ionicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/Ionicons/css/ionicons.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/dist/css/AdminLTE.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/AdminLTE.min.css' %}">
     <!-- iCheck -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.2/plugins/iCheck/square/blue.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/plugins/iCheck/square/blue.css' %}">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,6 +26,14 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 </head>
+
+<style>
+.form-control{
+    border-radius: 20px;
+    box-shadow: 1px 1px 1px #888888;;
+}
+</style>
+
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
@@ -33,16 +41,17 @@
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-        <p class="login-box-msg">登陆开始会话</p>
+
 
         <form action="{% url 'p_login' %}" method="post">
+        <p class="login-box-msg">使用运维平台账号登陆(生产账号)</p>
             <div class="form-group has-feedback">
                 <input type="text" name="username" class="form-control" placeholder="用户名">
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                <i class="glyphicon glyphicon-user form-control-feedback"></i>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" name="password" class="form-control" placeholder="密码">
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                <i class="glyphicon glyphicon-lock form-control-feedback"></i>
             </div>
             <div class="form-group has-feedback">
                 {% if msg %}
@@ -64,10 +73,10 @@
 <!-- /.login-box -->
 
 <!-- jQuery 3 -->
-<script src="{% static 'AdminLTE-2.4.2/bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js' %}"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="{% static 'AdminLTE-2.4.2/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
 <!-- iCheck -->
-<script src="{% static 'AdminLTE-2.4.2/plugins/iCheck/icheck.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/plugins/iCheck/icheck.min.js' %}"></script>
 </body>
 </html>

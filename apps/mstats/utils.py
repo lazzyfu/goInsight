@@ -1,25 +1,21 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-import configparser
+import datetime
 import json
-import os
 import re
+import time
 
-import paramiko
 import pymysql
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 
-from mstats.models import MySQLQueryLog
-from project_manager.models import InceptionHostConfig
+from mstats.models import MySQLQueryLog, MysqlSchemaInfo
 
 channel_layer = get_channel_layer()
 
 
-def get_mysql_user_info(host):
-    data = InceptionHostConfig.objects.get(comment=host)
+def get_mysql_user_info(host, port):
+    data = MysqlSchemaInfo.objects.filter(host=host, port=port).first()
     conn = pymysql.connect(host=data.host,
                            user=data.user,
                            password=data.password,
@@ -99,405 +95,42 @@ def get_mysql_user_info(host):
         conn.close()
 
 
-class MysqlUserManager(object):
-    def __init__(self, kwargs):
-        self.db_host = kwargs.get('db_host')
-        # username = user@host
-        self.username = kwargs.get('username')
-        self.schema = kwargs.get('schema')
-        self.password = kwargs.get('password')
-        self.privileges = kwargs.get('privileges')
+def mysql_rw_query(querys, rw='r'):
+    """
+    rw取值：'r' 和 'rw'
+    """
+    allowed_r_query = ['select', 'show', 'desc', 'explain']
+    allowed_rw_query = ['select', 'show', 'desc', 'explain', 'update', 'delete', 'insert']
 
-        data = InceptionHostConfig.objects.get(comment=self.db_host)
-        self.dst_user = '@'.join((data.user, data.host))
-        self.conn = pymysql.connect(host=data.host,
-                                    port=data.port,
-                                    user=data.user,
-                                    password=data.password,
-                                    charset='utf8')
+    match_first_element = []
+    for sql in querys:
+        match_first_element.append(sql.split(' ', 1)[0])
 
-    def flush_privileges(self):
-        """刷新权限"""
-        with self.conn.cursor() as cursor:
-            flush_query = f"flush privileges"
-            cursor.execute(flush_query)
-            cursor.close()
+    # 转换为小写
+    lower_match_first_element = [i.lower() for i in match_first_element]
 
-    def rollback_user(self):
-        """移除执行错误后，已经生成的用户"""
-        with self.conn.cursor() as cursor:
-            rollback_user_query = f"drop user {self.username}"
-            cursor.execute(rollback_user_query)
-            cursor.close()
+    if rw == 'r':
+        if not set(allowed_r_query) >= set(lower_match_first_element):
+            no_support_r_query = list(set(lower_match_first_element).difference(set(allowed_r_query)))
+            msg = '不支持如下SQL语句：{}'.format(','.join(no_support_r_query))
+            return False, msg
 
-    def priv_modify(self):
-        try:
-            with self.conn.cursor() as cursor:
-                # 先移除all privileges
-                revoke_query = f"revoke all ON {self.schema} from {self.username}"
-                cursor.execute(revoke_query)
+    if rw == 'rw':
+        if not set(allowed_rw_query) >= set(lower_match_first_element):
+            no_support_rw_query = list(set(lower_match_first_element).difference(set(allowed_rw_query)))
+            msg = '不支持如下SQL语句：{}'.format(','.join(no_support_rw_query))
+            return False, msg
 
-                # 赋予新权限
-                modify_query = f"grant {self.privileges} on {self.schema} to {self.username}"
-                cursor.execute(modify_query)
-                return {'status': 0, 'msg': '修改成功'}
-        except self.conn.OperationalError as error:
-            return {'status': 2, 'msg': f'授权失败，请检查{self.dst_user}是否有with grant option权限'}
-        except self.conn.ProgrammingError as error:
-            return {'status': 2, 'msg': str(error)}
-        finally:
-            self.flush_privileges()
-            self.conn.close()
+    return True, querys
 
-    def new_host(self):
-        try:
-            with self.conn.cursor() as cursor:
-                # 创建用户主机
-                new_host_query = f"create user {self.username} identified by \"{self.password}\""
-                cursor.execute(new_host_query)
-
-                # 赋予新权限
-                modify_query = f"grant {self.privileges} on {self.schema} to {self.username}"
-                cursor.execute(modify_query)
-                return {'status': 0, 'msg': '创建成功'}
-        except self.conn.OperationalError as error:
-            self.rollback_user()
-            return {'status': 2, 'msg': f'授权失败，请检查{self.dst_user}是否有with grant option权限'}
-        except self.conn.ProgrammingError as error:
-            self.rollback_user()
-            return {'status': 2, 'msg': f'语法错误，{str(error)}'}
-        except self.conn.InternalError as error:
-            return {'status': 2, 'msg': f'创建用户失败，请检查主机是否存在, {str(error)}'}
-        finally:
-            self.flush_privileges()
-            self.conn.close()
-
-    def delete_host(self):
-        try:
-            with self.conn.cursor() as cursor:
-                delete_host_query = f"drop user {self.username}"
-                cursor.execute(delete_host_query)
-                cursor.close()
-                return {'status': 0, 'msg': '删除成功'}
-        except Exception as error:
-            return {'status': 2, 'msg': str(error)}
-        finally:
-            self.flush_privileges()
-            self.conn.close()
-
-
-def check_mysql_conn_status(fun):
-    def wapper(request, *args, **kwargs):
-        host = request.GET.get('host')
-        data = get_object_or_404(InceptionHostConfig, comment=host)
-
-        try:
-            conn = pymysql.connect(user=data.user,
-                                   password=data.password,
-                                   host=data.host,
-                                   port=data.port,
-                                   use_unicode=True,
-                                   connect_timeout=1)
-
-            if conn:
-                return fun(request, *args, **kwargs)
-            conn.close()
-        except pymysql.Error as err:
-            raise Http404
-
-    return wapper
-
-
-class ParamikoOutput(object):
-    def __init__(self, ssh_host=None, ssh_port=None, ssh_user=None, ssh_password=None):
-        self.ssh_host = ssh_host
-        self.ssh_port = ssh_port
-        self.ssh_user = ssh_user
-        self.ssh_password = ssh_password
-
-    def check_connection(self):
-        s = paramiko.SSHClient()
-        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
-                      timeout=1)
-            return True
-        except Exception as err:
-            return err
-
-    def run(self, cmd):
-        try:
-            s = paramiko.SSHClient()
-            s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            s.connect(hostname=self.ssh_host, port=self.ssh_port, username=self.ssh_user, password=self.ssh_password,
-                      timeout=1)
-
-            msg = [stdin, stdout, stderr] = s.exec_command(cmd)
-            out = []
-            for item in msg:
-                try:
-                    for line in item:
-                        out.append(line.strip('\n'))
-                except Exception as err:
-                    pass
-            s.close()
-            return {'status': 0, 'data': out}
-        except Exception as err:
-            return {'status': 2, 'msg': '连接超时，请检查SSH或网络'}
-
-
-class GeneralCParser(object):
-    """从传入的字符串中读取配置并生成变量"""
-
-    def __init__(self, backup_dir=None, parser_string=None):
-        if isinstance(parser_string, str):
-            self.config = configparser.ConfigParser(allow_no_value=True)
-            self.config.read_string(parser_string)
-            self.backup_dir = backup_dir
-            self.check_obj = []
-
-            # 获取mysql backup user
-            mysql = self.config['mysql']
-            self.mysql_cmd = mysql.get('mysql_tool')
-            self.mysql_user = mysql.get('user')
-            self.mysql_host = mysql.get('host')
-            self.mysql_password = mysql.get('password')
-            self.mysql_port = mysql.get('port')
-
-            self.check_obj.append(self.mysql_cmd)
-            self.check_obj.append(self.backup_dir)
-
-            # 是否启用compress
-            try:
-                xb_compress = self.config['compress']
-                try:
-                    if 'compress' in xb_compress:
-                        self.compress = xb_compress.get('compress')
-                    if 'compress_chunk_size' in xb_compress:
-                        self.compress_chunk_size = xb_compress.get('compress_chunk_size')
-                    if 'compress_threads' in xb_compress:
-                        self.compress_threads = xb_compress.get('compress_threads')
-                    if self.compress and self.compress_chunk_size and self.compress_threads:
-                        self.compress_args = f"--compress={self.compress} " \
-                                             f"--compress-chunk-size={self.compress_chunk_size} " \
-                                             f"--compress-threads={self.compress_threads}"
-                except AttributeError as err:
-                    self.compress_args = ''
-            except KeyError as err:
-                self.compress_args = ''
-
-            # 是否启用encrypt
-            try:
-                xb_encrypt = self.config['encrypt']
-                try:
-                    if 'encrypt' in xb_encrypt:
-                        self.encrypt = xb_encrypt.get('encrypt')
-                    if 'encrypt_key' in xb_encrypt:
-                        self.encrypt_key = xb_encrypt.get('encrypt_key')
-                    if 'encrypt_threads' in xb_encrypt:
-                        self.encrypt_threads = xb_encrypt.get('encrypt_threads')
-                    if 'encrypt_chunk_size' in xb_encrypt:
-                        self.encrypt_chunk_size = xb_encrypt.get('encrypt_chunk_size')
-                    if self.encrypt and self.encrypt_key and self.encrypt_threads and self.encrypt_chunk_size:
-                        self.encrypt_args = f"--encrypt={self.encrypt} --encrypt-key={self.encrypt_key} " \
-                                            f"--encrypt-threads={self.encrypt_threads} " \
-                                            f"--encrypt-chunk-size={self.encrypt_chunk_size}"
-                except AttributeError as err:
-                    self.encrypt_args = ''
-            except KeyError as err:
-                self.encrypt_args = ''
-
-            # 获取mysqldump
-            try:
-                mysqldump = self.config['mysqldump']
-                self.mysqldump_cmd = mysqldump.get('backup_tool')
-                self.mysqldump_backupdir = os.path.join(self.backup_dir, 'mysqldump')
-                self.backup_dbs = mysqldump.get('backup_dbs').split(',')
-                self.single_table = mysqldump.get('single_table')
-                self.dump_options = mysqldump.get('dump_options')
-
-                self.check_obj.append(self.mysqldump_cmd)
-
-            except KeyError as err:
-                pass
-
-            # 获取xtrabackup
-            try:
-                xtrabackup = self.config['xtrabackup']
-                self.xtrabackup_cmd = xtrabackup.get('backup_tool')
-                self.defaults_file = xtrabackup.get('defaults-file')
-                self.xtrabackup_backupdir = os.path.join(self.backup_dir, 'xtrabackup', "`date +%F_%T`")
-                self.xtra_options = xtrabackup.get('xtra_options')
-
-                self.check_obj.append(self.xtrabackup_cmd)
-
-            except KeyError as err:
-                pass
-
-
-class CheckCParserValid(GeneralCParser):
-    """检测备份配置文件在目标主机的有效性"""
-
-    def __init__(self, ssh_user=None, ssh_password=None, ssh_host=None, ssh_port=None, backup_dir=None,
-                 parser_string=None):
-        # 获取ssh
-        self.ssh_user = ssh_user
-        self.ssh_password = ssh_password
-        self.ssh_host = ssh_host
-        self.ssh_port = ssh_port
-        self.parser_string = parser_string
-        GeneralCParser.__init__(self, backup_dir, self.parser_string)
-        self.result = {}
-
-        self.paramiko_conn = ParamikoOutput(ssh_user=self.ssh_user,
-                                            ssh_password=self.ssh_password,
-                                            ssh_host=self.ssh_host,
-                                            ssh_port=self.ssh_port)
-
-    def check_ssh_conn(self):
-        result = self.paramiko_conn.check_connection()
-        if result is not True:
-            self.result = {'status': 2, 'msg': 'SSH Authentication Failed'}
-            return False
-        else:
-            return True
-
-    def check_obj_exisit(self):
-        """检测指定的命令文件和目录是否存在是否存在"""
-        is_true = []
-        for i in self.check_obj:
-            output = self.paramiko_conn.run(f"ls {i} && echo $?")['data']
-            if output[-1] != '0':
-                self.result = {'status': 2, 'msg': str(output[0]) + ', 请确认文件或目录存在'}
-                is_true.append(False)
-                break
-            else:
-                is_true.append(True)
-        return is_true
-
-    def check_schema_exisit(self):
-        """检测使用mysqldump时，备份的库是否存在"""
-        for db in self.backup_dbs:
-            cmd = f"{self.mysql_cmd} --user={self.mysql_user} --password='{self.mysql_password}' " \
-                  f"--host={self.mysql_host} --port={self.mysql_port} " \
-                  f"-e \"select count(*) from information_schema.SCHEMATA where SCHEMA_NAME='{db}'\""
-
-            output = self.paramiko_conn.run(cmd)['data']
-            if output[1] == '0':
-                self.result = {'status': 2, 'msg': f'mysqldump指定备份的库不存在：{db}'}
-                break
-
-    def mkdir_backup_dir(self):
-        """创建备份目录，自动创建self.backup_dir/{mysqldump,xtrabackup}"""
-        cmd1 = f"if [ ! -d {self.backup_dir}/mysqldump ]; then mkdir {self.backup_dir}/mysqldump;fi "
-        cmd2 = f"if [ ! -d {self.backup_dir}/xtrabackup ]; then mkdir {self.backup_dir}/xtrabackup;fi "
-
-        self.paramiko_conn.run(cmd1)
-        self.paramiko_conn.run(cmd2)
-
-    def check_mysql_conn(self):
-        """检测mysql备份用户是否可以连接到数据库"""
-        cmd = f"{self.mysql_cmd} --user={self.mysql_user} --password='{self.mysql_password}' " \
-              f"--host={self.mysql_host} --port={self.mysql_port} -e 'select 1'"
-        output = self.paramiko_conn.run(cmd)['data']
-        if output[0] != '1':
-            self.result = {'status': 2, 'msg': str(output[-1])}
-            return False
-        else:
-            return True
-
-    def run(self):
-        if self.check_ssh_conn():
-            if all(self.check_obj_exisit()):
-                if self.check_mysql_conn():
-                    if self.config.has_section('mysqldump'):
-                        self.check_schema_exisit()
-            self.mkdir_backup_dir()
-        return self.result if self.result else True
-
-
-class GeneralBackupCmd(GeneralCParser):
-    """生成备份命令并返回"""
-
-    def __init__(self, ssh_user=None, ssh_password=None, ssh_host=None, ssh_port=None, backup_dir=None,
-                 parser_string=None):
-        # 获取ssh
-        self.ssh_user = ssh_user
-        self.ssh_password = ssh_password
-        self.ssh_host = ssh_host
-        self.ssh_port = ssh_port
-        self.parser_string = parser_string
-        GeneralCParser.__init__(self, backup_dir, self.parser_string)
-
-        self.mysql_args = f"--user={self.mysql_user} --password='{self.mysql_password}' " \
-                          f"--host={self.mysql_host} --port={self.mysql_port}"
-
-        self.backup_cmd = {}
-
-    def general_xtrabackup_cmd(self):
-        """生成xtrabackup备份命令"""
-        cmd = ' '.join((f"{self.xtrabackup_cmd} --defaults-file={self.defaults_file} "
-                        f"--backup --target-dir={self.xtrabackup_backupdir} {self.xtra_options}",
-                        self.mysql_args, self.compress_args, self.encrypt_args))
-        self.backup_cmd['xtrabackup_cmd'] = cmd
-
-    def general_mysqldump_cmd(self):
-        """生成mysqldump备份命令"""
-        cmd = []
-        for db in self.backup_dbs:
-            cmd.append(' '.join((self.mysqldump_cmd,
-                                 self.mysql_args,
-                                 self.dump_options,
-                                 db,
-                                 f'| gzip > {self.mysqldump_backupdir}/full_{db}_`date +%F_%T`.sql.gz '
-                                 f'2>/dev/null')))
-        self.backup_cmd['mysqldump_full_cmd'] = cmd
-
-    def run(self):
-        if self.config.has_section('mysqldump'):
-            self.general_mysqldump_cmd()
-
-        if self.config.has_section('xtrabackup'):
-            self.general_xtrabackup_cmd()
-
-        return self.backup_cmd
-
-
-#         if single_table == 'enable':
-#             dbs = tuple(backup_dbs) if len(backup_dbs) > 1 else (repr(backup_dbs))
-#             query_cmd = " ".join(('mysql',
-#                                   self.get_mysql(),
-#                                   "-e",
-#                                   f"\"select table_schema, table_name from information_schema.tables "
-#                                   f"where table_schema in {dbs}\" 2>/dev/null"))
-#             paramiko_output = ParamikoOutput(self.ssh_host, self.ssh_port, self.ssh_user, self.ssh_password)
-#             query_output = paramiko_output.run(query_cmd)
-#             del query_output[0]
-#             mysqldump_single_cmd = []
-#             for i in query_output:
-#                 schema = i.split('\t')[0]
-#                 table = i.split('\t')[1]
-#                 mysqldump_single_cmd.append(' '.join((backup_tool,
-#                                                       self.get_mysql(),
-#                                                       schema,
-#                                                       table,
-#                                                       dump_options,
-#                                                       f'| gzip > {backupdir}/singlebackup_'
-#                                                       f'{schema}_{table}_`date +%F_%T`.sql.gz 2>/dev/null')))
-#             self.backup_cmd['mysqldump_single_cmd'] = mysqldump_single_cmd
-#     except KeyError as err:
-#         return ''
-#
 
 def mysql_query_format(querys):
     """
     接收原始SQL
-    格式化SQL语句，对提交的SQL语法进行检测
-    返回格式化后的SQL列表
+    格式化SQL语句，返回格式化后的SQL列表
     """
-    support_query = ['select', 'show', 'desc', 'explain']
-    sql_list = []
-    match_first = []
+
+    format_querys = []
 
     # 匹配以\n开头和结尾且只包括\n的转换为''
     # 删除列表中的''元素
@@ -507,59 +140,79 @@ def mysql_query_format(querys):
         j = re.sub('\s+', ' ', i, re.S, re.I)
         # 匹配不以#开头的，此类为注释，不执行
         if re.search('^(?!#)', j, re.I):
-            sql_list.append(j)
-            match_first.append(j.split(' ', 1)[0])
+            format_querys.append(j)
+
+    return format_querys
+
+
+def mysql_query_rules(querys):
+    """
+    对查询进行规则检测
+    """
 
     # 判断是否有limit、没有增加limit 1000
-    for i in sql_list:
-        limit = re.compile('^SELECT (.*) FROM (.*) LIMIT (.*)', re.I)
-        no_limit = re.compile('^SELECT (.*) FROM (.*)', re.I)
+    # 最大仅允许limit 1000
+    for i in querys:
+        limit = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*) LIMIT (\d+)$', re.I)
+        limit_offset = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*) LIMIT (\d+) OFFSET (\d+)$', re.I)
+        no_limit = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*)', re.I)
         # select语句
-        if re.match('^select', i, re.I) and limit.match(i) is None:
-            # 当未匹配到select ... limit ...语句，重写查询
-            sql_list[sql_list.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT 1000", i)
+        if re.match('^select', i, re.I):
+            # 禁止limit N offset N语法
+            if limit_offset.match(i) is None:
+                if limit.match(i) is None:
+                    # 当未匹配到select ... limit ...语句，重写查询
+                    querys[querys.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT 500", i)
+                else:
+                    limit_num = limit.match(i)
+                    if int(limit_num.group(3).replace(';', '')) > 500:
+                        querys[querys.index(i)] = limit.sub(r"SELECT \1 FROM \2 LIMIT 1000", i)
+            else:
+                # 重新limit N offset N 为limit N语法
+                querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT \3', i)
 
-    # 定义正则规则
-    deny_rules = ['^SELECT .*\w+\.\*.* FROM .*', '^SELECT \*.* FROM .*']
+    print(querys)
+    return querys
 
-    # 转换为小写
-    lower_match_first = [i.lower() for i in match_first]
 
-    # 判断SQL语句是否为支持的语句
-    if not set(support_query) >= set(lower_match_first):
-        no_support_query = list(set(lower_match_first).difference(set(support_query)))
-        msg = '不支持如下SQL语句：{}'.format(','.join(no_support_query))
-        return False, msg
-    else:
-        for i in sql_list:
-            for r in deny_rules:
-                pattern = re.compile(r, re.I)
-                if pattern.match(i):
-                    msg = '查询拒绝，不允许 * '
-                    return False, msg
-        return True, sql_list
+NoneType = type(None)
 
 
 class MySQLQuery(object):
-    def __init__(self, querys, host, database):
-        self.querys = querys
-        self.status, self.data = mysql_query_format(self.querys)
-        self.comment = host
-        self.database = database
+    """
+    MySQL查询接口
+    """
 
-        obj = InceptionHostConfig.objects.get(comment=self.comment, purpose='1', is_enable=0)
-        self.conn = pymysql.connect(host=obj.host,
+    def __init__(self, querys=None, host=None, port=None, schema=None, rw='r', envi=None):
+        self.querys = querys
+        self.host = host
+        self.port = int(port)
+        self.schema = schema
+        self.envi = envi
+
+        # 格式化SQL语句
+        format_querys = mysql_query_format(self.querys)
+        # 匹配查询规则，进行过滤
+        limit_querys = mysql_query_rules(format_querys)
+        # 判断是只读还是读写操作，依照环境而定
+        self.status, self.data = mysql_rw_query(limit_querys, rw=rw)
+
+        obj = MysqlSchemaInfo.objects.get(host=host, port=port, schema=schema)
+        self.conn = pymysql.connect(host=self.host,
+                                    port=self.port,
                                     user=obj.user,
                                     password=obj.password,
-                                    port=obj.port,
                                     charset='utf8',
-                                    database=self.database,
+                                    database=self.schema,
                                     cursorclass=pymysql.cursors.DictCursor)
+        # 设置最大查询时间30s
+        self.conn._read_timeout = 30
 
     def query(self, request):
         obj = MySQLQueryLog.objects.create(user=request.user.username,
-                                           host=self.comment,
-                                           database=self.database,
+                                           host=self.host,
+                                           database=self.schema,
+                                           envi=self.envi,
                                            query_sql=self.querys)
         if not self.status:
             obj.query_status = self.data
@@ -568,39 +221,70 @@ class MySQLQuery(object):
             result = {'status': 2, 'msg': self.data}
         else:
             try:
+                start_time = time.time()
                 dynamic_table = {}
                 pull_msg = []
                 i = 1
                 for sql in self.data:
-                    # 获取字段
-                    with self.conn.cursor() as cursor:
-                        cursor.execute(sql)
-                        keys = cursor.fetchone().keys()
-                        field = [{'field': j, 'title': j} for j in keys]
+                    # 如果是DML语句中的update/insert/delete、执行并提交
+                    # 此处统一将其转换为小写
+                    first_element = sql.split(' ', 1)[0].lower()
+                    if first_element in ('update', 'insert', 'delete'):
+                        with self.conn.cursor() as cursor:
+                            cursor.execute(sql)
+                            obj.affect_rows = cursor.rowcount
+                            obj.query_status = '成功'
+                            obj.save()
+                            pull_msg.append(f'{sql}\n执行成功，影响行数：{obj.affect_rows}\n')
+                        self.conn.commit()
+                    else:
+                        # 非修改语句
+                        # 获取字段
+                        with self.conn.cursor() as cursor:
+                            cursor.execute(sql)
+                            keys = cursor.fetchone().keys()
+                            field = [{'field': j, 'title': j} for j in keys]
 
-                    # 获取数据
-                    with self.conn.cursor() as cursor:
-                        cursor.execute(sql)
-                        obj.affect_rows = cursor.rowcount
-                        obj.query_status = '成功'
-                        obj.save()
-                        pull_msg.append(f'{sql[:20]} ...\n执行成功，影响行数：{obj.affect_rows}\n')
-                        data = []
-                        for j in cursor.fetchall():
-                            for k in j:
-                                if isinstance(j[k], str):
-                                    j[k] = j[k].replace('\n', '<br>')
-                            data.append(j)
-
-                    dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
-                    i += 1
+                        # 获取数据
+                        with self.conn.cursor() as cursor:
+                            cursor.execute(sql)
+                            obj.affect_rows = cursor.rowcount
+                            obj.query_status = '成功'
+                            obj.save()
+                            pull_msg.append(f'{sql}\n执行成功，影响行数：{obj.affect_rows}\n')
+                            data = []
+                            for j in cursor.fetchall():
+                                for k in j:
+                                    if isinstance(j[k], str):
+                                        # 处理特殊字符，避免html会进行转义
+                                        v = j[k].replace('<', '&lt;').replace('>', '&gt;')
+                                        j[k] = v.replace('\n', '<br>')
+                                    elif isinstance(j[k], datetime.datetime):
+                                        # 时间类型转换为字符串，避免前端转时间的问题
+                                        j[k] = str(j[k])
+                                    elif isinstance(j[k], NoneType):
+                                        j[k] = 'NULL'
+                                    elif isinstance(j[k], bytes):
+                                        # mysql列可能存在bit类型，转换成字符串和utf-8编码
+                                        j[k] = str(j[k], encoding='utf-8')
+                                data.append(j)
+                        dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
+                        i += 1
+                end_time = time.time()
+                query_time = float(end_time - start_time)
+                obj.query_time = round(query_time, 3)
+                obj.save()
                 json_pull_data = {'type': 1, 'msg': pull_msg}
                 result = {'status': 0, 'data': dynamic_table}
             except Exception as err:
-                obj.query_status = str(err)
+                if 'NoneType' in str(err):
+                    error = f'{sql[:30]} ...\n没有查询到记录'
+                else:
+                    error = str(err)
+                obj.query_status = error
                 obj.save()
-                json_pull_data = {'type': 1, 'msg': str(err)}
-                result = {'status': 2, 'msg': str(err)}
+                json_pull_data = {'type': 1, 'msg': error}
+                result = {'status': 2, 'msg': error}
             finally:
                 self.conn.close()
         async_to_sync(channel_layer.group_send)(request.user.username, {"type": "user.message",

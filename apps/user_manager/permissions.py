@@ -1,15 +1,18 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-import json
+import ast
+import logging
 from functools import wraps
 
 from django.core.exceptions import PermissionDenied
 from django.db.models import F
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from project_manager.models import AuditContents, IncepMakeExecTask
 from user_manager.models import PermissionDetail
+from utils.tools import format_request
+
+logger = logging.getLogger(__name__)
 
 
 def has_perm(perm_list, perm):
@@ -47,58 +50,45 @@ def permission_required(*perm):
     return decorator
 
 
-def group_permission_required(fun):
+def order_permission_required(perm):
     """
-    验证项目组权限
-    如果用户不属于该项目，则返回：PermissionDenied
+    验证线上工单执行权限
+    可执行的用户：有指定的权限或工单申请人
     """
 
-    def wapper(request, *args, **kwargs):
-        user_in_group = request.session['groups']
-        group_id = request.POST.get('group_id')
-
-        if user_in_group is not None:
-            if int(group_id) in request.session['groups']:
-                return fun(request, *args, **kwargs)
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if isinstance(perm, str):
+                perms = (perm,)
             else:
-                context = {'status': 1, 'msg': '权限拒绝，您不属于该项目组的成员'}
-                return HttpResponse(json.dumps(context))
-        else:
-            raise PermissionDenied
+                perms = perm
+            user_role = request.request.user.user_role()
+            id = request.request.POST.get('id')
+            # 此处用作debug
+            logger.info(f'钩子id: {id}, type: {type(id)}')
+            if id != '':
+                pk_id = int(id) if isinstance(id, str) else id
+            obj = get_object_or_404(AuditContents, pk=pk_id)
+            perm_list = list(PermissionDetail.objects.annotate(
+                permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
+                'permission_name', flat=True))
+            if any(has_perm(perm_list, p) for p in perms) or obj.proposer == request.request.user.username:
+                return view_func(request, *args, **kwargs)
+            else:
+                raise PermissionDenied
 
-    return wapper
+        return _wrapped_view
 
-
-def check_record_details_permission(fun):
-    """
-    验证用户是否有指定项目详情记录的访问权限
-    """
-
-    def wapper(request, *args, **kwargs):
-        id = kwargs['id']
-        group_id = int(kwargs['group_id'])
-
-        # 检查该记录是否存在
-        obj = get_object_or_404(AuditContents, pk=id)
-
-        # 检查用户是否有该项目的权限
-        if group_id not in request.session['groups']:
-            raise PermissionDenied
-
-        # 验证pk记录中的group_id是否和输入的group_id相同
-        if obj.group_id == group_id:
-            return fun(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
-
-    return wapper
+    return decorator
 
 
 def perform_tasks_permission_required(*perm):
     """
     执行任务权限检查
-    当执行任务未线下任务（category='0'）且有can_commit权限的用户，可以执行线下的执行任务
+    可执行的用户：有指定的权限或工单申请人
     """
+
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
@@ -110,15 +100,17 @@ def perform_tasks_permission_required(*perm):
             perm_list = list(PermissionDetail.objects.annotate(
                 permission_name=F('permission__permission_name')).filter(role__role_name=user_role).values_list(
                 'permission_name', flat=True))
-            obj = IncepMakeExecTask.objects.get(id=request.request.POST.get('id'))
-            # 当执行任务未线下任务时，且用户有can_commit权限时
-            if obj.category == '0':
-                if 'can_commit' in perm_list:
-                    return view_func(request, *args, **kwargs)
 
-            if any(has_perm(perm_list, p) for p in perms):
+            data = format_request(request.request)
+            taskid = ast.literal_eval(data.get('taskid'))
+
+            allowed_user = IncepMakeExecTask.objects.filter(taskid=taskid).first().user
+            # 当执行任务为线上任务时或谁提交的，谁有权限执行
+            if any(has_perm(perm_list, p) for p in perms) or allowed_user == request.request.user.username:
                 return view_func(request, *args, **kwargs)
             else:
                 raise PermissionDenied
+
         return _wrapped_view
+
     return decorator

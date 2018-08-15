@@ -14,7 +14,6 @@ class IncepSqlCheckForm(forms.Form):
 
 
 class SyntaxCheckForm(forms.Form):
-    host = forms.CharField(required=True)
     database = forms.CharField(required=True, max_length=64)
     operate_type = forms.ChoiceField(choices=operate_type_choice, label=u'操作类型，是DDL还是DML')
     contents = forms.CharField(widget=forms.Textarea)

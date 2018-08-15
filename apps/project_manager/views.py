@@ -1,17 +1,19 @@
+import datetime
 import json
 
 import sqlparse
 from channels.layers import get_channel_layer
-from django.db.models import F, Count
+from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
-from apps.project_manager.inception.inception_api import GetSchemaInfo, sql_filter, IncepSqlCheck
+from apps.project_manager.inception.inception_api import GetTableMetaInfo, sql_filter, IncepSqlCheck
+from mstats.models import MysqlSchemaInfo
 from project_manager.forms import SyntaxCheckForm
-from project_manager.utils import check_db_account
-from user_manager.models import GroupsDetail, Contacts, PermissionDetail, RolesDetail
+from project_manager.utils import check_db_conn_status
+from user_manager.models import PermissionDetail, RolesDetail
 from utils.tools import format_request
-from .models import InceptionHostConfigDetail, InceptionHostConfig
+from .models import AuditTasks
 
 channel_layer = get_channel_layer()
 
@@ -37,130 +39,89 @@ class BeautifySQLView(View):
                 sql_split.append({'comment': '', 'sql': sql.value})
 
         beautify_sql_list = []
-        try:
-            for row in sql_split:
-                comment = row['comment']
-                sql = row['sql']
-                res = sqlparse.parse(sql)
-                if res[0].tokens[0].ttype[1] == 'DDL':
-                    sql_format = sqlparse.format(sql)
-                    beautify_sql_list.append(comment + sql_format)
-                else:
-                    sql_format = sqlparse.format(sql, reindent=True)
-                    beautify_sql_list.append(comment + sql_format)
-            context = {'data': '\n\n'.join(beautify_sql_list)}
-        except Exception as err:
-            context = {'status': 2, 'msg': '注释或语法错误'}
+        for row in sql_split:
+            comment = row['comment']
+            sql = row['sql']
+            res = sqlparse.parse(sql)
+            syntax_type = res[0].token_first().ttype.__str__()
+            if syntax_type == 'Token.Keyword.DDL':
+                sql_format = sqlparse.format(sql)
+                beautify_sql_list.append(comment + sql_format)
+            elif syntax_type == 'Token.Keyword.DML':
+                sql_format = sqlparse.format(sql, reindent=True)
+                beautify_sql_list.append(comment + sql_format)
+            elif syntax_type == 'Token.Keyword':
+                beautify_sql_list.append(comment + sql)
+        context = {'data': '\n\n'.join(beautify_sql_list)}
 
         return HttpResponse(json.dumps(context))
 
 
-class IncepHostConfigView(View):
-    """获取当前用户所属项目的所有数据库主机，筛选指定项目的主机"""
+class GetHostInfoView(View):
+    """获取指定环境主机信息"""
 
     def get(self, request):
-        """
-        type=0：线下数据库
-        type=1：线上数据库
-        purpose=0：审核目的
-        purpose=1：查询目的
-        group: 筛选指定项目的主机
-        """
-        data = format_request(request)
-        type = data.get('type')
-        purpose = data.get('purpose')
-        user_in_group = request.session.get('groups')
-        selected_group = data.get('selected_group')
-        if type and purpose:
-            result = InceptionHostConfigDetail.objects.annotate(comment=F('config__comment'),
-                                                                ).filter(config__type=type). \
-                filter(config__purpose=purpose). \
-                filter(config__is_enable=0). \
-                filter(group__group_id=selected_group). \
-                values('comment').annotate(Count('id'))
-        else:
-            result = InceptionHostConfigDetail.objects.annotate(comment=F('config__comment')
-                                                                ).filter(config__is_enable=0). \
-                filter(group__group_id__in=user_in_group). \
-                values('comment').annotate(Count('id'))
+        result = format_request(request)
+        envi = result.get('envi').split(',')
+        is_master = result.get('is_master')
 
-        return JsonResponse(list(result), safe=False)
+        data = MysqlSchemaInfo.objects.filter(envi__in=envi, is_master=is_master).filter(comment__isnull=False).values(
+            'host', 'port', 'comment').distinct()
+
+        return JsonResponse(list(data), safe=False)
 
 
-class GetSchemaView(View):
-    """获取选中环境的数据库库名"""
+class GetTableMetaInfoView(View):
+    """获取mysql表的信息，提供给tab补全使用"""
 
     def post(self, request):
         data = format_request(request)
-        host = data['host']
-        obj = InceptionHostConfig.objects.get(comment=host)
-        status, msg = check_db_account(obj.user, obj.host, obj.password, obj.port)
+        print()
+        host, port = data.get('schema').split(',')
+        status, msg = check_db_conn_status(host, port)
         if status:
-            db_list = GetSchemaInfo(host).get_values()
-            context = {'status': 0, 'msg': '', 'data': db_list}
+            meta_data = GetTableMetaInfo(host, port).get_column_info()
+            context = {'status': 0, 'msg': '', 'data': meta_data}
         else:
-            context = {'status': 2, 'msg': msg}
+            context = {'status': 2, 'msg': f'无法连接到数据库，请联系DBA\n主机: {host}\n端口: {port}'}
         return HttpResponse(json.dumps(context))
 
 
-class GroupInfoView(View):
-    def get(self, request):
-        groups = GroupsDetail.objects.filter(
-            user__uid=request.user.uid).annotate(
-            group_id=F('group__group_id'), group_name=F('group__group_name')) \
-            .values('group_id', 'group_name')
+class GetTableInfo(View):
+    """获取指定主机的所有表"""
 
-        return JsonResponse(list(groups), safe=False)
+    def post(self, request):
+        data = format_request(request).get('schema')
+        host, port, schema = data.split(',')
+
+        status, msg = check_db_conn_status(host, port)
+        if status:
+            table_list = GetTableMetaInfo(host, port, schema).get_column_info()
+            context = {'status': 0, 'msg': '', 'data': table_list}
+        else:
+            context = {'status': 2, 'msg': f'无法连接到数据库，请联系DBA\n主机: {host}\n端口: {port}'}
+        return HttpResponse(json.dumps(context))
 
 
 class GetAuditUserView(View):
-    """获取指定项目组的批准人和执行人信息"""
+    """获取DBA信息"""
 
-    def post(self, request):
-        data = format_request(request)
-        group_id = data.get('group_id')
+    def get(self, request):
         result = []
-        if group_id:
-            role_list = PermissionDetail.objects.annotate(
-                role_name=F('role__role_name'),
-                permission_name=F('permission__permission_name')).filter(
-                permission__permission_name__in=('can_approve', 'can_execute')
-            ).values_list('role_name', 'permission_name')
+        role_list = PermissionDetail.objects.annotate(
+            role_name=F('role__role_name'),
+            permission_name=F('permission__permission_name')).filter(
+            permission__permission_name='can_approve'
+        ).values_list('role_name')
 
-            for i in role_list:
-                role_name = i[0]
-                can_priv = i[1]
+        for i in role_list:
+            role_name = i[0]
+            data = RolesDetail.objects.annotate(
+                username=F('user__username'),
+                displayname=F('user__displayname'),
+            ).filter(role__role_name=role_name).values('username', 'displayname').order_by('username')
 
-                uid = RolesDetail.objects.annotate(uid=F('user__uid')).filter(
-                    role__role_name=role_name).values_list(
-                    'uid', flat=True)
-
-                data = GroupsDetail.objects.annotate(
-                    uid=F('user__uid'),
-                    username=F('user__username'),
-                    email=F('user__email'),
-                ).filter(group__group_id=group_id).filter(user__uid__in=uid).values('uid', 'username', 'email')
-                result.append({'priv': can_priv, 'user': list(data)})
-        return JsonResponse(result, safe=False)
-
-
-class ContactsInfoView(View):
-    def post(self, request):
-        """ 获取指定项目的联系人"""
-        group_id = request.POST.get('group_id')
-
-        result = []
-        if group_id:
-
-            query = f"select ac.contact_id, group_concat(concat_ws(':', ac.contact_name, ac.contact_id, " \
-                    f"ac.contact_email)) as contact_info " \
-                    f"from auditsql_contacts as ac JOIN auditsql_contacts_detail a ON ac.contact_id = a.contact_id " \
-                    f"JOIN  auditsql_groups a2 " \
-                    f"ON a.group_id = a2.group_id where a.group_id = {group_id} group by ac.contact_id;"
-
-            for row in Contacts.objects.raw(query):
-                result.append(row.contact_info)
-
+            result.append({'user': list(data)})
         return JsonResponse(result, safe=False)
 
 
@@ -171,8 +132,7 @@ class SyntaxCheckView(View):
         form = SyntaxCheckForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            host = cleaned_data['host']
-            database = cleaned_data['database']
+            host, port, database = cleaned_data['database'].split(',')
             operate_type = cleaned_data.get('operate_type')
             contents = cleaned_data['contents']
 
@@ -180,7 +140,7 @@ class SyntaxCheckView(View):
             filter_result = sql_filter(contents, operate_type)
 
             # 实例化
-            of_audit = IncepSqlCheck(contents, host, database, request.user.username)
+            of_audit = IncepSqlCheck(contents, host, port, database, request.user.username)
 
             if filter_result['status'] == 2:
                 context = filter_result
@@ -193,3 +153,19 @@ class SyntaxCheckView(View):
             error = "请选择主机、库名或项目组"
             context = {'status': 2, 'msg': error}
             return HttpResponse(json.dumps(context))
+
+
+class GetOnlineAuditTasksList(View):
+    def get(self, request):
+        """
+        如果当前任务的提交时间大于任务设置的过期时间，不允许选择该任务
+        is_disable：是否禁用，0：否，1：是
+        """
+        before_14_days = (datetime.datetime.now() - datetime.timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")
+        query = f"select id,tasks,if(now()>expire_time,1,0) as is_disable from auditsql_audit_tasks " \
+                f"where created_at >= '{before_14_days}' order by created_at desc"
+        data = []
+        for row in AuditTasks.objects.raw(query):
+            data.append({'tasks': row.tasks, 'is_disable': row.is_disable})
+
+        return JsonResponse(data, safe=False)

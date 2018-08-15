@@ -2,29 +2,24 @@
 # edit by fuzongfei
 
 from django.contrib.auth.decorators import login_required
-from django.urls import path, re_path
+from django.urls import path
 
-from mstats.views import RenderMySQLUserView, MySQLUserView, MysqlUserManagerView, RBackupTaskView, BackupTaskView, \
-    BackupTaskDetailView, BackupTaskPreviewView, BackupTaskPreviewListView, GetBackupDiskUsedView, \
-    RSchemaMonitorTaskView, SchemaMonitorTaskView, MySQLQueryView, RMySQLQueryView
+from mstats.views import ROnlineMySQLQueryView, OnlineMySQLQueryView, \
+    ROfflineMySQLQueryView, OfflineMySQLQueryView, \
+    GetSchemaInfo, WebSSHView, GetWebSSHCmdView, GetStruInfoView
 
 urlpatterns = [
-    path(r'r_mysql_user_manager/', login_required(RenderMySQLUserView.as_view()), name='p_r_mysql_user_manager'),
-    path(r'mysql_user/', login_required(MySQLUserView.as_view()), name='p_mysql_user'),
-    path(r'mysql_user_manager/', login_required(MysqlUserManagerView.as_view()), name='p_mysql_user_manager'),
-    # 监控表结构定时任务
-    path(r'rperiodic_task/', login_required(RSchemaMonitorTaskView.as_view()), name='p_rschema_monitor_task'),
-    path(r'periodic_task/', login_required(SchemaMonitorTaskView.as_view()), name='p_schema_monitor_task'),
-    # 监控备份定时任务
-    path(r'rbackup_task/', login_required(RBackupTaskView.as_view()), name='p_rbackup_task'),
-    path(r'backup_task/', login_required(BackupTaskView.as_view()), name='p_backup_task'),
-    # 获取备份任务信息
-    path(r'backup_task_detail/', login_required(BackupTaskDetailView.as_view()), name='p_backup_task_detail'),
-    re_path(r'backup_task_preview/(?P<id>\d+)/', login_required(BackupTaskPreviewView.as_view())),
-    re_path(r'backup_task_preview_list', login_required(BackupTaskPreviewListView.as_view()),
-            name='p_backup_task_preview_list'),
-    re_path(r'get_backup_disk_used', login_required(GetBackupDiskUsedView.as_view()),
-            name='p_get_backup_disk_used'),
-    path(r'rquery/', login_required(RMySQLQueryView.as_view()), name='p_rquery'),
-    path(r'query/', login_required(MySQLQueryView.as_view()), name='p_query')
+    # mysql online query
+    path(r'r_online_query/', login_required(ROnlineMySQLQueryView.as_view()), name='p_r_online_query'),
+    path(r'online_query/', login_required(OnlineMySQLQueryView.as_view()), name='p_online_query'),
+    # mysql offline query
+    path(r'r_offline_query/', login_required(ROfflineMySQLQueryView.as_view()), name='p_r_offline_query'),
+    path(r'offline_query/', login_required(OfflineMySQLQueryView.as_view()), name='p_offline_query'),
+    # 获取库名
+    path(r'get_schema_info/', login_required(GetSchemaInfo.as_view()), name='p_get_schema_info'),
+    # 获取表结构和索引信息
+    path(r'get_stru_info/', login_required(GetStruInfoView.as_view()), name='p_get_stru_info'),
+    # webssh
+    path(r'web_ssh/', login_required(WebSSHView.as_view()), name='p_web_ssh'),
+    path(r'get_ssh_cmd/', login_required(GetWebSSHCmdView.as_view()), name='p_get_ssh_cmd'),
 ]
