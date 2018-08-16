@@ -5,6 +5,8 @@ AuditSQL介绍
 
 **欢迎大家的使用，同时使用中遇到的问题，请指出，谢谢。（不喜勿喷，谢谢）**
 
+## 文档地址
+https://github.com/lazzyfu/AuditSQL/wiki
 
 ## 开发组件
 
