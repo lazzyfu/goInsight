@@ -121,11 +121,11 @@ def xiaoding_pull(user, id, type, addition_info=None, sleep=3):
         host = ':'.join((data.host, str(data.port)))
         addition_info = addition_info if addition_info else None
         if data.envi_desc == 0:
-            envi_desc = 'M1环境'
+            envi_desc = '测试环境'
             if domain_name:
                 jump_url = '/'.join((domain_name, 'projects/ol/test_records/'))
         elif data.envi_desc == 1:
-            envi_desc = 'Staging环境'
+            envi_desc = '预发布环境'
             if domain_name:
                 jump_url = '/'.join((domain_name, 'projects/ol/staging_records/'))
         elif data.envi_desc == 2:

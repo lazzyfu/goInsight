@@ -1,133 +1,120 @@
-INSERT INTO `auditsql_permission`
-VALUES
-('1', 'can_offline_mysql_query', '线下环境数据查询权限', now(), now()),
-('2', 'can_admin', '管理员权限', now(), now()),
-('3', 'can_online_mysql_query', '线上环境数据查询权限', now(), now()),
-('4', 'can_commit', '提交权限', now(), now()),
-('5', 'can_execute', '执行权限', now(), now()),
-('6', 'can_approve', '审批权限', now(), now());
+部署/升级
+===============
 
+#系统版本要求
 
-部署后，需要解决如下几个问题：
-问题1：Pymysql在链接inception在判断版本时出现value error
-解决办法：
-修改Pymysql文件夹内的connections.py
-修改为如下：
-```
-self.server_version = '5.7.18-16-log'
-if int(self.server_version.split('.', 1)[0]) >= 5:
-   self.client_flag |= CLIENT.MULTI_RESULTS
-```
+CentOS release 6.9（Inception可能无法在centos7上编译通过，建议选择centos6.x）
 
-问题2：Inception始终反馈"Must start as begin statement"的语法错误
-解决办法：
-修改Pymysql文件夹内的cursors.py
-修改为如下：
-```
-if not self._defer_warnings:
-    # self._show_warnings()
-    pass
-```
+配置：2核4G内存
 
-系统版本要求：CentOS release 6.9（Inception可能无法再centos7上编译通过，建议选择centos6.x）
-
-# 安装依赖包
+#安装依赖包
+```bash
 yum -y install net-tools vim lsof lrzsz bzip2-devel gcc gcc-c++ make automake unzip curl curl-devel perl perl-devel expat expat-devel zlib zlib-devel asciidoc xmlto gettext-devel openssh-clients openssl-devel openssl mlocate python-devel openldap-devel
+```
 
-# 安装python：
+#安装python
+```bash
 cd /usr/local/src
 wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
 tar -zxf Python-3.6.4.tgz
 ./configure --prefix=/usr && make && make altinstall
+```
 
-# 安装虚拟环境
+#安装虚拟环境
+```bash
 pip3.6 install virtualenv -i https://mirrors.aliyun.com/pypi/simple
+```
 
-# 创建项目所需的虚拟环境venv_py36
+#创建项目所需的虚拟环境venv_py36
+```bash
 cd /root
 virtualenv venv_py36 --python=`which python3.6`
+```
 
-# 修改.bashrc,在该系统用户登录之后自动激活虚拟环境。
-# 在vim /root/.bashrc下增加以下命令
+#修改.bashrc,系统用户登录自动激活虚拟环境。
+#在vim /root/.bashrc下增加以下命令
+```bash
 source ~/venv_py36/bin/activate
+```
 
-# 安装Git：
+#安装Git
+```bash
 cd /usr/local/src
 wget https://github.com/git/git/archive/master.zip
 unzip master.zip
 make prefix=/usr all
 make prefix=/usr install
+```
 
-# 在.bashrc下增加以下命令
+#在.bashrc下增加以下命令
+```bash
 export PATH=$PATH:/usr/libexec/git-core
+```
 
-# 安装mysql：
+#安装mysql
+```bash
 yum -y install http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
 yum -y install Percona-Server-server-56  Percona-Server-devel-56
+```
 
-# 初始化django环境
-# 拉取django项目代码
-# 拉取后，将settings_bak.py修改为settings.py
-# 创建web目录
+#初始化django环境
+#拉取django项目代码
+#拉取后，将settings_bak.py修改为settings.py
+#创建web目录
+```bash
 mkdir /data/web -p
-git clone https://github.com/lazzyfu/AuditSQL.git
+cd /data/web && git clone https://github.com/lazzyfu/AuditSQL.git
 chown -R nginx. /data/web
+```
 
-# 安装依赖的django项目开发包
+#安装依赖的django项目开发包
+```bash
 pip3.6 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+```
 
-# 安装uwsgi
-pip install uwsgi
 
-# 安装nginx
+#安装redis
+```bash
+yum -y install redis
+```
+
+#安装nginx
+```bash
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 yum -y install nginx
-
-# 安装redis
-yum -y install redis
-
-# 安装Inception
-# 安装到/opt/inception目录下
-# 自己去github上搜索Inception下载，安装即可
-unzip inception-master.zip
-cd inception-master
-vim inception_build.sh
 ```
-# 修改为：
--DCMAKE_INSTALL_PREFIX=/opt/inception
-```
-./inception_build.sh debug
 
-# 配置nginx
+#配置nginx
+```text
 vim /etc/nginx/conf.d/nginx.conf
-```
+
 server {
     listen      8000;
     server_name sqlaudit.example.com;
     charset     utf-8;
 
-    # max upload size
+    #max upload size
     client_max_body_size 75M;
 
-    # django media directory
+    #django media directory
     location /media  {
         alias /data/web/AuditSQL/media;
     }
 
-    # django static directory
+    #django static directory
     location /static {
         alias /data/web/AuditSQL/static;
     }
 
-    # uwsgi 反向代理
+    #uwsgi 反向代理
     location / {
         uwsgi_pass  unix://///data/web/AuditSQL_uwsgi.sock;
 
-        # the uwsgi_params file you installed
+        #the uwsgi_params file you installed
         include     /etc/nginx/uwsgi_params;
     }
 
-    # daphne 反向代理
+    #daphne 反向代理
     location /ws {
       proxy_pass http://0.0.0.0:8001;
       proxy_http_version 1.1;
@@ -156,11 +143,17 @@ server {
 }
 ```
 
-# 配置uwsgi
-vim /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+#安装uwsgi
+```bash
+pip install uwsgi
 ```
+
+#配置uwsgi
+```text
+vim /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+
 [uwsgi]
-# nginx用户的uid
+#nginx用户的uid
 uid = nginx
 chdir = /data/web/AuditSQL
 module = AuditSQL.wsgi
@@ -175,90 +168,124 @@ vacuum = true
 daemonize = /var/log/uwsgi.log
 ```
 
-# 配置数据库(字符集utf8，否则执行python manage.py migrate会报编码错误)
+#配置数据库(字符集utf8，否则执行python manage.py migrate会报编码错误)
+```bash
 create database auditsql character set utf8
+```
 
-# 初始化数据表
+#初始化数据表
+```bash
 cd /data/web/AuditSQL
 python manage.py migrate
+```
 
-# 处理静态文件
+#处理静态文件
+```bash
 python manage.py collectstatic
+```
 
-# 启动uwsgi
+#启动uwsgi
+```bash
 uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+```
 
-# 启动daphne服务（服务websocket）
+#启动daphne服务（服务websocket）
+```bash
 cd /data/web/AuditSQL
 nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
+```
 
-# 启动nginx
+#启动nginx
+```bash
 service nginx start
+```
 
-# 启动redis
+#启动redis
+#redis默认配置即可
+```bash
 service redis start
+```
 
 
-# 配置celery启动脚本
-# 同级目录下有
+#配置celery启动脚本
+#同级目录下有celeryd文件
+```bash
 vim /etc/init.d/celeryd
 chmod +x /etc/init.d/celeryd
-
-# 编辑配置文件
-vim /etc/default/celeryd
 ```
-# Names of nodes to start
-#   most people will only start one node:
+
+#编辑celery配置文件
+```text
+vim /etc/default/celeryd
+
+#Names of nodes to start
+#  most people will only start one node:
 CELERYD_NODES="worker1"
-#   but you can also start multiple and configure settings
-#   for each in CELERYD_OPTS
+#  but you can also start multiple and configure settings
+#  for each in CELERYD_OPTS
 #CELERYD_NODES="worker1 worker2 worker3"
-#   alternatively, you can specify the number of nodes to start:
+#  alternatively, you can specify the number of nodes to start:
 #CELERYD_NODES=10
 
-# Absolute or relative path to the 'celery' command:
+#Absolute or relative path to the 'celery' command:
 CELERY_BIN="/root/venv/bin/celery"
 #CELERY_BIN="/virtualenvs/def/bin/celery"
 
-# App instance to use
-# comment out this line if you don't use an app
+#App instance to use
+#comment out this line if you don't use an app
 CELERY_APP="AuditSQL"
-# or fully qualified:
+#or fully qualified:
 #CELERY_APP="proj.tasks:app"
 
-# Where to chdir at start.
-CELERYD_CHDIR="/data/web/dba/AuditSQL/"
+#Where to chdir at start.
+CELERYD_CHDIR="/data/web/AuditSQL/AuditSQL/"
 
-# Extra command-line arguments to the worker
+#Extra command-line arguments to the worker
 CELERYD_OPTS="--time-limit=7200 --concurrency=8 -B"
-# Configure node-specific settings by appending node name to arguments:
+#Configure node-specific settings by appending node name to arguments:
 #CELERYD_OPTS="--time-limit=300 -c 8 -c:worker2 4 -c:worker3 2 -Ofair:worker1"
 
-# Set logging level to DEBUG
+#Set logging level to DEBUG
 #CELERYD_LOG_LEVEL="DEBUG"
 
-# %n will be replaced with the first part of the nodename.
+#%n will be replaced with the first part of the nodename.
 CELERYD_LOG_FILE="/var/log/celery/%n%I.log"
 CELERYD_PID_FILE="/var/run/celery/%n.pid"
 
-# Workers should run as an unprivileged user.
-#   You need to create this user manually (or you can choose
-#   a user/group combination that already exists (e.g., nobody).
+#Workers should run as an unprivileged user.
+#  You need to create this user manually (or you can choose
+#  a user/group combination that already exists (e.g., nobody).
 CELERYD_USER="root"
 CELERYD_GROUP="root"
 
-# If enabled pid and log directories will be created if missing,
-# and owned by the userid/group configured.
+#If enabled pid and log directories will be created if missing,
+#and owned by the userid/group configured.
 CELERY_CREATE_DIRS=1
 ```
 
-# 启动celery
+#启动celery
+```bash
 /etc/init.d/celeryd start
-
-
-# 配置inception
-vim /etc/inception.cnf
 ```
+
+
+#安装Inception
+#安装到/opt/inception目录下
+#自己去github上搜索Inception下载，安装即可
+```text
+unzip inception-master.zip
+cd inception-master
+vim inception_build.sh
+#修改为：
+-DCMAKE_INSTALL_PREFIX=/opt/inception
+
+./inception_build.sh debug
+```
+
+#配置inception
+```text
+vim /etc/inception.cnf
+
 [inception]
 general_log=1
 general_log_file=/opt/inception/inception.log
@@ -289,11 +316,13 @@ inception_merge_alter_table=OFF
 inception_max_update_rows=10000000
 ```
 
-# 启动inception
+#启动inception
+```text
 nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
-
-# 汇总启动命令
 ```
+
+#汇总启动命令
+```text
 chown -R mysql:mysql /var/lib/mysql
 service mysql restart
 service redis restart
@@ -306,14 +335,40 @@ service nginx restart
 ```
 
 最后在在crontab里面添加如下：
+```text
 crontab -e
-```
-# 杀掉inception并启动，清除僵尸进程
+
+#杀掉inception并启动，清除僵尸进程
 40 23 */1 * * ps -ef |grep inception |awk '{print $2}' |head -2|xargs kill -9
 41 23 */1 * * nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
 ```
 
-截止，部署完成。
+部署完成，最后需要修改pymysql文件，解决如下问题：
 
+问题1：Pymysql在链接inception在判断版本时出现value error
+
+解决办法：
+
+修改Pymysql文件夹内的connections.py
+
+修改为如下：
+```text
+self.server_version = '5.7.18-16-log'
+if int(self.server_version.split('.', 1)[0]) >= 5:
+   self.client_flag |= CLIENT.MULTI_RESULTS
+```
+
+问题2：Inception始终反馈"Must start as begin statement"的语法错误
+
+解决办法：
+
+修改Pymysql文件夹内的cursors.py
+
+修改为如下：
+```txt
+if not self._defer_warnings:
+    #self._show_warnings()
+    pass
+```
 
 
