@@ -70,6 +70,25 @@ step2：初始化数据：initial_data.txt
 3. 移除了注册用户和创建用户的支持，请使用绑定LDAP使用
 
 ## 页面展示(随便展示几处)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/test_env.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/staging_env.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dml_gongdan.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl_gongdan.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/pro_query.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/offline_query.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/mongo_query.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/sys_config.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dingding.png)
+
+
 
 
 ## 联系方式
