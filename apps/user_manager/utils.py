@@ -10,6 +10,7 @@ def check_ldap_connection():
     try:
         conn = ldap.initialize(AUTH_LDAP_SERVER_URI)
         conn.simple_bind_s(AUTH_LDAP_BIND_DN, AUTH_LDAP_BIND_PASSWORD)
+        conn.timeout = 2
         return True, None
     except ldap.INVALID_CREDENTIALS as err:
         msg = '配置文件绑定的LDAP用户名或密码错误'
