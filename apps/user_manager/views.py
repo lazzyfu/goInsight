@@ -11,6 +11,7 @@ from django.views import View
 from django.views.generic import FormView, RedirectView
 
 from user_manager.models import UserAccount, PermissionDetail, RolesDetail, SystemMsgDetails, SystemMsg
+from user_manager.utils import check_ldap_connection
 from utils.tools import format_request
 from .forms import ChangePasswordForm, LoginForm
 
@@ -28,35 +29,40 @@ class LoginView(FormView):
         username = cleaned_data.get('username')
         password = cleaned_data.get('password')
 
-        try:
-            user = authenticate(username=username, password=password)
+        # 检查ldap是否ok
+        status, msg = check_ldap_connection()
+        if status:
+            try:
+                user = authenticate(username=username, password=password)
 
-            obj = UserAccount.objects.get(username=username)
-            if make_password(password) != obj.password:
-                result = {'msg': '用户密码输入错误'}
-            # 激活用户
-            obj.is_active = True
-            obj.save()
-            # 如果用户首次登陆，没有角色，分配个开发的角色，role_id=2
-            RolesDetail.objects.get_or_create(user_id=obj.uid, defaults={'role_id': 2})
-            # if not obj.is_active:
-            #     result = {'msg': '用户被禁用，请联系管理员'}
-            # else:
-            if user is not None:
-                login(self.request, user)
-                try:
-                    user_role = self.request.user.user_role()
-                    # 将用户权限写入到session
-                    perm_list = list(PermissionDetail.objects.annotate(
-                        permission_name=F('permission__permission_name')).filter(
-                        role__role_name=user_role).values_list(
-                        'permission_name', flat=True))
-                    self.request.session['perm_list'] = perm_list
-                    return super(LoginView, self).form_valid(form)
-                except RolesDetail.DoesNotExist:
-                    result = {'msg': '用户未被分配角色，请联系管理员'}
-        except UserAccount.DoesNotExist:
-            result = {'msg': '用户不存在，请联系管理员'}
+                obj = UserAccount.objects.get(username=username)
+                if make_password(password) != obj.password:
+                    result = {'msg': '密码输入错误，请重新输入'}
+                # 激活用户
+                obj.is_active = True
+                obj.save()
+                # 如果用户首次登陆，没有角色，分配个开发的角色，role_id=2
+                RolesDetail.objects.get_or_create(user_id=obj.uid, defaults={'role_id': 2})
+                # if not obj.is_active:
+                #     result = {'msg': '用户被禁用，请联系管理员'}
+                # else:
+                if user is not None:
+                    login(self.request, user)
+                    try:
+                        user_role = self.request.user.user_role()
+                        # 将用户权限写入到session
+                        perm_list = list(PermissionDetail.objects.annotate(
+                            permission_name=F('permission__permission_name')).filter(
+                            role__role_name=user_role).values_list(
+                            'permission_name', flat=True))
+                        self.request.session['perm_list'] = perm_list
+                        return super(LoginView, self).form_valid(form)
+                    except RolesDetail.DoesNotExist:
+                        result = {'msg': '用户未被分配角色，请联系管理员'}
+            except UserAccount.DoesNotExist:
+                result = {'msg': '用户不存在，请联系管理员'}
+        else:
+            result = {'msg': msg}
         return render(self.request, self.template_name, result)
 
 

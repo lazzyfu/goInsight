@@ -215,11 +215,6 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch("cn=accounts,dc=test,dc=com", ldap.SCOPE_SUBT
 # 按照自己公司的ldap字段进行修改映射
 AUTH_LDAP_USER_ATTR_MAP = {"username": "username", 'email': 'mail', "displayname": 'givenName'}
 
-# 若需要调试ldap，不注释下面代码
-# logger = logging.getLogger('django_auth_ldap')
-# logger.addHandler(logging.StreamHandler())
-# logger.setLevel(logging.DEBUG)
-
 # Inception配置
 # 直接使用本地的mysql作为备份主机
 INCEPTION_HOST = '127.0.0.1'
@@ -277,5 +272,10 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'django_auth_ldap': {
+            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+        },
     }
 }
+
