@@ -3,7 +3,7 @@ AuditSQL介绍
 
 **AuditSQL(命名确实是个问题，^_^)是一个web版的MySQL数据库审核平台，旨在降低DBA的运维成本。**
 
-**欢迎大家的使用，同时使用中遇到的问题，请指出，谢谢。（不喜勿喷，谢谢）**
+**欢迎大家的使用和好评，同时使用中遇到的问题，请指出，谢谢。（不喜勿喷^_^）**
 
 ## 文档地址
 https://github.com/lazzyfu/AuditSQL/wiki
@@ -45,31 +45,22 @@ https://github.com/lazzyfu/AuditSQL/wiki
    - SQL语法自动补全(包括表名和列名)
 
 - 执行任务功能
-   - 自动分片当前审核内容，并生产SQL执行任务列表
+   - 自动分片，支持一键串行全部执行或有选择的执行
    - 提供回滚，inception执行日志预览功能
-   - 提供DDL语句的OSC进度实时显示和停止功能
+   - 提供DDL语句的OSC进度实时输出
 
 - 推送
-   - 实时钉钉推送
+   - 实时钉钉推送，友好推送（用户更新手机号，直接@用户）
    - 执行任务执行进度的实时显示（websocket）
 
 - 其他
    - 集成LDAP认证登陆
    - 支持修改头像
 
-## 部署：
-
-step1：安装：install.txt
-
-step2：初始化数据：initial_data.txt
-
-
 ## 移除的功能
-1. 移除了对mail的推送支持，目前仅支持钉钉推送
+1. 考虑到钉钉的便捷性和及时性，仅支持钉钉推送，移除了邮件推送
 
-2. 移除了和数据库审核系统功能么有关系的功能
-
-3. 移除了注册用户和创建用户的支持，请使用绑定LDAP使用
+2. 考虑到目前大多数企业都支持域或LDAP，移除了注册用户和创建用户的支持
 
 ## 页面展示(随便展示几处)
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/test_env.png)
@@ -79,6 +70,8 @@ step2：初始化数据：initial_data.txt
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dml_gongdan.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl_gongdan.png)
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform_task.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/pro_query.png)
 
