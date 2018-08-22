@@ -3,7 +3,7 @@ AuditSQL介绍
 
 **AuditSQL(命名确实是个问题，^_^)是一个web版的MySQL数据库审核平台，旨在降低DBA的运维成本。**
 
-**欢迎大家的使用和好评，同时使用中遇到的问题，请指出，谢谢。（不喜勿喷^_^）**
+**欢迎大家的使用和给颗star，同时使用中遇到的问题，请指出，谢谢。（不喜勿喷^_^）**
 
 ## 文档地址
 https://github.com/lazzyfu/AuditSQL/wiki
@@ -54,13 +54,12 @@ https://github.com/lazzyfu/AuditSQL/wiki
    - 执行任务执行进度的实时显示（websocket）
 
 - 其他
-   - 集成LDAP认证登陆
+   - 支持LDAP认证登陆
    - 支持修改头像
+   - 支持用户自己修改密码（非ldap方式认证）
 
 ## 移除的功能
 1. 考虑到钉钉的便捷性和及时性，仅支持钉钉推送，移除了邮件推送
-
-2. 考虑到目前大多数企业都支持域或LDAP，移除了注册用户和创建用户的支持
 
 ## 页面展示(随便展示几处)
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/test_env.png)
@@ -82,8 +81,6 @@ https://github.com/lazzyfu/AuditSQL/wiki
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/sys_config.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dingding.png)
-
-
 
 
 ## 联系方式

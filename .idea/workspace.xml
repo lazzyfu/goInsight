@@ -55,6 +55,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="336">
+                <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+              </first_editor>
+              <second_editor>
+                <js_state />
+              </second_editor>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/user_manager/views.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -91,11 +105,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="profile.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="profile.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/profile.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="644">
-              <caret line="142" column="38" lean-forward="true" selection-start-line="142" selection-start-column="38" selection-end-line="142" selection-end-column="38" />
+            <state relative-caret-position="333">
+              <caret line="133" column="67" lean-forward="true" selection-start-line="133" selection-start-column="67" selection-end-line="133" selection-end-column="67" />
             </state>
           </provider>
         </entry>
@@ -235,12 +249,12 @@
         <option value="$PROJECT_DIR$/AuditSQL/settings_bak.py" />
         <option value="$PROJECT_DIR$/tets.py" />
         <option value="$PROJECT_DIR$/apps/user_manager/utils.py" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/apps/user_manager/views.py" />
         <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
         <option value="$PROJECT_DIR$/apps/user_manager/admin.py" />
         <option value="$PROJECT_DIR$/templates/login.html" />
         <option value="$PROJECT_DIR$/templates/profile.html" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -751,7 +765,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3292683" />
       <window_info anchor="bottom" id="Python Console" order="7" sideWeight="0.49570817" weight="0.49185336" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.48296058" weight="0.32484725" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.18530351" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.18530351" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" weight="0.3297568" />
       <window_info anchor="right" id="SciView" order="3" weight="0.3297568" />
@@ -1043,18 +1057,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="149">
-            <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
-          </first_editor>
-          <second_editor>
-            <js_state />
-          </second_editor>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/user_manager/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="614">
@@ -1099,8 +1101,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/profile.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="644">
-          <caret line="142" column="38" lean-forward="true" selection-start-line="142" selection-start-column="38" selection-end-line="142" selection-end-column="38" />
+        <state relative-caret-position="333">
+          <caret line="133" column="67" lean-forward="true" selection-start-line="133" selection-start-column="67" selection-end-line="133" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="336">
+            <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+          </first_editor>
+          <second_editor>
+            <js_state />
+          </second_editor>
         </state>
       </provider>
     </entry>
