@@ -75,10 +75,10 @@ class UserAccountAdmin(admin.ModelAdmin):
     # 新建用户，发送通知邮件
     def save_model(self, request, obj, form, change):
         obj.user = request.user
-        if change is False:
-            data = form.clean()
-            password = data.get('password')
-            obj.password = make_password(password)
+        # if change is False:
+        data = form.clean()
+        password = data.get('password')
+        obj.password = make_password(password)
         super().save_model(request, obj, form, change)
 
 
