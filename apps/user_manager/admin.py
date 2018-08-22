@@ -54,7 +54,7 @@ class UserAccountAdmin(admin.ModelAdmin):
     search_fields = ('username', 'email', 'displayname')
     fieldsets = (
         ('个人信息',
-         {'fields': ['username', 'displayname', 'password', 'mobile', 'is_superuser', 'is_active', 'avatar_file']}),
+         {'fields': ['username', 'displayname', 'password', 'mobile', 'is_active', 'avatar_file']}),
     )
     inlines = [RolesDetailInline, MysqlSchemaGrantInline, WebShellGrantInline]
 
@@ -73,16 +73,13 @@ class UserAccountAdmin(admin.ModelAdmin):
 
     # 新建用户时，支持输入明文密码，并初始化密码
     # 新建用户，发送通知邮件
-    # def save_model(self, request, obj, form, change):
-    #     obj.user = request.user
-    #     if change is False:
-    #         data = form.clean()
-    #         username = data.get('username')
-    #         password = data.get('password')
-    #         email = data.get('email')
-    #         send_create_user_mail.delay(username=username, password=password, email=email)
-    #         obj.password = make_password(password)
-    #     super().save_model(request, obj, form, change)
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        if change is False:
+            data = form.clean()
+            password = data.get('password')
+            obj.password = make_password(password)
+        super().save_model(request, obj, form, change)
 
 
 class RolesAdmin(admin.ModelAdmin):
