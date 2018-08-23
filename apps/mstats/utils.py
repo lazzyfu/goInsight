@@ -262,6 +262,8 @@ class MySQLQuery(object):
                                     elif isinstance(j[k], datetime.datetime):
                                         # 时间类型转换为字符串，避免前端转时间的问题
                                         j[k] = str(j[k])
+                                    elif isinstance(j[k], datetime.timedelta):
+                                        j[k] = str(j[k])
                                     elif isinstance(j[k], NoneType):
                                         j[k] = 'NULL'
                                     elif isinstance(j[k], bytes):
