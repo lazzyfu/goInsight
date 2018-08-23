@@ -81,11 +81,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="702">
-              <caret line="175" column="53" lean-forward="true" selection-start-line="175" selection-start-column="53" selection-end-line="175" selection-end-column="53" />
+            <state relative-caret-position="599">
+              <caret line="212" column="31" lean-forward="true" selection-start-line="212" selection-start-column="31" selection-end-line="212" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="webssh.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/webssh.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="624">
+              <caret line="67" column="32" lean-forward="true" selection-start-line="67" selection-start-column="32" selection-end-line="67" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -216,7 +225,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/ol_records.html" />
         <option value="$PROJECT_DIR$/templates/ol_details.html" />
         <option value="$PROJECT_DIR$/templates/_send_commit_mail.html" />
         <option value="$PROJECT_DIR$/apps/project_manager/user/urls.py" />
@@ -267,6 +275,7 @@
         <option value="$PROJECT_DIR$/apps/user_manager/utils.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/templates/base.html" />
+        <option value="$PROJECT_DIR$/templates/webssh.html" />
       </list>
     </option>
   </component>
@@ -846,13 +855,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1292">
-          <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/urls.py" />
     <entry file="file://$PROJECT_DIR$/apps/scheduled_tasks/utils.py" />
     <entry file="file://$PROJECT_DIR$/AuditSQL/urls.py">
@@ -1140,8 +1142,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="702">
-          <caret line="175" column="53" lean-forward="true" selection-start-line="175" selection-start-column="53" selection-end-line="175" selection-end-column="53" />
+        <state relative-caret-position="599">
+          <caret line="212" column="31" lean-forward="true" selection-start-line="212" selection-start-column="31" selection-end-line="212" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/webssh.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="624">
+          <caret line="67" column="32" lean-forward="true" selection-start-line="67" selection-start-column="32" selection-end-line="67" selection-end-column="32" />
         </state>
       </provider>
     </entry>
