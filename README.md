@@ -1,17 +1,18 @@
 AuditSQL介绍
 ===============
 
-**AuditSQL(命名确实是个问题，^_^)是一个web版的MySQL数据库审核平台，旨在降低DBA的运维成本。**
+**AuditSQL(命名确实是个问题，^_^)是一个web版的MySQL数据库审核平台，作为一个DBA，厌烦了SQL上线过程的语法审核、各个环境手动支持，反馈等重复且不讨好的工作，
+于是开发此款工具，旨在降低DBA的运维成本，解放大家的生产力。**
 
-**欢迎大家的使用和给颗star，同时使用中遇到的问题，请指出，谢谢。（不喜勿喷^_^）**
+**欢迎大家的使用，如果觉得不错，麻烦伸出您高贵的小手，给颗star，同时使用中遇到的问题，请联系我，谢谢（^_^）**
 
 ## 文档地址
 https://github.com/lazzyfu/AuditSQL/wiki
 
 ## 开发组件
 
-- Python 3.6
-- Django 2.0 
+- Python 3.6+
+- Django 2.0+
 - celery 4.2.0
 - django-channels
 - AdminLTE
@@ -24,7 +25,7 @@ https://github.com/lazzyfu/AuditSQL/wiki
   - 执行任务记录
 
 - SQL审核
-  - DML和DDL语法审核
+  - DML和DDL语法审核(Inception支持)
 
 - 工单
   - DML变更工单
@@ -34,7 +35,7 @@ https://github.com/lazzyfu/AuditSQL/wiki
 - 数据查询
   - 生产mysql
   - 非生产mysql
-  - mongo和redis（xterm）
+  - mongo和redis(xterm)
 
 - 功能
    - SQL审核的流程化，规范化
