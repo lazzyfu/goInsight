@@ -85,6 +85,47 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dingding.png)
 
+死锁钉钉通知：
+```text
+【警告 ◕﹏◕，探测到新的死锁记录，探测时间：2018-08-29 05:13:31】
+
+## 死锁记录1 ##:
+主机：192.168.10.19
+时间: 2018-08-29 05:12:58+00:00
+线程ID: 6102754
+事务ID: 0
+事务激活时间: 15
+用户名: test_user
+主机名:
+IP: 192.168.0.100
+库名: test_11
+表名: data_realtime_trans_adc_statixxx
+发生死锁的索引: idx_adc_id
+锁类型: RECORD
+锁模式: X
+请求锁: w
+是否回滚: 否
+查询: REPLACE INTO data_realtime_trans_adc_statxxx (`adc_
+
+主机：192.168.10.19
+时间: 2018-08-29 05:12:58+00:00
+线程ID: 6102764
+事务ID: 0
+事务激活时间: 5
+用户名: test_user
+主机名:
+IP: 192.168.0.100
+库名: test_11
+表名: data_realtime_trans_adc_statixxx
+发生死锁的索引: idx_adc_id
+锁类型: RECORD
+锁模式: X
+请求锁: w
+是否回滚: 是
+查询: REPLACE INTO data_realtime_trans_adc_statixxx (`adc_
+
+@所有人
+```
 
 ## 联系方式
 

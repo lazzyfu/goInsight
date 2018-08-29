@@ -85,9 +85,9 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="625">
-                <caret line="78" lean-forward="true" selection-start-line="78" selection-end-line="78" />
+            <state split_layout="FIRST">
+              <first_editor relative-caret-position="642">
+                <caret line="121" column="6" lean-forward="true" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="6" />
               </first_editor>
               <second_editor>
                 <js_state />
@@ -1192,9 +1192,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="625">
-            <caret line="78" lean-forward="true" selection-start-line="78" selection-end-line="78" />
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="642">
+            <caret line="121" column="6" lean-forward="true" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="6" />
           </first_editor>
           <second_editor>
             <js_state />
