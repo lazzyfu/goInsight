@@ -71,6 +71,8 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl_gongdan.png)
 
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/task.png)
+
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform_task.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/pro_query.png)
