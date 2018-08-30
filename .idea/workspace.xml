@@ -55,91 +55,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="install.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/deploy/install.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="939">
-              <caret line="410" column="5" lean-forward="true" selection-start-line="410" selection-start-column="5" selection-end-line="410" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="816">
-              <caret line="272" column="1" lean-forward="true" selection-start-line="272" selection-start-column="1" selection-end-line="272" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="readme.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/readme.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-            <state split_layout="FIRST">
-              <first_editor relative-caret-position="642">
-                <caret line="121" column="6" lean-forward="true" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="6" />
-              </first_editor>
-              <second_editor>
-                <js_state />
-              </second_editor>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/mstats/admin.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="493">
-              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
-              <folding>
-                <element signature="e#0#32#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="apps.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/mstats/apps.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/user_manager/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" lean-forward="true" selection-end-line="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/mstats/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="apps.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/user_manager/apps.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="102">
-              <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+              <caret line="6" selection-start-line="6" selection-end-line="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="admin.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/apps/user_manager/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="646">
+              <caret line="98" column="60" lean-forward="true" selection-start-line="98" selection-start-column="60" selection-end-line="98" selection-end-column="60" />
             </state>
           </provider>
         </entry>
@@ -148,7 +77,7 @@
         <entry file="file://$USER_HOME$/virtualenv_python3.6.2/lib/python3.6/site-packages/django_celery_results/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="323">
-              <caret line="27" column="5" lean-forward="true" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
+              <caret line="27" column="5" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -268,7 +197,6 @@
         <option value="$PROJECT_DIR$/apps/user_manager/views.py" />
         <option value="$PROJECT_DIR$/templates/login.html" />
         <option value="$PROJECT_DIR$/templates/profile.html" />
-        <option value="$PROJECT_DIR$/apps/user_manager/admin.py" />
         <option value="$PROJECT_DIR$/apps/user_manager/utils.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/webssh.html" />
@@ -285,6 +213,7 @@
         <option value="$PROJECT_DIR$/deploy/install.txt" />
         <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/apps/user_manager/admin.py" />
       </list>
     </option>
   </component>
@@ -786,27 +715,27 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.52129924" side_tool="true" weight="0.33167082" />
       <window_info anchor="bottom" id="Database Changes" order="8" weight="0.3299389" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47870076" weight="0.23930754" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.47870076" visible="true" weight="0.17209776" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3292683" />
       <window_info anchor="bottom" id="Python Console" order="7" sideWeight="0.49570817" weight="0.49185336" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.48296058" weight="0.32484725" />
-      <window_info anchor="bottom" id="manage.py@AuditSQL" order="8" sideWeight="0.49427754" weight="0.32790223" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.19595315" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.15015975" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" weight="0.3297568" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32825205" />
       <window_info anchor="right" id="SciView" order="3" weight="0.3297568" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.41768292" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.41751528" />
       <window_info id="Favorites" order="2" sideWeight="0.5372907" side_tool="true" weight="0.23003195" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" id="Data View" order="3" />
+      <window_info anchor="bottom" id="manage.py@AuditSQL" order="8" sideWeight="0.49427754" weight="0.32790223" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Database Console" order="9" sideWeight="0.49713877" weight="0.329602" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32825205" />
     </layout>
     <layout-to-restore>
       <window_info anchor="bottom" id="Database Console" order="13" sideWeight="0.49713877" weight="0.329602" />
@@ -849,10 +778,22 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="205" />
+      <option name="time" value="206" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="2057">
+            <caret line="121" column="6" lean-forward="true" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="6" />
+          </first_editor>
+          <second_editor>
+            <js_state />
+          </second_editor>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/apps/user_manager/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="409">
@@ -932,13 +873,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deploy/initial_data.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="30" lean-forward="true" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/deploy/initial_data.txt" />
     <entry file="file://$PROJECT_DIR$/apps/project_manager/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -972,13 +907,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2261">
           <caret line="133" column="67" selection-start-line="133" selection-start-column="67" selection-end-line="133" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1292">
-          <caret line="82" selection-start-line="82" selection-end-line="82" />
         </state>
       </provider>
     </entry>
@@ -1042,9 +970,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="666">
           <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1052,9 +977,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="666">
           <caret line="92" column="13" selection-start-line="92" selection-start-column="13" selection-end-line="92" selection-end-column="13" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1100,51 +1022,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/virtualenv_python3.6.2/lib/python3.6/site-packages/django_celery_results/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" lean-forward="true" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/apps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/apps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/virtualenv_python3.6.2/lib/python3.6/site-packages/django_celery_results/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
-          <caret line="27" column="5" lean-forward="true" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
+          <caret line="27" column="5" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -1171,15 +1052,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/deploy/install.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="939">
-          <caret line="410" column="5" lean-forward="true" selection-start-line="410" selection-start-column="5" selection-end-line="410" selection-end-column="5" />
+        <state relative-caret-position="651">
+          <caret line="410" column="5" selection-start-line="410" selection-start-column="5" selection-end-line="410" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="816">
-          <caret line="272" column="1" lean-forward="true" selection-start-line="272" selection-start-column="1" selection-end-line="272" selection-end-column="1" />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="251">
+            <caret line="98" column="4" lean-forward="true" selection-start-line="98" selection-start-column="4" selection-end-line="98" selection-end-column="4" />
+          </first_editor>
+          <second_editor>
+            <js_state />
+          </second_editor>
         </state>
       </provider>
     </entry>
@@ -1190,15 +1076,55 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="FIRST">
-          <first_editor relative-caret-position="642">
-            <caret line="121" column="6" lean-forward="true" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="6" />
-          </first_editor>
-          <second_editor>
-            <js_state />
-          </second_editor>
+    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="272" column="1" selection-start-line="272" selection-start-column="1" selection-end-line="272" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/mstats/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/mstats/apps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/user_manager/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/mstats/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/user_manager/apps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/user_manager/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="646">
+          <caret line="98" column="60" lean-forward="true" selection-start-line="98" selection-start-column="60" selection-end-line="98" selection-end-column="60" />
         </state>
       </provider>
     </entry>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import Group
 
 from mstats.models import MysqlSchemaGrant, MysqlSchemaInfo, WebShellGrant
@@ -71,15 +71,18 @@ class UserAccountAdmin(admin.ModelAdmin):
 
     reset_password.short_description = u'重置用户密码为：123.com'
 
-    # 新建用户时，支持输入明文密码，并初始化密码
-    # 新建用户，发送通知邮件
+    # 支持密码修改
     def save_model(self, request, obj, form, change):
         obj.user = request.user
-        # if change is False:
         data = form.clean()
         password = data.get('password')
-        obj.password = make_password(password)
-        super().save_model(request, obj, form, change)
+        print(form.changed_data)
+        print(password)
+        if 'password' in form.changed_data:
+            obj.password = make_password(password)
+            super().save_model(request, obj, form, change)
+        else:
+            return False
 
 
 class RolesAdmin(admin.ModelAdmin):
