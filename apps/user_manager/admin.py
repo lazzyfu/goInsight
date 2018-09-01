@@ -78,9 +78,8 @@ class UserAccountAdmin(admin.ModelAdmin):
         password = data.get('password')
         if 'password' in form.changed_data:
             obj.password = make_password(password)
-            super().save_model(request, obj, form, change)
-        else:
-            return False
+
+        return super().save_model(request, obj, form, change)
 
 
 class RolesAdmin(admin.ModelAdmin):
