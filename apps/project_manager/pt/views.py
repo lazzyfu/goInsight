@@ -281,42 +281,43 @@ class PerformRollbackView(View):
             else:
                 of_audit = IncepSqlCheck(rollback_sql, obj.dst_host, obj.dst_port, obj.dst_database,
                                          request.user.username)
-                result = of_audit.make_sqlsha1()[1]
+                result = of_audit.make_sqlsha1()[1:]
 
-                rollback_sql = result['SQL'] + ';'
-                rollback_sqlsha1 = result['sqlsha1']
+                for row in result:
+                    rollback_sql = row['SQL'] + ';'
+                    rollback_sqlsha1 = row['sqlsha1']
 
-                # 将任务进度设置为：回滚中
-                obj.exec_status = 3
-                obj.rollback_sqlsha1 = rollback_sqlsha1
-                obj.save()
+                    # 将任务进度设置为：回滚中
+                    obj.exec_status = 3
+                    obj.rollback_sqlsha1 = rollback_sqlsha1
+                    obj.save()
 
-                if result['sqlsha1']:
-                    # 异步执行SQL任务
-                    r = incep_async_tasks.delay(user=request.user.username,
+                    if row['sqlsha1']:
+                        # 异步执行SQL任务
+                        r = incep_async_tasks.delay(user=request.user.username,
+                                                    id=id,
+                                                    host=host,
+                                                    port=port,
+                                                    database=database,
+                                                    sql=rollback_sql,
+                                                    sqlsha1=rollback_sqlsha1,
+                                                    exec_status='3')
+                        task_id = r.task_id
+                        # 将celery task_id写入到表
+                        obj.celery_task_id = task_id
+                        obj.save()
+                        # 获取OSC执行进度
+                        get_osc_percent.delay(task_id=task_id)
+
+                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+                    else:
+                        incep_async_tasks.delay(user=request.user.username,
                                                 id=id,
+                                                sql=rollback_sql,
                                                 host=host,
                                                 port=port,
                                                 database=database,
-                                                sql=rollback_sql,
-                                                sqlsha1=rollback_sqlsha1,
                                                 exec_status='3')
-                    task_id = r.task_id
-                    # 将celery task_id写入到表
-                    obj.celery_task_id = task_id
-                    obj.save()
-                    # 获取OSC执行进度
-                    get_osc_percent.delay(task_id=task_id)
 
-                    context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-                else:
-                    incep_async_tasks.delay(user=request.user.username,
-                                            id=id,
-                                            sql=rollback_sql,
-                                            host=host,
-                                            port=port,
-                                            database=database,
-                                            exec_status='3')
-
-                    context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
         return HttpResponse(json.dumps(context))
