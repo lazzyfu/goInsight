@@ -56,11 +56,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sqlaudit/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="397">
-              <caret line="47" selection-start-line="47" selection-end-line="47" />
+            <state relative-caret-position="469">
+              <caret line="149" column="21" lean-forward="true" selection-start-line="149" selection-start-column="21" selection-end-line="149" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -269,6 +269,11 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="sqlaudit" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
@@ -651,16 +656,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.52129924" side_tool="true" weight="0.33167082" />
       <window_info anchor="bottom" id="Database Changes" order="8" weight="0.3299389" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47870076" visible="true" weight="0.4635193" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47870076" weight="0.4635193" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3292683" />
       <window_info anchor="bottom" id="Python Console" order="7" sideWeight="0.49570817" weight="0.49185336" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.48296058" weight="0.32484725" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.21733822" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.48296058" visible="true" weight="0.32403433" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.21733822" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" weight="0.3297568" />
       <window_info anchor="right" id="SciView" order="3" weight="0.3297568" />
@@ -723,7 +727,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/mstats/models.py" />
     <entry file="file://$PROJECT_DIR$/deploy/initial_data.txt" />
     <entry file="file://$PROJECT_DIR$/apps/project_manager/tasks.py" />
     <entry file="file://$PROJECT_DIR$/AuditSQL/celery.py" />
@@ -817,8 +820,15 @@
     <entry file="file://$PROJECT_DIR$/apps/user_manager/views.py" />
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="47" selection-start-line="47" selection-end-line="47" />
+        <state relative-caret-position="447">
+          <caret line="27" column="12" lean-forward="true" selection-start-line="27" selection-start-column="12" selection-end-line="27" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sqlaudit/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="469">
+          <caret line="149" column="21" lean-forward="true" selection-start-line="149" selection-start-column="21" selection-end-line="149" selection-end-column="21" />
         </state>
       </provider>
     </entry>
