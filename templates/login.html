@@ -5,7 +5,7 @@
     {% load staticfiles %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="icon" href="/media/img/favicon.ico">
-    <title>数据库审核系统 | 登陆</title>
+    <title>数据库审核系统</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -29,8 +29,7 @@
 
 <style>
 .form-control{
-    border-radius: 20px;
-    box-shadow: 1px 1px 1px #888888;;
+    border-radius: 10px;
 }
 </style>
 
@@ -52,6 +51,14 @@
             <div class="form-group has-feedback">
                 <input type="password" name="password" class="form-control" placeholder="密码">
                 <i class="glyphicon glyphicon-lock form-control-feedback"></i>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" placeholder="请输入右侧验证码" name="verifycode" id="verifycode">
+                </div>
+                <div class="col-sm-5">
+                    <img class="check-code" src="{% url 'p_verify' %}" alt="验证码" onclick="ChangeCode(this);">
+                </div>
             </div>
             <div class="form-group has-feedback">
                 {% if msg %}
@@ -78,5 +85,10 @@
 <script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
 <!-- iCheck -->
 <script src="{% static 'AdminLTE-2.4.5/plugins/iCheck/icheck.min.js' %}"></script>
+<script>
+    function ChangeCode(ths){
+        ths.src = ths.src + '?';  //点击一下，局部重新get一次，重新生成验证
+    }
+</script>
 </body>
 </html>

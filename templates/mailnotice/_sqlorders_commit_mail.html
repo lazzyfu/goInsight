@@ -1,0 +1,79 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        table {
+            white-space: normal;
+            font-weight: normal;
+            font-size: medium;
+            font-style: normal;
+            text-align: start;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .table > tbody > tr > td {
+            padding: 8px;
+            line-height: 1.42857143;
+            vertical-align: top;
+            border-top: 1px solid #ddd;
+        }
+
+        td, th {
+            display: table-cell;
+            vertical-align: inherit;
+        }
+    </style>
+</head>
+<body>
+<table class="table table-hover">
+    <tbody>
+    <tr>
+        <td>标题:</td>
+        <td>{{ data.title }}</td>
+    </tr>
+    {% if data.description %}
+        <tr>
+            <td>需求:</td>
+            <td>{{ data.description }}</td>
+        </tr>
+    {% endif %}
+    {% if data.description %}
+        <tr>
+            <td>任务版本:</td>
+            <td>{{ data.task_version }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td>环境:</td>
+        <td>{{ envi_name }}</td>
+    </tr>
+    <tr>
+        <td>类型:</td>
+        <td>{{ data.sql_type }}</td>
+    </tr>
+    <tr>
+        <td>备注:</td>
+        <td>{{ data.remark }}</td>
+    </tr>
+    <tr>
+        <td>申请人:</td>
+        <td>{{ data.proposer }}</td>
+    </tr>
+    <tr>
+        <td>审核人:</td>
+        <td>{{ data.auditor }}</td>
+    </tr>
+    <tr>
+        <td>主机/库:</td>
+        <td>{{ data.host }}_{{ data.port }}_{{ data.database }}</td>
+    </tr>
+    <tr>
+        <td>提交时间:</td>
+        <td>{{ data.created_at|date:"Y-m-d H:i:s" }}</td>
+    </tr>
+    </tbody>
+</table>
+<p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_list/{{ data.envi_id }} 进行操作，谢谢。</p>
+</body>
+</html>
