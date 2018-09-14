@@ -9,13 +9,13 @@
  * 1：输出inception osc的执行进度
  */
 function CreateWebSocket() {
-    var socket = new WebSocket('ws://' + window.location.host + '/ws/');
+   let socket = new WebSocket('ws://' + window.location.host + '/ws/');
     socket.onmessage = function (message) {
         document.getElementById('typediv1').style.visibility = "visible";
-        var result = JSON.parse(message.data);
-        var status = result.status;
-        var data = result.data;
-        var output_html = '';
+       let result = JSON.parse(message.data);
+       let status = result.status;
+       let data = result.data;
+       let output_html = '';
 
         if (status === 0) {
             $('#output_append').empty();
@@ -39,12 +39,12 @@ function CreateWebSocket() {
  * 渲染inception执行输出
  */
 function renderIncepExecResult(data) {
-    var html = '';
+   let html = '';
     $.each(data, function (index, row) {
-        var SQL = row.SQL;
-        var ID = row.ID;
-        var stage = row.stage;
-        var errlevel = '';
+       let SQL = row.SQL;
+       let ID = row.ID;
+       let stage = row.stage;
+       let errlevel = '';
         if (row.errlevel === 0) {
             errlevel = '成功'
         }
@@ -54,10 +54,10 @@ function renderIncepExecResult(data) {
         else if (row.errlevel === 2) {
             errlevel = '错误'
         }
-        var stagestatus = row.stagestatus;
-        var errormessage = row.errormessage;
-        var Affected_rows = row.Affected_rows;
-        var execute_time = row.execute_time;
+       let stagestatus = row.stagestatus;
+       let errormessage = row.errormessage;
+       let Affected_rows = row.Affected_rows;
+       let execute_time = row.execute_time;
         html += "<dt> ID：</dt>" + "<dd>" + ID + "</dd>" +
             "<dt> 阶段：</dt>" + "<dd>" + stage + "</dd>" +
             "<dt> 状态：</dt>" + "<dd>" + stagestatus + "</dd>" +
@@ -74,13 +74,13 @@ function renderIncepExecResult(data) {
  * 渲染inception osc输出
  */
 function renderIncepOSCResult(data) {
-    var html = '';
+   let html = '';
     $.each(data, function (index, row) {
-        var TABLE = row.DBNAME + '.' + row.TABLENAME;
-        var REMAINTIME = row.REMAINTIME;
-        var SQLSHA1 = row.SQLSHA1;
-        var PERCENT = row.PERCENT;
-        var INFOMATION = row.INFOMATION.replace(/\n/g, '\.' + '<br>');
+       let TABLE = row.DBNAME + '.' + row.TABLENAME;
+       let REMAINTIME = row.REMAINTIME;
+       let SQLSHA1 = row.SQLSHA1;
+       let PERCENT = row.PERCENT;
+       let INFOMATION = row.INFOMATION.replace(/\n/g, '\.' + '<br>');
 
         html += "<dt> 正在操作表：</dt>" + "<dd>" + TABLE + "</dd>" +
             "<dt> SQLSHA1：</dt>" + "<dd>" + SQLSHA1 + "</dd>" +
