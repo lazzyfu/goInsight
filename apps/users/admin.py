@@ -7,6 +7,7 @@ from django.db.models import Min, Q
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas
 from sqlquery.models import MysqlSchemasGrant
 from users.models import UserAccounts, UserRoles, RolePermission
+from webshell.models import WebShellGrant
 
 admin.site.site_title = '后台'
 admin.site.site_header = '数据库审核系统'
@@ -24,6 +25,14 @@ class RolePermissionInline(admin.TabularInline):
     verbose_name = u'用户权限'
     verbose_name_plural = u'用户权限'
     extra = 1
+
+
+class WebShellGrantInline(admin.TabularInline):
+    model = WebShellGrant
+    extra = 1
+
+    verbose_name = u'WebShell授权'
+    verbose_name_plural = u'WebShell授权'
 
 
 class MysqlSchemasGrantInline(admin.TabularInline):
@@ -56,7 +65,7 @@ class UserAccountsAdmin(admin.ModelAdmin):
         ('个人信息',
          {'fields': ['username', 'displayname', 'email', 'mobile', 'password', 'is_active', 'avatar_file']}),
     )
-    inlines = [UserRolesInline, MysqlSchemasGrantInline]
+    inlines = [UserRolesInline, MysqlSchemasGrantInline, WebShellGrantInline]
 
     exclude = ('users',)
     actions = ['reset_password']

@@ -4,7 +4,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views import View
 
-from sqlorders.models import MysqlSchemas
+from webshell.models import WebShellInfo
 
 
 class WebSSHView(View):
@@ -14,11 +14,11 @@ class WebSSHView(View):
 
 class GetWebSSHCmdView(View):
     def get(self, request):
-        query = f"select a.id, a.command, a.comment from auditsql_web_shell a " \
-                f"join auditsql_web_shell_grant b on a.id = b.shell_id " \
-                f"join auditsql_useraccount c on b.user_id = c.uid where c.uid = {request.user.uid}"
+        query = f"select a.id, a.command, a.comment from sqlaudit_web_shell a " \
+                f"join sqlaudit_web_shell_grant b on a.id = b.shell_id " \
+                f"join sqlaudit_user_accounts c on b.user_id = c.uid where c.uid = {request.user.uid}"
         data = []
-        for row in MysqlSchemas.objects.raw(query):
+        for row in WebShellInfo.objects.raw(query):
             data.append({
                 'command': row.command,
                 'comment': row.comment

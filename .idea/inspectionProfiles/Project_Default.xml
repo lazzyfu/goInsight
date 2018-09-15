@@ -1,0 +1,51 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="JSUnusedGlobalSymbols" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyInterpreterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyMethodMayBeStaticInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="ignoredPackages">
+        <value>
+          <list size="11">
+            <item index="0" class="java.lang.String" itemvalue="tornado" />
+            <item index="1" class="java.lang.String" itemvalue="utils" />
+            <item index="2" class="java.lang.String" itemvalue="django-pure-pagination" />
+            <item index="3" class="java.lang.String" itemvalue="channels" />
+            <item index="4" class="java.lang.String" itemvalue="daphne" />
+            <item index="5" class="java.lang.String" itemvalue="celery" />
+            <item index="6" class="java.lang.String" itemvalue="amqp" />
+            <item index="7" class="java.lang.String" itemvalue="kombu" />
+            <item index="8" class="java.lang.String" itemvalue="billiard" />
+            <item index="9" class="java.lang.String" itemvalue="django-celery" />
+            <item index="10" class="java.lang.String" itemvalue="django_celery_beat" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredNames">
+        <list>
+          <option value="id" />
+          <option value="type" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnboundLocalVariableInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="ProjectManager.ol.views.IncepOlApproveView.request" />
+          <option value="project_manager.ol.views.IncepOlReplyView.request" />
+          <option value="user_manager.views.LoginView.request" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+  </profile>
+</component>
