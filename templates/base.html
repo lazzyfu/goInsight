@@ -178,7 +178,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li><a href="{% url 'p_render_sql_ddl_orders' %}"><i
                                 class="fa fa-circle-o"></i>DDL工单</a>
                         </li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i>导出数据</a>
                         </li>
                     </ul>
                 </li>
@@ -192,6 +191,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </span>
                     </a>
                     <ul class="treeview-menu" id="s_sql_query_envi">
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a>
+                        <i class="fa fa-history"></i>
+                        <span>webshell</span>
+                        <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'p_web_ssh' %}"><i class="fa fa-circle-o"></i>Mongo和Redis</a></li>
                     </ul>
                 </li>
             </ul>

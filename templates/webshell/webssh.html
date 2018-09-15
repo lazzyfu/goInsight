@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .terminal {
+            float: none;
+            border: #000 solid 5px;
+            font-size: 12px;
+            width: auto;
+            opacity: 0.8;
+            box-shadow: rgba(0, 0, 0, 0.8) 5px 5px 20px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default">
+                <div class="box-header box-border">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> MongoDB和Redis查询
+                            <small class="text-muted"><cite>若出现未响应(一般网络延时)，请多点几次回车键即可</cite></small>
+                        </h3>
+                    </div>
+                    <div class="mailbox-read-info">
+                        <p>
+                            <small class="text-danger">
+                                <cite>为了保证数据安全，不支持ctr+c、ctr+d、quit、exit操作（该类操作将会强制重载终端）</cite></small>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="box-body box-border">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <select id="s_cmd" required onchange="change_cmd()"
+                                    class="form-control selectpicker" data-live-search="true" title="点击选择已授权的实例...">
+                            </select>
+                        </div>
+
+                        <div class="form-group pull-right">
+                            <button type="button" onclick="refresh_xterm()" class="btn bg-info btn-sm">重载终端
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="box-body box-border">
+                    <div id="terminal-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        var cmd = '',
+            status = '',
+            sock = new WebSocket('ws://' + window.location.host + '/ssh/'),
+            term = new Terminal({
+                tabStopWidth: 4,
+                scrollback: 3000,
+                cursorBlink: true,
+                screenKeys: true
+            });
+
+
+        // 自动计算并设置窗口尺寸大小，自适应
+        function resize_xterm_window() {
+            var text = $('#terminal-container');
+            var containerWidth = parseFloat(text.width());
+            {#var containerHeight = parseFloat(text.height());#}
+            var containerHeight = $(window).height()-300;
+
+            var charWidth = 8.6;
+            var charHeight = 17.0;
+
+            var cols = parseInt(containerWidth / charWidth);
+            var rows = parseInt(containerHeight / charHeight);
+
+            // 设置窗口尺寸
+            term.resize(cols, rows);
+            // 发送窗口尺寸给后端
+            sock.send(JSON.stringify({'resize': [cols, rows]}));
+        }
+
+        function CreateWebShell() {
+            // 必须在term.open之前执行
+            term.setOption('fontWeight', 'Normal');
+            term.setOption('fontSize', 14);
+            term.setOption('letterSpacing', 0);
+            term.setOption('cursorStyle', 'block');
+            // websocket打开
+            sock.onopen = function () {
+                term.open(null, true);
+                $('.terminal').detach().appendTo('#terminal-container');
+                resize_xterm_window();
+                term.write('\r\n请选择授权的实例...\r\n');
+            };
+        }
+
+
+        function StartWebShell() {
+            status = 'open';
+            var start = null, end = null;
+
+            // 发送数据
+            term.on('data', function (data) {
+                sock.send(JSON.stringify({'data': data}));
+                record_cmd(data)
+            });
+
+            // websocket接收消息
+            sock.onmessage = function (msg) {
+                term.write(msg.data);
+            };
+
+            // websocket错误
+            sock.onerror = function (e) {
+                sock.close();
+                refresh_xterm()
+            };
+
+            // websocket关闭
+            sock.onclose = function (e) {
+                term.write('\r\nConnection Closed...\r\n');
+            };
+
+            // 追踪触发按键
+            term.attachCustomKeyEventHandler(function (e) {
+                if (e.ctrlKey && e.keyCode === 68) {
+                    displayPNotify(2, '不支持ctr + d操作');
+                    return false
+                }
+                if (e.ctrlKey && e.keyCode === 67) {
+                    displayPNotify(2, '不支持ctr + c操作');
+                    return false
+                }
+            });
+
+            // 设置命令记录
+            var cmd_string = [];
+
+            function record_cmd(data) {
+                if (data.indexOf('\r') < 0) {
+                    cmd_string.push(data)
+                } else if (data.indexOf('\r') >= 0) {
+                    var filter_result = cmd_string.join('');
+                    if (filter_result.indexOf('quit') >= 0 || filter_result.indexOf('exit') >= 0) {
+                        refresh_xterm()
+                    }
+                    cmd_string = []
+                }
+            }
+        }
+
+        CreateWebShell();
+
+        /**
+         * 获取执行命令
+         */
+        $(function () {
+            $('#s_cmd').empty();
+            $.ajax({
+                url: '{% url 'p_get_ssh_cmd' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (index, row) {
+                        html += '<option data-icon="fa fa-database" value=\"' + row.command + '\">' + row.comment + '</option>'
+                    });
+                    $('#s_cmd').append(html);
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            })
+        });
+
+        // 用户切换命令
+        function change_cmd() {
+            // 此处status只用于检测是否已经执行过了StartWebShell函数
+            if (!status) {
+                StartWebShell();
+            }
+            cmd = $('#s_cmd').val();
+            var join_cmd = [cmd, '\r'].join('');
+
+            sock.send(JSON.stringify({'data': join_cmd}));
+            if (join_cmd.indexOf('mongo') >= 0) {
+                sock.send(JSON.stringify({'data': 'rs.slaveOk()\r'}))
+            }
+        }
+
+
+        // 刷新xterm
+        function refresh_xterm() {
+            // 此处直接刷新页面
+            window.location.reload()
+        }
+
+        // 监控窗口，动态调整xterm画布大小
+        $(window).resize(function () {
+            resize_xterm_window();
+        });
+
+    </script>
+{% endblock %}
