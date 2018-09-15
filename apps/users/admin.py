@@ -36,10 +36,14 @@ class MysqlSchemasGrantInline(admin.TabularInline):
     # 此处过滤指定的数据
     # 将生产环境的主库过滤掉
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        parent_id_min = SqlOrdersEnvironment.objects.all().aggregate(Min('parent_id'))['parent_id__min']
-        envi_id = SqlOrdersEnvironment.objects.get(parent_id=parent_id_min).envi_id
-        kwargs['queryset'] = MysqlSchemas.objects.filter(Q(envi_id=envi_id, is_master=0) | ~Q(envi_id=envi_id))
-        return super(MysqlSchemasGrantInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        try:
+            parent_id_min = SqlOrdersEnvironment.objects.all().aggregate(Min('parent_id'))['parent_id__min']
+            envi_id = SqlOrdersEnvironment.objects.get(parent_id=parent_id_min).envi_id
+            kwargs['queryset'] = MysqlSchemas.objects.filter(Q(envi_id=envi_id, is_master=0) | ~Q(envi_id=envi_id))
+        except Exception as err:
+            pass
+        finally:
+            return super(MysqlSchemasGrantInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class UserAccountsAdmin(admin.ModelAdmin):
