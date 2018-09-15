@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/media/png/webshell.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sqlaudit/settings-bak.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -72,16 +70,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="566">
-                <caret line="60" column="12" lean-forward="true" selection-start-line="60" selection-start-column="12" selection-end-line="60" selection-end-column="12" />
+              <first_editor relative-caret-position="668">
+                <caret line="66" column="14" selection-start-line="66" selection-start-column="14" selection-end-line="66" selection-end-column="14" />
               </first_editor>
               <second_editor>
                 <js_state />
               </second_editor>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings-bak.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="523">
+              <caret line="226" column="13" lean-forward="true" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -114,6 +121,7 @@
         <option value="$PROJECT_DIR$/apps/webshell/models.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/sqlaudit/settings-bak.py" />
       </list>
     </option>
   </component>
@@ -197,6 +205,11 @@
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="sqlaudit" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -215,6 +228,7 @@
       <recent name="$PROJECT_DIR$/media/png" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sqlaudit" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components" />
     </key>
   </component>
@@ -472,12 +486,19 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="566">
-            <caret line="60" column="12" lean-forward="true" selection-start-line="60" selection-start-column="12" selection-end-line="60" selection-end-column="12" />
+          <first_editor relative-caret-position="668">
+            <caret line="66" column="14" selection-start-line="66" selection-start-column="14" selection-end-line="66" selection-end-column="14" />
           </first_editor>
           <second_editor>
             <js_state />
           </second_editor>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="523">
+          <caret line="226" column="13" lean-forward="true" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
         </state>
       </provider>
     </entry>
