@@ -1,5 +1,6 @@
 from django.contrib import admin
 # Register your models here.
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from django.db.models import Min, Q
 
@@ -55,6 +56,16 @@ class UserAccountsAdmin(admin.ModelAdmin):
 
     exclude = ('users',)
     actions = ['reset_password']
+
+    # 支持密码修改
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        data = form.clean()
+        password = data.get('password')
+        if 'password' in form.changed_data:
+            obj.password = make_password(password)
+
+        return super().save_model(request, obj, form, change)
 
 
 class UserRolesAdmin(admin.ModelAdmin):
