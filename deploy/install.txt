@@ -1,0 +1,424 @@
+部署/升级
+===============
+
+#系统版本要求
+
+CentOS release 6.9（Inception可能无法在centos7上编译通过，建议选择centos6.x）
+
+配置：2核4G内存+
+
+#安装epel源
+
+#安装依赖包
+```bash
+yum -y install net-tools vim lsof lrzsz bzip2-devel gcc gcc-c++ make automake unzip curl curl-devel perl perl-devel expat \
+expat-devel zlib zlib-devel asciidoc xmlto gettext-devel openssh-clients openssl-devel openssl mlocate python-devel openldap-devel
+```
+
+#安装python
+```bash
+cd /usr/local/src
+wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
+tar -zxf Python-3.6.4.tgz
+./configure --prefix=/usr && make && make altinstall
+```
+
+#安装虚拟环境
+```bash
+pip3.6 install --upgrade pip
+pip3.6 install virtualenv -i https://mirrors.aliyun.com/pypi/simple
+```
+
+#创建项目所需的虚拟环境venv_py36
+```bash
+cd /root
+virtualenv venv_py36 --python=`which python3.6`
+```
+
+#激活python虚拟环境
+echo "source /root/venv_py36/bin/activate" >> /root/.bashrc
+source /root/.bashrc
+
+#安装Git
+```bash
+cd /usr/local/src
+wget https://github.com/git/git/archive/master.zip
+unzip master.zip
+make prefix=/usr all
+make prefix=/usr install
+```
+
+#在.bashrc下增加以下命令
+```bash
+export PATH=$PATH:/usr/libexec/git-core
+```
+
+#安装mysql
+```bash
+yum -y install http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+yum -y install Percona-Server-server-56  Percona-Server-devel-56 percona-toolkit
+```
+
+#安装nginx
+```bash
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+yum -y install nginx
+```
+
+#安装redis
+```bash
+yum -y install redis
+```
+
+#拉取项目代码
+```bash
+mkdir /data/web -p
+cd /data/web && git clone https://github.com/lazzyfu/AuditSQL.git
+chown -R nginx. /data/web
+```
+
+#安装django项目依赖包
+```bash
+cd /data/web/AuditSQL/
+mkdir /data/web/AuditSQL/logs
+pip3.6 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+```
+
+#配置nginx
+```text
+vim /etc/nginx/conf.d/nginx.conf
+# 将下面的servername修改成自己的域名
+# 将下面的listen修改成自己的端口
+
+server {
+    listen      8000;
+    server_name sqlaudit.example.com;
+    charset     utf-8;
+
+    #max upload size
+    client_max_body_size 75M;
+
+    #django media directory
+    location /media  {
+        alias /data/web/AuditSQL/media;
+    }
+
+    #django static directory
+    location /static {
+        alias /data/web/AuditSQL/static;
+    }
+
+    #uwsgi 反向代理
+    location / {
+        uwsgi_pass  unix://///data/web/AuditSQL_uwsgi.sock;
+
+        #the uwsgi_params file you installed
+        include     /etc/nginx/uwsgi_params;
+    }
+
+    #daphne反向代理
+    location /ws {
+      proxy_pass http://0.0.0.0:8001;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_redirect     off;
+      proxy_set_header   Host $host;
+      proxy_set_header   X-Real-IP $remote_addr;
+      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header   X-Forwarded-Host $server_name;
+      proxy_read_timeout  36000s;
+      proxy_send_timeout  36000s;
+    }
+    location /ssh {
+      proxy_pass http://0.0.0.0:8001;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_redirect     off;
+      proxy_set_header   Host $host;
+      proxy_set_header   X-Real-IP $remote_addr;
+      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header   X-Forwarded-Host $server_name;
+      proxy_read_timeout  36000s;
+    }
+}
+```
+
+#安装uwsgi
+```bash
+pip3.6 install uwsgi
+```
+
+#配置uwsgi
+```text
+vim /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+
+[uwsgi]
+#nginx用户的uid
+uid = nginx
+chdir = /data/web/AuditSQL
+module = AuditSQL.wsgi
+home = /root/venv_py36
+socket = /data/web/AuditSQL_uwsgi.sock
+master = true
+processes = 4
+threads = 2
+max-requests = 6000
+chmod-socket = 664
+vacuum = true
+daemonize = /var/log/uwsgi.log
+```
+
+#初始化数据库并设置密码，记住设置的root的密码(假设为：123.com)，下面settings.py文件使用
+```bash
+service mysql start
+mysql_secure_installation
+```
+
+#配置数据库(字符集utf8，否则执行python manage.py migrate会报编码错误)
+```bash
+mysql -uroot -p123.com -e 'create database auditsql character set utf8'
+```
+
+#编辑项目配置文件
+```bash
+/data/web/AuditSQL/AuditSQL
+cp settings_bak.py settings.py
+
+vim settings.py
+
+DEBUG = False
+ALLOWED_HOSTS = ['*']
+#配置mysql
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'auditsql',
+        'USER': 'root',
+        'HOST': 'localhost',
+        'PASSWORD': '123.com',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4'
+        }
+    }
+}
+
+# 是否启用ldap认证
+# 若启用，取消注释#即可
+AUTHENTICATION_BACKENDS = [
+    #'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# ldap配置
+# 根据公司的ldap进行配置
+AUTH_LDAP_SERVER_URI = "ldap://192.168.200.1"
+# AUTH_LDAP_START_TLS = True
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+AUTH_LDAP_BIND_DN = "uid=devops,cn=users,cn=accounts,dc=test,dc=com"
+AUTH_LDAP_BIND_PASSWORD = "devops123.com"
+AUTH_LDAP_USER_SEARCH = LDAPSearch("cn=accounts,dc=test,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+
+# 下面字段必须存在，管理字段可自定义
+# username：用户名
+# email：邮箱地址
+# displayname：对应的昵称或中文名
+# 按照自己公司的ldap字段进行修改映射
+AUTH_LDAP_USER_ATTR_MAP = {"username": "username", 'email': 'mail', "displayname": 'givenName'}
+
+```
+
+#初始化项目表结构
+```bash
+cd /data/web/AuditSQL
+python manage.py migrate
+python manage.py loaddata deploy/initial_data.json
+```
+
+#处理静态文件
+```bash
+python manage.py collectstatic
+```
+
+#启动uwsgi
+```bash
+chown -R nginx. /data/web/
+uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+```
+
+#启动daphne服务（服务websocket）
+```bash
+cd /data/web/AuditSQL
+nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
+```
+
+#启动nginx
+```bash
+service nginx start
+```
+
+#启动redis
+#redis默认配置即可
+```bash
+service redis start
+```
+
+#配置celery启动脚本
+#同级目录下有celeryd文件,copy /etc/init.d/目录下
+```bash
+vim /etc/init.d/celeryd
+chmod +x /etc/init.d/celeryd
+```
+
+#编辑celery配置文件
+```text
+vim /etc/default/celeryd
+
+#Names of nodes to start
+CELERYD_NODES="worker1"
+
+#Absolute or relative path to the 'celery' command:
+CELERY_BIN="/root/venv_py36/bin/celery"
+
+#App instance to use
+#comment out this line if you don't use an app
+CELERY_APP="AuditSQL"
+
+#Where to chdir at start.
+CELERYD_CHDIR="/data/web/AuditSQL/"
+
+#Extra command-line arguments to the worker
+CELERYD_OPTS="--time-limit=7200 --concurrency=8 -B"
+
+#Set logging level to DEBUG
+#CELERYD_LOG_LEVEL="DEBUG"
+
+#%n will be replaced with the first part of the nodename.
+CELERYD_LOG_FILE="/var/log/celery/%n%I.log"
+CELERYD_PID_FILE="/var/run/celery/%n.pid"
+
+#Workers should run as an unprivileged user.
+#  You need to create this user manually (or you can choose
+#  a user/group combination that already exists (e.g., nobody).
+CELERYD_USER="root"
+CELERYD_GROUP="root"
+
+#If enabled pid and log directories will be created if missing,
+#and owned by the userid/group configured.
+CELERY_CREATE_DIRS=1
+```
+
+#启动celery
+```bash
+/etc/init.d/celeryd start
+```
+
+#安装Inception
+#安装到/opt/inception目录下
+#自己去github上搜索Inception下载，安装即可
+```text
+unzip inception-master.zip
+cd inception-master
+vim inception_build.sh
+#修改为：
+-DCMAKE_INSTALL_PREFIX=/opt/inception
+
+./inception_build.sh debug
+```
+
+#配置inception
+```text
+vim /etc/inception.cnf
+
+[inception]
+general_log=1
+general_log_file=/opt/inception/inception.log
+port=6033
+socket=/opt/inception/incption.socket
+character-set-client-handshake=0
+character-set-server=utf8
+inception_remote_system_password=123.com
+inception_remote_system_user=root
+inception_remote_backup_port=3306
+inception_remote_backup_host=127.0.0.1
+inception_support_charset=utf8,utf8mb4
+inception_enable_nullable=0
+inception_check_primary_key=1
+inception_check_column_comment=1
+inception_check_table_comment=1
+inception_osc_min_table_size=1
+inception_ddl_support=1
+inception_enable_blob_type=1
+inception_check_column_default_value=1
+inception_enable_identifer_keyword=1
+inception_osc_check_replication_filters=0
+inception_osc_recursion_method=none
+inception_osc_bin_dir=/usr/bin/pt-online-schema-change
+inception_check_timestamp_default=OFF
+inception_enable_nullable=ON
+inception_merge_alter_table=OFF
+inception_max_update_rows=10000000
+```
+
+#启动inception
+```text
+nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
+```
+
+#汇总启动命令
+```text
+chown -R mysql:mysql /var/lib/mysql
+service mysql restart
+service redis restart
+uwsgi --ini /etc/nginx/conf.d/AuditSQL_uwsgi.ini
+cd /data/web/AuditSQL
+nohup daphne -b 0.0.0.0 -p 8001 -v2 AuditSQL.asgi:application --access-log=/var/log/daphnei.log &
+chown -R nginx. /data/web/
+service nginx start
+/etc/init.d/celeryd start
+nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
+```
+
+#解决inception调用pt产生的僵尸进程问题
+```text
+crontab -e
+
+#杀掉inception并启动，清除僵尸进程
+40 23 */1 * * ps -ef |grep inception |awk '{print $2}' |head -2|xargs kill -9
+41 23 */1 * * nohup /opt/inception/bin/Inception --defaults-file=/etc/inception.cnf &
+```
+
+最后需要修改pymysql文件，解决如下问题：
+
+问题1：Pymysql在链接inception在判断版本时出现value error
+
+解决办法：
+
+修改Pymysql文件夹内的connections.py
+
+修改为如下：
+```text
+self.server_version = '5.7.18-16-log'
+if int(self.server_version.split('.', 1)[0]) >= 5:
+   self.client_flag |= CLIENT.MULTI_RESULTS
+```
+
+问题2：Inception始终反馈"Must start as begin statement"的语法错误
+
+解决办法：
+
+修改Pymysql文件夹内的cursors.py
+
+修改为如下：
+```txt
+if not self._defer_warnings:
+    #self._show_warnings()
+    pass
+```
+
+部署完成，访问：http://sqlaudit.example.com:8000/ 是否OK。
+
+
