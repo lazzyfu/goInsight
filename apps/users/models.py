@@ -39,7 +39,7 @@ class UserAccounts(AbstractUser):
     user_schema.short_description = '授权库'
 
     class Meta:
-        verbose_name = u'用户表'
+        verbose_name = u'用户'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -63,7 +63,7 @@ class UserRoles(models.Model):
         return ', '.join(permission_desc)
 
     class Meta:
-        verbose_name = u'角色表'
+        verbose_name = u'角色'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -83,7 +83,7 @@ class RolePermission(models.Model):
         return self.permission_desc
 
     class Meta:
-        verbose_name = u'权限表'
+        verbose_name = u'权限'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
