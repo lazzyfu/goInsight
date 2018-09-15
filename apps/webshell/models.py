@@ -8,8 +8,8 @@ from users.models import UserAccounts
 
 class WebShellInfo(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
-    command = models.CharField(max_length=1024, null=False, default='', verbose_name=u'用户命令')
-    comment = models.CharField(max_length=128, null=True, verbose_name=u'命令描述')
+    command = models.CharField(max_length=1024, null=False, default='', verbose_name=u'命令')
+    comment = models.CharField(max_length=128, null=True, verbose_name=u'描述')
     envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
@@ -18,7 +18,7 @@ class WebShellInfo(models.Model):
         return self.comment
 
     class Meta:
-        verbose_name = u'webssh'
+        verbose_name = u'webshell'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -34,7 +34,7 @@ class WebShellGrant(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     class Meta:
-        verbose_name = u'web shell授权表'
+        verbose_name = u'webshell授权'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
