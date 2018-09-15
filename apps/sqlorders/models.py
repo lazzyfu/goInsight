@@ -8,8 +8,8 @@ from users.models import UserAccounts
 
 class SqlOrdersEnvironment(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
-    envi_id = models.IntegerField(null=False, default=1, verbose_name=u'当前环境id，起始值：1')
-    parent_id = models.IntegerField(null=False, default=0, verbose_name=u'上一级环境id，起始值：0')
+    envi_id = models.IntegerField(null=False, default=1, verbose_name=u'ID，起始值：1')
+    parent_id = models.IntegerField(null=False, default=0, verbose_name=u'父ID，起始值：0')
     envi_name = models.CharField(max_length=30, default='', null=False, verbose_name=u'环境')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
