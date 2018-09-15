@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('sqlorders/', include('sqlorders.urls')),
     path('sqlquery/', include('sqlquery.urls')),
+    path('webshell/', include('webshell.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
