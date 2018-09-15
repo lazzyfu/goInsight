@@ -2,10 +2,10 @@
 
 AuditSQL是基于Inception开发的web版本的MySQL数据库审核平台，旨在降低DBA的运维成本，解放大家的生产力。
 
-请大家放心使用，若是遇到使用上的问题或bug，请提出Issues，我会及时关注以及提出解决办法。若是觉得ok，请给颗Star，谢谢。
+请大家放心使用，若是遇到使用上的问题或bug，请提出Issues，我会及时关注并给出解决办法。若是觉得ok，请给颗Star，谢谢。
 
 
-# 开发组件
+## 开发组件
 
 * Python 3.6+
 * Django 2.0+
@@ -14,7 +14,7 @@ AuditSQL是基于Inception开发的web版本的MySQL数据库审核平台，旨�
 * AdminLTE
 * Paramiko
 
-# 功能
+## 功能
 - 支持自定义级联环境（比如：测试环境--> 预发布环境 -->生产环境）
 - 支持DDL、DML的SQL语法审核、提示、美化、高亮、注释识别、补全等功能
 - 支持DDL、DML上线工单，并提供上线版本号支持
@@ -52,7 +52,7 @@ https://github.com/lazzyfu/AuditSQL/wiki
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/table.png)
 
 
-死锁钉钉通知：
+## 死锁钉钉通知：
 ```text
 【警告 ◕﹏◕，探测到新的死锁记录，探测时间：2018-08-29 05:13:31】
 
