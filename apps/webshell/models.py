@@ -2,14 +2,15 @@ from django.db import models
 
 
 # Create your models here.
+from sqlorders.models import envi_choice
 from users.models import UserAccounts
 
 
 class WebShellInfo(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     command = models.CharField(max_length=1024, null=False, default='', verbose_name=u'用户命令')
-    envi = models.SmallIntegerField(null=False, default=1, verbose_name=u'0: 线下环境，1: 生产环境')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'命令描述')
+    envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
@@ -17,7 +18,7 @@ class WebShellInfo(models.Model):
         return self.comment
 
     class Meta:
-        verbose_name = u'mongodb和redis'
+        verbose_name = u'webssh'
         verbose_name_plural = verbose_name
 
         default_permissions = ()

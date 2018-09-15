@@ -12,6 +12,7 @@ from channels.layers import get_channel_layer
 # from .settings import WEBSHELL_HOST, WEBSHELL_PORT, WEBSHELL_USER, WEBSHELL_PASSWORD
 
 # from mstats.models import WebShellOpLog
+from webshell.models import WebShellOpLog
 
 channel_layer = get_channel_layer()
 
