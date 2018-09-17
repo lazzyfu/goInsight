@@ -10,7 +10,7 @@ import pymysql
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from sqlorders.models import MysqlSchemas
+from sqlorders.models import MysqlSchemas, SysConfig
 from sqlquery.models import MySQLQueryLog
 
 channel_layer = get_channel_layer()
@@ -73,6 +73,14 @@ def mysql_query_rules(querys):
 
     # 判断是否有limit、没有增加limit 1000
     # 最大仅允许limit 1000
+    default_rows = 100
+    max_rows = 200
+    if SysConfig.objects.get(key='query_limit').is_enabled == '0':
+        queryset = SysConfig.objects.get(key='query_limit').value
+        a, b = queryset.split(',')
+        default_rows = int(a.split('=')[1])
+        max_rows = int(b.split('=')[1])
+
     for i in querys:
         limit = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*) LIMIT (\d+)$', re.I)
         limit_offset = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*) LIMIT (\d+) OFFSET (\d+)$', re.I)
@@ -83,16 +91,14 @@ def mysql_query_rules(querys):
             if limit_offset.match(i) is None:
                 if limit.match(i) is None:
                     # 当未匹配到select ... limit ...语句，重写查询
-                    querys[querys.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT 100", i)
+                    querys[querys.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT {}".format(default_rows), i)
                 else:
                     limit_num = limit.match(i)
-                    if int(limit_num.group(3).replace(';', '')) > 500:
-                        querys[querys.index(i)] = limit.sub(r"SELECT \1 FROM \2 LIMIT 200", i)
+                    if int(limit_num.group(3).replace(';', '')) > max_rows:
+                        querys[querys.index(i)] = limit.sub(r"SELECT \1 FROM \2 LIMIT {}".format(max_rows), i)
             else:
                 # 重新limit N offset N 为limit N语法
                 querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT \3', i)
-
-    print(querys)
     return querys
 
 
