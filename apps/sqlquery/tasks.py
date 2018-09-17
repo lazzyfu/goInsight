@@ -85,7 +85,7 @@ def detect_deadlock(*args):
     # 库名：auditsql，表名：dbaudit_deadlocks_records
     command = "/usr/bin/pt-deadlock-logger --user={user} --password={password} --host={host} --port={port} " \
               "--no-version-check --create-dest-table " \
-              "--dest h=localhost,u=root,p=123.com,D=auditsql,t=dbaudit_deadlocks_records --iterations 1"
+              "--dest h=localhost,u=root,p=123.com,D=sqlaudit,t=dbaudit_deadlocks_records --iterations 1"
 
     query = "SELECT id, `user`, `password`, `host`, `port` FROM sqlaudit_mysql_schemas " \
             "WHERE sqlaudit_mysql_schemas.is_master = 1 group by host,port"
