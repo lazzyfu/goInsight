@@ -109,6 +109,33 @@ def detect_deadlock(*args):
         result.append({'data': [data[i], data[i + 1]]})
         i += step
 
+    format_deadlock_data = ''
+    j = 1
+    for row in result:
+        double_data = ''
+        for i in row['data']:
+            text = f"主机：{i['server']}\n" \
+                   f"时间: {i['ts']}\n" \
+                   f"线程ID: {i['thread']}\n" \
+                   f"事务ID: {i['txn_id']}\n" \
+                   f"事务激活时间: {i['txn_time']}\n" \
+                   f"用户名: {i['user']}\n" \
+                   f"主机名: {i['hostname']}\n" \
+                   f"IP: {i['ip']}\n" \
+                   f"库名: {i['db']}\n" \
+                   f"表名: {i['tbl']} \n" \
+                   f"发生死锁的索引: {i['idx']}\n" \
+                   f"锁类型: {i['lock_type']}\n" \
+                   f"锁模式: {i['lock_mode']}\n" \
+                   f"请求锁: {i['wait_hold']}\n" \
+                   f"是否回滚: {'否' if i['victim'] == 0 else '是'}\n" \
+                   f"查询: {i['query']}\n\n"
+            double_data += text
+            DeadlockRecord.objects.filter(id=i['id']).update(is_pull=1)
+
+        format_deadlock_data += ''.join((f'## 死锁记录{j} ##:\n', double_data))
+        j += 1
+
     if result:
         # 判断系统是否开启了相关通知
         # 发送邮件通知
@@ -131,33 +158,6 @@ def detect_deadlock(*args):
         if SysConfig.objects.get(key='dingding_push').is_enabled == '0':
             webhook = SysConfig.objects.get(key='dingding_push').value
             xiaoding = DingtalkChatbot(webhook)
-
-            format_deadlock_data = ''
-            j = 1
-            for row in result:
-                double_data = ''
-                for i in row['data']:
-                    text = f"主机：{i['server']}\n" \
-                           f"时间: {i['ts']}\n" \
-                           f"线程ID: {i['thread']}\n" \
-                           f"事务ID: {i['txn_id']}\n" \
-                           f"事务激活时间: {i['txn_time']}\n" \
-                           f"用户名: {i['user']}\n" \
-                           f"主机名: {i['hostname']}\n" \
-                           f"IP: {i['ip']}\n" \
-                           f"库名: {i['db']}\n" \
-                           f"表名: {i['tbl']} \n" \
-                           f"发生死锁的索引: {i['idx']}\n" \
-                           f"锁类型: {i['lock_type']}\n" \
-                           f"锁模式: {i['lock_mode']}\n" \
-                           f"请求锁: {i['wait_hold']}\n" \
-                           f"是否回滚: {'否' if i['victim'] == 0 else '是'}\n" \
-                           f"查询: {i['query']}\n\n"
-                    double_data += text
-                    DeadlockRecord.objects.filter(id=i['id']).update(is_pull=1)
-
-                format_deadlock_data += ''.join((f'## 死锁记录{j} ##:\n', double_data))
-                j += 1
 
             check_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             msg = '\n'.join((f'【警告 ◕﹏◕，探测到新的死锁记录，探测时间：{check_time}】\n', format_deadlock_data))
