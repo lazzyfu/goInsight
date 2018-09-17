@@ -24,8 +24,8 @@ class SqlOrdersEnvironment(models.Model):
         unique_together = (('envi_id',), ('parent_id',))
 
 
-# envi_choice = [(x, y) for x, y in list(SqlOrdersEnvironment.objects.all().values_list('envi_id', 'envi_name'))]
-envi_choice = ((0, '1'), (1, '1'))
+envi_choice = [(x, y) for x, y in list(SqlOrdersEnvironment.objects.all().values_list('envi_id', 'envi_name'))]
+# envi_choice = ((0, '1'), (1, '1'))
 type_choice = ((0, '数据查询'), (1, 'SQL审核'))
 
 
