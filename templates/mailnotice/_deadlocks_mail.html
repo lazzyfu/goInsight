@@ -9,10 +9,8 @@
     </style>
 </head>
 <body>
-{% for row in data %}
-    {% ifequal row '<hr>' %}
-        <hr>
-    {% else %}
+{% for i in data %}
+    {% for row in i.data %}
         <p>业务主机：{{ row.src_host }}</p>
         <p>时间：{{ row.ts }}</p>
         <p>线程ID：{{ row.thread }}</p>
@@ -28,7 +26,8 @@
         <p>是否回滚：{% ifequal row.victim 0 %} 否 {% else %} 是 {% endifequal %}</p>
         <p>查询：</p>
         <p>{{ row.query }}</p>
-    {% endifequal %}
+        <br>
+    {% endfor %}
 {% endfor %}
 </body>
 </html>
