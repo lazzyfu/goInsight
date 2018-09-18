@@ -154,7 +154,7 @@ class SqlOrdersExecTasks(models.Model):
     taskid = models.CharField(null=False, max_length=128, verbose_name=u'任务号')
     related_id = models.IntegerField(null=False, default=0, verbose_name=u'关联SqlOrdersContents的主键id')
     envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
-    host = models.CharField(null=False, max_length=30, verbose_name=u'操作目标数据库主机')
+    host = models.CharField(null=False, max_length=128, verbose_name=u'操作目标数据库主机')
     database = models.CharField(null=False, max_length=80, verbose_name=u'操作目标数据库')
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
     sql = models.TextField(verbose_name=u'执行的SQL', default='')

@@ -71,8 +71,7 @@ def mysql_query_rules(querys):
     对查询进行规则检测
     """
 
-    # 判断是否有limit、没有增加limit 1000
-    # 最大仅允许limit 1000
+    # 判断是否有limit、没有增加limit限制
     default_rows = 100
     max_rows = 200
     if SysConfig.objects.get(key='query_limit').is_enabled == '0':

@@ -68,7 +68,7 @@ class GetProductSchemasView(View):
 
     def get(self, request):
         product_envi_id = SqlOrdersEnvironment.objects.get(parent_id=0).envi_id
-        queryset = MysqlSchemas.objects.filter(envi_id=product_envi_id).values('host', 'port', 'schema')
+        queryset = MysqlSchemas.objects.filter(envi_id=product_envi_id, is_master=1).values('host', 'port', 'schema')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
 
@@ -167,7 +167,7 @@ class SqlOrdersListView(View):
         form = SqlOrderListForm(request.POST)
         context = {}
         if form.is_valid():
-            context = form.query()
+            context = form.query(request)
 
         return JsonResponse(context, safe=False)
 

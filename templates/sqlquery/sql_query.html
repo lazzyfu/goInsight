@@ -212,7 +212,7 @@
             $container.on("after_open.jstree", function (e, data) {
                 // tab补全
                 // 172.17.101.40-3306-test
-                tab_schema = data.node.id.split('-').join(',');
+                tab_schema = data.node.id.split('___').join(',');
                 if (tab_schema) {
                     get_table_info(tab_schema);
                 }
