@@ -96,8 +96,12 @@ def mysql_query_rules(querys):
                     if int(limit_num.group(3).replace(';', '')) > max_rows:
                         querys[querys.index(i)] = limit.sub(r"SELECT \1 FROM \2 LIMIT {}".format(max_rows), i)
             else:
-                # 重新limit N offset N 为limit N语法
-                querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT \3', i)
+                # 重写limit N offset N 为limit N语法
+                limit_offset_match = limit_offset.match(i)
+                if int(limit_offset_match.group(3).replace(';', '')) > max_rows:
+                    querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT {}'.format(max_rows), i)
+                else:
+                    querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT \3', i)
     return querys
 
 
