@@ -136,7 +136,7 @@ class MySQLQuery(object):
                                     database=self.schema,
                                     cursorclass=pymysql.cursors.DictCursor)
         # 设置最大查询时间30s
-        self.conn._read_timeout = 30
+        self.conn._read_timeout = 600
 
     def query(self, request):
         obj = MySQLQueryLog.objects.create(user=request.user.username,
