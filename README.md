@@ -47,6 +47,8 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform.png)
 
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform_ddl.png)
+
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/query.png)
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/table.png)
