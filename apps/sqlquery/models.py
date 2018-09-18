@@ -24,7 +24,7 @@ class MysqlSchemasGrant(models.Model):
 class MySQLQueryLog(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     user = models.CharField(max_length=30, null=False, verbose_name=u'用户名')
-    host = models.CharField(max_length=32, null=False, verbose_name=u'目标数据库地址')
+    host = models.CharField(max_length=128, null=False, verbose_name=u'目标数据库地址')
     database = models.CharField(max_length=32, null=False, verbose_name=u'目标数据库')
     envi = models.SmallIntegerField(null=False, default=1, verbose_name=u'0：线上环境， 1：线下环境')
     query_sql = models.TextField(null=False, default='', verbose_name=u'查询SQL')

@@ -8,7 +8,6 @@ from sqlorders.models import envi_choice, SqlOrdersEnvironment, MysqlSchemas
 from sqlorders.utils import GetTableInfo
 from sqlquery.models import MysqlSchemasGrant
 from sqlquery.sqlQueryApi import MySQLQuery
-from sqlquery.utils import GetSchemasGrantApi
 
 
 class GetSchemasGrantForm(forms.Form):
@@ -31,10 +30,11 @@ class GetSchemasGrantForm(forms.Form):
 
         context = []
         for row in MysqlSchemas.objects.raw(query):
-            data = GetSchemasGrantApi(row.host, row.port, row.schema).get_online_tables()
+            data = GetTableInfo(row.host, row.port, row.schema).get_online_tables()
+            show_schema = '_'.join((row.comment, row.schema))
             context.append({
-                'id': '-'.join((row.host, str(row.port), row.schema)),
-                'text': row.schema,
+                'id': '___'.join((row.host, str(row.port), row.schema)),
+                'text': show_schema,
                 'children': data
             })
         return context
@@ -45,7 +45,7 @@ class GetStruInfoForm(forms.Form):
 
     def query(self):
         cdata = self.cleaned_data
-        host, port, schema = cdata.get('schema').split('-')
+        host, port, schema = cdata.get('schema').split('___')
         if len(schema.split('.')) == 2:
             data = GetTableInfo(host, port, schema).get_stru_info()
             context = {'status': 0, 'data': data}
@@ -65,7 +65,7 @@ class ExecSqlQueryForm(forms.Form):
         schema = cdata.get('schema')
         contents = cdata.get('contents')
 
-        host, port, schema = schema.split('-')
+        host, port, schema = schema.split('___')
         if len(schema.split('.')) == 2:
             schema = schema.split('.')[0]
 

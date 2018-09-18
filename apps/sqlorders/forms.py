@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, MysqlSchemas, \
     SqlOrdersTasksVersions
 from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter, GetInceptionBackupApi
+from users.models import RolePermission
 from .tasks import *
 
 
@@ -169,12 +170,20 @@ class SqlOrderListForm(forms.Form):
     offset_size = forms.IntegerField(required=True, label=u'分页偏移量')
     search_content = forms.CharField(max_length=128, required=False, label='搜索内容')
 
-    def query(self):
+    def query(self, request):
         cdata = self.cleaned_data
         envi_id = cdata.get('envi_id')
         limit_size = cdata.get('limit_size')
         offset_size = cdata.get('offset_size')
         search_content = cdata.get('search_content')
+
+        # 获取用户的权限，用于前端表格的列的显示
+        role_name = request.user.user_role()
+        perm_list = list(
+            RolePermission.objects.filter(role__role_name=role_name).values_list('permission_name', flat=True))
+
+        permissions = {'permissions': perm_list}
+
         query = SqlOrdersContents.objects.filter(envi_id=envi_id).annotate(
             progress_value=Case(
                 When(progress='0', then=Value('待批准')),
@@ -211,7 +220,11 @@ class SqlOrderListForm(forms.Form):
                                 'title', 'proposer', 'auditor',
                                 'created_at', 'remark'
                                 ).order_by('-created_at')[offset_size:limit_size]
-        result = {'total': ol_total, 'rows': list(ol_records)}
+        rows = []
+        for x in list(ol_records):
+            x.update(permissions)
+            rows.append(x)
+        result = {'total': ol_total, 'rows': rows}
         return result
 
 
