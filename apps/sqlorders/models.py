@@ -1,9 +1,13 @@
+import logging
+
 from django.db import models
 
 # Create your models here.
 
 # sql工单环境定义
 from users.models import UserAccounts
+
+logger = logging.getLogger('django')
 
 
 class SqlOrdersEnvironment(models.Model):
@@ -69,8 +73,13 @@ class MysqlSchemas(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     def __str__(self):
-        envi_name = SqlOrdersEnvironment.objects.get(envi_id=self.envi_id).envi_name
-        return '_'.join((envi_name, self.host, str(self.port), self.schema))
+        try:
+            envi_name = SqlOrdersEnvironment.objects.get(envi_id=self.envi_id).envi_name
+            return '_'.join((envi_name, self.host, str(self.port), self.schema))
+        except Exception as err:
+            logger.error(err)
+            logger.error('请先配置环境')
+            return ''
 
     class Meta:
         verbose_name = u'MySQL集群汇总库'
@@ -200,7 +209,7 @@ class SysConfig(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     name = models.CharField(max_length=256, default='', null=False, verbose_name=u'名称')
     key = models.CharField(max_length=256, default='', null=False, verbose_name=u'key')
-    value = models.CharField(max_length=256, null=True,  blank=True, verbose_name=u'值')
+    value = models.CharField(max_length=256, null=True, blank=True, verbose_name=u'值')
     is_enabled = models.CharField(max_length=2, choices=(('0', '启用'), ('1', '禁用')), default='1', verbose_name=u'是否启用')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
 
