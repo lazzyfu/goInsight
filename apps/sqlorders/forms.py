@@ -10,7 +10,7 @@ from django.db.models import Max, Case, When, Value, CharField, Q
 from django.shortcuts import get_object_or_404
 
 from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, MysqlSchemas, \
-    SqlOrdersTasksVersions
+    SqlOrdersTasksVersions, SysConfig
 from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter, GetInceptionBackupApi
 from users.models import RolePermission
 from .tasks import *
@@ -514,26 +514,39 @@ class SinglePerformTasksForm(forms.Form):
                     obj.exec_status = 2
                     obj.save()
 
-                    # 如果sqlsha1存在，使用pt-online-schema-change执行
+                    # 如果sqlsha1存在，说明是大表，需要使用工具进行修改
+                    # inception_osc_min_table_size默认为16M
+                    # 如果此处向走gh-ost，则设置inception_osc_min_table_size=0
                     if obj.sqlsha1:
-                        # 异步执行SQL任务
-                        r = incep_async_tasks.delay(user=request.user.username,
+                        # 判断是否使用gh-ost执行
+                        if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
+                            ghost_async_tasks.delay(user=request.user.username,
                                                     id=id,
                                                     sql=sql,
-                                                    host=host,
-                                                    port=port,
-                                                    database=database,
-                                                    sqlsha1=obj.sqlsha1,
-                                                    backup='yes',
-                                                    exec_status='2')
-                        task_id = r.task_id
-                        # 将celery task_id写入到表
-                        obj.celery_task_id = task_id
-                        obj.save()
-                        # 获取OSC执行进度
-                        get_osc_percent.delay(task_id=task_id)
+                                                    host=obj.host,
+                                                    port=obj.port,
+                                                    database=obj.database)
+                            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+                        else:
+                            # 使用pt-online-schema-change执行
+                            # 异步执行SQL任务
+                            r = incep_async_tasks.delay(user=request.user.username,
+                                                        id=id,
+                                                        sql=sql,
+                                                        host=host,
+                                                        port=port,
+                                                        database=database,
+                                                        sqlsha1=obj.sqlsha1,
+                                                        backup='yes',
+                                                        exec_status='2')
+                            task_id = r.task_id
+                            # 将celery task_id写入到表
+                            obj.celery_task_id = task_id
+                            obj.save()
+                            # 获取OSC执行进度
+                            get_osc_percent.delay(task_id=task_id)
 
-                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+                            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
 
                     else:
                         # 当affected_row>2000时，只执行不备份

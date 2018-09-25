@@ -209,7 +209,7 @@ class SysConfig(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     name = models.CharField(max_length=256, default='', null=False, verbose_name=u'名称')
     key = models.CharField(max_length=256, default='', null=False, verbose_name=u'key')
-    value = models.CharField(max_length=256, null=True, blank=True, verbose_name=u'值')
+    value = models.TextField(max_length=256, null=True, blank=True, verbose_name=u'值')
     is_enabled = models.CharField(max_length=2, choices=(('0', '启用'), ('1', '禁用')), default='1', verbose_name=u'是否启用')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
 
