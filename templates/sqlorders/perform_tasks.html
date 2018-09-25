@@ -3,23 +3,18 @@
 
 {% block link_css %}
     <style>
-        .box-size {
-            font-size: 12px;
-        }
-
         .log-ul {
             width: auto;
             height: 550px;
             overflow: scroll;
-            padding: 10px;
-            margin: 10px;
+            padding: 8px;
+            margin: 8px;
         }
 
         textarea {
             width: 850px;
             border: 1px solid #eee;
-            height: 320px;
-            font-size: 13px;
+            height: 300px;
             color: #999;
         }
     </style>
@@ -60,7 +55,7 @@
         <div class="box">
             <div class="box-header">
                 <div class="mailbox-read-info">
-                    <h3 class="box-title"><i class="fa fa-hand-o-right"></i> 结果输出</h3>
+                    <h3 class="box-title"><i class="fa fa-hand-o-right"></i> 输出</h3>
                 </div>
             </div>
 
@@ -85,7 +80,7 @@
                         <div class="box-body box-comments">
                             <div class="box-comment">
                                 <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
-                                <textarea style="resize: none" readonly="readonly" id="select_sql"></textarea>
+                                <textarea title="" style="resize: none" readonly="readonly" id="select_sql"></textarea>
                             </div>
                             <div class="box-comment">
                                 <h5><i class="fa  fa-info-circle"> 执行日志</i></h5>
@@ -220,14 +215,29 @@
                         field: 'id',
                         title: "执行",
                         formatter: function (value, row) {
-                            return '<a href="#" onclick="execSingleTasks(' + row.id + ')"><i class="fa fa-play-circle"></i></a> ';
+                            return '<a href="#" onclick="execSingleTasks(' + row.id + ')"><i class="fa fa-play"></i></a> ';
+                        }
+                    },
+
+                    {
+                        field: 'id',
+                        title: "暂停(ghost)",
+                        formatter: function (value, row) {
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'pause\')"><i class="fa fa-pause"></i></a> ';
                         }
                     },
                     {
                         field: 'id',
-                        title: "停止OSC",
+                        title: "恢复(ghost)",
                         formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ')"><i class="fa fa-power-off"></i></a> ';
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'recovery\')"><i class="fa fa-play"></i></a> ';
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "停止",
+                        formatter: function (value, row) {
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop\')"><i class="fa fa-power-off"></i></a> ';
                         }
                     },
                     {
@@ -286,8 +296,10 @@
                         select_sql.append(rollback_sql);
                         exec_log.append(log_html);
                         $('#rollbackupModal').modal('show');
-                    }
-                    else {
+                    } else if (result.status === 1) {
+                        exec_log.append(result.data.exec_log.replace(/\n/g, '\.' + '<br>'));
+                        $('#rollbackupModal').modal('show');
+                    } else if (result.status === 2) {
                         displayPNotify(result.status, result.msg)
                     }
                 }
@@ -346,7 +358,7 @@
         }
 
         <!-- 停止 -->
-        function PerformTasksStop(id) {
+        function PerformTasksStop(id, action) {
             let csrftoken = $.cookie('csrftoken');
 
             $.ajax({
@@ -355,6 +367,7 @@
                 dataType: 'json',
                 data: {
                     'id': id,
+                    'action': action,
                     'taskid': taskid,
                     'csrfmiddlewaretoken': csrftoken
                 },
@@ -403,7 +416,7 @@
             mode: "text/x-mysql",
             autoRefresh: true,
             readOnly: true,
-            {#theme: 'material'#}
+            theme: 'material'
         });
 
         function preview_sql() {
@@ -433,11 +446,6 @@
         <!-- 创建websocket，获取执行进度 -->
         $(document).ready(function () {
             CreateWebSocket();
-        });
-
-
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
         });
 
     </script>

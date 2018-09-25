@@ -13,8 +13,8 @@
             <!-- Profile Image -->
             <div class="box box-primary">
                 <div class="box-body box-profile" id="crop-avatar">
-                    <div class="avatar-view" title="点击更改头像">
-                        <img src="/media/{{ request.user.avatar_file }}" alt="Avatar">
+                    <div class="avatar-view image" title="点击更改头像">
+                        <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="Avatar">
                     </div>
                     <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
                         <div class="modal-dialog modal-lg">
