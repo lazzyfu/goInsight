@@ -52,7 +52,7 @@ class GetAuditUserView(View):
 
     def get(self, request):
         role_queryset = RolePermission.objects.filter(permission_name='can_audit_sql').values_list('role__role_name',
-                                                                                               flat=True)
+                                                                                                   flat=True)
         queryset = UserRoles.objects.filter(role_name__in=role_queryset).filter(
             user__username__isnull=False
         ).values(
@@ -68,7 +68,8 @@ class GetProductSchemasView(View):
 
     def get(self, request):
         product_envi_id = SqlOrdersEnvironment.objects.get(parent_id=0).envi_id
-        queryset = MysqlSchemas.objects.filter(envi_id=product_envi_id, is_master=1).values('host', 'port', 'schema')
+        queryset = MysqlSchemas.objects.filter(envi_id=product_envi_id, is_master=1).values('host', 'port', 'schema',
+                                                                                            'comment')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
 
@@ -82,7 +83,7 @@ class GetOfflineSchemasView(View):
     def get(self, request):
         max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
         offline_envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
-        queryset = MysqlSchemas.objects.filter(envi_id=offline_envi_id).values('host', 'port', 'schema')
+        queryset = MysqlSchemas.objects.filter(envi_id=offline_envi_id).values('host', 'port', 'schema', 'comment')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
 

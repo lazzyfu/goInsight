@@ -229,7 +229,7 @@
                     let html = '';
                     $.each(data, function (index, row) {
                         let result = [row.host, row.port, row.schema].join(',');
-                        let show_result = [row.host, row.port, row.schema].join('_');
+                        let show_result = [row.comment, row.port, row.schema].join('_');
                         html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
                     });
                     $('#s_schema').append(html);
