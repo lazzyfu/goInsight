@@ -662,19 +662,18 @@ class PerformTasksRollbackForm(forms.Form):
 
 
 class SqlOrdersTasksVersionForm(forms.Form):
-    id = forms.IntegerField(required=False)
-    tasks_version = forms.CharField(required=True)
-    expire_time = forms.CharField(required=True)
+    id = forms.CharField(required=False)
+    tasks_version = forms.CharField(required=False)
+    expire_time = forms.CharField(required=False)
     action = forms.ChoiceField(choices=(('new', 'new'), ('delete', 'delete')))
 
     def save(self, request):
         cdata = self.cleaned_data
-        id = cdata.get('id')
-        tasks_version = cdata.get('tasks_version')
-        expire_time = cdata.get('expire_time')
         action = cdata.get('action')
 
         if action == 'new':
+            tasks_version = cdata.get('tasks_version')
+            expire_time = cdata.get('expire_time')
             if SqlOrdersTasksVersions.objects.filter(tasks_version=tasks_version).exists():
                 context = {'status': 2, 'msg': '记录已存在，不能重复创建'}
             else:
@@ -682,6 +681,7 @@ class SqlOrdersTasksVersionForm(forms.Form):
                                                       username=request.user.displayname)
                 context = {'status': 0, 'msg': '创建成功'}
         elif action == 'delete':
+            id = self.data.getlist('id')[0]
             for i in id.split(','):
                 SqlOrdersTasksVersions.objects.get(pk=i).delete()
             context = {'status': 0, 'msg': '删除成功'}
