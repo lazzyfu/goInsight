@@ -49,17 +49,12 @@ def sync_schemas():
                 with cnx.cursor() as cursor:
                     cursor.execute(schema_filter_query)
                     for i in cursor.fetchall():
+                        schema_join = '_'.join(([row['db_host'], str(row['db_port']), i['schema_name']]))
                         MysqlSchemas.objects.update_or_create(
-                            user=row['user'],
-                            password=row['password'],
-                            host=row['db_host'],
-                            port=row['db_port'],
-                            schema=i['schema_name'],
-                            envi_id=row['envi_id'],
-                            is_master=row['is_master'],
-                            schema_join='_'.join(
-                                ([row['db_host'], str(row['db_port']), i['schema_name']])),
-                            comment=row['comment'],
+                            schema_join=schema_join,
+                            defaults={'user': row['user'], 'password': row['password'], 'host': row['db_host'],
+                                      'port': row['db_port'], 'schema': i['schema_name'], 'envi_id': row['envi_id'],
+                                      'is_master': row['is_master'], 'comment': row['comment']}
                         )
             finally:
                 cnx.close()
