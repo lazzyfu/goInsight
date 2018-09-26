@@ -196,6 +196,8 @@ class MySQLQuery(object):
                                         j[k] = str(j[k])
                                     elif isinstance(j[k], NoneType):
                                         j[k] = 'NULL'
+                                    elif isinstance(j[k], int):
+                                        j[k] = str(j[k])
                                     elif isinstance(j[k], bytes):
                                         # mysql列可能存在bit类型，转换成字符串和utf-8编码
                                         j[k] = str(j[k], encoding='utf-8')
