@@ -164,8 +164,8 @@ class RenderSqlOrdersListView(View):
 class SqlOrdersListView(View):
     """获取工单列表页面的工单数据"""
 
-    def post(self, request):
-        form = SqlOrderListForm(request.POST)
+    def get(self, request):
+        form = SqlOrderListForm(request.GET)
         context = {}
         if form.is_valid():
             context = form.query(request)
