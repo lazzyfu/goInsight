@@ -102,10 +102,9 @@
          */
         let envi_id = $('#s_envi_id').text();
         $(function () {
-            let csrftoken = $.cookie('csrftoken');
             let $table = $('#demo-table');
             $table.bootstrapTable({
-                method: 'post',
+                method: 'get',
                 dataType: 'json',
                 contentType: "application/x-www-form-urlencoded",
                 url: "{% url 'p_get_sql_orders_list' %}",
@@ -115,8 +114,7 @@
                         envi_id: envi_id,
                         limit_size: params.limit + params.offset,
                         offset_size: params.offset,
-                        search_content: params.search,
-                        csrfmiddlewaretoken: csrftoken
+                        search_content: params.search
                     }
                 },
                 sidePagination: "server",
