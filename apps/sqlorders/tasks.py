@@ -279,6 +279,9 @@ def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, databa
     if match is not None:
         # 由于gh-ost不支持反引号，会被解析成命令，因此此处替换掉
         table = match.group(3).replace('`', '')
+        # 将schema.table进行处理，这种情况gh-ost不识别，只保留table
+        if len(table.split('.')) > 1:
+            table = table.split('.')[1]
         value = ' '.join((match.group(5), match.group(6))).replace('`', '')
 
         obj = MysqlConfig.objects.get(host=host, port=port)
