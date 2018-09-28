@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlquery/sql_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlquery/sql_query.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/png/query.png" beforeDir="false" afterPath="$PROJECT_DIR$/media/png/query.png" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -83,20 +79,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="761">
-              <caret line="325" column="78" lean-forward="true" selection-start-line="325" selection-start-column="78" selection-end-line="325" selection-end-column="78" />
+            <state relative-caret-position="546">
+              <caret line="297" column="34" lean-forward="true" selection-start-line="297" selection-start-column="34" selection-end-line="297" selection-end-column="34" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2567">
-              <caret line="173" selection-start-line="173" selection-end-line="173" />
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="745">
+                <caret line="95" column="7" lean-forward="true" selection-start-line="95" selection-start-column="7" selection-end-line="95" selection-end-column="7" />
+              </first_editor>
+              <second_editor>
+                <js_state />
+              </second_editor>
             </state>
           </provider>
         </entry>
@@ -261,6 +262,17 @@
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="media" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="media" type="462c0819:PsiDirectoryNode" />
+              <item name="png" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="sqlaudit" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -313,8 +325,8 @@
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/media/png/admin" />
       <recent name="$PROJECT_DIR$/media/png" />
+      <recent name="$PROJECT_DIR$/media/png/admin" />
       <recent name="$PROJECT_DIR$/media" />
       <recent name="$PROJECT_DIR$/apps/sqlquery" />
     </key>
@@ -632,18 +644,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="221">
-            <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
-          </first_editor>
-          <second_editor>
-            <js_state />
-          </second_editor>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/mailnotice/_sqlorders_commit_mail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="585">
@@ -762,8 +762,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="761">
-          <caret line="325" column="78" lean-forward="true" selection-start-line="325" selection-start-column="78" selection-end-line="325" selection-end-column="78" />
+        <state relative-caret-position="546">
+          <caret line="297" column="34" lean-forward="true" selection-start-line="297" selection-start-column="34" selection-end-line="297" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="745">
+            <caret line="95" column="7" lean-forward="true" selection-start-line="95" selection-start-column="7" selection-end-line="95" selection-end-column="7" />
+          </first_editor>
+          <second_editor>
+            <js_state />
+          </second_editor>
         </state>
       </provider>
     </entry>
