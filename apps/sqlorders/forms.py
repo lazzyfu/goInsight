@@ -41,7 +41,8 @@ class GetParentSchemasForm(forms.Form):
         envi_id = cdata.get('envi_id')
         parent_id = SqlOrdersEnvironment.objects.get(envi_id=envi_id).parent_id
 
-        queryset = MysqlSchemas.objects.filter(envi_id=parent_id).values('host', 'port', 'schema', 'comment')
+        queryset = MysqlSchemas.objects.filter(envi_id=parent_id).filter(is_master=1).values('host', 'port', 'schema',
+                                                                                             'comment')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return serialize_data
 
