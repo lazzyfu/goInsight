@@ -277,8 +277,9 @@ def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, databa
     queryset = SqlOrdersExecTasks.objects.get(id=id)
 
     if match is not None:
-        table = match.group(3)
-        value = ' '.join((match.group(5), match.group(6)))
+        # 由于gh-ost不支持反引号，会被解析成命令，因此此处替换掉
+        table = match.group(3).replace('`', '')
+        value = ' '.join((match.group(5), match.group(6))).replace('`', '')
 
         obj = MysqlConfig.objects.get(host=host, port=port)
         user_args = SysConfig.objects.get(key='is_ghost').value

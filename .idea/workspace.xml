@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/sqlorders/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/tasks.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,7 +20,7 @@
       <file leaf-file-name="sql_orders_list.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1667">
+            <state relative-caret-position="2091">
               <caret line="123" column="34" selection-start-line="123" selection-start-column="34" selection-end-line="123" selection-end-column="34" />
             </state>
           </provider>
@@ -29,8 +29,8 @@
       <file leaf-file-name="sql_query.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/sqlquery/sql_query.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="496">
-              <caret line="74" column="77" lean-forward="true" selection-start-line="74" selection-start-column="77" selection-end-line="74" selection-end-column="77" />
+            <state relative-caret-position="505">
+              <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
             </state>
           </provider>
         </entry>
@@ -38,7 +38,7 @@
       <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
+            <state relative-caret-position="799">
               <caret line="47" column="19" selection-start-line="47" selection-start-column="19" selection-end-line="47" selection-end-column="19" />
             </state>
           </provider>
@@ -53,11 +53,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="forms.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="528">
-              <caret line="48" lean-forward="true" selection-start-line="48" selection-end-line="48" />
+            <state relative-caret-position="851">
+              <caret line="67" column="36" lean-forward="true" selection-start-line="67" selection-start-column="36" selection-end-line="67" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -71,11 +71,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5151">
-              <caret line="318" column="9" selection-start-line="318" selection-start-column="9" selection-end-line="318" selection-end-column="9" />
+            <state relative-caret-position="626">
+              <caret line="303" column="20" lean-forward="true" selection-start-line="303" selection-start-column="20" selection-end-line="303" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -168,7 +168,6 @@
         <option value="$PROJECT_DIR$/templates/profile.html" />
         <option value="$PROJECT_DIR$/apps/sqlorders/models.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/admin.py" />
-        <option value="$PROJECT_DIR$/apps/sqlorders/tasks.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_tasks_version.html" />
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html" />
@@ -179,6 +178,7 @@
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" />
         <option value="$PROJECT_DIR$/apps/sqlorders/views.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/forms.py" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/tasks.py" />
       </list>
     </option>
   </component>
@@ -222,6 +222,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -284,7 +285,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -367,10 +367,9 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32952183" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.4033264" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23855165" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24121405" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39914164" />
@@ -382,6 +381,7 @@
       <window_info anchor="bottom" id="manage.py@AuditSQL" order="7" weight="0.32939914" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -697,16 +697,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5151">
-          <caret line="318" column="9" selection-start-line="318" selection-start-column="9" selection-end-line="318" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
+        <state relative-caret-position="799">
           <caret line="47" column="19" selection-start-line="47" selection-start-column="19" selection-end-line="47" selection-end-column="19" />
         </state>
       </provider>
@@ -727,22 +720,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1667">
+        <state relative-caret-position="2091">
           <caret line="123" column="34" selection-start-line="123" selection-start-column="34" selection-end-line="123" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/sqlquery/sql_query.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="496">
-          <caret line="74" column="77" lean-forward="true" selection-start-line="74" selection-start-column="77" selection-end-line="74" selection-end-column="77" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="48" lean-forward="true" selection-start-line="48" selection-end-line="48" />
+        <state relative-caret-position="851">
+          <caret line="67" column="36" lean-forward="true" selection-start-line="67" selection-start-column="36" selection-end-line="67" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/sqlquery/sql_query.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="505">
+          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="626">
+          <caret line="303" column="20" lean-forward="true" selection-start-line="303" selection-start-column="20" selection-end-line="303" selection-end-column="20" />
         </state>
       </provider>
     </entry>
