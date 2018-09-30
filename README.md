@@ -38,49 +38,47 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 ## 页面展示(简单展示几处)
 
-登陆页面：
+**登陆页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/login.png)
 
-个人详情页面：
+**个人详情页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/profile.png)
 
-上线版本页面：
+**上线版本页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/version.png)
 
-DDL工单页面：
+**DDL工单页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl.png)
 
-测试环境页面：
+**测试环境页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/test.png)
 
-执行任务页面：
+**执行任务页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform.png)
 
-使用pt-osc改表：
+**使用pt-osc改表：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform_ddl.png)
 
-使用gh-ost改表：
+**使用gh-ost改表：**
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ghost_1.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl_ghost.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ghost_2.png)
-
-查询页面：
+**查询页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/query.png)
 
-查看表结构和索引：
+**查看表结构和索引：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/table.png)
 
-xterm页面：
+**xterm页面：**
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/webshell.png)
 
