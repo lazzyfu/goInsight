@@ -33,7 +33,7 @@ class UserAccounts(AbstractUser):
         from sqlquery.models import MysqlSchemasGrant
         result = MysqlSchemasGrant.objects.annotate(schemas=F('schema__schema'), host=F('schema__host'),
                                                     port=F('schema__port')).filter(
-            user__uid=self.uid).values_list('host', 'port', 'schemas')
+            user__uid=self.uid).values_list('schema__comment', 'schemas')
         return ','.join(['_'.join(map(str, i)) for i in list(result)])
 
     user_schema.short_description = '授权库'

@@ -75,7 +75,7 @@ class MysqlSchemas(models.Model):
     def __str__(self):
         try:
             envi_name = SqlOrdersEnvironment.objects.get(envi_id=self.envi_id).envi_name
-            return '_'.join((envi_name, self.host, str(self.port), self.schema))
+            return '_'.join((envi_name, self.comment, self.schema))
         except Exception as err:
             logger.error(err)
             logger.error('请先配置环境')
@@ -169,6 +169,8 @@ class SqlOrdersExecTasks(models.Model):
     sql = models.TextField(verbose_name=u'执行的SQL', default='')
     sql_type = models.CharField(max_length=5, default='DML', choices=sql_type_choice,
                                 verbose_name=u'SQL类型')
+    is_ghost = models.IntegerField(choices=((0, '否'), (1, '是')), default=0, verbose_name=u'是否启用ghost改表')
+    ghost_pid = models.IntegerField(null=False, default=0, verbose_name=u'ghost进程pid')
     sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
     rollback_sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'rollback sqlsha1')
     celery_task_id = models.CharField(null=False, max_length=256, default='', verbose_name=u'celery执行任务ID')

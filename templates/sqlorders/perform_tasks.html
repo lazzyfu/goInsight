@@ -113,7 +113,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="box-body">
-                            <textarea id="preview_sql_contents"></textarea>
+                            <textarea title="" id="preview_sql_contents"></textarea>
                         </div>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                 queryParams: function queryParams() {
                     return {'taskid': taskid.toString()};
                 },
-                cache: false,
+                cache: true,
                 sidePagination: "client",
                 showColumns: true,
                 pagination: true,
@@ -154,6 +154,8 @@
                 pageSize: 20,
                 pageList: [10, 20, 30],
                 uniqueId: "id",
+                fixedColumns: true,
+                fixedNumber: +1,
                 classes: 'table table-hover table-no-bordered',
 
                 columns: [
@@ -221,23 +223,30 @@
 
                     {
                         field: 'id',
-                        title: "暂停(ghost)",
+                        title: "暂停(gh-ost)",
                         formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'pause\')"><i class="fa fa-pause"></i></a> ';
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'pause_ghost\')"><i class="fa fa-pause"></i></a> ';
                         }
                     },
                     {
                         field: 'id',
-                        title: "恢复(ghost)",
+                        title: "恢复(gh-ost)",
                         formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'recovery\')"><i class="fa fa-play"></i></a> ';
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'recovery_ghost\')"><i class="fa fa-play"></i></a> ';
                         }
                     },
                     {
                         field: 'id',
-                        title: "停止",
+                        title: "终止(gh-ost)",
                         formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop\')"><i class="fa fa-power-off"></i></a> ';
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ghost\')"><i class="fa fa-power-off"></i></a> ';
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: "终止(pt-osc)",
+                        formatter: function (value, row) {
+                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ptosc\')"><i class="fa fa-power-off"></i></a> ';
                         }
                     },
                     {

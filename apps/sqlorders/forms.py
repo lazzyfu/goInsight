@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import os
 from datetime import datetime
 
+import psutil
 import sqlparse
 from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
@@ -514,6 +516,7 @@ class SinglePerformTasksForm(forms.Form):
                     # 将任务进度设置为：处理中
                     obj.exec_status = 2
                     obj.save()
+                    print(obj.exec_status)
 
                     # 如果sqlsha1存在，说明是大表，需要使用工具进行修改
                     # inception_osc_min_table_size默认为16M
@@ -550,8 +553,8 @@ class SinglePerformTasksForm(forms.Form):
                             context = {'status': 1, 'msg': '任务已提交，请查看输出'}
 
                     else:
-                        # 当affected_row>2000时，只执行不备份
-                        if obj.affected_row > 2000:
+                        # 当affected_row>100000时，只执行不备份
+                        if obj.affected_row > 1000000:
                             incep_async_tasks.delay(user=request.user.username,
                                                     id=id,
                                                     sql=sql,
@@ -560,7 +563,7 @@ class SinglePerformTasksForm(forms.Form):
                                                     database=database,
                                                     exec_status='2')
                         else:
-                            # 当affected_row<=2000时，执行并备份
+                            # 当affected_row<=100000时，执行并备份
                             incep_async_tasks.delay(user=request.user.username,
                                                     id=id,
                                                     backup='yes',
@@ -573,6 +576,75 @@ class SinglePerformTasksForm(forms.Form):
                         context = {'status': 1, 'msg': '任务已提交，请查看输出'}
             # 更新父任务进度
             update_audit_content_progress(request.user.username, obj.taskid)
+        return context
+
+
+class PerformTasksOpForm(forms.Form):
+    id = forms.IntegerField(required=True)
+    action = forms.ChoiceField(
+        choices=(
+            ('pause_ghost', 'pause_ghost'),
+            ('recovery_ghost', 'recovery_ghost'),
+            ('stop_ghost', 'stop_ghost'),
+            ('stop_ptosc', 'stop_ptosc')
+        ), error_messages={'required': '传入的值错误, 不接受非法的值'}
+    )
+
+    def op(self, request):
+        cdata = self.cleaned_data
+        id = cdata.get('id')
+        action = cdata.get('action')
+
+        obj = SqlOrdersExecTasks.objects.get(id=id)
+        celery_task_id = obj.celery_task_id
+
+        context = {}
+        if obj.exec_status in ('0', '1', '4'):
+            context = {'status': 2, 'msg': '请不要重复操作任务'}
+        else:
+            # 判断是否使用gh-ost执行
+            if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
+                # 获取gh-ost的sock文件
+                formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)',
+                                       re.I)
+                match = formatsql.match(obj.sql)
+                # 由于gh-ost不支持反引号，会被解析成命令，因此此处替换掉
+                table = match.group(3).replace('`', '')
+                # 将schema.table进行处理，这种情况gh-ost不识别，只保留table
+                if len(table.split('.')) > 1:
+                    table = table.split('.')[1]
+                sock = os.path.join('/tmp', f"gh-ost.{obj.database}.{table}.sock")
+                # 判断程序是否允许
+                if psutil.pid_exists(obj.ghost_pid):
+                    if os.path.exists(sock):
+                        if action == 'pause_ghost':
+                            pause_cmd = f"echo throttle | nc -U {sock}"
+                            subprocess.Popen(pause_cmd, shell=True)
+                            context = {'status': 1, 'msg': '暂停动作已执行，请查看输出'}
+
+                        if action == 'recovery_ghost':
+                            recovery_cmd = f"echo no-throttle | nc -U {sock}"
+                            subprocess.Popen(recovery_cmd, shell=True)
+                            context = {'status': 1, 'msg': '恢复动作已执行，请查看输出'}
+                        if action == 'stop_ghost':
+                            stop_cmd = f"echo panic | nc -U {sock}"
+                            subprocess.Popen(stop_cmd, shell=True)
+                            context = {'status': 1, 'msg': '终止动作已执行，请查看输出'}
+                    else:
+                        context = {'status': 2, 'msg': f'不能找到文件{sock}, 操作失败'}
+                else:
+                    os.remove(sock) if os.path.exists(sock) else None
+                    context = {'status': 2, 'msg': '进程不存在，操作失败'}
+            else:
+                # pt-osc操作
+                if action == 'stop_ptosc':
+                    # 停止pt-osc进程
+                    stop_incep_osc.delay(user=request.user.username,
+                                         id=id,
+                                         celery_task_id=celery_task_id)
+                    context = {'status': 2, 'msg': '终止动作已执行，请查看输出'}
+                else:
+                    context = {'status': 2, 'msg': '非ghost任务，操作失败'}
         return context
 
 

@@ -2,78 +2,34 @@
 <head>
     <meta charset="utf-8">
     <style>
-        table {
-            white-space: normal;
-            font-weight: normal;
-            font-size: medium;
-            font-style: normal;
-            text-align: start;
-            border-collapse: collapse;
-            border-spacing: 0;
-        }
-
-        .table > tbody > tr > td {
-            padding: 8px;
-            line-height: 1.42857143;
-            vertical-align: top;
-            border-top: 1px solid #ddd;
-        }
-
-        td, th {
-            display: table-cell;
-            vertical-align: inherit;
+        .leaf-b {
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            float: left;
+            margin-left: 1%;
+            margin-top: 1%;
+            background: #fff;
         }
     </style>
 </head>
 <body>
-<table class="table table-hover">
-    <tbody>
-    <tr>
-        <td>标题:</td>
-        <td>{{ data.title }}</td>
-    </tr>
+<div class="leaf-b">
+    <p><span style="color: blue">标题：</span>{{ data.title }}</p>
     {% if data.description %}
-        <tr>
-            <td>需求:</td>
-            <td>{{ data.description }}</td>
-        </tr>
+        <p><span style="color: blue">需求：</span>{{ data.description }}</p>
     {% endif %}
     {% if data.task_version %}
-        <tr>
-            <td>任务版本:</td>
-            <td>{{ data.task_version }}</td>
-        </tr>
+        <p><span style="color: blue">上线版本：</span>{{ data.task_version }}</p>
     {% endif %}
-    <tr>
-        <td>环境:</td>
-        <td>{{ envi_name }}</td>
-    </tr>
-    <tr>
-        <td>类型:</td>
-        <td>{{ data.sql_type }}</td>
-    </tr>
-    <tr>
-        <td>备注:</td>
-        <td>{{ data.remark }}</td>
-    </tr>
-    <tr>
-        <td>申请人:</td>
-        <td>{{ data.proposer }}</td>
-    </tr>
-    <tr>
-        <td>审核人:</td>
-        <td>{{ data.auditor }}</td>
-    </tr>
-    <tr>
-        <td>主机/库:</td>
-        <td>{{ data.host }}_{{ data.port }}_{{ data.database }}</td>
-    </tr>
-    <tr>
-        <td>提交时间:</td>
-        <td>{{ data.created_at|date:"Y-m-d H:i:s" }}</td>
-    </tr>
-    </tbody>
-</table>
-<p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_list/{{ data.envi_id }} 进行操作，谢谢。</p>
+    <p><span style="color: blue">环境：</span>{{ envi_name }}</p>
+    <p><span style="color: blue">类型：</span>{{ data.sql_type }}</p>
+    <p><span style="color: blue">备注：</span>{{ data.remark }}</p>
+    <p><span style="color: blue">申请人：</span>{{ data.proposer }}</p>
+    <p><span style="color: blue">审核人：</span>{{ data.auditor }}</p>
+    <p><span style="color: blue">主机/库：</span>{{ data.host }}_{{ data.port }}_{{ data.database }}</p>
+    <p><span style="color: blue">提交时间：</span>{{ data.created_at|date:"Y-m-d H:i:s" }}</p>
+    <p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_details/{{ data.id }} 进行操作，谢谢。</p>
+</div>
 </body>
 </html>
