@@ -21,8 +21,7 @@ logger = logging.getLogger(__name__)
 @shared_task
 def sync_schemas():
     ignored_params = ('information_schema', 'mysql', 'percona', 'performance_schema', 'sys')
-    schema_filter_query = f"select schema_name from information_schema.schemata " \
-                          f"where SCHEMA_NAME not in {ignored_params}"
+    schema_filter_query = f"select schema_name from information_schema.schemata where SCHEMA_NAME not in {ignored_params}"
 
     collect_from_host = []
     for row in MysqlConfig.objects.all():

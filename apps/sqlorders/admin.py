@@ -22,7 +22,7 @@ class SqlOrdersExecTasksAdmin(admin.ModelAdmin):
         ('任务详情',
          {'fields': ['user', 'taskid', 'envi_id', 'host', 'port', 'database', 'exec_status', 'sql_type', 'sql']}),
     )
-    readonly_fields = ('user', 'taskid', 'envi_id', 'host', 'port', 'database', 'sql_type', 'sql')
+    readonly_fields = ('user', 'taskid', 'envi_id', 'host', 'port', 'sql_type')
 
 
 class SysConfigAdmin(admin.ModelAdmin):

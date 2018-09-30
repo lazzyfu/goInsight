@@ -9,6 +9,8 @@ status = 2: 推送inception processlist
 
 import ast
 import json
+import logging
+import os
 import re
 import subprocess
 import time
@@ -25,6 +27,7 @@ from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlConfig,
 from sqlorders.msgNotice import SqlOrdersMsgPull
 
 channel_layer = get_channel_layer()
+logger = logging.getLogger('django')
 
 
 def update_tasks_status(id=None, exec_result=None, exec_status=None):
@@ -209,8 +212,8 @@ def incep_multi_tasks(username, query, key):
                     # 获取OSC执行进度
                     get_osc_percent.delay(task_id=task_id)
             else:
-                # 当affected_row>2000时，只执行不备份
-                if obj.affected_row > 2000:
+                # 当affected_row>1000000时，只执行不备份
+                if obj.affected_row > 1000000:
                     r = incep_async_tasks.delay(user=username,
                                                 id=id,
                                                 sql=sql,
@@ -271,7 +274,7 @@ def stop_incep_osc(user, id=None, celery_task_id=None):
 @shared_task
 def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, database=None):
     """ghost改表"""
-    formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY)([\s\S]*)', re.I)
+    formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)', re.I)
     match = formatsql.match(sql)
 
     queryset = SqlOrdersExecTasks.objects.get(id=id)
@@ -285,6 +288,7 @@ def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, databa
         value = ' '.join((match.group(5), match.group(6))).replace('`', '')
 
         obj = MysqlConfig.objects.get(host=host, port=port)
+        # 获取用户配置的gh-ost参数
         user_args = SysConfig.objects.get(key='is_ghost').value
 
         ghost_cmd = f"gh-ost {user_args} " \
@@ -292,7 +296,14 @@ def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, databa
                     f"--assume-master-host={host} " \
                     f"--database=\"{database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
 
+        # 删除sock，如果存在的话
+        sock = os.path.join('/tmp', f"gh-ost.{database}.{table}.sock")
+        os.remove(sock) if os.path.exists(sock) else None
+        logger.info(f'删除sock：{sock}')
+
+        # 执行gh-ost命令
         p = subprocess.Popen(ghost_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        logger.info(f'执行命令：{ghost_cmd}')
 
         # 记录ghost进程的pid
         queryset.ghost_pid = p.pid
@@ -314,14 +325,16 @@ def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, databa
         if p.returncode == 0:
             # 返回状态为0，设置状态为成功
             queryset.exec_status = '1'
-
         else:
             # 返回状态不为0，设置状态为失败
             queryset.exec_status = '5'
+        # 记录日志和标记为使用gh-ost执行
         queryset.exec_log = execute_log
+        queryset.is_ghost = 1
         queryset.save()
     else:
         pull_msg = {'status': 3, 'data': f'未成功匹配到SQL：{sql}'}
+        logger.error(f'无法匹配SQL：{sql}')
         # 推送消息
         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
                                                        'text': json.dumps(pull_msg)})

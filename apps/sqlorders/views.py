@@ -1,6 +1,7 @@
 import ast
 import datetime
 import json
+import logging
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
@@ -15,12 +16,14 @@ from django.views.generic import FormView
 from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm, SyntaxCheckForm, BeautifySQLForm, \
     SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, GetParentSchemasForm, HookSqlOrdersForm, \
     GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, stop_incep_osc, PerformTasksRollbackForm, \
-    SqlOrdersTasksVersionForm
+    SqlOrdersTasksVersionForm, PerformTasksOpForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
     SqlOrdersTasksVersions
 from sqlorders.utils import GetInceptionBackupApi, check_incep_alive
 from users.models import RolePermission, UserRoles
 from users.permissionsVerify import permission_required
+
+logger = logging.getLogger('django')
 
 
 class GetSqlOrdersEnviView(View):
@@ -349,9 +352,9 @@ class SinglePerformTasksView(View):
         return HttpResponse(json.dumps(context))
 
 
-class PerformTasksStopView(View):
+class PerformTasksOpView(View):
     """
-    执行任务-停止OSC执行
+    执行任务-操作，支持：暂停、恢复、终止
     只支持停止修改表结构的操作
     """
 
@@ -359,18 +362,14 @@ class PerformTasksStopView(View):
     @permission_required('can_execute_sql')
     @transaction.atomic
     def post(self, request):
-        id = request.POST.get('id')
-        obj = SqlOrdersExecTasks.objects.get(id=id)
-        celery_task_id = obj.celery_task_id
-
-        if obj.exec_status in ('0', '1', '4'):
-            context = {'status': 2, 'msg': '请不要重复操作任务'}
+        form = PerformTasksOpForm(request.POST)
+        if form.is_valid():
+            context = form.op(request)
         else:
-            # 关闭正在执行的任务
-            stop_incep_osc.delay(user=request.user.username,
-                                 id=id,
-                                 celery_task_id=celery_task_id)
-            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+            error = form.errors.as_json()
+            error_msg = [value[0].get('message') for key, value in json.loads(error).items()][0]
+            context = {'status': 2, 'msg': str(error_msg)}
+
         return HttpResponse(json.dumps(context))
 
 
@@ -395,19 +394,28 @@ class GetPerformTasksResultView(View):
 
     def get(self, request):
         id = request.GET.get('id')
-        if SqlOrdersExecTasks.objects.get(id=id).exec_status in ('1', '4'):
-            sql_detail = SqlOrdersExecTasks.objects.get(id=id)
-            sequence_result = {'backupdbName': sql_detail.backup_dbname, 'sequence': sql_detail.sequence}
-            rollback_sql = GetInceptionBackupApi(sequence_result).get_rollback_statement()
+        queryset = SqlOrdersExecTasks.objects.get(id=id)
+        exec_log = queryset.exec_log if queryset.exec_log else ''
+        if queryset.exec_status in ('1', '4', '5'):
+            if queryset.is_ghost == 1:
+                data = {'rollback_log': '', 'exec_log': exec_log}
+                context = {'status': 1, 'msg': '', 'data': data}
+            else:
+                try:
+                    sequence_result = {'backupdbName': queryset.backup_dbname, 'sequence': queryset.sequence}
+                    rollback_sql = GetInceptionBackupApi(sequence_result).get_rollback_statement()
+                except Exception as err:
+                    logger.error(err)
+                    logger.error(f'未查询到回滚SQL，执行任务ID：{id}')
+                    rollback_sql = ''
+                # 此处要将exec_log去字符串处理，否则无法转换为json
+                print(type(exec_log))
+                print('执行日志：', ast.literal_eval(exec_log))
 
-            exec_log = sql_detail.exec_log if sql_detail.exec_log else ''
-
-            # 此处要将exec_log去字符串处理，否则无法转换为json
-            data = {'rollback_log': rollback_sql, 'exec_log': ast.literal_eval(exec_log)}
-            context = {'status': 0, 'msg': '', 'data': data}
+                data = {'rollback_log': rollback_sql, 'exec_log': ast.literal_eval(exec_log)}
+                context = {'status': 0, 'msg': '', 'data': data}
         else:
             context = {'status': 2, 'msg': '该SQL未被执行，无法查询状态信息'}
-
         return HttpResponse(json.dumps(context))
 
 
