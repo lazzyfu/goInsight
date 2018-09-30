@@ -514,7 +514,7 @@ class SinglePerformTasksForm(forms.Form):
                     context = {'status': 2, 'msg': '请不要重复操作任务'}
                 else:
                     # 将任务进度设置为：处理中
-                    obj.exec_status = 2
+                    obj.exec_status = '2'
                     obj.save()
                     print(obj.exec_status)
 

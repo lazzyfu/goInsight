@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/media/png/ddl_ghost.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/sqlorders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/forms.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -40,17 +43,43 @@
       <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="840">
-              <caret line="308" column="34" lean-forward="true" selection-start-line="308" selection-start-column="34" selection-end-line="308" selection-end-column="34" />
+            <state relative-caret-position="86">
+              <caret line="274" column="21" selection-start-line="274" selection-start-column="4" selection-end-line="274" selection-end-column="21" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="forms.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="719">
-              <caret line="641" column="17" lean-forward="true" selection-start-line="641" selection-start-column="17" selection-end-line="641" selection-end-column="17" />
+            <state relative-caret-position="700">
+              <caret line="545" column="47" lean-forward="true" selection-start-line="545" selection-start-column="47" selection-end-line="545" selection-end-column="47" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="432">
+                <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+              </first_editor>
+              <second_editor>
+                <js_state />
+              </second_editor>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="704">
+              <caret line="184" column="32" lean-forward="true" selection-start-line="184" selection-start-column="32" selection-end-line="184" selection-end-column="32" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -119,7 +148,6 @@
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_tasks_version.html" />
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html" />
         <option value="$PROJECT_DIR$/templates/mailnotice/_sqlorders_commit_mail.html" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/apps/sqlquery/sqlQueryApi.py" />
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" />
         <option value="$PROJECT_DIR$/templates/sqlquery/sql_query.html" />
@@ -133,6 +161,7 @@
         <option value="$PROJECT_DIR$/apps/sqlorders/models.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/tasks.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/forms.py" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -210,31 +239,13 @@
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="media" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="mailnotice" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="sqlquery" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="webshell" type="462c0819:PsiDirectoryNode" />
+              <item name="media" type="462c0819:PsiDirectoryNode" />
+              <item name="png" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -251,17 +262,17 @@
     <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/../yops/apps/opsorder/views.py" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/media/png" />
-      <recent name="$PROJECT_DIR$/media/png/admin" />
-      <recent name="$PROJECT_DIR$/media" />
-      <recent name="$PROJECT_DIR$/apps/sqlquery" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/templates/mailnotice" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/bootstrap-table" />
       <recent name="$PROJECT_DIR$/sqlaudit" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/media/png" />
+      <recent name="$PROJECT_DIR$/media/png/admin" />
+      <recent name="$PROJECT_DIR$/media" />
+      <recent name="$PROJECT_DIR$/apps/sqlquery" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -325,7 +336,7 @@
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.47921" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.25779626" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29179978" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.29179978" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -577,18 +588,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="694">
-            <caret line="92" column="16" lean-forward="true" selection-start-line="92" selection-start-column="16" selection-end-line="92" selection-end-column="16" />
-          </first_editor>
-          <second_editor>
-            <js_state />
-          </second_editor>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -662,20 +661,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="186" lean-forward="true" selection-start-line="186" selection-end-line="186" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/sqlorders/perform_tasks.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="147">
           <caret line="449" column="21" lean-forward="true" selection-start-line="449" selection-start-column="21" selection-end-line="449" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/mailnotice/_sqlorders_commit_mail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="25" column="66" lean-forward="true" selection-start-line="25" selection-start-column="66" selection-end-line="25" selection-end-column="66" />
         </state>
       </provider>
     </entry>
@@ -689,24 +685,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/mailnotice/_sqlorders_commit_mail.html">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="25" column="66" lean-forward="true" selection-start-line="25" selection-start-column="66" selection-end-line="25" selection-end-column="66" />
+        <state relative-caret-position="86">
+          <caret line="274" column="21" selection-start-line="274" selection-start-column="4" selection-end-line="274" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="840">
-          <caret line="308" column="34" lean-forward="true" selection-start-line="308" selection-start-column="34" selection-end-line="308" selection-end-column="34" />
+        <state relative-caret-position="704">
+          <caret line="184" column="32" lean-forward="true" selection-start-line="184" selection-start-column="32" selection-end-line="184" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="719">
-          <caret line="641" column="17" lean-forward="true" selection-start-line="641" selection-start-column="17" selection-end-line="641" selection-end-column="17" />
+        <state relative-caret-position="700">
+          <caret line="545" column="47" lean-forward="true" selection-start-line="545" selection-start-column="47" selection-end-line="545" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="432">
+            <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+          </first_editor>
+          <second_editor>
+            <js_state />
+          </second_editor>
         </state>
       </provider>
     </entry>
