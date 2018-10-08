@@ -258,8 +258,6 @@
                 success: function (data) {
                     let $this = $("#s_email_cc");
                     $this.empty();
-                    $this.append(
-                        "<option data-icon='glyphicon-user' data-subtext='rd@yunzhanghu.com' value='rd@yunzhanghu.com' selected> 产品技术部 </option>");
                     $.each(data, function (index, row) {
                         $this.append(
                             "<option data-icon='glyphicon-user' data-subtext=" + row.email + " value=" + row.email + ">" + row.username + "</option>");
