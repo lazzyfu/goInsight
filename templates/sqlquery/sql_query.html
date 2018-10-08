@@ -379,5 +379,32 @@
             });
             return false;
         });
+
+        $(function () {
+            // 保存用户输入
+            let user_input = localStorage.getItem("{{ envi_id }}");
+            let $textarea = $("textarea");
+            if (user_input) {
+                myCodeMirror.setValue(user_input);
+            }
+            $textarea.bind('input propertychange', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("{{ envi_id }}", contents);
+            });
+            $textarea.on('paste', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("{{ envi_id }}", contents);
+            });
+            $textarea.on('keyup', function (event) {
+                if (8 <= event.keyCode <= 46) {
+                    let contents = myCodeMirror.getValue();
+                    localStorage.setItem("{{ envi_id }}", contents);
+                }
+            });
+            $("button").on('click', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("{{ envi_id }}", contents);
+            });
+        })
     </script>
 {% endblock %}
