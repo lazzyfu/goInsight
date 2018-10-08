@@ -66,13 +66,23 @@ class GetAuditUserView(View):
         return HttpResponse(serialize_data)
 
 
-class GetProductSchemasView(View):
-    """获取生产环境schema列表"""
+class GetTargetSchemasView(View):
+    """获取dml工单指定环境的schema列表"""
 
-    def get(self, request):
-        product_envi_id = SqlOrdersEnvironment.objects.get(parent_id=0).envi_id
-        queryset = MysqlSchemas.objects.filter(envi_id=product_envi_id, is_master=1).values('host', 'port', 'schema',
-                                                                                            'comment')
+    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
+    def post(self, request):
+        envi_id = request.POST.get('envi_id')
+        parent_id = SqlOrdersEnvironment.objects.get(envi_id=envi_id).parent_id
+        print(parent_id)
+        if parent_id == 0:
+            # 为生产环境
+            queryset = MysqlSchemas.objects.filter(envi_id=envi_id, is_master=1).values('host', 'port', 'schema',
+                                                                                        'comment')
+        else:
+            # 为非生产环境
+            queryset = MysqlSchemas.objects.filter(envi_id=envi_id).values('host', 'port', 'schema',
+                                                                           'comment')
+
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
 

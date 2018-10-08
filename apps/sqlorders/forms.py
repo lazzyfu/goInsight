@@ -59,6 +59,7 @@ class SqlOrdersAuditForm(forms.Form):
     remark = forms.CharField(required=True, max_length=256, min_length=1, label=u'工单备注')
     sql_type = forms.ChoiceField(choices=sql_type_choice, label=u'操作类型，是DDL还是DML')
     contents = forms.CharField(widget=forms.Textarea, label=u'审核内容')
+    envi_id = forms.ChoiceField(choices=envi_choice, required=False)
 
     def save(self, request):
         cdata = self.cleaned_data
@@ -71,12 +72,13 @@ class SqlOrdersAuditForm(forms.Form):
         host, port, database = cdata.get('database').split(',')
         sql_type = cdata.get('sql_type')
         contents = cdata.get('contents')
+        envi_id = cdata.get('envi_id')
 
         if sql_type == 'DDL':
             max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
             envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
-        else:
-            envi_id = SqlOrdersEnvironment.objects.get(parent_id=0).envi_id
+        elif sql_type == 'DML':
+            envi_id = envi_id
 
         result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
         if result.get('status') == 2:
