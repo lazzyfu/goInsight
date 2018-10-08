@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 530px;
+            height: 650px;
         }
     </style>
 {% endblock %}
@@ -55,7 +55,9 @@
                                         <div class="col-sm-9">
                                             <select id="s_remark" style="width: 100%" name="remark" required
                                                     class="selectpicker form-control" title="请选择...">
-                                                <option data-icon="glyphicon-paperclip" selected value="数据修复">数据修复
+                                                <option data-icon="glyphicon-paperclip" selected value="数据修复">数据变更
+                                                </option>
+                                                <option data-icon="glyphicon-paperclip" value="数据修复">初始数据
                                                 </option>
                                             </select>
                                         </div>
@@ -69,6 +71,16 @@
                                                     class="selectpicker form-control" title="请选择...">
                                                 <option data-icon="glyphicon-pushpin" selected value="DML">DML
                                                 </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">环境 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_envi" name="envi_id" style="width: 100%" required
+                                                    class="form-control selectpicker" title="选择环境..."
+                                                    onchange="getTargetSchema()">
                                             </select>
                                         </div>
                                     </div>
@@ -94,24 +106,27 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group has-feedback">
-                                        <label class="control-label col-md-3">抄送 </label>
-                                        <div class="col-md-9">
-                                            <select id="s_email_cc" name="email_cc" data-live-search="true"
-                                                    title="选择需要抄送的联系人..."
-                                                    data-actions-box="true"
-                                                    style="width: 100%" class="selectpicker form-control dropup"
-                                                    multiple>
-                                            </select>
+                                    {% ifequal is_enable_mail '0' %}
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-3">抄送 <span
+                                                    class="text-red">*</span></label>
+                                            <div class="col-md-9">
+                                                <select id="s_email_cc" name="email_cc" data-live-search="true"
+                                                        title="选择需要抄送的联系人..."
+                                                        data-actions-box="true"
+                                                        style="width: 100%" class="selectpicker form-control dropup"
+                                                        multiple required>
+                                                </select>
+                                            </div>
+                                            <div class="help-block with-errors col-md-2"></div>
                                         </div>
-                                        <div class="help-block with-errors col-md-2"></div>
-                                    </div>
+                                    {% endifequal %}
 
                                     <div class="form-group">
                                         <label class="control-label col-sm-3"></label>
                                         <div class="col-sm-9">
                                             <button type="button" onclick="beautifySQL()"
-                                                    class="btn bg-info btn-sm">美化SQL
+                                                    class="btn bg-info btn-sm">格式化SQL
                                             </button>
 
                                             <button type="button" onclick="incepSyntaxCheckForm()"
@@ -134,8 +149,8 @@
                             <div class="box box-gray">
                                 <div class="box-body no-padding">
                                     <div class="mailbox-read-info">
-                                        <h5>填写SQL语句
-                                            <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
+                                        <h5>填写DML语句 (UPDATE/INSERT/DELETE)
+                                            <small class="text-muted"><cite>支持Tab自动补全</cite></small>
                                         </h5>
                                     </div>
                                 </div>
@@ -203,27 +218,32 @@
 
 
         /**
-         * 获取生产环境schema列表
+         * 获取指定环境的schema
          */
-        $(function () {
+        function getTargetSchema() {
+            let s_schema = $('#s_schema');
+            let envi_id = $('#s_envi').val();
+            let csrftoken = $.cookie('csrftoken');
             $.ajax({
-                url: '{% url 'p_get_product_schemas' %}',
-                type: 'GET',
+                url: '{% url 'p_get_target_schemas' %}',
+                type: 'POST',
                 dataType: 'json',
+                data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
+                    s_schema.empty();
                     let html = '';
                     $.each(data, function (index, row) {
                         let result = [row.host, row.port, row.schema].join(',');
                         let show_result = [row.comment, row.port, row.schema].join('_');
                         html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
                     });
-                    $('#s_schema').append(html);
+                    s_schema.append(html);
                     $('.selectpicker').selectpicker('refresh')
                 }
             })
-        });
+        }
 
         /**
          * 获取抄送的用户和邮箱
@@ -236,9 +256,12 @@
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    $("#s_email_cc").empty();
+                    let $this = $("#s_email_cc");
+                    $this.empty();
+                    $this.append(
+                        "<option data-icon='glyphicon-user' data-subtext='rd@yunzhanghu.com' value='rd@yunzhanghu.com' selected> 产品技术部 </option>");
                     $.each(data, function (index, row) {
-                        $("#s_email_cc").append(
+                        $this.append(
                             "<option data-icon='glyphicon-user' data-subtext=" + row.email + " value=" + row.email + ">" + row.username + "</option>");
                     });
                     $('.selectpicker').selectpicker('refresh');
@@ -295,11 +318,32 @@
                     $("#s_operator").empty();
                     $.each(result, function (index, row) {
                         $("#s_operator").append(
-                            "<option data-icon='glyphicon-user' data-subtext=" + row.displayname + " value=" + row.username + ">" + row.username + "</option>");
+                            "<option data-icon='glyphicon-user' data-subtext=" + row.displayname + " value=" + row.username + ">" + row.username + "</option>"
+                        );
                     });
                     $('.selectpicker').selectpicker('refresh');
                 }
             })
+        });
+
+        // 获取用户设置的环境
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_get_sql_orders_envi' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (data) {
+                    $("#s_envi").empty();
+                    $.each(data, function (index, row) {
+                        $("#s_envi").append(
+                            "<option data-icon='glyphicon-record' value=" + row.envi_id + ">" + row.envi_name + "</option>"
+                        );
+                    });
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            });
         });
 
         /**

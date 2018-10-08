@@ -82,6 +82,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'context_processors.global_values.get_order_enviroment',
+                'context_processors.global_values.get_mail_status',
             ],
         },
     },

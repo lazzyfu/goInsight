@@ -3,14 +3,14 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import path, re_path
 
-from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAuditUserView, GetProductSchemasView, \
-    GetTablesView, RenderSqlDdlOrdersView, GetOfflineSchemasView, SqlOrdersAuditView, RenderSqlOrdersListView, \
+from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAuditUserView, GetTablesView, \
+    RenderSqlDdlOrdersView, GetOfflineSchemasView, SqlOrdersAuditView, RenderSqlOrdersListView, \
     SqlOrdersListView, SyntaxCheckView, BeautifySQLView, SqlOrdersDetailsView, SqlOrdersApproveView, \
     SqlOrdersFeedbackView, SqlOrdersCloseView, GetParentSchemasView, HookSqlOrdersView, GeneratePerformTasksView, \
     RenderPerformTasksView, PerformTasksDetailsView, PerformTasksSQLPreView, SinglePerformTasksView, \
     FullPerformTasksView, GetPerformTasksResultView, PerformTasksRollbackView, \
     SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, SqlOrdersTasksVersionListView, GetVersionOrdersList, \
-    PerformTasksOpView
+    PerformTasksOpView, GetTargetSchemasView
 
 urlpatterns = [
     path('get_sql_orders_envi/', login_required(GetSqlOrdersEnviView.as_view()), name='p_get_sql_orders_envi'),
@@ -18,7 +18,7 @@ urlpatterns = [
     path(r'render_sql_ddl_orders/', login_required(RenderSqlDdlOrdersView.as_view()), name='p_render_sql_ddl_orders'),
     path(r'get_audit_user/', login_required(GetAuditUserView.as_view()), name='p_get_audit_user'),
     # 获取schema列表
-    path(r'get_product_schemas/', login_required(GetProductSchemasView.as_view()), name='p_get_product_schemas'),
+    path(r'get_product_schemas/', login_required(GetTargetSchemasView.as_view()), name='p_get_target_schemas'),
     path(r'get_offline_schemas/', login_required(GetOfflineSchemasView.as_view()), name='p_get_offline_schemas'),
     path(r'get_parent_schemas/', login_required(GetParentSchemasView.as_view()), name='p_get_parent_schemas'),
     path(r'get_tables/', login_required(GetTablesView.as_view()), name='p_get_tables'),

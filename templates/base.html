@@ -163,7 +163,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                     </a>
-                    <ul class="treeview-menu" id="s_sql_orders_envi">
+                    <ul class="treeview-menu">
+                        {% for i in order_environment %}
+                            <li><a href='/sqlorders/sql_orders_list/{{ i.envi_id }}/'><i
+                                class="fa fa-circle-o"></i>查询_{{ i.envi_name }}</a>
+                        {% endfor %}
                     </ul>
                 </li>
 
@@ -184,7 +188,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li><a href="{% url 'p_render_sql_ddl_orders' %}"><i
                                 class="fa fa-circle-o"></i>DDL工单</a>
                         </li>
-                        </li>
                     </ul>
                 </li>
 
@@ -196,7 +199,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                     </a>
-                    <ul class="treeview-menu" id="s_sql_query_envi">
+                    <ul class="treeview-menu">
+                        {% for i in order_environment %}
+                            <li><a href='/sqlquery/sql_query/{{ i.envi_id }}/'><i
+                                class="fa fa-circle-o"></i>查询_{{ i.envi_name }}</a>
+                        {% endfor %}
                     </ul>
                 </li>
 
@@ -334,27 +341,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- 定义 javascript block -->
 {% block link_javascripts %}
 {% endblock %}
-
-<script>
-    // 获取用户设置的环境
-    $(function () {
-        $.ajax({
-            url: '{% url 'p_get_sql_orders_envi' %}',
-            type: 'GET',
-            dataType: 'json',
-            timeout: 10000,
-            cache: false,
-            success: function (data) {
-                $("#s_sql_orders_envi").empty();
-                $("#s_sql_query_envi").empty();
-                $.each(data, function (index, item) {
-                    $("#s_sql_orders_envi").append("<li><a href='/sqlorders/sql_orders_list/" + item.envi_id + "'><i class=\"fa fa-circle-o\"></i>" + "工单_" + item.envi_name + "</a>");
-                    $("#s_sql_query_envi").append("<li><a href='/sqlquery/sql_query/" + item.envi_id + "'><i class=\"fa fa-circle-o\"></i>" + "查询_" + item.envi_name + "</a>");
-                });
-            }
-        });
-    })
-</script>
 
 </body>
 </html>
