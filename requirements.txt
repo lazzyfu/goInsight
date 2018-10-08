@@ -19,7 +19,7 @@ constantly==15.1.0
 cryptography==2.3.1
 daphne==2.2.2
 DingtalkChatbot==1.2.0
-Django==2.1.1
+Django==2.1.2
 django-auth-ldap==1.7.0
 django-celery-beat==1.1.1
 django-celery-results==1.0.1
