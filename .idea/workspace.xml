@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlquery/sql_query.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlquery/sql_query.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/codemirror/codemirror.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/codemirror/mode/javascript/javascript.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/order-1.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/suggest/bootstrap-suggest.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/suggest/bootstrap-suggest.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/toastr/toastr.min.js" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -33,7 +38,7 @@
         <entry file="file://$PROJECT_DIR$/apps/context_processors/global_values.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="306">
-              <caret line="18" selection-start-line="18" selection-end-line="18" />
+              <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
             </state>
           </provider>
         </entry>
@@ -41,7 +46,7 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sqlaudit/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1343">
+            <state relative-caret-position="879">
               <caret line="85" column="16" lean-forward="true" selection-start-line="85" selection-start-column="16" selection-end-line="85" selection-end-column="66" />
             </state>
           </provider>
@@ -50,8 +55,8 @@
       <file leaf-file-name="settings-bak.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1445">
-              <caret line="91" column="46" lean-forward="true" selection-start-line="91" selection-start-column="46" selection-end-line="91" selection-end-column="46" />
+            <state relative-caret-position="522">
+              <caret line="70" column="30" lean-forward="true" selection-start-line="70" selection-start-column="30" selection-end-line="70" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -65,23 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sql_query.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="sql_query.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/sqlquery/sql_query.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="880">
-              <caret line="408" column="13" lean-forward="true" selection-start-line="408" selection-start-column="13" selection-end-line="408" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3740">
-              <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
-              <folding>
-                <element signature="e#0#14#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="336">
+              <caret line="376" column="21" lean-forward="true" selection-start-line="376" selection-start-column="21" selection-end-line="376" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -104,11 +97,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="base.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3383">
-              <caret line="199" column="39" lean-forward="true" selection-start-line="199" selection-start-column="39" selection-end-line="199" selection-end-column="39" />
+            <state relative-caret-position="797">
+              <caret line="285" column="22" lean-forward="true" selection-start-line="285" selection-start-column="22" selection-end-line="285" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -152,6 +145,8 @@
       <find>抄送</find>
       <find>rd</find>
       <find>rd@yun</find>
+      <find>static/js</find>
+      <find>opsorder</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -241,6 +236,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -269,6 +265,11 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="sqlaudit" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
@@ -303,7 +304,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -387,17 +387,18 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.47854078" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32848233" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.47854078" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.25779626" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18530351" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18690096" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39806867" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -405,7 +406,6 @@
       <window_info anchor="bottom" id="manage.py@AuditSQL" order="7" weight="0.32832617" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -420,13 +420,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3230">
-          <caret line="190" column="25" lean-forward="true" selection-start-line="190" selection-start-column="25" selection-end-line="190" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/webshell/apps.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -700,20 +693,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/context_processors/global_values.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sqlaudit/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1343">
-          <caret line="85" column="16" lean-forward="true" selection-start-line="85" selection-start-column="16" selection-end-line="85" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3740">
@@ -721,13 +700,6 @@
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1445">
-          <caret line="91" column="46" lean-forward="true" selection-start-line="91" selection-start-column="46" selection-end-line="91" selection-end-column="46" />
         </state>
       </provider>
     </entry>
@@ -748,13 +720,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3383">
-          <caret line="199" column="39" lean-forward="true" selection-start-line="199" selection-start-column="39" selection-end-line="199" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4947">
@@ -771,8 +736,43 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/sqlquery/sql_query.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="880">
-          <caret line="408" column="13" lean-forward="true" selection-start-line="408" selection-start-column="13" selection-end-line="408" selection-end-column="13" />
+        <state relative-caret-position="336">
+          <caret line="376" column="21" lean-forward="true" selection-start-line="376" selection-start-column="21" selection-end-line="376" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/context_processors/global_values.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sqlaudit/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="879">
+          <caret line="85" column="16" lean-forward="true" selection-start-line="85" selection-start-column="16" selection-end-line="85" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="522">
+          <caret line="70" column="30" lean-forward="true" selection-start-line="70" selection-start-column="30" selection-end-line="70" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/js/order-1.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="30" column="76" selection-start-line="30" selection-start-column="76" selection-end-line="30" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="797">
+          <caret line="285" column="22" lean-forward="true" selection-start-line="285" selection-start-column="22" selection-end-line="285" selection-end-column="22" />
         </state>
       </provider>
     </entry>
