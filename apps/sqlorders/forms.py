@@ -607,9 +607,21 @@ class PerformTasksOpForm(forms.Form):
             # 判断是否使用gh-ost执行
             if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
                 # 获取gh-ost的sock文件
+                # 将语句中的注释和SQL分离
+                sql_split = {}
+                for stmt in sqlparse.split(obj.sql):
+                    sql = sqlparse.parse(stmt)[0]
+                    sql_comment = sql.token_first()
+                    if isinstance(sql_comment, sqlparse.sql.Comment):
+                        sql_split = {'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')}
+                    else:
+                        sql_split = {'comment': '', 'sql': sql.value}
+
+                # 获取不包含注释的SQL语句
+                sql = sql_split['sql']
                 formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)',
                                        re.I)
-                match = formatsql.match(obj.sql)
+                match = formatsql.match(sql)
                 # 由于gh-ost不支持反引号，会被解析成命令，因此此处替换掉
                 table = match.group(3).replace('`', '')
                 # 将schema.table进行处理，这种情况gh-ost不识别，只保留table

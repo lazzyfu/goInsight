@@ -36,7 +36,7 @@
                 <div class="box-header box-border">
                     <div class="mailbox-read-info">
                         <h3 class="box-title"><i class="fa fa-cog"></i> {{ envi_name }}-SQL查询
-                            <small>默认返回 limit 100条记录, 最大查询时间600s</small>
+                            <small>默认返回 limit 100条记录，最大支持limit 1000, 最大查询时间600s</small>
                         </h3>
                     </div>
                     <div id="s_envi_id" style="display:none;">{{ envi_id }}</div>
@@ -49,9 +49,9 @@
                             </div>
                         </div>
 
-                        <div class="col-md-9" style="padding-left: 5px">
+                        <div class="col-md-9" style="padding-left: 3px">
                             <form class="form-inline" id="SqlQueryForm" action="{% url 'p_exec_sql_query' %}"
-                                  method="post">
+                                  method="post" style="margin: 2px">
                                 <div class="form-group">
                                     <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm"><i
                                             class="fa fa-magic"></i> 格式化SQL
@@ -61,12 +61,20 @@
                                     <button type="submit" class="btn bg-info btn-sm"><i class="fa fa-flash"></i> 执行
                                     </button>
                                 </div>
+                                <div class="form-group pull-right">
+                                    <select onchange="selectTheme()" id=select title="选择主题...">
+                                        <option selected>default</option>
+                                        <option>material</option>
+                                        <option>dracula</option>
+                                        <option>monokai</option>
+                                    </select>
+                                </div>
                                 {% csrf_token %}
                             </form>
-                            <div>
+                            <div style="margin: 2px">
                                 <textarea title="" id="s_sql"></textarea>
                             </div>
-                            <div>
+                            <div style="margin: 2px">
                                 <textarea title="" id="query_log"></textarea>
                             </div>
                         </div>
@@ -148,8 +156,8 @@
 
         myCodeMirror.on("keyup", function (cm, event) {
             if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
-                event.keyCode !== 13 &&    /*delete不提示*/
-                event.keyCode !== 186 &&  /*分号；不提示*/
+                event.keyCode !== 13 && /*delete不提示*/
+                event.keyCode !== 186 && /*分号；不提示*/
                 event.keyCode !== 8) {        /*Enter - do not open autocomplete list just after item has been selected in it*/
                 CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
             }
@@ -319,6 +327,7 @@
             $(this).ajaxSubmit({
                 data: {'contents': contents, 'schema': query_schema, 'envi_id': envi_id},
                 dataType: 'json',
+                timeout: 700000, // 700秒
                 beforeSubmit: showLoadingScreen($('body'), '数据查询中，请稍后...'),
                 success: function (result) {
                     hideLoadingScreen($('body'));
@@ -352,7 +361,7 @@
                                 showExport: true,
                                 exportDataType: 'all',
                                 pageNumber: 1,
-                                pageSize: 10,
+                                pageSize: 20,
                                 locale: 'zh-CN',
                                 height: 800,
                                 sidePagination: "client",
@@ -414,6 +423,29 @@
                 let contents = myCodeMirror.getValue();
                 localStorage.setItem("{{ envi_id }}", contents);
             });
-        })
+        });
+
+        // 设置主题
+        let input = document.getElementById("select");
+        function selectTheme() {
+            let theme = input.options[input.selectedIndex].textContent;
+            myCodeMirror.setOption("theme", theme);
+            location.hash = "#" + theme;
+        }
+
+        let choice = (location.hash && location.hash.slice(1)) ||
+            (document.location.search &&
+                decodeURIComponent(document.location.search.slice(1)));
+        if (choice) {
+            input.value = choice;
+            myCodeMirror.setOption("theme", choice);
+        }
+        CodeMirror.on(window, "hashchange", function () {
+            let theme = location.hash.slice(1);
+            if (theme) {
+                input.value = theme;
+                selectTheme();
+            }
+        });
     </script>
 {% endblock %}
