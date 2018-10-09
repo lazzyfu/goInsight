@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 400px;
+            height: 450px;
             font-size: 12px;
         }
 
@@ -16,7 +16,7 @@
         .tab .nav-tabs li a {
             padding: 10px 20px;
             margin-right: 10px;
-        {#border: 2px;#} position: relative;
+            position: relative;
         }
 
         .jstree-leaf {
@@ -36,7 +36,7 @@
                 <div class="box-header box-border">
                     <div class="mailbox-read-info">
                         <h3 class="box-title"><i class="fa fa-cog"></i> {{ envi_name }}-SQL查询
-                            <small>默认返回 limit 100条记录, 支持 tab 语法补全, 最大查询时间600s</small>
+                            <small>默认返回 limit 100条记录, 最大查询时间600s</small>
                         </h3>
                     </div>
                     <div id="s_envi_id" style="display:none;">{{ envi_id }}</div>
@@ -131,7 +131,6 @@
             matchBrackets: true,
             lineWrapping: true,
             showCursorWhenSelecting: true,
-            extraKeys: {"Tab": "autocomplete"},
             hint: CodeMirror.hint.sql
         });
 
@@ -141,10 +140,20 @@
             readOnly: true,
             autofocus: false,
             lineWrapping: true,
+            theme: "material",
             placeholder: '消息 ...'
         });
 
-        myQueryLog.setSize('height', '170px');
+        myQueryLog.setSize('height', '120px');
+
+        myCodeMirror.on("keyup", function (cm, event) {
+            if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
+                event.keyCode !== 13 &&    /*delete不提示*/
+                event.keyCode !== 186 &&  /*分号；不提示*/
+                event.keyCode !== 8) {        /*Enter - do not open autocomplete list just after item has been selected in it*/
+                CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+            }
+        });
 
         /**
          * 获取生产环境的schemas和tables信息，左侧jstree展示使用
@@ -345,7 +354,7 @@
                                 pageNumber: 1,
                                 pageSize: 10,
                                 locale: 'zh-CN',
-                                height: 500,
+                                height: 800,
                                 sidePagination: "client",
                                 pagination: true,
                                 singleSelect: true,
