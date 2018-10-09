@@ -15,6 +15,7 @@ import re
 import subprocess
 import time
 
+import sqlparse
 from asgiref.sync import async_to_sync
 from celery import shared_task
 from celery.result import AsyncResult
@@ -274,6 +275,20 @@ def stop_incep_osc(user, id=None, celery_task_id=None):
 @shared_task
 def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, database=None):
     """ghost改表"""
+    """ghost改表"""
+    # 将语句中的注释和SQL分离
+    sql_split = {}
+    for stmt in sqlparse.split(sql):
+        sql = sqlparse.parse(stmt)[0]
+        sql_comment = sql.token_first()
+        if isinstance(sql_comment, sqlparse.sql.Comment):
+            sql_split = {'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')}
+        else:
+            sql_split = {'comment': '', 'sql': sql.value}
+
+    # 获取不包含注释的SQL语句
+    sql = sql_split['sql']
+
     formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)', re.I)
     match = formatsql.match(sql)
 
