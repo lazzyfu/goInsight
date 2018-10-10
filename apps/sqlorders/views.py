@@ -16,9 +16,9 @@ from django.views.generic import FormView
 from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm, SyntaxCheckForm, BeautifySQLForm, \
     SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, GetParentSchemasForm, HookSqlOrdersForm, \
     GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, stop_incep_osc, PerformTasksRollbackForm, \
-    SqlOrdersTasksVersionForm, PerformTasksOpForm
+    SqlOrdersTasksVersionForm, PerformTasksOpForm, CommitOrderReplyForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
-    SqlOrdersTasksVersions
+    SqlOrdersTasksVersions, SqlOrderReply
 from sqlorders.utils import GetInceptionBackupApi, check_incep_alive
 from users.models import RolePermission, UserRoles
 from users.permissionsVerify import permission_required
@@ -260,6 +260,37 @@ class SqlOrdersCloseView(FormView):
     def form_invalid(self, form):
         error = form.errors.as_text()
         context = {'status': 2, 'msg': error}
+        return HttpResponse(json.dumps(context))
+
+
+class CommitOrderReplyView(FormView):
+    """处理用户的回复的工单信息"""
+
+    form_class = CommitOrderReplyForm
+
+    def form_valid(self, form):
+        context = form.is_save(self.request)
+        return HttpResponse(json.dumps(context))
+
+    def form_invalid(self, form):
+        error = form.errors.as_json()
+        error_msg = [value[0].get('message') for key, value in json.loads(error).items()][0]
+        context = {'status': 2, 'msg': str(error_msg)}
+        return HttpResponse(json.dumps(context))
+
+
+class GetOrderReplyView(View):
+    """获取用户的回复的工单信息"""
+
+    def get(self, request):
+        reply_id = request.GET.get('reply_id')
+        queryset = SqlOrderReply.objects.annotate(
+            username=F('user__username'),
+            avatar_file=F('user__avatar_file'),
+        ).filter(reply__id=reply_id).values('username', 'avatar_file', 'reply_contents', 'created_at').order_by(
+            '-created_at')
+        serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
+        context = {'status': 0, 'data': serialize_data}
         return HttpResponse(json.dumps(context))
 
 
