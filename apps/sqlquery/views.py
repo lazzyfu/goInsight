@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.views import View
 
 from sqlorders.models import SqlOrdersEnvironment
-from sqlquery.forms import GetSchemasGrantForm, GetStruInfoForm, ExecSqlQueryForm
+from sqlquery.forms import GetSchemasGrantForm, GetStruInfoForm, ExecSqlQueryForm, GetHistorySqlForm, \
+    GetFilterHistorySqlForm
 
 
 class RenderSqlQueryView(View):
@@ -47,6 +48,30 @@ class ExecSqlQueryView(View):
         form = ExecSqlQueryForm(request.POST)
         if form.is_valid():
             context = form.execute(request)
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
+
+        return JsonResponse(context, safe=False)
+
+
+class GetHistorySqlView(View):
+    """获取当前用户执行的SQL历史,返回前1000条"""
+
+    def get(self, request):
+        form = GetHistorySqlForm(request.GET)
+        if form.is_valid():
+            context = form.query(request)
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
+
+        return JsonResponse(context, safe=False)
+
+    def post(self, request):
+        form = GetFilterHistorySqlForm(request.POST)
+        if form.is_valid():
+            context = form.query(request)
         else:
             error = form.errors.as_text()
             context = {'status': 2, 'msg': error}

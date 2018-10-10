@@ -6,7 +6,7 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 450px;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .tab .nav-tabs {
@@ -44,33 +44,29 @@
                 <div class="row">
                     <div class="box-body box-border">
                         <div class="col-md-3" style="padding-right: 5px">
-                            <div style="height: 600px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 3px">
+                            <div style="height: 610px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 3px">
                                 <div id="container"></div>
                             </div>
                         </div>
 
-                        <div class="col-md-9" style="padding-left: 3px">
-                            <form class="form-inline" id="SqlQueryForm" action="{% url 'p_exec_sql_query' %}"
-                                  method="post" style="margin: 2px">
-                                <div class="form-group">
-                                    <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm"><i
-                                            class="fa fa-magic"></i> 格式化SQL
-                                    </button>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn bg-info btn-sm"><i class="fa fa-flash"></i> 执行
-                                    </button>
-                                </div>
-                                <div class="form-group pull-right">
-                                    <select onchange="selectTheme()" id=select title="选择主题...">
-                                        <option selected>default</option>
-                                        <option>material</option>
-                                        <option>dracula</option>
-                                        <option>monokai</option>
-                                    </select>
-                                </div>
-                                {% csrf_token %}
-                            </form>
+                        <div class="col-md-9" style="padding-left: 2px">
+                            <div style="margin: 3px">
+                                <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm"><i
+                                        class="fa fa-magic"></i> 格式化SQL
+                                </button>
+                                <button onclick="commitSqlQueryForm()" class="btn bg-info btn-sm"><i
+                                        class="fa fa-flash"></i> 执行
+                                </button>
+                                <button class="btn bg-info btn-sm" onclick="getHistorySql()"><i
+                                        class="fa fa-history"></i> 我的SQL
+                                </button>
+                                <select onchange="selectTheme()" id=select title="选择主题..." class="pull-right">
+                                    <option selected>default</option>
+                                    <option>material</option>
+                                    <option>darcula</option>
+                                    <option>monokai</option>
+                                </select>
+                            </div>
                             <div style="margin: 2px">
                                 <textarea title="" id="s_sql"></textarea>
                             </div>
@@ -85,6 +81,42 @@
                         <ul class="nav nav-tabs" id="li_append"></ul>
                         <div class="tab-content" id="table_append"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SQL历史模态框 -->
+    <div class="modal fade" id="modal_history_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-history"></i> SQL历史
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="box-body">
+                            <div class="input-group">
+                                <input title="" id='search_contents' type="text" placeholder="输入关键字、搜索更多SQL记录"
+                                       class="form-control">
+                                <span class="input-group-btn">
+                                    <button type="button" onclick="getFilterHistorySql()" class="btn btn-info btn-flat">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <p>默认显示最近的1000条记录</p>
+                            <textarea title="" id="preview_history_sql"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>
@@ -277,7 +309,7 @@
         }
 
         // 获取查询日志
-        let socket = new WebSocket('ws://' + window.location.host + '/ws/');
+        let socket = new WebSocket('wss://' + window.location.host + '/ws/');
         socket.onmessage = function (message) {
             let result = JSON.parse(message.data);
             let msg = result.msg;
@@ -301,8 +333,9 @@
         /**
          * 执行MySQL查询语句
          */
-        $('#SqlQueryForm').on('submit', function (e) {
+        function commitSqlQueryForm() {
             // 清空输出的结果
+            let csrftoken = $.cookie('csrftoken');
             $('#li_append').empty();
             $('#table_append').empty();
 
@@ -323,10 +356,16 @@
                 displayPNotify(2, '请点击选中左侧库或表，在执行查询');
                 return false;
             }
-
-            $(this).ajaxSubmit({
-                data: {'contents': contents, 'schema': query_schema, 'envi_id': envi_id},
+            $.ajax({
+                data: {
+                    'contents': contents,
+                    'schema': query_schema,
+                    'envi_id': envi_id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
                 dataType: 'json',
+                url: '{% url 'p_exec_sql_query' %}',
+                method: 'POST',
                 timeout: 700000, // 700秒
                 beforeSubmit: showLoadingScreen($('body'), '数据查询中，请稍后...'),
                 success: function (result) {
@@ -343,7 +382,6 @@
                                 "<table id=\"table" + i + "\"></table>\n" +
                                 "</div>"
                         }
-
                         $('#table_append').append(table_html);
                         $('#li_append').append(li_html);
                         $('.nav-tabs>li>a').first().trigger('click');
@@ -360,6 +398,7 @@
                                 showRefresh: true,
                                 showExport: true,
                                 exportDataType: 'all',
+                                exportTypes: ['csv', 'txt', 'excel'],
                                 pageNumber: 1,
                                 pageSize: 20,
                                 locale: 'zh-CN',
@@ -394,9 +433,8 @@
                         hideLoadingScreen();
                     }
                 }
-            });
-            return false;
-        });
+            })
+        }
 
         $(function () {
             // 保存用户输入
@@ -427,6 +465,7 @@
 
         // 设置主题
         let input = document.getElementById("select");
+
         function selectTheme() {
             let theme = input.options[input.selectedIndex].textContent;
             myCodeMirror.setOption("theme", theme);
@@ -447,5 +486,59 @@
                 selectTheme();
             }
         });
+
+        // 获取当前用户执行的SQL记录
+        let hSTextarea = document.getElementById('preview_history_sql');
+        let hSCodeMirror = CodeMirror.fromTextArea(hSTextarea, {
+            mode: "text/x-mysql",
+            readOnly: true,
+            theme: 'material',
+            lineNumbers: true,
+            autoRefresh: true,
+            smartIndent: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            keyMap: "sublime",
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            lineWrapping: true,
+        });
+
+        function getHistorySql() {
+            $('#preview_history_sql').empty();
+            $.ajax({
+                url: '{% url 'p_get_history_sql' %}',
+                type: 'GET',
+                data: {'envi_id': envi_id},
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (result) {
+                    let data = result.data.join(';\n\n');
+                    hSCodeMirror.setValue(data);
+                    $('#modal_history_sql').modal('show')
+                }
+            })
+        }
+
+        function getFilterHistorySql() {
+            let contents = $('#search_contents').val();
+            let csrftoken = $.cookie('csrftoken');
+            $('#preview_history_sql').empty();
+            $.ajax({
+                url: '{% url 'p_get_history_sql' %}',
+                type: 'POST',
+                data: {'envi_id': envi_id, 'contents': contents, 'csrfmiddlewaretoken': csrftoken},
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (result) {
+                    let data = result.data.join(';\n\n');
+                    hSCodeMirror.setValue(data)
+                }
+            })
+        }
+
     </script>
 {% endblock %}

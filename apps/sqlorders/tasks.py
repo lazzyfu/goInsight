@@ -300,7 +300,9 @@ def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, databa
         # 将schema.table进行处理，这种情况gh-ost不识别，只保留table
         if len(table.split('.')) > 1:
             table = table.split('.')[1]
-        value = ' '.join((match.group(5), match.group(6))).replace('`', '')
+
+        # 处理反引号和将双引号处理成单引号
+        value = ' '.join((match.group(5), match.group(6))).replace('`', '').replace('"', '\'')
 
         obj = MysqlConfig.objects.get(host=host, port=port)
         # 获取用户配置的gh-ost参数
