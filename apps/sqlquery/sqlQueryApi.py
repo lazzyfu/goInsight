@@ -151,7 +151,6 @@ class MySQLQuery(object):
             result = {'status': 2, 'msg': self.data}
         else:
             try:
-                start_time = time.time()
                 dynamic_table = {}
                 pull_msg = []
                 i = 1
@@ -160,13 +159,19 @@ class MySQLQuery(object):
                     # 此处统一将其转换为小写
                     first_element = sql.split(' ', 1)[0].lower()
                     if first_element in ('update', 'insert', 'delete'):
+                        start_time = time.time()
                         with self.conn.cursor() as cursor:
                             cursor.execute(sql)
                             obj.affect_rows = cursor.rowcount
                             obj.query_status = '成功'
                             obj.save()
-                            pull_msg.append(f'{sql}\n执行成功，影响行数：{obj.affect_rows}\n')
+                            pull_msg.append(f'{sql}\n执行成功，影响行数：{obj.affect_rows}')
                         self.conn.commit()
+                        end_time = time.time()
+                        query_time = str(round(float(end_time - start_time), 3)) + 's'
+                        obj.query_time = query_time
+                        obj.save()
+                        pull_msg.append(f'耗时：{query_time}\n')
                     else:
                         # 非修改语句
                         # 获取字段
@@ -176,12 +181,13 @@ class MySQLQuery(object):
                             field = [{'field': j, 'title': j} for j in keys]
 
                         # 获取数据
+                        start_time = time.time()
                         with self.conn.cursor() as cursor:
                             cursor.execute(sql)
                             obj.affect_rows = cursor.rowcount
                             obj.query_status = '成功'
                             obj.save()
-                            pull_msg.append(f'{sql}\n执行成功，影响行数：{obj.affect_rows}\n')
+                            pull_msg.append(f'{sql}\n执行成功，影响行数：{obj.affect_rows}')
                             data = []
                             for j in cursor.fetchall():
                                 for k in j:
@@ -204,10 +210,11 @@ class MySQLQuery(object):
                                 data.append(j)
                         dynamic_table.update({f'{i}': {'columnDefinition': field, 'data': data}})
                         i += 1
-                end_time = time.time()
-                query_time = float(end_time - start_time)
-                obj.query_time = round(query_time, 3)
-                obj.save()
+                        end_time = time.time()
+                        query_time = str(round(float(end_time - start_time), 3)) + 's'
+                        obj.query_time = query_time
+                        obj.save()
+                        pull_msg.append(f'耗时：{query_time}\n')
                 json_pull_data = {'type': 1, 'msg': pull_msg}
                 result = {'status': 0, 'data': dynamic_table}
             except Exception as err:
