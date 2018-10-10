@@ -7,7 +7,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from sqlorders.models import SqlOrdersContents, SqlOrdersEnvironment, SysConfig
+from sqlorders.models import SqlOrdersContents, SqlOrdersEnvironment, SysConfig, SqlOrderReply
 from users.models import UserAccounts
 from sqlaudit.settings import EMAIL_FROM
 
@@ -96,18 +96,23 @@ def send_commit_mail(id, user=None, type=None, addition_info=None, domain_name_t
 
 @shared_task
 def send_verify_mail(id, user=None, type=None, addition_info=None, domain_name_tips=None):
+    envi_name = None
+    if type == 'reply':
+        data = SqlOrderReply.objects.get(pk=id)
+        id = data.reply_id
+        title = SqlOrdersContents.objects.get(pk=id).title
+    else:
+        data = SqlOrdersContents.objects.get(pk=id)
+        title = data.title
+        # 查询工单环境
+        envi_name = SqlOrdersEnvironment.objects.get(envi_id=data.envi_id).envi_name
+
     """发送工单确认邮件"""
     proposer, auditor, email_cc = get_user_email(id)
     # 收件人
     email_receiver = list(set(proposer + auditor))
     # 抄送人
     email_cc = email_cc
-
-    # 向_commit_mail.html渲染data数据
-    data = SqlOrdersContents.objects.get(pk=id)
-
-    # 查询工单环境
-    envi_name = SqlOrdersEnvironment.objects.get(envi_id=data.envi_id).envi_name
 
     # 向mail_template.html渲染data数据
     email_html_body = render_to_string('mailnotice/_sqlorders_verify_mail.html', {
@@ -121,7 +126,7 @@ def send_verify_mail(id, user=None, type=None, addition_info=None, domain_name_t
 
     # 发送邮件
     headers = {'Reply: ': email_receiver}
-    title = 'Re: ' + data.title
+    title = 'Re: ' + title
     msg = EmailMessage(subject=title,
                        body=email_html_body,
                        from_email=EMAIL_FROM,
@@ -136,16 +141,23 @@ def send_verify_mail(id, user=None, type=None, addition_info=None, domain_name_t
 @shared_task
 def dingding_push(id, user=None, type=None, addition_info=None, webhook=None, domain_name_tips=None):
     xiaoding = DingtalkChatbot(webhook)
-    # 获取数据
-    data = SqlOrdersContents.objects.get(pk=id)
     # 查询工单环境
-    envi_name = SqlOrdersEnvironment.objects.get(envi_id=data.envi_id).envi_name
+    envi_name = None
 
+    if type == 'reply':
+        obj = SqlOrderReply.objects.get(pk=id)
+        record_id = obj.reply_id
+        reply_contents = obj.reply_contents
+        data = SqlOrdersContents.objects.get(pk=record_id)
+    else:
+        # 获取数据
+        data = SqlOrdersContents.objects.get(pk=id)
+        envi_name = SqlOrdersEnvironment.objects.get(envi_id=data.envi_id).envi_name
     # 如果用户手机号存在，钉钉直接@mobile
     # 如果手机号不存在，钉钉直接@all
     proposer_mobile = UserAccounts.objects.get(username=data.proposer).mobile
     auditor_mobile = UserAccounts.objects.get(username=data.auditor).mobile
-#
+
     # 提交
     if type == 'commit':
         text = f"您好、{user}提交了审核内容，◕‿◕\n" \
@@ -218,6 +230,19 @@ def dingding_push(id, user=None, type=None, addition_info=None, webhook=None, do
             xiaoding.send_text(msg=text, at_mobiles=[proposer_mobile, auditor_mobile])
         else:
             xiaoding.send_text(msg=text, is_at_all=True)
+
+    # 回复
+    elif type == 'reply':
+        text = f"您好、{user}回复了内容，◕‿◕\n" \
+               f"标题: {data.title}\n" \
+               f"回复内容: {reply_contents}\n" \
+               f"URL: {domain_name_tips}/sqlorders/sql_orders_details/{data.pk}/ \n" \
+               f"回复时间: {timezone.localtime(data.updated_at).strftime('%Y-%m-%d %H:%M:%S')}\n"
+        if proposer_mobile and auditor_mobile:
+            xiaoding.send_text(msg=text, at_mobiles=[proposer_mobile, auditor_mobile])
+        else:
+            xiaoding.send_text(msg=text, is_at_all=True)
+
     # 钩子
     elif type == 'hook':
         text = f"您好、{user}扭转了工单，◕‿◕\n" \

@@ -10,7 +10,7 @@ from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAud
     RenderPerformTasksView, PerformTasksDetailsView, PerformTasksSQLPreView, SinglePerformTasksView, \
     FullPerformTasksView, GetPerformTasksResultView, PerformTasksRollbackView, \
     SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, SqlOrdersTasksVersionListView, GetVersionOrdersList, \
-    PerformTasksOpView, GetTargetSchemasView
+    PerformTasksOpView, GetTargetSchemasView, CommitOrderReplyView, GetOrderReplyView
 
 urlpatterns = [
     path('get_sql_orders_envi/', login_required(GetSqlOrdersEnviView.as_view()), name='p_get_sql_orders_envi'),
@@ -37,6 +37,9 @@ urlpatterns = [
     path(r'sql_orders_approve/', login_required(SqlOrdersApproveView.as_view())),
     path(r'sql_orders_feedback/', login_required(SqlOrdersFeedbackView.as_view())),
     path(r'sql_orders_close/', login_required(SqlOrdersCloseView.as_view())),
+    # 回复工单
+    path(r'commit_order_reply/', login_required(CommitOrderReplyView.as_view()), name='p_commit_order_reply'),
+    path(r'get_order_reply/', login_required(GetOrderReplyView.as_view()), name='p_get_order_reply'),
     # 钩子
     path(r'hook_sql_orders/', login_required(HookSqlOrdersView.as_view()), name='p_hook_sql_orders'),
     # 工单转换成执行任务

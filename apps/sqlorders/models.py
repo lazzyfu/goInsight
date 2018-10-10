@@ -221,3 +221,24 @@ class SysConfig(models.Model):
 
         default_permissions = ()
         db_table = 'sqlaudit_sys_config'
+
+
+class SqlOrderReply(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键')
+    reply = models.ForeignKey(SqlOrdersContents, on_delete=models.CASCADE, null=False, default='')
+    user = models.ForeignKey(UserAccounts, on_delete=models.CASCADE, null=False, default='')
+    reply_contents = models.TextField(default='', verbose_name=u'回复内容')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'回复时间')
+
+    class Meta:
+        verbose_name = u'工单回复'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_sql_order_reply'
+
+    def reply_id(self):
+        return self.reply.id
+
+    def user_id(self):
+        return self.user.uid

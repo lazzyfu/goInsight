@@ -12,7 +12,7 @@ from django.db.models import Max, Case, When, Value, CharField, Q
 from django.shortcuts import get_object_or_404
 
 from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, MysqlSchemas, \
-    SqlOrdersTasksVersions, SysConfig
+    SqlOrdersTasksVersions, SysConfig, SqlOrderReply
 from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter, GetInceptionBackupApi
 from users.models import RolePermission
 from .tasks import *
@@ -776,4 +776,24 @@ class SqlOrdersTasksVersionForm(forms.Form):
             for i in id.split(','):
                 SqlOrdersTasksVersions.objects.get(pk=i).delete()
             context = {'status': 0, 'msg': '删除成功'}
+        return context
+
+
+class CommitOrderReplyForm(forms.Form):
+    reply_id = forms.IntegerField(required=True)
+    reply_contents = forms.CharField(widget=forms.Textarea, min_length=2,
+                                     error_messages={'required': '回复内容不能为空', 'min_length': '回复至少输入2个字符'})
+
+    def is_save(self, request):
+        cdata = self.cleaned_data
+        reply_id = cdata.get('reply_id')
+        reply_contents = cdata.get('reply_contents')
+        obj = SqlOrderReply.objects.create(
+            reply_id=reply_id,
+            user_id=request.user.uid,
+            reply_contents=reply_contents)
+        # 发送钉钉推送
+        msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='reply')
+        msg_pull.run()
+        context = {'status': 0, 'msg': ''}
         return context
