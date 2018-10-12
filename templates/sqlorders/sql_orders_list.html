@@ -129,6 +129,7 @@
                 locale: 'zh-CN',
                 pageList: [10, 20],
                 uniqueId: "id",
+                rowStyle: render_row_style,
                 classes: 'table table-hover table-no-bordered',
 
                 columns: [
@@ -323,5 +324,19 @@
         hook_modal_selector.on('hidden.bs.modal', function (event) {
             $('.selectpicker').selectpicker('refresh')
         })
+
+        /**
+         * 渲染行的样式
+         * 已完成的自动标记为：绿色(success)
+         * 关闭的自动标记为：红色(danger)
+         */
+        function render_row_style(row, index) {
+            let finish_status = ['已完成', '已关闭', '已勾住'];
+            if (finish_status.indexOf(row.progress_value) < 0) {
+                return {classes: 'danger'}
+            } else {
+                return {};
+            }
+        }
     </script>
 {% endblock %}
