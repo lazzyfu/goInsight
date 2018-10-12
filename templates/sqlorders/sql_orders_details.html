@@ -16,12 +16,17 @@
             background-color: #f5f5f5;
             border-radius: 4px;
         }
+
+        .cm-highlightSearch {
+            background: yellow;
+        }
     </style>
 {% endblock %}
 
 {% block right_content %}
     <ol class="breadcrumb">
-        <li><a href="/sqlorders/sql_orders_list/{{ contents.envi_id }}/"><i class="fa fa-arrow-circle-left"></i> 审核页面</a></li>
+        <li><a href="/sqlorders/sql_orders_list/{{ contents.envi_id }}/"><i class="fa fa-arrow-circle-left"></i>
+            审核页面</a></li>
         <li class="active">当前页面</li>
     </ol>
     <div class="row">
@@ -140,11 +145,27 @@
 
 {% block link_javascripts %}
     <script>
+        let keyword = new RegExp('UNIQUE INDEX', 'i');
+
+        CodeMirror.defineMode("highlightSearch", function (config, parserConfig) {
+            let searchOverlay = {
+                token: function (stream, state) {
+                    if (stream.match(keyword)) {
+                        return "highlightSearch";
+                    }
+
+                    while (stream.next() != null && !stream.match(keyword, false)) {
+                    }
+                    return null;
+                }
+            };
+            return CodeMirror.overlayMode(CodeMirror.getMode(config, parserConfig.backdrop || "sql"), searchOverlay);
+        });
         let myTextarea = document.getElementById('select_sql');
         let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
-            mode: "text/x-mysql",
-            readOnly: true
+            mode: "highlightSearch",
+            readOnly: true,
         });
 
         <!-- 提交回复内容 -->
@@ -202,6 +223,7 @@
                 }
             })
         }
+
         get_order_reply()
     </script>
 {% endblock %}
