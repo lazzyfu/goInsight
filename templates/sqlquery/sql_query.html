@@ -309,7 +309,7 @@
         }
 
         // 获取查询日志
-        let socket = new WebSocket('wss://' + window.location.host + '/ws/');
+        let socket = new WebSocket('ws://' + window.location.host + '/ws/');
         socket.onmessage = function (message) {
             let result = JSON.parse(message.data);
             let msg = result.msg;

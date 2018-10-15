@@ -57,6 +57,15 @@
                         <li class="list-group-item">
                             <b>进度</b> <a class="pull-right">{{ contents.progress_value }}</a>
                         </li>
+                        {% if contents.progress_value == '待批准' %}
+                            <li class="list-group-item">
+                                <b>审批</b>
+                                <a class="pull-right" href='#'
+                                   onclick='link_sql_orders_audit("{{ contents.id }}", "/sqlorders/sql_orders_approve/","通过", "不通过")'><i
+                                        class='fa fa-check-square-o fa-lg'></i>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
                 <!-- /.box-body -->
@@ -222,6 +231,12 @@
                     });
                 }
             })
+        }
+
+        <!-- 批准的快捷方式 -->
+        function link_sql_orders_audit(id, url, btn_left, btn_right) {
+            sql_orders_audit(id, url, btn_left, btn_right);
+            refresh_page()
         }
 
         get_order_reply()
