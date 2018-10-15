@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,8 +20,17 @@
       <file leaf-file-name="sql_orders_details.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="551">
-              <caret line="51" column="87" lean-forward="true" selection-start-line="51" selection-start-column="87" selection-end-line="51" selection-end-column="87" />
+            <state relative-caret-position="703">
+              <caret line="68" column="25" lean-forward="true" selection-start-line="68" selection-start-column="25" selection-end-line="68" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="31" column="14" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -117,8 +124,8 @@
         <option value="$PROJECT_DIR$/apps/sqlorders/msgNotice.py" />
         <option value="$PROJECT_DIR$/apps/sqlquery/sqlQueryApi.py" />
         <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" />
-        <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html" />
       </list>
     </option>
   </component>
@@ -316,7 +323,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32848233" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.4993895" weight="0.25738397" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22954823" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23199023" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
@@ -345,16 +352,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/sqlquery/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="986">
-          <caret line="58" column="22" selection-start-line="58" selection-start-column="6" selection-end-line="58" selection-end-column="22" />
-          <folding>
-            <element signature="e#43#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/migrations/0003_auto_20180915_1650.py" />
     <entry file="file://$PROJECT_DIR$/apps/sqlquery/models.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -694,10 +691,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="31" column="14" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="551">
-          <caret line="51" column="87" lean-forward="true" selection-start-line="51" selection-start-column="87" selection-end-line="51" selection-end-column="87" />
+        <state relative-caret-position="703">
+          <caret line="68" column="25" lean-forward="true" selection-start-line="68" selection-start-column="25" selection-end-line="68" selection-end-column="25" />
         </state>
       </provider>
     </entry>
