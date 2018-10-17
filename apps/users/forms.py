@@ -12,6 +12,7 @@ from users.utils import check_ldap_connection
 class LoginForm(forms.Form):
     username = forms.CharField(required=True, max_length=30)
     password = forms.CharField(required=True, max_length=30, min_length=7)
+    verifycode = forms.CharField(error_messages={'required': '验证码不能为空'})
 
     def authentication(self, request):
         cdata = self.cleaned_data
