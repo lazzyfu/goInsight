@@ -74,11 +74,11 @@ class SqlOrdersAuditForm(forms.Form):
         contents = cdata.get('contents')
         envi_id = cdata.get('envi_id')
 
-        if sql_type == 'DDL':
-            max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
-            envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
-        elif sql_type == 'DML':
-            envi_id = envi_id
+        # if sql_type == 'DDL':
+        #     max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
+        #     envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
+        # elif sql_type == 'DML':
+        envi_id = envi_id
 
         result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
         if result.get('status') == 2:

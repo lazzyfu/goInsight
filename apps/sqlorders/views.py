@@ -73,7 +73,6 @@ class GetTargetSchemasView(View):
     def post(self, request):
         envi_id = request.POST.get('envi_id')
         parent_id = SqlOrdersEnvironment.objects.get(envi_id=envi_id).parent_id
-        print(parent_id)
         if parent_id == 0:
             # 为生产环境
             queryset = MysqlSchemas.objects.filter(envi_id=envi_id, is_master=1).values('host', 'port', 'schema',
@@ -87,18 +86,18 @@ class GetTargetSchemasView(View):
         return HttpResponse(serialize_data)
 
 
-class GetOfflineSchemasView(View):
-    """
-    获取非生产环境schema列表
-    获取sql工单环境定义表中parent_id最大的envi_id
-    """
-
-    def get(self, request):
-        max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
-        offline_envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
-        queryset = MysqlSchemas.objects.filter(envi_id=offline_envi_id).values('host', 'port', 'schema', 'comment')
-        serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-        return HttpResponse(serialize_data)
+# class GetOfflineSchemasView(View):
+#     """
+#     获取非生产环境schema列表
+#     获取sql工单环境定义表中parent_id最大的envi_id
+#     """
+#
+#     def get(self, request):
+#         max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
+#         offline_envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
+#         queryset = MysqlSchemas.objects.filter(envi_id=offline_envi_id).values('host', 'port', 'schema', 'comment')
+#         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
+#         return HttpResponse(serialize_data)
 
 
 class GetParentSchemasView(View):
