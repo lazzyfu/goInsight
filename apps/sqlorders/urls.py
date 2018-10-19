@@ -10,7 +10,8 @@ from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAud
     RenderPerformTasksView, PerformTasksDetailsView, PerformTasksSQLPreView, SinglePerformTasksView, \
     FullPerformTasksView, GetPerformTasksResultView, PerformTasksRollbackView, \
     SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, SqlOrdersTasksVersionListView, GetVersionOrdersList, \
-    PerformTasksOpView, GetTargetSchemasView, CommitOrderReplyView, GetOrderReplyView
+    PerformTasksOpView, GetTargetSchemasView, CommitOrderReplyView, GetOrderReplyView, RenderMyOrdersView, MyOrdersView, \
+    GetSqlExecuteDetailsView
 
 urlpatterns = [
     path('get_sql_orders_envi/', login_required(GetSqlOrdersEnviView.as_view()), name='p_get_sql_orders_envi'),
@@ -19,7 +20,6 @@ urlpatterns = [
     path(r'get_audit_user/', login_required(GetAuditUserView.as_view()), name='p_get_audit_user'),
     # 获取schema列表
     path(r'get_product_schemas/', login_required(GetTargetSchemasView.as_view()), name='p_get_target_schemas'),
-    # path(r'get_offline_schemas/', login_required(GetOfflineSchemasView.as_view()), name='p_get_offline_schemas'),
     path(r'get_parent_schemas/', login_required(GetParentSchemasView.as_view()), name='p_get_parent_schemas'),
     path(r'get_tables/', login_required(GetTablesView.as_view()), name='p_get_tables'),
     # inceotion语法检查
@@ -48,6 +48,8 @@ urlpatterns = [
     re_path(r'perform_tasks/(?P<taskid>.*)/', login_required(RenderPerformTasksView.as_view())),
     path(r'perform_tasks_details/', login_required(PerformTasksDetailsView.as_view()),
          name='p_perform_tasks_details'),
+    path(r'get_sql_exec_details/', login_required(GetSqlExecuteDetailsView.as_view()),
+         name='p_get_sql_exec_details'),
     # 预览SQL
     path(r'perform_tasks_sqlpre/', login_required(PerformTasksSQLPreView.as_view()),
          name='p_perform_tasks_sqlpre'),
@@ -68,4 +70,7 @@ urlpatterns = [
          name='p_get_sql_tasks_version_list'),
     # 获取任务版本内的工单信息
     path(r'get_version_orders_list/', login_required(GetVersionOrdersList.as_view())),
+    # 我的工单
+    re_path(r'render_my_orders/', login_required(RenderMyOrdersView.as_view()), name='p_render_my_orders'),
+    path(r'get_my_orders/', login_required(MyOrdersView.as_view()), name='p_get_my_orders'),
 ]

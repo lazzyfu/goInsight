@@ -106,7 +106,6 @@ class SqlOrdersAuditForm(forms.Form):
 
             # 跳转到工单记录页面
             context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
-            print(context)
         return context
 
 
@@ -516,9 +515,10 @@ class SinglePerformTasksForm(forms.Form):
                     context = {'status': 2, 'msg': '请不要重复操作任务'}
                 else:
                     # 将任务进度设置为：处理中
+                    obj.executor = request.user.username
+                    obj.execition_time = timezone.now()
                     obj.exec_status = '2'
                     obj.save()
-                    print(obj.exec_status)
 
                     # 如果sqlsha1存在，说明是大表，需要使用工具进行修改
                     # inception_osc_min_table_size默认为16M
@@ -797,3 +797,66 @@ class CommitOrderReplyForm(forms.Form):
         msg_pull.run()
         context = {'status': 0, 'msg': ''}
         return context
+
+class MyOrdersForm(forms.Form):
+    """我的工单"""
+    limit_size = forms.IntegerField(required=True, label=u'每页显示数量')
+    offset_size = forms.IntegerField(required=True, label=u'分页偏移量')
+    search_content = forms.CharField(max_length=128, required=False, label='搜索内容')
+
+    def query(self, request):
+        cdata = self.cleaned_data
+        limit_size = cdata.get('limit_size')
+        offset_size = cdata.get('offset_size')
+        search_content = cdata.get('search_content')
+
+        # 获取用户的权限，用于前端表格的列的显示
+        role_name = request.user.user_role()
+        perm_list = list(
+            RolePermission.objects.filter(role__role_name=role_name).values_list('permission_name', flat=True))
+
+        permissions = {'permissions': perm_list}
+
+        query = SqlOrdersContents.objects.filter(
+            Q(proposer=request.user.username) | Q(auditor=request.user.username)).annotate(
+            progress_value=Case(
+                When(progress='0', then=Value('待批准')),
+                When(progress='1', then=Value('未批准')),
+                When(progress='2', then=Value('已批准')),
+                When(progress='3', then=Value('处理中')),
+                When(progress='4', then=Value('已完成')),
+                When(progress='5', then=Value('已关闭')),
+                When(progress='6', then=Value('已勾住')),
+                output_field=CharField(),
+            ),
+            progress_color=Case(
+                When(progress__in=('0',), then=Value('btn-primary')),
+                When(progress__in=('2',), then=Value('btn-warning')),
+                When(progress__in=('1', '5'), then=Value('btn-danger')),
+                When(progress__in=('3',), then=Value('btn-info')),
+                When(progress__in=('4',), then=Value('btn-success')),
+                When(progress__in=('6',), then=Value('btn-default')),
+                output_field=CharField(),
+            ),
+        )
+        if search_content:
+            obj = query.filter(Q(task_version__icontains=search_content) | Q(title__icontains=search_content) | Q(
+                proposer__icontains=search_content) | Q(
+                host__icontains=search_content) | Q(host__icontains=search_content) | Q(
+                database__icontains=search_content) | Q(contents__icontains=search_content))
+        else:
+            obj = query
+
+        ol_total = obj.count()
+
+        ol_records = obj.values('progress_color', 'task_version', 'host', 'port', 'sql_type',
+                                'database', 'progress_value', 'id', 'envi_id',
+                                'title', 'proposer', 'auditor',
+                                'created_at', 'remark'
+                                ).order_by('-created_at')[offset_size:limit_size]
+        rows = []
+        for x in list(ol_records):
+            x.update(permissions)
+            rows.append(x)
+        result = {'total': ol_total, 'rows': rows}
+        return result

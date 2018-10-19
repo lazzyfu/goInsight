@@ -50,6 +50,7 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
             # 状态变为失败
             data.exec_status = '5'
             data.exec_log = exec_result
+            data.affected_row = exec_result[1]['Affected_rows']
             data.save()
         else:
             # 执行成功
@@ -58,11 +59,13 @@ def update_tasks_status(id=None, exec_result=None, exec_status=None):
                 data.exec_status = '1'
                 data.sequence = exec_result[1]['sequence']
                 data.backup_dbname = exec_result[1]['backup_dbname']
+                data.affected_row = exec_result[1]['Affected_rows']
                 data.exec_log = exec_result
                 data.save()
             # 执行状态为回滚中时，状态变为已回滚
             elif exec_status == '3':
                 data.exec_status = '4'
+                data.affected_row = exec_result[1]['Affected_rows']
                 data.save()
 
 
@@ -179,6 +182,8 @@ def incep_multi_tasks(username, query, key):
         obj = SqlOrdersExecTasks.objects.get(id=id)
         if obj.exec_status not in ('1', '2', '3', '4'):
             # 将任务进度设置为: 处理中
+            obj.executor = username
+            obj.execition_time = timezone.now()
             obj.exec_status = '2'
             obj.save()
 

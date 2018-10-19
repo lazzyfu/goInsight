@@ -158,8 +158,11 @@ exec_progress = (
 
 class SqlOrdersExecTasks(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
-    uid = models.IntegerField(null=False, default=0, verbose_name=u'操作用户uid')
-    user = models.CharField(max_length=30, null=False, verbose_name=u'操作用户')
+    uid = models.IntegerField(null=False, default=0, verbose_name=u'申请用户uid')
+    user = models.CharField(max_length=30, null=False, verbose_name=u'申请用户')
+    executor = models.CharField(max_length=30, null=False, default='', verbose_name=u'工单执行人')
+    execition_time = models.DateTimeField(auto_now=True, verbose_name=u'工单执行时间')
+    runtime = models.CharField(max_length=1024, null=False, default='0.00', verbose_name=u'任务运行时间，单位s')
     taskid = models.CharField(null=False, max_length=128, verbose_name=u'任务号')
     related_id = models.IntegerField(null=False, default=0, verbose_name=u'关联SqlOrdersContents的主键id')
     envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')

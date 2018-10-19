@@ -16,7 +16,7 @@ from django.views.generic import FormView
 from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm, SyntaxCheckForm, BeautifySQLForm, \
     SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, GetParentSchemasForm, HookSqlOrdersForm, \
     GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, stop_incep_osc, PerformTasksRollbackForm, \
-    SqlOrdersTasksVersionForm, PerformTasksOpForm, CommitOrderReplyForm
+    SqlOrdersTasksVersionForm, PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
     SqlOrdersTasksVersions, SqlOrderReply
 from sqlorders.utils import GetInceptionBackupApi, check_incep_alive
@@ -84,20 +84,6 @@ class GetTargetSchemasView(View):
 
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
-
-
-# class GetOfflineSchemasView(View):
-#     """
-#     获取非生产环境schema列表
-#     获取sql工单环境定义表中parent_id最大的envi_id
-#     """
-#
-#     def get(self, request):
-#         max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
-#         offline_envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
-#         queryset = MysqlSchemas.objects.filter(envi_id=offline_envi_id).values('host', 'port', 'schema', 'comment')
-#         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-#         return HttpResponse(serialize_data)
 
 
 class GetParentSchemasView(View):
@@ -367,6 +353,50 @@ class PerformTasksDetailsView(View):
         return HttpResponse(json.dumps(task_details))
 
 
+class GetSqlExecuteDetailsView(View):
+    """获取每条SQL的执行详情"""
+
+    def get(self, request):
+        id = request.GET.get('id')
+        queryset = SqlOrdersExecTasks.objects.annotate(
+            status=Case(
+                When(exec_status='0', then=Value('未执行')),
+                When(exec_status='1', then=Value('已完成')),
+                When(exec_status='2', then=Value('处理中')),
+                When(exec_status='3', then=Value('回滚中')),
+                When(exec_status='4', then=Value('已回滚')),
+                When(exec_status='5', then=Value('失败')),
+                When(exec_status='6', then=Value('异常')),
+                output_field=CharField(),
+            )
+        ).filter(related_id=id).values('sql', 'status', 'affected_row', 'runtime', 'executor', 'execition_time')
+
+        field = [{'field': 'sid', 'title': 'ID'},
+                 {'field': 'sql', 'title': 'SQL'},
+                 {'field': 'status', 'title': '状态'},
+                 {'field': 'affected_row', 'title': '影响行数'},
+                 {'field': 'runtime', 'title': '耗时(s)'},
+                 {'field': 'executor', 'title': '执行人'},
+                 {'field': 'execition_time', 'title': '执行时间'},
+                 ]
+
+        i = 1
+        data = []
+        for row in queryset:
+            data.append({
+                'sid': i,
+                'sql': row['sql'][:50] + ' ...',
+                'status': row['status'],
+                'affected_row': row['affected_row'],
+                'runtime': row['runtime'],
+                'executor': row['executor'],
+                'execition_time': (row['execition_time'] + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+            })
+            i += 1
+        context = {'columns': field, 'data': data}
+        return JsonResponse(context, safe=False)
+
+
 class PerformTasksSQLPreView(View):
     """获取执行任务的SQL列表，进行预览展示"""
 
@@ -568,4 +598,25 @@ class GetVersionOrdersList(View):
             result.append(columns)
 
         context = {'columns': columns_definition + dynamic_columns_definition, 'data': result}
+        return JsonResponse(context, safe=False)
+
+
+class RenderMyOrdersView(View):
+    """渲染工单列表页面"""
+
+    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
+    def get(self, request):
+        return render(request, 'sqlorders/my_orders.html')
+
+
+class MyOrdersView(View):
+    """获取工单列表页面的工单数据"""
+
+    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
+    def get(self, request):
+        form = MyOrdersForm(request.GET)
+        context = {}
+        if form.is_valid():
+            context = form.query(request)
+
         return JsonResponse(context, safe=False)
