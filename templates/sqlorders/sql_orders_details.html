@@ -27,10 +27,10 @@
     <ol class="breadcrumb">
         <li><a href="/sqlorders/sql_orders_list/{{ contents.envi_id }}/"><i class="fa fa-arrow-circle-left"></i>
             审核页面</a></li>
-        <li class="active">当前页面</li>
     </ol>
     <div class="row">
-        <div class="col-md-4">
+        <div id="s_sql_details" style="display:none;">{{ contents.id }}</div>
+        <div class="col-md-4" style="padding-right: 2px">
             <!-- Profile Image -->
             <div class="box box-primary">
                 <div class="box-body box-profile">
@@ -55,7 +55,10 @@
                             <b>审核时间</b> <a class="pull-right">{{ contents.operate_time }}</a>
                         </li>
                         <li class="list-group-item">
-                            <b>进度</b> <a class="pull-right">{{ contents.progress_value }}</a>
+                            <b>备注 </b> <a class="pull-right text-red">{{ contents.remark }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>进度</b> <a class="pull-right text-red">{{ contents.progress_value }}</a>
                         </li>
                         {% if contents.progress_value == '待批准' %}
                             <li class="list-group-item">
@@ -67,6 +70,9 @@
                             </li>
                         {% endif %}
                     </ul>
+                    {% if contents.progress_value in '已完成,已勾住' %}
+                        <a href="#" onclick="viewSqlDetails()" class="btn btn-primary btn-block"><b>点击查看SQL执行详情</b></a>
+                    {% endif %}
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -131,7 +137,8 @@
                           method="post">
                         <div class="form-group margin-bottom-none">
                             <div class="col-sm-10">
-                                <textarea rows="3" class="form-control input-sm" name="reply_contents"
+                                <textarea rows="1" style="resize: vertical;max-height: 100px"
+                                          class="form-control input-sm" name="reply_contents"
                                           placeholder="请输入回复内容..."></textarea>
                             </div>
                             <div class="col-sm-2">
@@ -149,6 +156,27 @@
             <!-- /. box -->
         </div>
         <!-- /.col -->
+    </div>
+
+    <!-- 查看sql执行详情模态框 -->
+    <div class="modal fade modal-wide" id="modal_table_sql">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-table"></i> SQL执行详情</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table id="table_sql"></table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
@@ -176,6 +204,7 @@
             mode: "highlightSearch",
             readOnly: true,
         });
+
 
         <!-- 提交回复内容 -->
         $(function () {
@@ -231,6 +260,37 @@
                     });
                 }
             })
+        }
+
+
+        <!-- 获取sql执行的详情 -->
+        function viewSqlDetails() {
+            let $table_sql = $('#table_sql');
+            let id = $('#s_sql_details').text();
+            $.ajax({
+                url: "{% url 'p_get_sql_exec_details' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'id': id},
+                timeout: 30000,
+                cache: true
+            }).done(function (result) {
+                $('#modal_table_sql').modal('show');
+                $table_sql.bootstrapTable('destroy').bootstrapTable({
+                    columns: result.columns,
+                    data: result.data,
+                    pageNumber: 1,
+                    pageSize: 20,
+                    locale: 'zh-CN',
+                    sidePagination: "client",
+                    pagination: true,
+                    singleSelect: true,
+                    minimumCountColumns: 2,
+                    matchBrackets: true,
+                    lineWrapping: true,
+                    classes: 'table table-hover table-no-bordered'
+                });
+            });
         }
 
         <!-- 批准的快捷方式 -->
