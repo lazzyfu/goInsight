@@ -144,22 +144,22 @@
                     }
                 ],
 
-                onLoadSuccess: function (value) {
-                    // 权限视图隐藏
-                    // 此处即使可以看见，后台也有权限进行控制
-                    if (value.total > 0) {
-                        let view_permission = value.rows[0].permissions;
-                        if (view_permission.indexOf('can_audit_sql') < 0) {
-                            // 隐藏审批权限的显示
-                            $('#demo-table').bootstrapTable('hideColumn', 'approve')
-                        }
-                        if (view_permission.indexOf('can_execute_sql') < 0) {
-                            // 隐藏执行和反馈权限的显示
-                            $table.bootstrapTable('hideColumn', 'execute');
-                            $table.bootstrapTable('hideColumn', 'feedback')
-                        }
-                    }
-                }
+                {#onLoadSuccess: function (value) {#}
+                {#    // 权限视图隐藏#}
+                {#    // 此处即使可以看见，后台也有权限进行控制#}
+                {#    if (value.total > 0) {#}
+                {#        let view_permission = value.rows[0].permissions;#}
+                {#        if (view_permission.indexOf('can_audit_sql') < 0) {#}
+                {#            // 隐藏审批权限的显示#}
+                {#            $('#demo-table').bootstrapTable('hideColumn', 'approve')#}
+                {#        }#}
+                {#        if (view_permission.indexOf('can_execute_sql') < 0) {#}
+                {#            // 隐藏执行和反馈权限的显示#}
+                {#            $table.bootstrapTable('hideColumn', 'execute');#}
+                {#            $table.bootstrapTable('hideColumn', 'feedback')#}
+                {#        }#}
+                {#    }#}
+                {# }#}
             })
         });
 
