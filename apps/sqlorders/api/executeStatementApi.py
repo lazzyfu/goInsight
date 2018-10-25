@@ -85,13 +85,15 @@ class ExecuteSql(object):
 
     def _sql_parser(self):
         """返回是DML还是DDL"""
-        type = ''
         res = sqlparse.parse(self.sql)
         syntax_type = res[0].token_first().ttype.__str__()
         if syntax_type == 'Token.Keyword.DDL':
             type = 'DDL'
         elif syntax_type == 'Token.Keyword.DML':
             type = 'DML'
+        else:
+            # 非DML和DDL语句，比如：use db
+            type = None
         return type
 
     def _get_position(self, cnx):
@@ -167,15 +169,9 @@ class ExecuteSql(object):
             # result = self._op_ddl()
             pass
         else:
-            result = None
+            result = {'status': 'warn', 'msg': f'非DML和DDL语句，执行失败'}
         self._close(cnx)
         return result
 
     def _close(self, cnx):
         cnx.close()
-
-# rrx = ExecuteSql(host='10.10.1.202', port=3306, user='yops', password='Fuzongfei_1991', database='aa')
-# # sql = "INSERT INTO `a1a` (`I_REF`, `name`, created_at) VALUES (2 , 'zsssss', now())"
-# sql = "update a1a set price=613.11 where name='zsssss' limit 6"
-# for i in rrx.run_by_sql(sql):
-#     print(i)

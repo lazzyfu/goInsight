@@ -13,18 +13,15 @@ import logging
 import os
 import re
 import subprocess
-import time
 
 import sqlparse
 from asgiref.sync import async_to_sync
 from celery import shared_task
-from celery.result import AsyncResult
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.utils import timezone
 
 from sqlorders.api.executeStatementApi import ExecuteSql
-from sqlorders.inceptionApi import InceptionSqlApi
 from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlConfig, SysConfig, MysqlSchemas
 from sqlorders.msgNotice import SqlOrdersMsgPull
 
@@ -57,7 +54,6 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
     # {'status': 'success', 'rollbacksql': [sql], 'affected_rows': 1, 'execute_time': '1.000s'}
     # 或 {'status': 'fail', 'msg': str(err)}
     data = SqlOrdersExecTasks.objects.get(id=id)
-    print(exec_result)
     if exec_result['status'] == 'fail':
         status = exec_result.get('status')
         msg = exec_result.get('msg')
@@ -65,7 +61,16 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
                    f"输出: {msg}\n"
         # 标记为失败
         data.exec_status = '5'
-        data.exec_log = str(exec_log)
+        data.exec_log = exec_log
+        data.save()
+    elif exec_result['status'] == 'warn':
+        status = exec_result.get('status')
+        msg = exec_result.get('msg')
+        exec_log = f"状态: {status}\n" \
+                   f"输出: {msg}\n"
+        # 标记为失败
+        data.exec_status = '1'
+        data.exec_log = exec_log
         data.save()
     elif exec_result['status'] == 'success':
         # 执行状态为处理中时，状态变为已完成
@@ -81,7 +86,7 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
             data.affected_row = affected_rows
             data.rollback_sql = '\n'.join(rollbacksql)
             data.execition_time = execute_time
-            data.exec_log = str(exec_log)
+            data.exec_log = exec_log
             data.save()
 
 
