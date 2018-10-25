@@ -5,7 +5,7 @@ import logging
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
-from django.db.models import F, Max, When, Value, CharField, Case
+from django.db.models import F, When, Value, CharField, Case
 from django.http import HttpResponse, JsonResponse
 # Create your views here.
 from django.shortcuts import render
@@ -15,11 +15,11 @@ from django.views.generic import FormView
 
 from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm, SyntaxCheckForm, BeautifySQLForm, \
     SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, GetParentSchemasForm, HookSqlOrdersForm, \
-    GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, stop_incep_osc, PerformTasksRollbackForm, \
-    SqlOrdersTasksVersionForm, PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm
+    GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, SqlOrdersTasksVersionForm, \
+    PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
     SqlOrdersTasksVersions, SqlOrderReply
-from sqlorders.utils import GetInceptionBackupApi, check_incep_alive
+from sqlorders.utils import check_incep_alive
 from users.models import RolePermission, UserRoles
 from users.permissionsVerify import permission_required
 
@@ -328,13 +328,10 @@ class PerformTasksDetailsView(View):
                 When(exec_status='0', then=Value('未执行')),
                 When(exec_status='1', then=Value('已完成')),
                 When(exec_status='2', then=Value('处理中')),
-                When(exec_status='3', then=Value('回滚中')),
-                When(exec_status='4', then=Value('已回滚')),
                 When(exec_status='5', then=Value('失败')),
-                When(exec_status='6', then=Value('异常')),
                 output_field=CharField(),
             )
-        ).filter(taskid=taskid).values('id', 'user', 'sqlsha1', 'sql', 'taskid', 'status')
+        ).filter(taskid=taskid).values('id', 'user', 'sql', 'taskid', 'status')
 
         i = 1
         task_details = []
@@ -344,7 +341,6 @@ class PerformTasksDetailsView(View):
                 'sid': i,
                 'id': row['id'],
                 'user': row['user'],
-                'sqlsha1': row['sqlsha1'],
                 'sql': row['sql'],
                 'taskid': row['taskid'],
                 'exec_status': row['status']
@@ -406,6 +402,22 @@ class PerformTasksSQLPreView(View):
         return HttpResponse(json.dumps(list(queryset)))
 
 
+class FullPerformTasksView(View):
+    """全部执行"""
+
+    @method_decorator(check_incep_alive)
+    @permission_required('can_execute_sql')
+    @transaction.atomic
+    def post(self, request):
+        form = FullPerformTasksForm(request.POST)
+        if form.is_valid():
+            context = form.exec(request)
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
+        return HttpResponse(json.dumps(context))
+
+
 class SinglePerformTasksView(View):
     """单条执行"""
 
@@ -443,68 +455,23 @@ class PerformTasksOpView(View):
         return HttpResponse(json.dumps(context))
 
 
-class FullPerformTasksView(View):
-    """全部执行"""
-
-    @method_decorator(check_incep_alive)
-    @permission_required('can_execute_sql')
-    @transaction.atomic
-    def post(self, request):
-        form = FullPerformTasksForm(request.POST)
-        if form.is_valid():
-            context = form.exec(request)
-        else:
-            error = form.errors.as_text()
-            context = {'status': 2, 'msg': error}
-        return HttpResponse(json.dumps(context))
-
-
 class GetPerformTasksResultView(View):
     """获取执行任务的执行结果和备份信息"""
 
     def get(self, request):
         id = request.GET.get('id')
         queryset = SqlOrdersExecTasks.objects.get(id=id)
-        exec_log = queryset.exec_log if queryset.exec_log else ''
+        exec_log = queryset.exec_log
         if queryset.exec_status in ('1', '4', '5'):
             if queryset.is_ghost == 1:
                 data = {'rollback_log': '', 'exec_log': exec_log}
                 context = {'status': 1, 'msg': '', 'data': data}
             else:
-                try:
-                    sequence_result = {'backupdbName': queryset.backup_dbname, 'sequence': queryset.sequence}
-                    rollback_sql = GetInceptionBackupApi(sequence_result).get_rollback_statement()
-                except Exception as err:
-                    logger.error(err)
-                    logger.error(f'未查询到回滚SQL，执行任务ID：{id}')
-                    rollback_sql = ''
-                # 此处要将exec_log去字符串处理，否则无法转换为json
-                print(type(exec_log))
-                print('执行日志：', ast.literal_eval(exec_log))
-
-                data = {'rollback_log': rollback_sql, 'exec_log': ast.literal_eval(exec_log)}
+                rollback_sql = queryset.rollback_sql
+                data = {'rollback_log': rollback_sql, 'exec_log': exec_log}
                 context = {'status': 0, 'msg': '', 'data': data}
         else:
             context = {'status': 2, 'msg': '该SQL未被执行，无法查询状态信息'}
-        return HttpResponse(json.dumps(context))
-
-
-class PerformTasksRollbackView(View):
-    """
-    执行任务-回滚操作
-    回滚操作不会进行再次进行备份
-    """
-
-    @method_decorator(check_incep_alive)
-    @permission_required('can_execute_sql')
-    @transaction.atomic
-    def post(self, request):
-        form = PerformTasksRollbackForm(request.POST)
-        if form.is_valid():
-            context = form.rollback(request)
-        else:
-            error = form.errors.as_text()
-            context = {'status': 2, 'msg': error}
         return HttpResponse(json.dumps(context))
 
 

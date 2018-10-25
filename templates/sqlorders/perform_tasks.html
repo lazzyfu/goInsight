@@ -60,8 +60,8 @@
             </div>
 
             <div class="box-body no-padding">
-                <dl id="output_append" class="log-ul">
-                </dl>
+                <div class="dl-horizontal log-ul" id="output_append">
+                </div>
             </div>
         </div>
     </div>
@@ -182,33 +182,19 @@
                         }
                     },
                     {
-                        field: 'sqlsha1',
-                        title: 'sqlsha1',
-                        sortable: true
-                    },
-                    {
                         field: 'exec_status',
                         title: '任务进度',
                         formatter: function (value, row, index) {
                             if (value === '已完成') {
                                 return "<p class='text-green'>" + value + "</p>"
                             }
-                            else if (value === '已回滚') {
-                                return "<p class='text-blue'>" + value + "</p>"
-                            }
                             else if (value === '处理中') {
-                                return "<p class='text-yellow'>" + value + "</p>"
-                            }
-                            else if (value === '回滚中') {
                                 return "<p class='text-yellow'>" + value + "</p>"
                             }
                             else if (value === '未执行') {
                                 return "<p class='text-red'>" + value + "</p>"
                             }
                             else if (value === '失败') {
-                                return "<p class='text-red'>" + value + "</p>"
-                            }
-                            else if (value === '异常') {
                                 return "<p class='text-red'>" + value + "</p>"
                             }
                         }
@@ -240,20 +226,6 @@
                         title: "终止(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ghost\')"><i class="fa fa-power-off"></i></a> ';
-                        }
-                    },
-                    {
-                        field: 'id',
-                        title: "终止(pt-osc)",
-                        formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ptosc\')"><i class="fa fa-power-off"></i></a> ';
-                        }
-                    },
-                    {
-                        field: 'id',
-                        title: "回滚",
-                        formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksRollback(' + row.id + ')"><i class="fa fa-undo"></i></a> ';
                         }
                     },
                     {
@@ -294,13 +266,10 @@
                     select_sql.empty();
                     exec_log.empty();
                     if (result.status === 0) {
-                        let log_html = renderIncepExecResult(result.data.exec_log);
+                        let log_html = result.data.exec_log.replace(/\n/g, '\.' + '<br>');
                         let rollback_sql = '';
                         if (result.data.rollback_log) {
                             rollback_sql = result.data.rollback_log
-                        }
-                        else {
-                            rollback_sql = ' 无记录'
                         }
                         select_sql.append(rollback_sql);
                         exec_log.append(log_html);
@@ -377,32 +346,6 @@
                 data: {
                     'id': id,
                     'action': action,
-                    'taskid': taskid,
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                timeout: 10000,
-                cache: false,
-                success: function (result) {
-                    displayPNotify(result.status, result.msg);
-                },
-                error: function (jqXHR) {
-                    if (jqXHR.status === 403) {
-                        displayPNotify(jqXHR.status)
-                    }
-                }
-            })
-        }
-
-        <!-- 回滚 -->
-        function PerformTasksRollback(id) {
-            let csrftoken = $.cookie('csrftoken');
-
-            $.ajax({
-                url: "{% url 'p_perform_tasks_rollback' %}",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    'id': id,
                     'taskid': taskid,
                     'csrfmiddlewaretoken': csrftoken
                 },

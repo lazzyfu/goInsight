@@ -164,61 +164,6 @@ def sql_filter(sql, sql_type):
         return context
 
 
-class GetInceptionBackupApi(object):
-    """从备份主机上获取备份数据"""
-
-    def __init__(self, data):
-        self.inception_backup_host = getattr(settings, 'INCEPTION_BACKUP_HOST')
-        self.inception_backup_user = getattr(settings, 'INCEPTION_BACKUP_USER')
-        self.inception_backup_password = getattr(settings, 'INCEPTION_BACKUP_PASSWORD')
-        self.inception_backup_port = getattr(settings, 'INCEPTION_BACKUP_PORT')
-
-        self.backupdbName = data['backupdbName']
-        self.sequence = data['sequence']
-
-    def get_rollback_statement(self):
-        conn = pymysql.connect(host=self.inception_backup_host, user=self.inception_backup_user,
-                               password=self.inception_backup_password,
-                               port=self.inception_backup_port, use_unicode=True, charset="utf8")
-
-        cur = conn.cursor()
-
-        rollback_statement = []
-
-        if self.backupdbName != 'None':
-            try:
-                table_query = f"select tablename from {self.backupdbName}.$_$Inception_backup_information$_$ " \
-                              f"where opid_time={self.sequence}"
-                cur.execute(table_query)
-                if cur.fetchone:
-                    for row in cur.fetchall():
-                        if row:
-                            dst_table = row[0]
-
-                            rollback_statement_query = f"select rollback_statement from " \
-                                                       f"{self.backupdbName}.{dst_table} " \
-                                                       f"where opid_time={self.sequence}"
-                            cur.execute(rollback_statement_query)
-
-                            for i in cur.fetchall():
-                                rollback_statement.append(i[0])
-
-                            if rollback_statement:
-                                return '\n'.join(rollback_statement)
-                            else:
-                                return False
-                        else:
-                            return False
-                else:
-                    return False
-            except conn.ProgrammingError as err:
-                logger.warning(err)
-                return False
-            finally:
-                cur.close()
-                conn.close()
-
-
 def check_incep_alive(fun):
     """检测inception进程是否运行"""
 

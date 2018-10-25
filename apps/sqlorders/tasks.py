@@ -23,50 +23,66 @@ from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.utils import timezone
 
+from sqlorders.api.executeStatementApi import ExecuteSql
 from sqlorders.inceptionApi import InceptionSqlApi
-from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlConfig, SysConfig
+from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlConfig, SysConfig, MysqlSchemas
 from sqlorders.msgNotice import SqlOrdersMsgPull
 
 channel_layer = get_channel_layer()
 logger = logging.getLogger('django')
 
 
-def update_tasks_status(id=None, exec_result=None, exec_status=None):
-    """
-    更新任务进度
-    更新备份信息
-    """
+@shared_task
+def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, database=None, exec_status=None):
+    """执行SQL"""
+    dst_server = MysqlSchemas.objects.get(host=host, port=port, schema=database)
+    dst_host = dst_server.host
+    dst_user = dst_server.user
+    dst_password = dst_server.password
+    dst_port = dst_server.port
+    dst_database = database
 
+    execute_sql = ExecuteSql(host=dst_host, port=dst_port,
+                             user=dst_user, password=dst_password,
+                             database=dst_database, username=username)
+    result = execute_sql.run_by_sql(sql)
+
+    # 更新任务进度
+    upd_current_task_status(id=id, exec_result=result, exec_status=exec_status)
+
+
+def upd_current_task_status(id=None, exec_result=None, exec_status=None):
+    """更新当前任务的进度"""
+    # exec_result的数据格式
+    # {'status': 'success', 'rollbacksql': [sql], 'affected_rows': 1, 'execute_time': '1.000s'}
+    # 或 {'status': 'fail', 'msg': str(err)}
     data = SqlOrdersExecTasks.objects.get(id=id)
-    errlevel = [x['errlevel'] for x in exec_result] if exec_result is not None else []
-
-    if exec_result is None:
-        # 若inception没有返回结果，标记为异常
-        data.exec_status = '6'
+    print(exec_result)
+    if exec_result['status'] == 'fail':
+        status = exec_result.get('status')
+        msg = exec_result.get('msg')
+        exec_log = f"状态: {status}\n" \
+                   f"输出: {msg}\n"
+        # 标记为失败
+        data.exec_status = '5'
+        data.exec_log = str(exec_log)
         data.save()
-    else:
-        # 执行失败
-        if 1 in errlevel or 2 in errlevel:
-            # 状态变为失败
-            data.exec_status = '5'
-            data.exec_log = exec_result
-            data.affected_row = exec_result[1]['Affected_rows']
+    elif exec_result['status'] == 'success':
+        # 执行状态为处理中时，状态变为已完成
+        status = exec_result.get('status')
+        affected_rows = exec_result.get('affected_rows')
+        rollbacksql = exec_result.get('rollbacksql')
+        execute_time = exec_result.get('execute_time')
+        exec_log = f"状态: {status}\n" \
+                   f"影响行数: {affected_rows}\n" \
+                   f"执行时间: {execute_time}"
+        if exec_status == '2':
+            data.exec_status = '1'
+            data.affected_row = affected_rows
+            data.rollback_sql = '\n'.join(rollbacksql)
+            data.execition_time = execute_time
+            data.exec_log = str(exec_log)
             data.save()
-        else:
-            # 执行成功
-            # 执行状态为处理中时，状态变为已完成
-            if exec_status == '2':
-                data.exec_status = '1'
-                data.sequence = exec_result[1]['sequence']
-                data.backup_dbname = exec_result[1]['backup_dbname']
-                data.affected_row = exec_result[1]['Affected_rows']
-                data.exec_log = exec_result
-                data.save()
-            # 执行状态为回滚中时，状态变为已回滚
-            elif exec_status == '3':
-                data.exec_status = '4'
-                data.affected_row = exec_result[1]['Affected_rows']
-                data.save()
 
 
 def update_audit_content_progress(username, taskid):
@@ -89,192 +105,46 @@ def update_audit_content_progress(username, taskid):
                 msg_pull.run()
 
 
-"""
-status = 0: 推送执行结果
-status = 1: 推送执行进度
-status = 2: 推送inception processlist
-"""
-
-
 @shared_task
-def get_osc_percent(task_id):
-    """实时获取pt-online-schema-change执行进度"""
-    task = AsyncResult(task_id)
-
-    while task.state in ('PENDING', 'STARTED', 'PROGRESS'):
-        while task.state == 'PROGRESS':
-            user = task.result.get('user')
-            host = task.result.get('host')
-            port = task.result.get('port')
-            database = task.result.get('database')
-            sqlsha1 = task.result.get('sqlsha1')
-
-            sql = f"inception get osc_percent '{sqlsha1}'"
-            of_audit = InceptionSqlApi(host, port, database, sql, user)
-
-            # 执行SQL
-            of_audit.run_status(1)
-
-            # 每1s获取一次
-            time.sleep(1)
-        else:
-            continue
-
-
-@shared_task(bind=True)
-def incep_async_tasks(self, id=None, user=None, sql=None, sqlsha1=None, host=None, port=None, database=None,
-                      exec_status=None,
-                      backup=None):
-    # 更新任务状态为: PROGRESS
-    self.update_state(state="PROGRESS",
-                      meta={'user': user, 'host': host, 'port': port, 'database': database, 'sqlsha1': sqlsha1})
-
-    of_audit = InceptionSqlApi(host, port, database, sql, user)
-
-    # 执行SQL
-    exec_result = of_audit.run_exec(0, backup)
-
-    # 更新任务进度
-    update_tasks_status(id=id, exec_result=exec_result, exec_status=exec_status)
-
-    # 更新任务状态为: SUCCESS
-    self.update_state(state="SUCCESS")
-
-
-@shared_task
-def stop_incep_osc(user, id=None, celery_task_id=None):
-    obj = SqlOrdersExecTasks.objects.get(id=id)
-    host = obj.dst_host
-    port = obj.dst_port
-    database = obj.dst_database
-
-    exec_status = None
-    if obj.exec_status == '2':
-        sqlsha1 = obj.sqlsha1
-        exec_status = 0
-    elif obj.exec_status == '3':
-        sqlsha1 = obj.rollback_sqlsha1
-        exec_status = 1
-
-    sql = f"inception stop alter '{sqlsha1}'"
-
-    # 执行SQL
-    task = AsyncResult(celery_task_id)
-    if task.state == 'PROGRESS':
-        of_audit = InceptionSqlApi(host, port, database, sql, user)
-        of_audit.run_status(0)
-
-        # 更新任务进度
-        update_tasks_status(id=id, exec_status=exec_status)
-
-
-@shared_task
-def incep_multi_tasks(username, query, key):
+def async_execute_multi_sql(username, query, key):
     taskid = key
     for row in SqlOrdersExecTasks.objects.raw(query):
         id = row.id
         host = row.host
         port = row.port
         database = row.database
-        sqlsha1 = row.sqlsha1
         sql = row.sql + ';'
 
         obj = SqlOrdersExecTasks.objects.get(id=id)
-        if obj.exec_status not in ('1', '2', '3', '4'):
+        if obj.exec_status not in ('1', '2'):
             # 将任务进度设置为: 处理中
             obj.executor = username
             obj.execition_time = timezone.now()
             obj.exec_status = '2'
             obj.save()
 
-            # 如果sqlsha1存在，说明是大表，需要使用工具进行修改
-            # inception_osc_min_table_size默认为16M
-            # 如果此处向走gh-ost，则设置inception_osc_min_table_size=0
-            if sqlsha1:
+            if obj.sql_type == 'DDL':
                 # 判断是否使用gh-ost执行
                 if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
-                    r = ghost_async_tasks.delay(user=username,
-                                                id=id,
-                                                sql=sql,
-                                                host=obj.host,
-                                                port=obj.port,
-                                                database=obj.database)
-                    task_id = r.task_id
-                else:
-                    # 异步执行SQL任务
-                    r = incep_async_tasks.delay(user=username,
-                                                id=id,
-                                                sql=sql,
-                                                host=host,
-                                                port=port,
-                                                database=database,
-                                                sqlsha1=sqlsha1,
-                                                backup='yes',
-                                                exec_status='2')
-                    task_id = r.task_id
-                    # 将celery task_id写入到表
-                    obj.celery_task_id = task_id
-                    obj.save()
-                    # 获取OSC执行进度
-                    get_osc_percent.delay(task_id=task_id)
-            else:
-                # 当affected_row>1000000时，只执行不备份
-                if obj.affected_row > 1000000:
-                    r = incep_async_tasks.delay(user=username,
-                                                id=id,
-                                                sql=sql,
-                                                host=host,
-                                                port=port,
-                                                database=database,
-                                                exec_status='2')
-                else:
-                    # 当affected_row<=2000时，执行并备份
-                    r = incep_async_tasks.delay(user=username,
-                                                id=id,
-                                                backup='yes',
-                                                sql=sql,
-                                                host=host,
-                                                port=port,
-                                                database=database,
-                                                exec_status='2')
-                task_id = r.task_id
-            # 判断当前任务是否执行完成，执行完成后，执行下一个任务
-            # 否则会变为并行异步执行
-            task = AsyncResult(task_id)
-            while task.state != 'SUCCESS':
-                time.sleep(0.2)
-                continue
+                    ghost_async_tasks.delay(user=username,
+                                            id=id,
+                                            sql=sql,
+                                            host=obj.host,
+                                            port=obj.port,
+                                            database=obj.database)
+            elif obj.sql_type == 'DML':
+                async_execute_sql.delay(
+                    username=username,
+                    id=id,
+                    sql=sql,
+                    host=host,
+                    port=port,
+                    database=database,
+                    exec_status='2')
 
     cache.delete(key)
     # 更新父任务进度
     update_audit_content_progress(username, ast.literal_eval(taskid))
-
-
-@shared_task
-def stop_incep_osc(user, id=None, celery_task_id=None):
-    obj = SqlOrdersExecTasks.objects.get(id=id)
-    host = obj.dst_host
-    port = obj.dst_port
-    database = obj.dst_database
-
-    exec_status = None
-    if obj.exec_status == '2':
-        sqlsha1 = obj.sqlsha1
-        exec_status = 0
-    elif obj.exec_status == '3':
-        sqlsha1 = obj.rollback_sqlsha1
-        exec_status = 1
-
-    sql = f"inception stop alter '{sqlsha1}'"
-
-    # 执行SQL
-    task = AsyncResult(celery_task_id)
-    if task.state == 'PROGRESS':
-        of_audit = InceptionSqlApi(host, port, database, sql, user)
-        of_audit.run_status(0)
-
-        # 更新任务进度
-        update_tasks_status(id=id, exec_status=exec_status)
 
 
 @shared_task
