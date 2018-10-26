@@ -6,7 +6,7 @@
  * 创建websocket
  * status
  * 1: 输出执行当前SQL语句的processlist信息
- * 2：输出inception osc的执行进度
+ * 2：渲染gh-ost输出
  */
 function CreateWebSocket() {
     let socket = new WebSocket('ws://' + window.location.host + '/ws/');
@@ -23,12 +23,7 @@ function CreateWebSocket() {
             output_html = renderSqlProcesslistResult(data);
             $this.append(output_html);
         }
-        else if (status === 1) {
-            $this.empty();
-            output_html = renderIncepOSCResult(data);
-            $this.append(output_html);
-        }
-        else if (status === 3) {
+        else if (status === 2) {
             output_html = renderGhostResult(data);
             $this.append(output_html);
             let element = document.getElementById('output_append');
@@ -48,7 +43,6 @@ function CreateWebSocket() {
    'COMMAND': 'Sleep', 'TIME': 0, 'STATE': '', 'INFO': None, 'TIME_MS': 44,
    'ROWS_SENT': 0, 'ROWS_EXAMINED': 0}
  */
-
 function renderSqlProcesslistResult(data) {
     let html = "<p class=\"text-danger\">该SQL的SHOW PROCESSLIST实时输出：</p>";
     for (let key in data) {
@@ -57,7 +51,9 @@ function renderSqlProcesslistResult(data) {
     return html
 }
 
-
+/**
+ * 渲染gh-ost输出
+ */
 function renderGhostResult(data) {
     return "<dt></dt><dd>" + data.replace(/\n/g, '\.' + '<br>') + "</dd>";
 }
