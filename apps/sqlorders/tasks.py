@@ -9,6 +9,7 @@ status = 2: 推送inception processlist
 
 import ast
 import logging
+import time
 
 from celery import shared_task
 from channels.layers import get_channel_layer
@@ -26,7 +27,7 @@ logger = logging.getLogger('django')
 def upd_current_task_status(id=None, exec_result=None, exec_status=None):
     """更新当前任务的进度"""
     # exec_result的数据格式
-    # {'status': 'success', 'rollbacksql': [sql,], 'affected_rows': 1, 'execute_time': '1.000s', 'exec_log': ''}
+    # {'status': 'success', 'rollbacksql': [sql,], 'affected_rows': 1, 'runtime': '1.000s', 'exec_log': ''}
     # 或
     # {'status': 'fail', 'exec_log': ''}
     data = SqlOrdersExecTasks.objects.get(id=id)
@@ -38,10 +39,11 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
     elif exec_result['status'] == 'success':
         # 执行状态为处理中时，状态变为已完成
         if exec_status == '2':
+            print(exec_result)
             data.exec_status = '1'
             data.affected_row = exec_result.get('affected_rows')
             data.rollback_sql = '\n'.join(exec_result.get('rollbacksql'))
-            data.execition_time = exec_result.get('execute_time')
+            data.runtime = exec_result.get('runtime')
             data.exec_log = exec_result.get('exec_log')
             data.save()
 
@@ -87,6 +89,7 @@ def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, da
 
 @shared_task
 def async_execute_multi_sql(username, query, key):
+    """批量执行SQL"""
     taskid = key
     for row in SqlOrdersExecTasks.objects.raw(query):
         id = row.id
@@ -103,25 +106,16 @@ def async_execute_multi_sql(username, query, key):
             obj.exec_status = '2'
             obj.save()
 
-            if obj.sql_type == 'DDL':
-                # 判断是否使用gh-ost执行
-                if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
-                    ghost_async_tasks.delay(user=username,
-                                            id=id,
-                                            sql=sql,
-                                            host=obj.host,
-                                            port=obj.port,
-                                            database=obj.database)
-            elif obj.sql_type == 'DML':
-                async_execute_sql.delay(
-                    username=username,
-                    id=id,
-                    sql=sql,
-                    host=host,
-                    port=port,
-                    database=database,
-                    exec_status='2')
-
+            # 执行SQL
+            async_execute_sql.delay(
+                username=username,
+                id=id,
+                sql=sql,
+                host=host,
+                port=port,
+                database=database,
+                exec_status='2')
+        time.sleep(0.02)
     cache.delete(key)
     # 更新父任务进度
     update_audit_content_progress(username, ast.literal_eval(taskid))

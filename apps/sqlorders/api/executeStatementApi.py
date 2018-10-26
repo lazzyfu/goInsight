@@ -139,17 +139,18 @@ class ExecuteSql(object):
             affected_rows = cursor.rowcount
         cnx.commit()
         end_time = time.time()
-        execute_time = str(round(float(end_time - start_time), 3)) + 's'
+        runtime = str(round(float(end_time - start_time), 3)) + 's'
         exec_log = f"状态: 执行成功\n" \
                    f"影响行数：{affected_rows}\n" \
-                   f"执行耗时：{execute_time}\n"
-        return affected_rows, execute_time, exec_log
+                   f"执行耗时：{runtime}\n"
+        return affected_rows, runtime, exec_log
 
     def _ghost_tool(self):
         syntaxcompile = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)', re.I)
         syntaxmatch = syntaxcompile.match(self.sql)
 
         if syntaxmatch is not None:
+            start_time = time.time()
             # 由于gh-ost不支持反引号，会被解析成命令，因此此处替换掉
             table = syntaxmatch.group(3).replace('`', '')
             # 将schema.table进行处理，这种情况gh-ost不识别，只保留table
@@ -168,7 +169,7 @@ class ExecuteSql(object):
                         f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
 
             # 删除sock，如果存在的话
-            sock = os.path.join('/tmp', f'gh-ost.{database}.{table}.sock')
+            sock = os.path.join('/tmp', f'gh-ost.{self.database}.{table}.sock')
             os.remove(sock) if os.path.exists(sock) else None
 
             # 执行gh-ost命令
@@ -186,10 +187,14 @@ class ExecuteSql(object):
                     async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
                                                                             'text': json.dumps(pull_msg)})
 
+            end_time = time.time()
+            runtime = str(round(float(end_time - start_time), 3)) + 's'
+
             if p.returncode == 0:
-                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': '', 'exec_log': exec_log}
+                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': 0, 'exec_log': exec_log,
+                          'runtime': runtime}
             else:
-                result = {'status': 'fail', 'exec_log': exec_log}
+                result = {'status': 'fail', 'exec_log': str(exec_log)}
         else:
             pull_msg = {'status': 2, 'data': f'未成功匹配到SQL：{self.sql}，请检查语法是否存在问题'}
             async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
@@ -204,6 +209,7 @@ class ExecuteSql(object):
         # 此类语句直接执行
         origcompile = re.compile('^(CREATE|DROP|RENAME|TRUNCATE)([\s\S]*)', re.I)
         origmatch = origcompile.match(self.sql)
+        result = None
         if origmatch is not None:
             # 启动监控线程
             # 监控被执行的SQL是否有锁等待
@@ -212,7 +218,7 @@ class ExecuteSql(object):
 
             try:
                 # 执行SQL
-                affected_rows, execute_time, exec_log = self._execute_sql(cnx)
+                affected_rows, runtime, exec_log = self._execute_sql(cnx)
                 result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'影响行数：{affected_rows}',
                           'exec_log': exec_log}
             except Exception as err:
@@ -231,7 +237,7 @@ class ExecuteSql(object):
             else:
                 try:
                     # 直接执行ALTER语句
-                    affected_rows, execute_time, exec_log = self._execute_sql(cnx)
+                    affected_rows, runtime, exec_log = self._execute_sql(cnx)
                     result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'影响行数：{affected_rows}',
                               'exec_log': exec_log}
                 except Exception as err:
@@ -254,7 +260,7 @@ class ExecuteSql(object):
         # 每条DML语句为作为一个事务执行
         try:
             # 执行SQL
-            affected_rows, execute_time, exec_log = self._execute_sql(cnx)
+            affected_rows, runtime, exec_log = self._execute_sql(cnx)
 
             # 事务执行完成后，获取end position
             end_pos, _ = self._get_position(cnx)
@@ -272,10 +278,10 @@ class ExecuteSql(object):
                                         affected_rows=affected_rows)
                 # 返回回滚语句的列表
                 result = {'status': 'success', 'rollbacksql': data.run_by_rows(), 'affected_rows': affected_rows,
-                          'execute_time': execute_time, 'exec_log': exec_log}
+                          'runtime': runtime, 'exec_log': exec_log}
             else:
                 result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'影响行数：{affected_rows}',
-                          'execute_time': execute_time, 'exec_log': exec_log}
+                          'runtime': runtime, 'exec_log': exec_log}
         except Exception as err:
             exec_log = f"状态: 执行失败\n" \
                        f"错误信息：{str(err)}\n"

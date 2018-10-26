@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+import json
 from datetime import datetime
 
 import psutil
@@ -539,27 +540,15 @@ class SinglePerformTasksForm(forms.Form):
                     obj.exec_status = '2'
                     obj.save()
 
-                    if obj.sql_type == 'DDL':
-                        # inception_osc_min_table_size默认为16M
-                        # 判断是否使用gh-ost执行
-                        if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
-                            ghost_async_tasks.delay(user=request.user.username,
-                                                    id=id,
-                                                    sql=sql,
-                                                    host=obj.host,
-                                                    port=obj.port,
-                                                    database=obj.database)
-                            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-                    elif obj.sql_type == 'DML':
-                        async_execute_sql.delay(
-                            username=request.user.username,
-                            id=id,
-                            sql=sql,
-                            host=host,
-                            port=port,
-                            database=database,
-                            exec_status='2')
-                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+                    async_execute_sql.delay(
+                        username=request.user.username,
+                        id=id,
+                        sql=sql,
+                        host=host,
+                        port=port,
+                        database=database,
+                        exec_status='2')
+                    context = {'status': 1, 'msg': '任务已提交，请查看输出'}
             # 更新父任务进度
             update_audit_content_progress(request.user.username, obj.taskid)
         return context

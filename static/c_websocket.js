@@ -55,5 +55,5 @@ function renderSqlProcesslistResult(data) {
  * 渲染gh-ost输出
  */
 function renderGhostResult(data) {
-    return "<dt></dt><dd>" + data.replace(/\n/g, '\.' + '<br>') + "</dd>";
+    return "<p>" + data.replace(/\n/g, '\.' + '<br>') + "</p>";
 }
