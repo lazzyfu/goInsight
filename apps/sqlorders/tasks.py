@@ -37,11 +37,11 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
         data.exec_log = exec_result.get('exec_log')
         data.save()
     elif exec_result['status'] == 'success':
+        print(exec_result)
         # 执行状态为处理中时，状态变为已完成
         if exec_status == '2':
-            print(exec_result)
             data.exec_status = '1'
-            data.affected_row = exec_result.get('affected_rows')
+            data.affected_row = int(exec_result.get('affected_rows'))
             data.rollback_sql = '\n'.join(exec_result.get('rollbacksql'))
             data.runtime = exec_result.get('runtime')
             data.exec_log = exec_result.get('exec_log')
@@ -202,3 +202,4 @@ def async_execute_multi_sql(username, query, key):
 #         # 推送消息
 #         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
 #                                                        'text': json.dumps(pull_msg)})
+

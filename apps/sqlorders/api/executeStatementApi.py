@@ -50,7 +50,6 @@ class CnxStatusCheckThread(threading.Thread):
                     pull_msg = {'status': 1, 'data': processlist_info}
                     async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
                                                                             'text': json.dumps(pull_msg)})
-                    print(processlist_info)
                 else:
                     return False
             time.sleep(1)
@@ -84,7 +83,6 @@ class ExecuteSql(object):
                                   )
             return cnx
         except Exception as err:
-            print(err)
             sys.exit(1)
 
     def _sql_parser(self):
@@ -219,7 +217,8 @@ class ExecuteSql(object):
             try:
                 # 执行SQL
                 affected_rows, runtime, exec_log = self._execute_sql(cnx)
-                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'影响行数：{affected_rows}',
+                result = {'status': 'success', 'rollbacksql': '', 'runtime': runtime,
+                          'affected_rows': f'{affected_rows}',
                           'exec_log': exec_log}
             except Exception as err:
                 exec_log = f"状态: 执行失败\n" \
@@ -238,7 +237,8 @@ class ExecuteSql(object):
                 try:
                     # 直接执行ALTER语句
                     affected_rows, runtime, exec_log = self._execute_sql(cnx)
-                    result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'影响行数：{affected_rows}',
+                    result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
+                              'runtime': runtime,
                               'exec_log': exec_log}
                 except Exception as err:
                     exec_log = f"状态: 执行失败\n" \
@@ -280,7 +280,7 @@ class ExecuteSql(object):
                 result = {'status': 'success', 'rollbacksql': data.run_by_rows(), 'affected_rows': affected_rows,
                           'runtime': runtime, 'exec_log': exec_log}
             else:
-                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'影响行数：{affected_rows}',
+                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                           'runtime': runtime, 'exec_log': exec_log}
         except Exception as err:
             exec_log = f"状态: 执行失败\n" \
@@ -303,9 +303,19 @@ class ExecuteSql(object):
         elif type == 'DDL':
             result = self._op_ddl(cnx)
         else:
-            exec_log = f"状态: 警告\n" \
-                       f"错误信息：非DML和DDL语句，执行失败\n"
-            result = {'status': 'warn', 'exec_log': exec_log}
+            # 匹配USE语法，单独处理
+            usecompile = re.compile('^(USE)([\s\S]*)', re.I)
+            usematch = usecompile.match(self.sql)
+
+            if usematch is not None:
+                exec_log = f"状态: 执行成功\n"
+                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': 0,
+                          'runtime': '0.00s', 'exec_log': exec_log}
+            else:
+                # 其他语法的SQL，不执行，直接返回警告
+                exec_log = f"状态: 警告\n" \
+                           f"错误信息：非DML和DDL语句，执行失败\n"
+                result = {'status': 'warn', 'exec_log': exec_log}
         self._close(cnx)
         return result
 

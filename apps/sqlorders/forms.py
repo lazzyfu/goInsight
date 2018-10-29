@@ -464,7 +464,6 @@ class GeneratePerformTasksForm(forms.Form):
                             port=port,
                             database=database,
                             sql=row['SQL'],
-                            sqlsha1=row['sqlsha1'],
                             affected_row=row['Affected_rows'],
                             sql_type=obj.sql_type,
                             envi_id=envi_id,

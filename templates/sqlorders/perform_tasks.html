@@ -11,6 +11,14 @@
             margin: 8px;
         }
 
+        .exec-log {
+            width: auto;
+            height: 350px;
+            padding: 8px;
+            overflow: scroll;
+            background-color: white;
+        }
+
         textarea {
             width: 850px;
             border: 1px solid #eee;
@@ -26,7 +34,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务--> 执行</h3>
+                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务</h3>
                         <h3 id="taskid" style="display: none">{{ taskid }}</h3>
                     </div>
                 </div>
@@ -60,7 +68,7 @@
             </div>
 
             <div class="box-body no-padding">
-                <div class="dl-horizontal log-ul" id="output_append">
+                <div class="log-ul" id="output_append">
                 </div>
             </div>
         </div>
@@ -83,10 +91,10 @@
                                 <textarea title="" style="resize: none" readonly="readonly" id="select_sql"></textarea>
                             </div>
                             <div class="box-comment">
-                                <h5><i class="fa  fa-info-circle"> 执行日志</i></h5>
+                                <h5><i class="fa fa-info-circle"> 执行日志</i></h5>
                                 <hr>
-                                <dl id="execLog">
-                                </dl>
+                                <div id="execLog" class="exec-log">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -166,15 +174,15 @@
                     },
                     {
                         field: 'user',
-                        title: '用户',
+                        title: '申请人',
                         sortable: true
                     }, {
                         field: 'sql',
                         title: 'sql语句',
                         sortable: true,
                         formatter: function (value) {
-                            if (value.length >= 128) {
-                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 128) + '&nbsp;...' + '</a>'
+                            if (value.length >= 88) {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 88) + '&nbsp;...' + '</a>'
                             }
                             else {
                                 return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value + '</a>'
@@ -183,7 +191,7 @@
                     },
                     {
                         field: 'exec_status',
-                        title: '任务进度',
+                        title: '进度',
                         formatter: function (value, row, index) {
                             if (value === '已完成') {
                                 return "<p class='text-green'>" + value + "</p>"
