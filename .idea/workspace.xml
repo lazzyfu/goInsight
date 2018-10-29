@@ -2,10 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/aaa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/sqlorders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/sqlorders/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,25 +16,19 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/AuditSQL$aaa.coverage" NAME="aaa Coverage Results" MODIFIED="1540805553043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="perform_tasks.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/sqlorders/perform_tasks.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="528">
-              <caret line="24" column="26" lean-forward="true" selection-start-line="24" selection-start-column="26" selection-end-line="24" selection-end-column="26" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="538">
-              <caret line="36" column="51" lean-forward="true" selection-start-line="36" selection-start-column="51" selection-end-line="36" selection-end-column="51" />
+            <state relative-caret-position="2464">
+              <caret line="112" column="26" lean-forward="true" selection-start-line="112" selection-start-column="26" selection-end-line="112" selection-end-column="26" />
               <folding>
                 <element signature="e#127#137#0" expanded="true" />
               </folding>
@@ -43,46 +39,10 @@
       <file leaf-file-name="executeStatementApi.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="579">
-              <caret line="272" column="56" lean-forward="true" selection-start-line="272" selection-start-column="56" selection-end-line="272" selection-end-column="56" />
+            <state relative-caret-position="600">
+              <caret line="318" column="71" lean-forward="true" selection-start-line="318" selection-start-column="71" selection-end-line="318" selection-end-column="71" />
               <folding>
                 <element signature="e#43#54#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="389">
-              <caret line="469" column="41" lean-forward="true" selection-start-line="469" selection-start-column="41" selection-end-line="469" selection-end-column="41" />
-              <folding>
-                <element signature="e#43#54#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/sqlorders/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="443">
-              <caret line="56" column="65" selection-start-line="56" selection-start-column="65" selection-end-line="56" selection-end-column="65" />
-              <folding>
-                <element signature="e#43#100#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="146">
-              <caret line="304" selection-start-line="304" selection-end-line="304" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -91,8 +51,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="155" column="6" selection-start-line="155" selection-start-column="6" selection-end-line="155" selection-end-column="6" />
+            <state relative-caret-position="318">
+              <caret line="103" column="8" lean-forward="true" selection-start-line="103" selection-start-column="8" selection-end-line="103" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -108,14 +68,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>PerformTasksRollbackView</find>
-      <find>time</find>
-      <find>getPerformTasksResult</find>
-      <find>renderIncepExecResult</find>
-      <find>incep_multi_tasks</find>
-      <find>PerformTasksRollbackForm</find>
-      <find>stop_incep_osc</find>
-      <find>celery_task_id</find>
       <find>SyntaxCheckForm</find>
       <find>str(exec_log)</find>
       <find>ghost_pid</find>
@@ -135,9 +87,17 @@
       <find>成功</find>
       <find>exec_log</find>
       <find>影响行数：</find>
-      <find>print</find>
       <find>runtime</find>
       <find>success</find>
+      <find>exec_progress</find>
+      <find>make_sqlsha1</find>
+      <find>InceptionSqlApi</find>
+      <find>核定征收打款退汇</find>
+      <find>affected_row</find>
+      <find>print</find>
+      <find>cnd</find>
+      <find>_connect</find>
+      <find>_get_position</find>
     </findStrings>
     <replaceStrings>
       <replace>runtime</replace>
@@ -196,6 +156,7 @@
         <option value="$PROJECT_DIR$/apps/sqlorders/models.py" />
         <option value="$PROJECT_DIR$/static/c_websocket.js" />
         <option value="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" />
+        <option value="$PROJECT_DIR$/aaa.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/forms.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/tasks.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py" />
@@ -258,12 +219,6 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
-              <item name="context_processors" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -272,22 +227,6 @@
               <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
               <item name="api" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -332,7 +271,26 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.aaa">
+    <configuration name="aaa" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="AuditSQL" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/aaa.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <configuration name="AuditSQL" type="Python.DjangoServer" factoryName="Django server">
       <module name="AuditSQL" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -356,6 +314,15 @@
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
     </configuration>
+    <list>
+      <item itemvalue="Django server.AuditSQL" />
+      <item itemvalue="Python.aaa" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.aaa" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -406,25 +373,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="10" />
+      <option name="time" value="11" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/sqlquery/deadlocksNotice.py" />
-    <entry file="file://$PROJECT_DIR$/apps/webshell/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="103" lean-forward="true" selection-start-line="103" selection-end-line="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/mailnotice/_deadlocks_mail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="32" column="7" lean-forward="true" selection-start-line="32" selection-start-column="7" selection-end-line="32" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlquery/utils.py" />
     <entry file="file://$PROJECT_DIR$/apps/users/views.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -652,16 +604,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="16" column="27" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
-          <folding>
-            <element signature="e#43#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/msgNotice.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="440">
@@ -683,32 +625,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/inceptionApi.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="112" column="11" lean-forward="true" selection-start-line="112" selection-start-column="11" selection-end-line="112" selection-end-column="11" />
-          <folding>
-            <element signature="e#43#54#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlquery/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="506">
           <caret line="23" column="34" lean-forward="true" selection-start-line="23" selection-start-column="34" selection-end-line="23" selection-end-column="34" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="443">
-          <caret line="56" column="65" selection-start-line="56" selection-start-column="65" selection-end-line="56" selection-end-column="65" />
-          <folding>
-            <element signature="e#43#100#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -729,27 +651,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="146">
-          <caret line="304" selection-start-line="304" selection-end-line="304" />
+        <state relative-caret-position="215">
+          <caret line="383" column="48" lean-forward="true" selection-start-line="383" selection-start-column="48" selection-end-line="383" selection-end-column="48" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="155" column="6" selection-start-line="155" selection-start-column="6" selection-end-line="155" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="469" column="41" lean-forward="true" selection-start-line="469" selection-start-column="41" selection-end-line="469" selection-end-column="41" />
+        <state relative-caret-position="443">
+          <caret line="56" column="65" selection-start-line="56" selection-start-column="65" selection-end-line="56" selection-end-column="65" />
           <folding>
-            <element signature="e#43#54#0" expanded="true" />
+            <element signature="e#43#100#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -761,20 +676,78 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/yops/lib/python3.6/site-packages/sqlparse/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="319">
+          <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/inceptionApi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1388">
+          <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+          <folding>
+            <element signature="e#43#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.1/python_stubs/19001090/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="5067" column="68" lean-forward="true" selection-start-line="5067" selection-start-column="68" selection-end-line="5067" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="403">
+          <caret line="379" column="45" lean-forward="true" selection-start-line="379" selection-start-column="45" selection-end-line="379" selection-end-column="45" />
+          <folding>
+            <element signature="e#43#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/aaa.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="765">
+          <caret line="288" column="20" lean-forward="true" selection-start-line="288" selection-start-column="20" selection-end-line="288" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="538">
-          <caret line="36" column="51" lean-forward="true" selection-start-line="36" selection-start-column="51" selection-end-line="36" selection-end-column="51" />
+        <state relative-caret-position="2464">
+          <caret line="112" column="26" lean-forward="true" selection-start-line="112" selection-start-column="26" selection-end-line="112" selection-end-column="26" />
           <folding>
             <element signature="e#127#137#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="103" column="8" lean-forward="true" selection-start-line="103" selection-start-column="8" selection-end-line="103" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-882">
+          <caret line="49" column="20" lean-forward="true" selection-start-line="49" selection-start-column="20" selection-end-line="49" selection-end-column="20" />
+          <folding>
+            <element signature="e#43#58#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="579">
-          <caret line="272" column="56" lean-forward="true" selection-start-line="272" selection-start-column="56" selection-end-line="272" selection-end-column="56" />
+        <state relative-caret-position="600">
+          <caret line="318" column="71" lean-forward="true" selection-start-line="318" selection-start-column="71" selection-end-line="318" selection-end-column="71" />
           <folding>
             <element signature="e#43#54#0" expanded="true" />
           </folding>

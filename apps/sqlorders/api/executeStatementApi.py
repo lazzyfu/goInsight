@@ -112,6 +112,30 @@ class ExecuteSql(object):
         # 获取不包含注释的SQL语句
         return sql_split['statement']
 
+    def _check_mysql_environment(self, cnx):
+        """
+        检测mysql是否开启了binlog以及GTID
+        若未开启，不进行备份
+        """
+        check_cmd = ["show variables like 'log_bin'",
+                     "show variables like 'binlog_format'",
+                     "show variables like 'gtid_mode'"
+                     ]
+        rr = []
+        with cnx.cursor() as cursor:
+            for i in check_cmd:
+                cursor.execute(i)
+                data = cursor.fetchone()
+                if data['Variable_name'] == 'log_bin' and data['Value'] == 'OFF':
+                    rr.append('mysql binlog not enable, please check, ths.\n')
+
+                if data['Variable_name'] == 'binlog_format' and data['Value'] == 'ROW':
+                    rr.append('mysql binlog format not eq ROW, please check, ths.\n')
+
+                if data['Variable_name'] == 'gtid_mode' and data['Value'] == 'OFF':
+                    rr.append('mysql gtid not enable, please check, ths.\n')
+        return rr
+
     def _get_position(self, cnx):
         """
         返回pos, file
@@ -247,9 +271,15 @@ class ExecuteSql(object):
         return result
 
     def _op_dml(self, cnx):
+        # 检查mysql相关配置
+        # 如果check_result列表长度大于0，说明不支持备份
+        check_result = self._check_mysql_environment(self._connect())
+        print(check_result)
+
         # 操作DML语句
         # 事务执行前，获取start position和binlog file
-        start_pos, binlog_file = self._get_position(cnx)
+        if len(check_result) == 0:
+            start_pos, binlog_file = self._get_position(cnx)
 
         # 启动监控线程
         # 监控被执行的SQL是否有锁等待
@@ -263,22 +293,30 @@ class ExecuteSql(object):
             affected_rows, runtime, exec_log = self._execute_sql(cnx)
 
             # 事务执行完成后，获取end position
-            end_pos, _ = self._get_position(cnx)
+            if len(check_result) == 0:
+                end_pos, _ = self._get_position(cnx)
 
             # 判断影响行数
             if affected_rows > 0:
                 # 获取回滚的SQL
-                data = ReadRemoteBinlog(binlog_file=binlog_file,
-                                        start_pos=start_pos,
-                                        end_pos=end_pos,
-                                        host=self.host,
-                                        port=self.port,
-                                        user=self.user,
-                                        password=self.password,
-                                        affected_rows=affected_rows)
-                # 返回回滚语句的列表
-                result = {'status': 'success', 'rollbacksql': data.run_by_rows(), 'affected_rows': affected_rows,
-                          'runtime': runtime, 'exec_log': exec_log}
+                if len(check_result) == 0:
+                    data = ReadRemoteBinlog(binlog_file=binlog_file,
+                                            start_pos=start_pos,
+                                            end_pos=end_pos,
+                                            host=self.host,
+                                            port=self.port,
+                                            user=self.user,
+                                            password=self.password,
+                                            affected_rows=affected_rows)
+                    # 返回回滚语句的列表
+                    result = {'status': 'success', 'rollbacksql': data.run_by_rows(), 'affected_rows': affected_rows,
+                              'runtime': runtime, 'exec_log': exec_log}
+                else:
+                    check_result = '\n'.join(check_result)
+                    exec_log = f"状态: 执行成功，备份失败\n" \
+                               f"错误信息：{check_result}"
+                    result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
+                              'runtime': runtime, 'exec_log': exec_log}
             else:
                 result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                           'runtime': runtime, 'exec_log': exec_log}

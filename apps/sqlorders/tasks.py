@@ -37,7 +37,6 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
         data.exec_log = exec_result.get('exec_log')
         data.save()
     elif exec_result['status'] == 'success':
-        print(exec_result)
         # 执行状态为处理中时，状态变为已完成
         if exec_status == '2':
             data.exec_status = '1'
@@ -49,6 +48,7 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
 
 
 def update_audit_content_progress(username, taskid):
+    # 当点击全部执行时有效
     # 检查任务是否都执行完成，如果执行完成，将父任务进度设置为已完成
     obj = SqlOrdersExecTasks.objects.filter(taskid=taskid)
     exec_status = obj.values_list('exec_status', flat=True)
@@ -59,8 +59,6 @@ def update_audit_content_progress(username, taskid):
             data = SqlOrdersContents.objects.get(id=related_id)
             if data.progress != '4':
                 data.progress = '4'
-                data.save()
-
                 data.updated_at = timezone.now()
                 data.save()
                 # 发送邮件
@@ -119,87 +117,3 @@ def async_execute_multi_sql(username, query, key):
     cache.delete(key)
     # 更新父任务进度
     update_audit_content_progress(username, ast.literal_eval(taskid))
-
-# @shared_task
-# def ghost_async_tasks(user=None, id=None, sql=None, host=None, port=None, database=None):
-#     """ghost改表"""
-#     # 将语句中的注释和SQL分离
-#     sql_split = {}
-#     for stmt in sqlparse.split(sql):
-#         sql = sqlparse.parse(stmt)[0]
-#         sql_comment = sql.token_first()
-#         if isinstance(sql_comment, sqlparse.sql.Comment):
-#             sql_split = {'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')}
-#         else:
-#             sql_split = {'comment': '', 'sql': sql.value}
-#
-#     # 获取不包含注释的SQL语句
-#     sql = sql_split['sql']
-#
-#     formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)', re.I)
-#     match = formatsql.match(sql)
-#
-#     queryset = SqlOrdersExecTasks.objects.get(id=id)
-#
-#     if match is not None:
-#         # 由于gh-ost不支持反引号，会被解析成命令，因此此处替换掉
-#         table = match.group(3).replace('`', '')
-#         # 将schema.table进行处理，这种情况gh-ost不识别，只保留table
-#         if len(table.split('.')) > 1:
-#             table = table.split('.')[1]
-#
-#         # 处理反引号和将双引号处理成单引号
-#         value = ' '.join((match.group(5), match.group(6))).replace('`', '').replace('"', '\'')
-#
-#         obj = MysqlConfig.objects.get(host=host, port=port)
-#         # 获取用户配置的gh-ost参数
-#         user_args = SysConfig.objects.get(key='is_ghost').value
-#
-#         ghost_cmd = f"gh-ost {user_args} " \
-#                     f"--user={obj.user} --password=\"{obj.password}\" --host={host} --port={port} " \
-#                     f"--assume-master-host={host} " \
-#                     f"--database=\"{database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
-#
-#         # 删除sock，如果存在的话
-#         sock = os.path.join('/tmp', f"gh-ost.{database}.{table}.sock")
-#         os.remove(sock) if os.path.exists(sock) else None
-#         logger.info(f'删除sock：{sock}')
-#
-#         # 执行gh-ost命令
-#         p = subprocess.Popen(ghost_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-#         logger.info(f'执行命令：{ghost_cmd}')
-#
-#         # 记录ghost进程的pid
-#         queryset.ghost_pid = p.pid
-#         queryset.save()
-#
-#         # 执行日志
-#         execute_log = ''
-#
-#         # 检测子进程是否退出
-#         while p.poll() is None:
-#             data = p.stdout.readline().decode('utf8')
-#             if data:
-#                 execute_log += data
-#                 pull_msg = {'status': 3, 'data': data}
-#                 # 推送消息
-#                 async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
-#                                                                'text': json.dumps(pull_msg)})
-#
-#         if p.returncode == 0:
-#             # 返回状态为0，设置状态为成功
-#             queryset.exec_status = '1'
-#         else:
-#             # 返回状态不为0，设置状态为失败
-#             queryset.exec_status = '5'
-#         # 记录日志和标记为使用gh-ost执行
-#         queryset.exec_log = execute_log
-#         queryset.is_ghost = 1
-#         queryset.save()
-#     else:
-#         pull_msg = {'status': 3, 'data': f'未成功匹配到SQL：{sql}'}
-#         logger.error(f'无法匹配SQL：{sql}')
-#         # 推送消息
-#         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
-#                                                        'text': json.dumps(pull_msg)})
-

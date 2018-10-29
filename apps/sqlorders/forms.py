@@ -1,9 +1,12 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import os
+import subprocess
 from datetime import datetime
 
 import psutil
+import sqlparse
 from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Case, When, Value, CharField, Q
@@ -442,29 +445,21 @@ class GeneratePerformTasksForm(forms.Form):
                     context = {'status': 0,
                                'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
                 else:
-                    host = obj.host
-                    database = obj.database
-                    port = obj.port
-                    sql_content = obj.contents
-
-                    # 实例化
-                    incep_audit = InceptionSqlApi(host, port, database, sql_content, request.user.username)
-
-                    # 对OSC执行的SQL生成sqlsha1
-                    result = incep_audit.make_sqlsha1()
+                    # 分割SQL，转换成sql列表
+                    # 移除sql头尾的分号;
+                    split_sqls = [sql.strip(';') for sql in sqlparse.split(obj.contents, encoding='utf8')]
                     taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
 
                     # 生成执行任务记录
-                    for row in result:
+                    for sql in split_sqls:
                         SqlOrdersExecTasks.objects.create(
                             uid=request.user.uid,
                             user=obj.proposer,
                             taskid=taskid,
-                            host=host,
-                            port=port,
-                            database=database,
-                            sql=row['SQL'],
-                            affected_row=row['Affected_rows'],
+                            host=obj.host,
+                            port=obj.port,
+                            database=obj.database,
+                            sql=sql.strip(';'),
                             sql_type=obj.sql_type,
                             envi_id=envi_id,
                             related_id=id
