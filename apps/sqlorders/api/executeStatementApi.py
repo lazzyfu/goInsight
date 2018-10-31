@@ -32,10 +32,10 @@ class CnxStatusCheckThread(threading.Thread):
         self.username = username
         self.cnx = cnx
         self.watch_thread_id = watch_thread_id
+        print('监控id:', self.watch_thread_id)
 
     def run(self):
         # 每秒查询一次状态
-        # 当检测到lock，且锁定超过10s后，回滚该条SQL
         check_cmd = f"select * from information_schema.processlist where ID={self.watch_thread_id}"
 
         while True:
@@ -127,13 +127,13 @@ class ExecuteSql(object):
                 cursor.execute(i)
                 data = cursor.fetchone()
                 if data['Variable_name'] == 'log_bin' and data['Value'] == 'OFF':
-                    rr.append('mysql binlog not enable, please check, ths.\n')
+                    rr.append('mysql binlog not enable')
 
-                if data['Variable_name'] == 'binlog_format' and data['Value'] == 'ROW':
-                    rr.append('mysql binlog format not eq ROW, please check, ths.\n')
+                if data['Variable_name'] == 'binlog_format' and data['Value'] != 'ROW':
+                    rr.append('mysql binlog format not eq row mode')
 
                 if data['Variable_name'] == 'gtid_mode' and data['Value'] == 'OFF':
-                    rr.append('mysql gtid not enable, please check, ths.\n')
+                    rr.append('mysql gtid mode not enable')
         return rr
 
     def _get_position(self, cnx):
@@ -273,8 +273,8 @@ class ExecuteSql(object):
     def _op_dml(self, cnx):
         # 检查mysql相关配置
         # 如果check_result列表长度大于0，说明不支持备份
+        binlog_file = start_pos = end_pos = None
         check_result = self._check_mysql_environment(self._connect())
-        print(check_result)
 
         # 操作DML语句
         # 事务执行前，获取start position和binlog file
@@ -300,6 +300,10 @@ class ExecuteSql(object):
             if affected_rows > 0:
                 # 获取回滚的SQL
                 if len(check_result) == 0:
+                    matchcompile = re.compile('^(UPDATE|DELETE|INSERT)([\s\S]*)', re.I)
+                    match = matchcompile.match(self.sql)
+                    sql_type = match.group(1).upper()
+
                     data = ReadRemoteBinlog(binlog_file=binlog_file,
                                             start_pos=start_pos,
                                             end_pos=end_pos,
@@ -307,12 +311,17 @@ class ExecuteSql(object):
                                             port=self.port,
                                             user=self.user,
                                             password=self.password,
+                                            sql_type=sql_type,
                                             affected_rows=affected_rows)
+
                     # 返回回滚语句的列表
-                    result = {'status': 'success', 'rollbacksql': data.run_by_rows(), 'affected_rows': affected_rows,
+                    # 格式：[{'gtid': gtid, 'rbsql': rbsql}, {'gtid': gtid, 'rbsql': rbsql} ...]
+                    rollbacksql = '\n\n'.join(
+                        ['\n'.join([i['gtid'], '\n\n'.join(i['rbsql'])]) for i in data.run_by_rows()])
+                    result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
                               'runtime': runtime, 'exec_log': exec_log}
                 else:
-                    check_result = '\n'.join(check_result)
+                    check_result = ', '.join(check_result)
                     exec_log = f"状态: 执行成功，备份失败\n" \
                                f"错误信息：{check_result}"
                     result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',

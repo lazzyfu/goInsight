@@ -16,16 +16,20 @@ class ReadRemoteBinlog(object):
     binlog_file：读取的binlog文件
     start_pos：开始读取的position
     end_pos：结束读取的position
+    sql_type：INSERT、UPDATE、DELETE
+    返回格式：
+    [{'gtid': gtid, 'rbsql': rbsql}, {'gtid': gtid, 'rbsql': rbsql} ...]
     """
 
     def __init__(self, binlog_file=None, start_pos=None, end_pos=None,
-                 host=None, port=None, user=None, password=None,
+                 host=None, port=None, user=None, password=None, sql_type=None,
                  affected_rows=None, only_schema=None, only_tables=None):
 
         self.binlog_file = binlog_file
         self.start_pos = start_pos
         self.end_pos = end_pos
         self.affected_rows = affected_rows
+        self.sql_type = sql_type
 
         self.only_schemas = only_schema
         self.only_tables = only_tables
@@ -34,7 +38,9 @@ class ReadRemoteBinlog(object):
         self.mysql_setting = {'host': host,
                               'port': port,
                               'user': user,
-                              'passwd': password}
+                              'passwd': password,
+                              'max_allowed_packet': 32 * 1024 * 1024
+                              }
 
     def _handler_date(self, obj):
         """格式化时间"""
@@ -87,18 +93,21 @@ class ReadRemoteBinlog(object):
     def _format_binlog(self, rows):
         return simplejson.dumps(rows, default=self._handler_date)
 
-    def generate_rollback_sql(self, rows):
+    def _generate_rollback_sql(self, rows):
         rollback_statement = []
         for row in rows:
             format_row = json.loads(self._format_binlog(row))
             type = format_row['type']
             database = format_row['database']
             table = format_row['table']
+            primary_key = format_row.get('primary_key')
             sql = ''
 
             if type == 'INSERT':
-                where_expression = ' AND '.join(map(self._val_join, row['values'].items()))
-                sql = f"DELETE FROM `{database}`.`{table}` WHERE {where_expression} LIMIT 1;"
+                where = '='.join((primary_key, str(row['values'].get(primary_key))))
+                if not primary_key:
+                    where = ' AND '.join(map(self._val_join, row['values'].items()))
+                sql = f"DELETE FROM `{database}`.`{table}` WHERE {where} LIMIT 1;"
 
             elif type == 'DELETE':
                 column_name = ', '.join(map(lambda key: f'`{key}`', row['values'].keys()))
@@ -107,55 +116,88 @@ class ReadRemoteBinlog(object):
 
             elif type == 'UPDATE':
                 before_values = ', '.join(map(self._upd_join, row['before'].items()))
-                after_values = ' AND '.join(map(self._val_join, row['after'].items()))
-                sql = f"UPDATE `{database}`.`{table}` SET {before_values} WHERE {after_values} LIMIT 1;"
+                where = '='.join((primary_key, str(row['after'].get(primary_key))))
+                if not primary_key:
+                    where = ' AND '.join(map(self._val_join, row['after'].items()))
+                sql = f"UPDATE `{database}`.`{table}` SET {before_values} WHERE {where};"
 
             rollback_statement.append(sql)
         return rollback_statement
 
+    def _filter_gtid(self, data):
+        rollbacksql = []
+        dlist = []
+        for i in data:
+            if isinstance(i, str):
+                dlist.append(data.index(i))
+        dlist.append(len(data))
+
+        result = []
+        i = 0
+        while i <= len(dlist) - 1:
+            try:
+                rr = data[dlist[i]:dlist[i + 1]]
+                gtid = rr[0]
+                gtid_len = len(rr) - 1
+                value = rr[1:]
+                result.append({'gtid': gtid, 'gtid_len': gtid_len, 'value': value})
+                i += 1
+            except IndexError as err:
+                break
+        for j in result:
+            if j['gtid_len'] == self.affected_rows:
+                rbsql = self._generate_rollback_sql(j['value'])
+                rollbacksql.append({'gtid': j['gtid'], 'rbsql': rbsql})
+        return rollbacksql
+
     def run_by_rows(self):
-        rows = []
         stream = BinLogStreamReader(connection_settings=self.mysql_setting,
-                                    server_id=100,
+                                    server_id=101213112,
                                     only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, GtidEvent],
+                                    resume_stream=True,
+                                    blocking=False,
                                     log_file=self.binlog_file,
                                     log_pos=self.start_pos,
-                                    only_schemas=self.only_schemas,
-                                    only_tables=self.only_tables,
-                                    resume_stream=True,
-                                    blocking=True)
-
-        for binlogevent in stream:
-            log_pos = binlogevent.packet.log_pos
-
-            if binlogevent.event_type == GTID_LOG_EVENT:
-                # 此处获取每个事务的GTID
-                # 不做处理
-                gtid = binlogevent.gtid
-                pass
-            else:
-                if log_pos > self.end_pos:
+                                    )
+        rows = []
+        try:
+            for binlogevent in stream:
+                log_pos = stream.log_pos
+                if log_pos >= self.end_pos:
                     print('binlog syncer exit...')
+                    stream.close()
                     break
                 else:
-                    # 获取当前事务的GTID的影响行数
-                    affected_rows = len(binlogevent.rows)
-                    # 判断当前事务的GTID的影响行数是否等于传入的影响行数
-                    # 由于pymysql执行无法获取到当前事务的GTID以及pymysqlreplication无法获取到binlog的thread_id
-                    # 所以无法实现精确定位，只能通过该方式实现，可能存在多备份数据的情况
-                    if self.affected_rows == affected_rows:
+                    if binlogevent.event_type == GTID_LOG_EVENT:
+                        # 此处获取每个事务的GTID
+                        # 不做处理
+                        gtid = binlogevent.gtid
+                        rows.append(gtid)
+                    else:
+                        # 判断当前事务的GTID的影响行数是否等于传入的影响行数
+                        # 由于pymysql执行无法获取到当前事务的GTID以及pymysqlreplication无法获取到binlog的thread_id
+                        # 所以无法实现精确定位，只能通过该方式实现，可能存在多备份数据的情况
                         for row in binlogevent.rows:
-                            binlog = {'database': binlogevent.schema, 'table': binlogevent.table}
-                            if isinstance(binlogevent, DeleteRowsEvent):
-                                binlog['values'] = row["values"]
-                                binlog['type'] = 'DELETE'
-                            elif isinstance(binlogevent, UpdateRowsEvent):
-                                binlog["before"] = row["before_values"]
-                                binlog["after"] = row["after_values"]
-                                binlog['type'] = 'UPDATE'
-                            elif isinstance(binlogevent, WriteRowsEvent):
-                                binlog['values'] = row["values"]
-                                binlog['type'] = 'INSERT'
-                            rows.append(binlog)
-                    return self.generate_rollback_sql(rows)
-            stream.close()
+                            binlog = {'database': binlogevent.schema,
+                                      'table': binlogevent.table,
+                                      'primary_key': binlogevent.primary_key}
+                            if self.sql_type == 'DELETE':
+                                if isinstance(binlogevent, DeleteRowsEvent):
+                                    binlog['values'] = row["values"]
+                                    binlog['type'] = 'DELETE'
+                                    rows.append(binlog)
+                            if self.sql_type == 'UPDATE':
+                                if isinstance(binlogevent, UpdateRowsEvent):
+                                    binlog["before"] = row["before_values"]
+                                    binlog["after"] = row["after_values"]
+                                    binlog['type'] = 'UPDATE'
+                                    rows.append(binlog)
+                            if self.sql_type == 'INSERT':
+                                if isinstance(binlogevent, WriteRowsEvent):
+                                    binlog['values'] = row["values"]
+                                    binlog['type'] = 'INSERT'
+                                    rows.append(binlog)
+        except Exception as err:
+            print(err)
+        stream.close()
+        return self._filter_gtid(rows)

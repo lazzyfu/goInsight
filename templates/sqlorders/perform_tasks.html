@@ -13,18 +13,17 @@
 
         .exec-log {
             width: auto;
-            height: 350px;
+            height: 250px;
             padding: 8px;
             overflow: scroll;
             background-color: white;
         }
 
-        textarea {
-            width: 850px;
+        .CodeMirror {
             border: 1px solid #eee;
-            height: 300px;
-            color: #999;
+            height: 450px;
         }
+
     </style>
 {% endblock %}
 
@@ -88,7 +87,7 @@
                         <div class="box-body box-comments">
                             <div class="box-comment">
                                 <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
-                                <textarea title="" style="resize: none" readonly="readonly" id="select_sql"></textarea>
+                                <textarea title="" style="resize: none" readonly="readonly" id="rbsql"></textarea>
                             </div>
                             <div class="box-comment">
                                 <h5><i class="fa fa-info-circle"> 执行日志</i></h5>
@@ -259,9 +258,19 @@
             setInterval(refreshTable, 3000);
         });
 
+
+        let rbsqlTextarea = document.getElementById('rbsql');
+        let rbsqlCodeMirror = CodeMirror.fromTextArea(rbsqlTextarea, {
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            readOnly: true,
+            theme: 'material'
+        });
+
+
         <!-- 获取回滚语句和执行结果日志 -->
         function getPerformTasksResult(id) {
-            let select_sql = $('#select_sql');
+            let rbsql = $('#rbsql');
             let exec_log = $('#execLog');
             $.ajax({
                 url: "{% url 'p_get_perform_tasks_result' %}",
@@ -271,7 +280,7 @@
                 timeout: 10000,
                 cache: false,
                 success: function (result) {
-                    select_sql.empty();
+                    rbsql.empty();
                     exec_log.empty();
                     if (result.status === 0) {
                         let log_html = result.data.exec_log.replace(/\n/g, '\.' + '<br>');
@@ -279,7 +288,8 @@
                         if (result.data.rollback_log) {
                             rollback_sql = result.data.rollback_log
                         }
-                        select_sql.append(rollback_sql);
+                        {#select_sql.append(rollback_sql);#}
+                        rbsqlCodeMirror.setValue(rollback_sql);
                         exec_log.append(log_html);
                         $('#rollbackupModal').modal('show');
                     } else if (result.status === 1) {

@@ -46,7 +46,7 @@ function CreateWebSocket() {
 function renderSqlProcesslistResult(data) {
     let html = "<p class=\"text-danger\">该SQL的SHOW PROCESSLIST实时输出：</p>";
     for (let key in data) {
-        html += "<p><b>" + key + "</b>: " + data[key] + "</p>"
+        html += "<p><b class='text-blue'>" + key + "</b>: " + data[key] + "</p>"
     }
     return html
 }

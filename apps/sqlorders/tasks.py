@@ -41,7 +41,7 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
         if exec_status == '2':
             data.exec_status = '1'
             data.affected_row = int(exec_result.get('affected_rows'))
-            data.rollback_sql = '\n'.join(exec_result.get('rollbacksql'))
+            data.rollback_sql = exec_result.get('rollbacksql')
             data.runtime = exec_result.get('runtime')
             data.exec_log = exec_result.get('exec_log')
             data.save()
