@@ -1,28 +1,42 @@
 <!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
 <html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>数据库审核系统 | Dashboard</title>
-    <link rel="icon" href="/media/img/favicon.ico">
+    <title>数据库审核系统</title>
     {% load staticfiles %}
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.7 -->
+    <link rel="icon" href="/media/img/favicon.ico">
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/font-awesome/css/font-awesome.min.css' %}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/Ionicons/css/ionicons.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/AdminLTE.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/skins/_all-skins.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/AdminLTE.min.css' %}">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+          page. However, you can choose any other skin. Make sure you
+          apply the skin class to the body tag so the changes take effect. -->
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/skins/skin-blue.min.css' %}">
     <!-- animate -->
     <link rel="stylesheet" href="{% static 'animate.css' %}">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins
-         folder instead of downloading all of them to reduce the load. -->
-    <!-- iCheck for checkboxes and radio inputs -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/iCheck/all.css' %}">
+    <!-- pnotify -->
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/pnotify/pnotify.custom.min.css' %}">
+    <!-- bootstrap-select -->
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
+    <!-- bootstrap-table -->
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap3-editable/css/bootstrap-editable.css' %}">
     <!-- CodeMirror -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/lib/codemirror.css' %}">
     <link rel="stylesheet"
@@ -31,41 +45,22 @@
           href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/fold/foldgutter.css' %}">
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/dialog/dialog.css' %}">
-    <!--CodeMirror theme -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/material.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/monokai.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/solarized.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/seti.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/idea.css' %}">
-    <!-- bootstrap-select -->
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
-    <!-- pnotify -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/pnotify/pnotify.custom.min.css' %}">
-    <!-- bootstrap datepicker -->
+          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/material.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}">
-    <!-- bootstrap-table -->
+          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/dracula.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap3-editable/css/bootstrap-editable.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/jquery-treegrid/css/jquery.treegrid.css' %}">
-    <!-- jquery loading -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.css' %}">
-    <!-- Tippy -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/tippyjs/dist/themes/light.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/tippyjs/dist/themes/translucent.css' %}">
-    <!-- xterm -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/xterm/css/xterm_3.5.1.css' %}">
+          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/monokai.css' %}">
     <!-- jstree -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.5/bower_components/jstree/dist/themes/default/style.min.css' %}">
     <!-- highlight -->
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.5/bower_components/highlight/github.min.css' %}">
-
+    <!-- jquery loading -->
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.css' %}">
+    <!-- xterm -->
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/xterm/css/xterm_3.5.1.css' %}">
 
     <style>
         .table > tbody > tr > td {
@@ -84,54 +79,44 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
 
+    <!-- Google Font -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
-<body class="hold-transition skin-green sidebar-mini">
+<body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+    <!-- Main Header -->
     <header class="main-header">
         <!-- Logo -->
         <a href="#" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><b>A</b>LT</span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><b>数据库审核系统</b></span>
+            <span class="logo-lg">数据库审核系统</span>
         </a>
-        <!-- Header Navbar: style can be found in header.less -->
-        <nav class="navbar navbar-static-top">
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
             <!-- Sidebar toggle button-->
-            <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                <span class="sr-only">Toggle navigation</span>
-            </a>
+            <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
-                    <!-- Notifications: style can be found in dropdown.less -->
-                    <li class="dropdown notifications-menu">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-bell-o"></i>
-                            <span class="label label-warning" id="sys_msg_count"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li class="header" id="sys_msg_unread_count"></li>
-                            <li>
-                                <!-- inner menu: contains the actual data -->
-                                <ul class="menu" id="li_msg_append">
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- User Account: style can be found in dropdown.less -->
+                    <!-- User Account Menu -->
                     <li class="dropdown user user-menu">
+                        <!-- Menu Toggle Button -->
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <!-- The user image in the navbar-->
                             <img src="/media/{{ request.user.avatar_file }}" class="user-image" alt="User Image">
+                            <!-- hidden-xs hides the username on small devices so only the image appears. -->
                             <span class="hidden-xs">{{ request.user.displayname }}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <!-- User image -->
-                            <li class="user-header">
+                            <!-- The user image in the menu -->
+                            <li class="user-header" style="background-color: #e1e6e4">
                                 <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="User Image">
                                 <p>
                                     {{ request.user.displayname }}
@@ -141,10 +126,10 @@
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="{% url 'p_user_profile' %}" class="btn btn-default btn-flat">详情</a>
+                                    <a href="{% url 'p_user_profile' %}" class="btn btn-default btn-flat">个人信息</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="{% url 'p_logout' %}" class="btn btn-default btn-flat">登出</a>
+                                    <a href="{% url 'p_logout' %}" class="btn btn-default btn-flat">退出</a>
                                 </div>
                             </li>
                         </ul>
@@ -155,90 +140,93 @@
     </header>
     <!-- Left side column. contains the logo and sidebar -->
     <aside class="main-sidebar">
+
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-            <!-- Sidebar user panel -->
+
+            <!-- Sidebar user panel (optional) -->
             <div class="user-panel">
                 <div class="pull-left image">
                     <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>{{ request.user.displayname }}</p>
-                    <a href="#">{{ request.user.user_role }}</a>
+                    <p>{{ request.user.username }}</p>
+                    <a href="#">{% if request.user.user_role %}{{ request.user.user_role }}{% endif %}</a>
                 </div>
             </div>
-            <!-- sidebar menu: : style can be found in sidebar.less -->
-            <ul class="sidebar-menu" data-widget="tree">
-                <li class="header">MAIN NAVIGATION</li>
 
+            <!-- Sidebar Menu -->
+            <ul class="sidebar-menu" data-widget="tree">
+                <li class="header">导航栏</li>
+                <!-- Optionally, you can add icons to the links -->
                 <li class="treeview">
-                    <a href="#">
+                    <a>
                         <i class="fa fa-history"></i>
                         <span>历史工单</span>
                         <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_ol_records' %}"><i class="fa fa-circle-o"></i>生产环境</a>
-                        <li><a href="{% url 'p_staging_records' %}"><i class="fa fa-circle-o"></i>预发布环境</a>
-                        <li><a href="{% url 'p_test_records' %}"><i class="fa fa-circle-o"></i>测试环境</a>
-                        <li><a href="{% url 'p_perform_records' %}"><i class="fa fa-circle-o"></i>执行任务记录</a></li>
+                        <li><a href='{% url 'p_render_my_orders' %}'><i
+                                class="fa fa-circle-o"></i>我的工单</a>
+                            {% for i in order_environment %}
+                                <li><a href='/sqlorders/sql_orders_list/{{ i.envi_id }}/'><i
+                                    class="fa fa-circle-o"></i>审核_{{ i.envi_name }}</a>
+                            {% endfor %}
                     </ul>
                 </li>
 
                 <li class="treeview">
-                    <a href="#">
+                    <a>
                         <i class="fa fa-edit"></i>
-                        <span>工单变更</span>
+                        <span>新建工单</span>
                         <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_tasks' %}"><i class="fa fa-circle-o"></i>上线版本号</a></li>
-                        <li><a href="{% url 'p_ol_work_order_audit' %}"><i class="fa fa-circle-o"></i>DML变更工单</a>
+                        <li><a href="{% url 'p_render_get_sql_tasks_version' %}"><i class="fa fa-circle-o"></i>上线版本号</a>
                         </li>
-                        <li><a href="{% url 'p_test_work_order_audit' %}"><i class="fa fa-circle-o"></i>DDL上线工单</a>
+                        <li><a href="{% url 'p_render_sql_dml_orders' %}"><i
+                                class="fa fa-circle-o"></i>DML工单</a>
+                        </li>
+                        <li><a href="{% url 'p_render_sql_ddl_orders' %}"><i
+                                class="fa fa-circle-o"></i>DDL工单</a>
                         </li>
                     </ul>
                 </li>
 
                 <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-search-minus"></i>
+                    <a>
+                        <i class="fa fa-history"></i>
                         <span>数据查询</span>
                         <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
                     </a>
                     <ul class="treeview-menu">
-                        {% if 'can_online_mysql_query' in request.session.perm_list %}
-                            <li><a href="{% url 'p_r_online_query' %}"><i class="fa fa-circle-o"></i>生产MySQL</a></li>
-                        {% endif %}
-                        {% if 'can_offline_mysql_query' in request.session.perm_list %}
-                            <li><a href="{% url 'p_r_offline_query' %}"><i class="fa fa-circle-o"></i>非生产MySQL</a>
-                            </li>
-                        {% endif %}
-                        <li><a href="{% url 'p_web_ssh' %}"><i class="fa fa-circle-o"></i>Mongo和Redis</a></li>
+                        {% for i in order_environment %}
+                            <li><a href='/sqlquery/sql_query/{{ i.envi_id }}/'><i
+                                class="fa fa-circle-o"></i>查询_{{ i.envi_name }}</a>
+                        {% endfor %}
                     </ul>
                 </li>
 
-                {% if 'can_admin' in request.session.perm_list %}
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-cog"></i>
-                            <span>系统管理</span>
-                            <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="{% url 'p_config' %}"><i class="fa fa-circle-o"></i>系统配置</a></li>
-                        </ul>
-                    </li>
-                {% endif %}
+                <li class="treeview">
+                    <a>
+                        <i class="fa fa-history"></i>
+                        <span>Xterm</span>
+                        <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'p_web_ssh' %}"><i class="fa fa-circle-o"></i>webshell</a></li>
+                    </ul>
+                </li>
             </ul>
+            <!-- /.sidebar-menu -->
         </section>
         <!-- /.sidebar -->
     </aside>
@@ -246,55 +234,40 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Main content -->
-        <section class="content">
+        <section class="content container-fluid">
             {% block right_content %}
             {% endblock %}
         </section>
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
     <footer class="main-footer">
+        <!-- To the right -->
         <div class="pull-right hidden-xs">
-            <b>MySQL Audit Version</b> 2.4.0
+            Anything you want
         </div>
-        <strong>Copyright &copy; 2014-2018 <a href="#">Almsaeed Studio</a>.</strong> All rights
-        reserved.
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2016 <a href="#">Company</a>.</strong> All rights reserved.
     </footer>
 
-    <!-- 系统消息模态框 -->
-    <div class="modal fade" id="sys_msg_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="msg_title">
-                    </h4>
-                </div>
-
-                <div class="modal-body">
-                    <div id="msg_content"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Add the sidebar's background. This div must be placed
+    immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
 
+<!-- REQUIRED JS SCRIPTS -->
+
 <!-- jQuery 3 -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js' %}"></script>
-<!-- jQuery UI 1.11.4 -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-ui/jquery-ui.min.js' %}"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
     $.widget.bridge('uibutton', $.ui.button);
 
     /** add active class and stay opened when selected */
-    var url = window.location;
+    let url = window.location;
 
     // for sidebar menu entirely but not cover treeview
     $('ul.sidebar-menu a').filter(function () {
@@ -308,14 +281,16 @@
 </script>
 <!-- Bootstrap 3.3.7 -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'AdminLTE-2.4.5/dist/js/adminlte.min.js' %}"></script>
 <!-- Slimscroll -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
 <!-- FastClick -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/fastclick/lib/fastclick.js' %}"></script>
-<!-- AdminLTE App -->
-<script src="{% static 'AdminLTE-2.4.5/dist/js/adminlte.js' %}"></script>
-<!-- iCheck 1.0.1 -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/iCheck/icheck.min.js' %}"></script>
+<!-- jquery-form -->
+<script src="{% static 'jquery.form.min.js' %}"></script>
+<!-- jquery-cookie -->
+<script src="{% static 'jquery.cookie.js' %}"></script>
 <!-- CodeMirror -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/lib/codemirror.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/mode/clike/clike.js' %}"></script>
@@ -336,16 +311,24 @@
 <script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/fold/foldcode.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/fold/brace-fold.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/keymap/sublime.js' %}"></script>
-<!-- bootstrap-select -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
-<!-- jquery-form -->
-<script src="{% static 'jquery.form.min.js' %}"></script>
-<!-- jquery-cookie -->
-<script src="{% static 'jquery.cookie.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/scroll/annotatescrollbar.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/search/matchesonscrollbar.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/search/match-highlighter.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/mode/overlay.js' %}"></script>
 <!-- pnotify -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/pnotify/pnotify.custom.min.js' %}"></script>
-<!-- bootstrap datepicker -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+<!-- bootstrap-select -->
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
+<!-- bootstrap-table -->
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap3-editable/js/bootstrap-editable.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/export/tableExport.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js' %}"></script>
 <!-- moment -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/moment/moment.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.5/bower_components/moment/locale/zh-cn.js' %}"></script>
@@ -353,108 +336,17 @@
 <script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-validation/validator.min.js' %}"></script>
 <!-- layer -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/layer/layui.js' %}"></script>
-<!-- Chartjs -->
-<script src="{% static 'Chart.min.js' %}"></script>
 <!-- jstree -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/jstree/dist/jstree.min.js' %}"></script>
-<!-- bootstrap-table -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap3-editable/js/bootstrap-editable.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/export/bootstrap-table-export.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/export/tableExport.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-treegrid/js/jquery.treegrid.min.js' %}"></script>
-<!-- jquery loading -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.js' %}"></script>
-<!-- Tippy -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/tippyjs/dist/tippy.all.js' %}"></script>
-<!-- xterm -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/xterm/js/xterm_3.5.1.js' %}"></script>
 <!-- highlight -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/highlight/highlight.min.js' %}"></script>
 <script src="{% static 'AdminLTE-2.4.5/bower_components/highlight/sql.min.js' %}"></script>
-<!-- general js file -->
+<!-- jquery loading -->
+<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.js' %}"></script>
+<!-- xterm -->
+<script src="{% static 'AdminLTE-2.4.5/bower_components/xterm/js/xterm_3.5.1.js' %}"></script>
+<!-- public js file -->
 <script src="{% static 'public.js' %}"></script>
-
-<script>
-    /**
-     * 获取系统消息
-     */
-    function get_sys_msg() {
-        $.ajax({
-            url: '{% url "p_system_msg" %}',
-            type: 'GET',
-            dataType: 'json',
-            timeout: 5000,
-            cache: false,
-            success: function (result) {
-                $("#li_msg_append").empty();
-                $('#sys_msg_count').empty();
-                $('#sys_msg_unread_count').empty();
-                var html = [];
-                var is_unread_count = 0;
-                $.each(result, function (index, row) {
-                    var title = row.title;
-                    var id = row.id;
-                    var is_read = row.is_read;
-                    if (is_read === 0) {
-                        is_unread_count += 1;
-                        html.push("<li>\n" +
-                            "<a href=\"#\" onclick=\"show_sys_msg_modal(" + id + ")\">\n" +
-                            "<i class=\"fa fa-commenting-o text-aqua\"></i> " + title + "\n" +
-                            "</a>\n" +
-                            "</li>")
-                    } else {
-                        html.push("<li>\n" +
-                            "<a href=\"#\" onclick=\"show_sys_msg_modal(" + id + ")\">\n" +
-                            "<i class=\"fa fa-commenting-o text-muted\"></i> " + title + "\n" +
-                            "</a>\n" +
-                            "</li>")
-                    }
-                });
-                $('#li_msg_append').append(html.slice(0, 10).join(''));
-                $('#sys_msg_unread_count').append('你有 ' + is_unread_count + ' 条未读的消息');
-                if (is_unread_count > 0) {
-                    $('#sys_msg_count').append(is_unread_count)
-                }
-            }
-        })
-    }
-
-    function interval(func, wait) {
-        var interv = function () {
-            func.call(null);
-            setTimeout(interv, wait);
-        };
-
-        setTimeout(interv, wait);
-    }
-
-    interval(get_sys_msg, 5000);
-
-    function show_sys_msg_modal(id) {
-        $('#msg_title').empty();
-        $('#msg_content').empty();
-        var csrftoken = $.cookie('csrftoken');
-        $.ajax({
-            url: '{% url "p_system_msg" %}',
-            type: 'POST',
-            dataType: 'json',
-            data: {'id': id, 'csrfmiddlewaretoken': csrftoken},
-            timeout: 5000,
-            cache: false,
-            success: function (result) {
-                var title = result[0].title;
-                var content = result[0].content;
-                $('#msg_title').append(title);
-                $('#msg_content').append(content)
-            }
-        });
-        $('#sys_msg_modal').modal('show');
-    }
-</script>
 
 <!-- 定义 javascript block -->
 {% block link_javascripts %}

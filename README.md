@@ -1,91 +1,89 @@
-AuditSQL介绍
-===============
+# AuditSQL
 
-**AuditSQL(命名确实是个问题，^_^)是一个web版的MySQL数据库审核平台，作为一个DBA，厌烦了SQL上线过程的语法审核、各个环境手动支持，反馈等重复且不讨好的工作，
-于是开发此款工具，旨在降低DBA的运维成本，解放大家的生产力。**
+AuditSQL是基于Inception开发的web版本的MySQL数据库审核平台，旨在降低DBA的运维成本，解放大家的生产力。
 
-**欢迎大家的使用，如果觉得不错，麻烦伸出您高贵的小手，给颗star，同时使用中遇到的问题，请联系我，谢谢（^_^）**
+请大家放心使用，若是遇到使用上的问题或bug，请提出Issues，我会及时关注并给出解决办法。若是觉得ok，请给颗**Star**，谢谢。
+
+本系统经过生产业务验证，稳定，可长期使用，支持rds，谢谢。
+
+## 开发组件
+
+* Python 3.6+
+* Django 2.0+
+* Celery 4.2.0+
+* Django-channels
+* AdminLTE
+* Paramiko
+
+## 功能
+- 支持自定义级联环境（比如：测试环境--> 预发布环境 -->生产环境）
+- 支持DDL、DML的SQL语法审核、提示、美化、高亮、注释识别、补全等功能
+- 支持DDL、DML上线工单，并提供上线版本号支持
+- 支持DDL、DML工单一键自动执行（可选单条执行或全部执行）
+- 支持gh-ost、pt-osc、原生alter改表
+- 支持工单流审核操作，提供：工单提交、工单执行、工单审核等权限
+- 支持钩子功能，DDL只需提交一次，逐级环境勾取即可
+- 支持SQL查询，查询库授权、查询日志审核等功能
+- 提供部分工单的回滚功能
+- 提供工单执行时，实时进度显示和执行日志预览功能
+- 支持多种推送方式，邮件、钉钉（后台支持一键开关）
+- 支持LDAP或本地手动创建用户授权登陆功能，支持修改头像，密码等功能
+- 提供xterm集成，支持绑定redis、mongodb等查询接口
+- 支持自动检测已配置数据库实例的死锁检测功能，并提供推送
+
 
 ## 文档地址
 https://github.com/lazzyfu/AuditSQL/wiki
 
-## 开发组件
 
-- Python 3.6+
-- Django 2.0+
-- celery 4.2.0
-- django-channels
-- AdminLTE
+## 页面展示(简单展示几处)
 
-## 核心功能简介（更多功能，请使用时体验）
-- 历史工单
-  - 生产环境
-  - 预发布环境
-  - 测试环境
-  - 执行任务记录
+**登陆页面：**
 
-- SQL审核
-  - DML和DDL语法审核(Inception支持)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/login.png)
 
-- 工单
-  - DML变更工单
-  - DDL上线工单
-  - 上线版本号
+**个人详情页面：**
 
-- 数据查询
-  - 生产mysql
-  - 非生产mysql
-  - mongo和redis(xterm)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/profile.png)
 
-- 功能
-   - SQL审核的流程化，规范化
-   - SQL美化功能
-   - SQL检测功能
-   - 语法高亮功能
-   - 注释识别功能
-   - SQL语法自动补全(包括表名和列名)
+**上线版本页面：**
 
-- 执行任务功能
-   - 自动分片，支持一键串行全部执行或有选择的执行
-   - 提供回滚，inception执行日志预览功能
-   - 提供DDL语句的OSC进度实时输出
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/version.png)
 
-- 推送
-   - 实时钉钉推送，友好推送（用户更新手机号，直接@用户）
-   - 执行任务执行进度的实时显示（websocket）
+**DDL工单页面：**
 
-- 其他
-   - 支持LDAP认证登陆
-   - 支持修改头像
-   - 支持用户自己修改密码（非ldap方式认证）
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl.png)
 
-## 移除的功能
-1. 考虑到钉钉的便捷性和及时性，仅支持钉钉推送，移除了邮件推送
+**测试环境页面：**
 
-## 页面展示(随便展示几处)
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/test_env.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/test.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/staging_env.png)
+**执行任务页面：**
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dml_gongdan.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl_gongdan.png)
+**使用pt-osc改表：**
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/task.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform_ddl.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/perform_task.png)
+**使用gh-ost改表：**
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/pro_query.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ddl_ghost.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/offline_query.png)
+**查询页面：**
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/mongo_query.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/query.png)
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/sys_config.png)
+**查看表结构和索引：**
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/dingding.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/table.png)
 
-死锁钉钉通知：
+**xterm页面：**
+
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/webshell.png)
+
+
+## 死锁钉钉通知：
 ```text
 【警告 ◕﹏◕，探测到新的死锁记录，探测时间：2018-08-29 05:13:31】
 

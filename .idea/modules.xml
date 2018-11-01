@@ -3,10 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/AuditSQL.iml" filepath="$PROJECT_DIR$/.idea/AuditSQL.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../SQLAuditOS/.idea/SQLAuditOS.iml" filepath="$PROJECT_DIR$/../SQLAuditOS/.idea/SQLAuditOS.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../auditdb/.idea/auditdb.iml" filepath="$PROJECT_DIR$/../auditdb/.idea/auditdb.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../mschecksum/.idea/mschecksum.iml" filepath="$PROJECT_DIR$/../mschecksum/.idea/mschecksum.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../xb_backup/.idea/xb_backup.iml" filepath="$PROJECT_DIR$/../xb_backup/.idea/xb_backup.iml" />
     </modules>
   </component>
 </project>

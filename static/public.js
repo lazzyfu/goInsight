@@ -6,7 +6,7 @@
  * 刷新当前页面
  */
 function refresh_page() {
-    setTimeout(window.location.reload(), 1000)
+    setTimeout("window.location.reload()", 3000)
 }
 
 /**
@@ -22,7 +22,7 @@ $(document).ready(function () {
  */
 
 function displayPNotify(status, msg) {
-    var opts = {
+    let opts = {
         title: "Over Here",
         text: msg,
         delay: 2000,
@@ -60,31 +60,44 @@ function displayPNotify(status, msg) {
 
 
 /**
- * 生成随机字符串
+ * 获取指定主机schema的tables信息
  */
-function random_str(len) {
-    len = len || 1;
-    var $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*';
-    var maxPos = $chars.length;
-    var pwd = '';
-    for (var i = 0; i < len; i++) {
-        pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+function get_table_info(schema) {
+    // 格式：host,port,schema
+    // 即：10.10.10.1,3306,tbl_name
+    if (!schema) {
+        schema = $("#s_schema").val();
     }
-    return pwd
+    let csrftoken = $.cookie('csrftoken');
+    $.ajax({
+        url: '/sqlorders/get_tables/',
+        type: 'POST',
+        dataType: 'json',
+        data: {'schema': schema, 'csrfmiddlewaretoken': csrftoken},
+        timeout: 5000,
+        cache: true,
+        success: function (result) {
+            if (result.status === 0) {
+                myCodeMirror.setOption("hintOptions", {tables: result.data.tables});
+            }
+            else {
+                displayPNotify(result.status, result.msg);
+            }
+        }
+    });
 }
-
 
 /**
  * 美化SQL
  */
 function beautifySQL() {
-    var sql_content = myCodeMirror.getValue();
-    var csrftoken = $.cookie('csrftoken');
+    let contents = myCodeMirror.getValue();
+    let csrftoken = $.cookie('csrftoken');
     $.ajax({
-        url: '/projects/beautify_sql/',
+        url: '/sqlorders/beautify_sql/',
         type: 'POST',
         dataType: 'json',
-        data: {'sql_content': sql_content, 'csrfmiddlewaretoken': csrftoken},
+        data: {'contents': contents, 'csrfmiddlewaretoken': csrftoken},
         timeout: 5000,
         cache: false,
         success: function (result) {
@@ -100,17 +113,15 @@ function beautifySQL() {
     })
 }
 
-
 /**
  * 执行inception语法检查
  */
 
 function incepSyntaxCheckForm() {
-    var host = $('#s_host').val();
-    var database = $('#s_schema').val();
-    var operate_type = $('#s_operate').val();
-    var contents = myCodeMirror.getValue();
-    var csrftoken = $.cookie('csrftoken');
+    let host = $('#s_schema').val();
+    let sql_type = $('#s_sql_type').val();
+    let contents = myCodeMirror.getValue();
+    let csrftoken = $.cookie('csrftoken');
 
     // 判断输入的SQL内容是否存在
     if (!contents) {
@@ -119,14 +130,13 @@ function incepSyntaxCheckForm() {
     }
 
     $.ajax({
-        url: '/projects/syntax_check/',
+        url: '/sqlorders/syntax_check/',
         type: 'POST',
         dataType: 'json',
         data: {
             'contents': contents,
-            'database': database,
             'host': host,
-            'operate_type': operate_type,
+            'sql_type': sql_type,
             'csrfmiddlewaretoken': csrftoken
         },
         timeout: 5000,
@@ -137,13 +147,13 @@ function incepSyntaxCheckForm() {
             }
             else {
                 $('#td_append').empty();
-                var html = '';
+                let html = '';
                 document.getElementById('typediv1').style.visibility = "visible";
                 $.each(result.data, function (index, content) {
-                    var SQL = content.SQL;
-                    var ID = content.ID;
-                    var stage = content.stage;
-                    var errlevel = '';
+                    let SQL = content.SQL;
+                    let ID = content.ID;
+                    let stage = content.stage;
+                    let errlevel = '';
                     if (content.errlevel === 0) {
                         errlevel = '成功';
                     }
@@ -153,10 +163,10 @@ function incepSyntaxCheckForm() {
                     else if (content.errlevel === 2) {
                         errlevel = '错误';
                     }
-                    var stagestatus = content.stagestatus;
-                    var errormessage = content.errormessage;
-                    var Affected_rows = content.Affected_rows;
-                    var execute_time = content.execute_time;
+                    let stagestatus = content.stagestatus;
+                    let errormessage = content.errormessage;
+                    let Affected_rows = content.Affected_rows;
+                    let execute_time = content.execute_time;
                     html += "<tr>" +
                         "<td>" + ID + "</td>" +
                         "<td>" + stage + "</td>" +
@@ -174,18 +184,19 @@ function incepSyntaxCheckForm() {
     })
 }
 
+
 /**
  * 将审核后的工单转换成执行任务
  */
-function general_perform_tasks(id, envi_desc) {
-    var csrftoken = $.cookie('csrftoken');
+function general_perform_tasks(id, envi_id) {
+    let csrftoken = $.cookie('csrftoken');
     $.ajax({
         type: 'post',
-        url: "/projects/ol/generate_perform_tasks/",
+        url: "/sqlorders/generate_perform_tasks/",
         dataType: 'json',
         data: {
             'id': id,
-            'envi_desc': envi_desc,
+            'envi_id': envi_id,
             'csrfmiddlewaretoken': csrftoken
         },
         success: function (result) {
@@ -207,11 +218,11 @@ function general_perform_tasks(id, envi_desc) {
 /**
  * 工单操作，审批、反馈、关闭
  */
-function work_order_operate_form(id, url, btn_left, btn_right) {
+function sql_orders_audit(id, url, btn_left, btn_right) {
     layui.use('layedit', function () {
         layui.use('layer', function () {
-            var layer = layui.layer;
-            var csrftoken = $.cookie('csrftoken');
+            let layer = layui.layer;
+            let csrftoken = $.cookie('csrftoken');
 
             function ajaxCommit(addition_info, status) {
                 $.ajax({
@@ -244,15 +255,15 @@ function work_order_operate_form(id, url, btn_left, btn_right) {
                 btnAlign: 'c',
 
                 yes: function () {
-                    var addition_info = $('#addition_info').val();
-                    var status = btn_left;
+                    let addition_info = $('#addition_info').val();
+                    let status = btn_left;
                     layer.close(layer.index);
                     ajaxCommit(addition_info, status)
                 },
 
                 btn2: function () {
-                    var addition_info = $('#addition_info').val();
-                    var status = btn_right;
+                    let addition_info = $('#addition_info').val();
+                    let status = btn_right;
                     ajaxCommit(addition_info, status)
                 },
                 // 右上角关闭回调
@@ -280,20 +291,25 @@ function hideLoadingScreen(tag) {
 /**
  * 渲染任务表格
  */
-var ding_tasks = '';
-var modal_tasks_show_selector = $('#modal_tasks_show');
+let ding_tasks = '';
+let modal_tasks_show_selector = $('#modal_tasks_show');
 
 function deploy_tasks_table(tasks) {
     modal_tasks_show_selector.modal('show');
-    var $tasks_table = $('#tasks-table');
+    let $tasks_table = $('#tasks-table');
     // 此处必须destroy table，否则会加载旧数据
     $tasks_table.bootstrapTable('destroy', {silent: true});
-    $(function () {
+
+    $.ajax({
+        url: '/sqlorders/get_version_orders_list',
+        type: 'GET',
+        dataType: 'json',
+        data: {'tasks': tasks},
+        timeout: 5000,
+        cache: false
+    }).done(function (d) {
         $tasks_table.bootstrapTable({
-            method: 'get',
-            dataType: 'json',
-            contentType: "application/x-www-form-urlencoded",
-            url: '/projects/ol/deploy_tasks/',
+            classes: 'table table-hover table-no-bordered',
             cache: false,
             showColumns: true,
             pagination: true,
@@ -304,71 +320,17 @@ function deploy_tasks_table(tasks) {
             pageSize: 20,
             locale: 'zh-CN',
             pageList: [10, 20],
-            uniqueId: "id",
-            classes: 'table table-hover table-no-bordered',
-            rowStyle: render_row_style,
-            queryParams: function (params) {
-                ding_tasks = tasks;
-                return {
-                    tasks: tasks
-                }
-            },
-
-            columns: [
-                {
-                    field: 'tasks',
-                    title: '任务'
-                },
-                {
-                    field: 'title',
-                    title: '标题',
-                    formatter: function (value, row) {
-                        return '<a target=\'_blank\' href=\'/projects/ol/ol_records/work_order_details/' + row.id + "'>" + value + "</a>"
-                    }
-                },
-                {
-                    field: 'proposer',
-                    title: '申请人'
-                },
-                {
-                    field: 'test',
-                    title: '测试环境',
-                    formatter: render_finish_status
-                },
-                {
-                    field: 'staging',
-                    title: 'Staging环境',
-                    formatter: render_finish_status
-                },
-                {
-                    field: 'product',
-                    title: '生产环境',
-                    formatter: render_finish_status
-                }
-            ]
-        });
+            columns: d.columns,
+            data: d.data
+        })
     });
-
-    $('#s_tasks').empty();
-    var csrftoken = $.cookie('csrftoken');
-    $.ajax({
-        url: '/projects/ol/deploy_tasks/',
-        type: 'POST',
-        dataType: 'json',
-        data: {'tasks': tasks, 'csrfmiddlewaretoken': csrftoken},
-        timeout: 5000,
-        cache: false,
-        success: function (result) {
-            $('#s_tasks').append(result.num)
-        }
-    })
 }
 
 function render_finish_status(value) {
-    var status = parseInt(value);
-    var finish_status = [4, 6];
-    var unfinish_status = [0, 1, 2, 3, 5];
-    var uncommit_status = [-1];
+    let status = parseInt(value);
+    let finish_status = [4, 6];
+    let unfinish_status = [0, 1, 2, 3, 5];
+    let uncommit_status = [-1];
     if (finish_status.indexOf(status) >= 0) {
         return "<i class='fa fa-check' style='color:green'></i>"
     } else if (unfinish_status.indexOf(status) >= 0) {
@@ -388,157 +350,3 @@ function render_finish_status(value) {
     }
 }
 
-/**
- * 渲染行的样式
- * 已完成的自动标记为：绿色(success)
- * 关闭的自动标记为：红色(danger)
- */
-function render_row_style(row, index) {
-    var finish_status = [4, 6];
-    var test = finish_status.indexOf(parseInt(row.test));
-    var staging = finish_status.indexOf(parseInt(row.staging));
-    var product = finish_status.indexOf(parseInt(row.product));
-    if (test >= 0 && staging >= 0 && product >= 0) {
-        return {classes: 'success'}
-    } else if (parseInt(row.test) === 5 || parseInt(row.staging) === 5 || parseInt(row.product) === 5) {
-        return {classes: 'danger'}
-    }
-    return {};
-}
-
-/**
- * 通知未完成工单的开发
- */
-function dingNotice() {
-    var csrftoken = $.cookie('csrftoken');
-    $.ajax({
-        url: '/projects/ol/ding_notice/',
-        type: 'POST',
-        dataType: 'json',
-        data: {'tasks': ding_tasks, 'csrfmiddlewaretoken': csrftoken},
-        timeout: 5000,
-        cache: false,
-        success: function (result) {
-            displayPNotify(result.status, result.msg)
-        }
-    })
-}
-
-/**
- * 获取指定主机表的元数据信息，tab补全使用
- */
-function get_table_meta_info(tab_schema) {
-    var csrftoken = $.cookie('csrftoken');
-    $.ajax({
-        url: '/projects/get_table_meta_info/',
-        type: 'POST',
-        dataType: 'json',
-        data: {'schema': tab_schema, 'csrfmiddlewaretoken': csrftoken},
-        timeout: 30000,
-        cache: true,
-        success: function (result) {
-            if (result.status === 0) {
-                myCodeMirror.setOption("hintOptions", {tables: result.data.tables});
-            }
-            else {
-                displayPNotify(result.status, result.msg);
-            }
-        }
-    });
-}
-
-/**
- * 执行MySQL查询语句
- */
-$('#SqlQueryForm').on('submit', function (e) {
-    // 清空输出的结果
-    $('#li_append').empty();
-    $('#table_append').empty();
-
-    // 获取选中的内容，否则为全部内容
-    var contents = '';
-    if (myCodeMirror.somethingSelected()) {
-        contents = myCodeMirror.getSelection()
-    } else {
-        contents = myCodeMirror.getValue();
-    }
-    // 判断输入的内容是否为空
-    if (contents.length < 1) {
-        displayPNotify(2, '内容不能为空');
-        return false;
-    }
-
-    if (!query_schema) {
-        displayPNotify(2, '请点击选中左侧库或表，在执行查询');
-        return false;
-    }
-    $(this).ajaxSubmit({
-        data: {'contents': contents, 'schema': query_schema},
-        dataType: 'json',
-        beforeSubmit: showLoadingScreen($('body'), '数据查询中，请稍后...'),
-        success: function (result) {
-            hideLoadingScreen($('body'));
-            if (result.status === 0) {
-                var data = result.data;
-                document.getElementById('typediv1').style.visibility = "visible";
-
-                var li_html = '';
-                var table_html = '';
-                for (var i in data) {
-                    li_html += "<li><a href=\"#tab_" + i + "\" data-toggle=\"tab\">" + "结果" + i + "</a></li>";
-                    table_html += "<div class=\"tab-pane\" id=\"tab_" + i + "\">\n" +
-                        "<table id=\"table" + i + "\"></table>\n" +
-                        "</div>"
-                }
-
-                $('#table_append').append(table_html);
-                $('#li_append').append(li_html);
-                $('.nav-tabs>li>a').first().trigger('click');
-
-
-                for (var key in data) {
-                    var d = data[key];
-                    var $table = $("#table" + key);
-
-                    $table.bootstrapTable({
-                        columns: d.columnDefinition,
-                        data: d.data,
-                        search: true,
-                        showColumns: true,
-                        showRefresh: true,
-                        showToggle: true,
-                        showExport: true,
-                        pageNumber: 1,
-                        pageSize: 20,
-                        locale: 'zh-CN',
-                        pageList: [20, 30, 50],
-                        sidePagination: "client",
-                        pagination: true,
-                        singleSelect: true,
-                        minimumCountColumns: 2,
-                        matchBrackets: true,
-                        lineWrapping: true,
-                        rowStyle: function rowStyle(row, index) {
-                            return {
-                                classes: 'text-nowrap another-class',
-                                css: {"font-size": "12px"}
-                            };
-                        },
-                        classes: 'table table-hover'
-                    });
-                }
-            }
-            else {
-                document.getElementById('typediv1').style.visibility = "hidden";
-                displayPNotify(result.status, result.msg)
-            }
-        },
-        error: function (jqXHR) {
-            if (jqXHR.status === 403) {
-                displayPNotify(jqXHR.status);
-                hideLoadingScreen();
-            }
-        }
-    });
-    return false;
-});

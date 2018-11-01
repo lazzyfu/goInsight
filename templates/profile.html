@@ -1,193 +1,183 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
+
 {% block link_css %}
-    <style>
-        .our-team {
-            padding: 30px 0 40px;
-            text-align: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .our-team .pic {
-            display: inline-block;
-            width: 130px;
-            height: 130px;
-            margin-bottom: 20px;
-            z-index: 1;
-            position: relative;
-        }
-
-        .our-team .pic:before {
-            content: "";
-            width: 100%;
-            height: 0;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 135%;
-            right: 0;
-            left: 0;
-            opacity: 0.2;
-            transform: scale(3);
-            transition: all 0.3s linear 0s;
-        }
-
-        .our-team:hover .pic:before {
-            height: 100%;
-        }
-
-        .our-team .pic:after {
-            content: "";
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: #ee4266;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -1;
-        }
-
-        .our-team .pic img {
-            width: 100%;
-            height: auto;
-            border-radius: 50%;
-            transform: scale(1);
-            transition: all 0.9s ease 0s;
-        }
-
-        .our-team:hover .pic img {
-            box-shadow: 0 0 0 14px #f7f5ec;
-            transform: scale(0.7);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/cropper/dist/cropper.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/cropper/examples/crop-avatar/css/main.css' %}">
 {% endblock %}
 
 {% block right_content %}
-    <section class="content">
-        <div class="row">
-            <div class="col-md-4">
-                <!-- Profile Image -->
-                <div class="box box-primary">
-                    <div class="box-body box-profile">
-                        <div class="our-team">
-                            <div class="pic">
-                                <img src="/media/{{ request.user.avatar_file }}">
-                            </div>
-                            <div class="team-content">
-                                <h3 class="title">
-                                    {% if request.user.displayname %}
-                                        {{ request.user.displayname }}
-                                    {% else %}
-                                        {{ request.user.username }}
-                                    {% endif %}
-                                </h3>
-                                <Span class="post">{{ request.user.user_role }}</Span>
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile" id="crop-avatar">
+                    <div class="avatar-view image" title="点击更改头像">
+                        <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="Avatar">
+                    </div>
+                    <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <form class="avatar-form" id="xxaa" action="{% url 'p_change_picture' %}" enctype="multipart/form-data" method="post">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h5 class="modal-title" id="avatar-modal-label">支持格式：JPEG|PNG</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="avatar-body">
+
+                                            <!-- Upload image and data -->
+                                            <div class="avatar-upload">
+                                                <input type="hidden" class="avatar-src" name="avatar_src">
+                                                <input type="hidden" class="avatar-data" name="avatar_data">
+                                                <label for="avatarInput">本地图片</label>
+                                                <input type="file" class="avatar-input" id="avatarInput" name="avatar_file">
+                                            </div>
+
+                                            <!-- Crop and preview -->
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <div class="avatar-wrapper"></div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="avatar-preview preview-lg"></div>
+                                                    <div class="avatar-preview preview-md"></div>
+                                                    <div class="avatar-preview preview-sm"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row avatar-btns">
+                                                <div class="col-md-3 col-md-offset-9">
+                                                    <button type="submit" class="btn btn-primary btn-block avatar-save">完成</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% csrf_token %}
+                                </form>
                             </div>
                         </div>
+                    </div><!-- /.modal -->
+                    <div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+                    <h3 class="profile-username text-center">
+                        {% if request.user.displayname %}
+                            {{ request.user.displayname }}
+                        {% else %}
+                            {{ request.user.username }}
+                        {% endif %}
+                    </h3>
 
-                        <ul class="list-group list-group-unbordered">
-                            <li class="list-group-item">
-                                <b>邮箱</b> <a class="pull-right">{{ request.user.email }}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>手机号</b> <a class="pull-right">{{ request.user.mobile }}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>注册时间</b> <a class="pull-right">{{ request.user.date_joined }}</a>
-                            </li>
-                        </ul>
-                        <a href="{% url 'p_change_pic' %}" class="btn btn-primary btn-block"><b>更换头像</b></a>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-md-8">
-                <div class="nav-tabs-custom">
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a href="#settings" data-toggle="tab">修改手机号</a></li>
-                        <li><a href="#change_password" data-toggle="tab">修改密码</a></li>
+                    <p class="text-muted text-center">{{ request.user.user_role }}</p>
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            <b>邮箱</b> <a class="pull-right">{{ request.user.email }}</a>
+                        </li>
+                        <li class="list-group-item" id="new_mobile">
+                            <b>手机号</b> <a class="pull-right">{{ request.user.mobile }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>注册时间</b> <a class="pull-right">{{ request.user.date_joined }}</a>
+                        </li>
                     </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="settings">
-                            <form class="form-horizontal" id="userChangeMobile"
-                                  action="{% url 'p_change_mobile' %}" method="post">
-                                <div class="form-group">
-                                    <label class="col-sm-2  control-label">手机号</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" placeholder="输入合法的手机号" name="mobile" required
-                                               maxlength="11" minlength="11"
-                                               class="form-control">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="submit" class="btn btn-danger">提交</button>
-                                    </div>
-                                </div>
-                                {% csrf_token %}
-                            </form>
-                        </div>
-                        <div class="tab-pane" id="change_password">
-                            <form class="form-horizontal" id="userChangePassForm"
-                                  action="{% url 'p_change_password' %}" method="post">
-                                <div class="form-group">
-                                    <label class="col-sm-2  control-label">原密码</label>
-                                    <div class="col-sm-8">
-                                        <input type="password" placeholder="原密码" name="old_password" required
-                                               class="form-control">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">新密码</label>
-                                    <div class="col-sm-8">
-                                        <input type="password" placeholder="新密码" name="new_password"
-                                               class="form-control" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">确认密码</label>
-                                    <div class="col-sm-8">
-                                        <input type="password" placeholder="确认密码" name="verify_password"
-                                               class="form-control" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="submit" class="btn btn-danger">提交</button>
-                                    </div>
-                                </div>
-                                {% csrf_token %}
-                            </form>
-                        </div>
-                        <!-- /.tab-pane -->
-                    </div>
-                    <!-- /.tab-content -->
                 </div>
-                <!-- /.nav-tabs-custom -->
+                <!-- /.box-body -->
             </div>
-            <!-- /.col -->
+            <!-- /.box -->
         </div>
-        <!-- /.row -->
-    </section>
+        <!-- /.col -->
+        <div class="col-md-9">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#settings" data-toggle="tab">修改手机号</a></li>
+                    <li><a href="#change_password" data-toggle="tab">修改密码</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="settings">
+                        <form class="form-horizontal" id="userChangeMobile"
+                              action="{% url 'p_change_mobile' %}" method="post">
+                            <div class="form-group">
+                                <label class="col-sm-2  control-label">手机号</label>
+                                <div class="col-sm-8">
+                                    <input type="text" placeholder="输入合法的手机号" name="mobile" required
+                                           maxlength="11" minlength="11"
+                                           class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-danger">提交</button>
+                                </div>
+                            </div>
+                            {% csrf_token %}
+                        </form>
+                    </div>
+
+                    <div class="tab-pane" id="change_password">
+                        <form class="form-horizontal" id="userChangePassForm"
+                              action="{% url 'p_change_password' %}" method="post">
+                            <div class="form-group">
+                                <label class="col-sm-2  control-label">原密码</label>
+                                <div class="col-sm-8">
+                                    <input type="password" placeholder="原密码" name="old_password" required
+                                           class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">新密码</label>
+                                <div class="col-sm-8">
+                                    <input type="password" placeholder="新密码" name="new_password"
+                                           class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">确认密码</label>
+                                <div class="col-sm-8">
+                                    <input type="password" placeholder="确认密码" name="verify_password"
+                                           class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-danger">提交</button>
+                                </div>
+                            </div>
+                            {% csrf_token %}
+                        </form>
+                    </div>
+                    <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
 {% endblock %}
 
 {% block link_javascripts %}
+    <script src="{% static 'AdminLTE-2.4.5/bower_components/cropper/dist/cropper.min.js' %}"></script>
+    <script src="{% static 'AdminLTE-2.4.5/bower_components/cropper/examples/crop-avatar/js/main.js' %}"></script>
     <script>
         // 修改手机号
         $(function () {
-            $('#userChangeMobile').submit(function () {
-                $('#userChangeMobile').ajaxSubmit({
+            let $this = $('#userChangeMobile');
+            let new_mobile = $('#new_mobile');
+            $this.submit(function () {
+                $this.ajaxSubmit({
                     clearForm: true,
                     dataType: 'json',
                     success: function (result) {
-                        refresh_page()
+                        displayPNotify(result.status, result.msg);
+                        if (result.status === 0) {
+                            new_mobile.empty();
+                            new_mobile.append("<b>手机号</b> <a class=\"pull-right\"> " + result.data + "</a>");
+                        }
                     }
                 });
                 return false;
@@ -196,8 +186,9 @@
 
         // 修改密码
         $(function () {
-            $('#userChangePassForm').submit(function () {
-                $('#userChangePassForm').ajaxSubmit({
+            let $this = $('#userChangePassForm');
+            $this.submit(function () {
+                $this.ajaxSubmit({
                     clearForm: true,
                     dataType: 'json',
                     success: function (result) {
@@ -207,5 +198,6 @@
                 return false;
             });
         });
+
     </script>
 {% endblock %}

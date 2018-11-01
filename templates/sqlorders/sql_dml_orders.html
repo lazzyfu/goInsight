@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 650px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header box-border">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-code"></i> 提交DML工单
+                        </h3>
+                    </div>
+                </div>
+                <div class="box-body box-border">
+                    <form class="form-horizontal" id="SqlOrdersCommitForm" action="{% url 'p_sql_orders_audit' %}"
+                          method="post" data-toggle="validator">
+                        <div class="col-md-4" id="left_input_height">
+                            <div class="box box-gray">
+                                <div class="box-body no-padding">
+                                    <div class="mailbox-read-info">
+                                        <h5>选择环境</h5>
+                                    </div>
+                                </div>
+                                <div class="box-body box-profile">
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">标题 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="title" data-minlength="5"
+                                                   class="form-control" spellcheck="false"
+                                                   placeholder="描述操作的目的" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">需求 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <textarea name="description" rows="5" style="resize: none"
+                                                      data-minlength="5"
+                                                      class="form-control" spellcheck="false" required
+                                                      placeholder="关联url链接或输入描述性文字"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">备注 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_remark" style="width: 100%" name="remark" required
+                                                    class="selectpicker form-control" title="请选择...">
+                                                <option data-icon="glyphicon-paperclip" selected value="数据修复">数据变更
+                                                </option>
+                                                <option data-icon="glyphicon-paperclip" value="数据修复">初始数据
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">操作 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select name="sql_type" id="s_sql_type"
+                                                    style="width: 100%" required
+                                                    class="selectpicker form-control" title="请选择...">
+                                                <option data-icon="glyphicon-pushpin" selected value="DML">DML
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">环境 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_envi" name="envi_id" style="width: 100%" required
+                                                    class="form-control selectpicker" title="选择环境..."
+                                                    onchange="getTargetSchema()">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">库名 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_schema" name="database" style="width: 100%" required
+                                                    class="form-control selectpicker" title="选择库名..."
+                                                    data-live-search="true" onchange="get_table_info()">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">审核人 <span
+                                                class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select title="选择工单审核人..." id="s_operator" name="auditor"
+                                                    style="width: 100%" required
+                                                    class="selectpicker form-control">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {% ifequal is_enable_mail '0' %}
+                                        <div class="form-group has-feedback">
+                                            <label class="control-label col-md-3">抄送 <span
+                                                    class="text-red">*</span></label>
+                                            <div class="col-md-9">
+                                                <select id="s_email_cc" name="email_cc" data-live-search="true"
+                                                        title="选择需要抄送的联系人..."
+                                                        data-actions-box="true"
+                                                        style="width: 100%" class="selectpicker form-control dropup"
+                                                        multiple required>
+                                                </select>
+                                            </div>
+                                            <div class="help-block with-errors col-md-2"></div>
+                                        </div>
+                                    {% endifequal %}
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3"></label>
+                                        <div class="col-sm-9">
+                                            <button type="button" onclick="beautifySQL()"
+                                                    class="btn bg-info btn-sm">格式化SQL
+                                            </button>
+
+                                            <button type="button" onclick="incepSyntaxCheckForm()"
+                                                    class="btn bg-info btn-sm">语法检测
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3"></label>
+                                        <div class="col-sm-9">
+                                            <button type="submit" class="btn bg-info btn-sm">生成工单</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="box box-gray">
+                                <div class="box-body no-padding">
+                                    <div class="mailbox-read-info">
+                                        <h5>填写DML语句 (UPDATE/INSERT/DELETE)
+                                            <small class="text-muted"><cite>支持Tab自动补全</cite></small>
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="box-body no-padding">
+                                    <div class="form-group">
+                                        <div class="col-md-12" id="right_code_hight">
+                                            <textarea title="" id="s_sql" autofocus class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                    <!-- /.col -->
+                </div>
+            </div>
+
+            <div class="box-size" id="typediv1" style="visibility: hidden">
+                <div class="box box-gray">
+                    <div class="box-body no-padding">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-condensed table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="col-sm-1 text-red">ID</th>
+                                    <th class="col-sm-1 text-red">阶段</th>
+                                    <th class="col-sm-1 text-red">状态</th>
+                                    <th class="col-sm-1 text-red">级别</th>
+                                    <th class="col-sm-2 text-red">信息</th>
+                                    <th class="col-sm-4 text-red">SQL</th>
+                                    <th class="col-sm-1 text-red">扫描/影响行数</th>
+                                    <th class="col-sm-1 text-red">耗时</th>
+                                </tr>
+                                </thead>
+                                <tbody id="td_append">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        let myTextarea = document.getElementById('s_sql');
+        let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            smartIndent: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            keyMap: "sublime",
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            showCursorWhenSelecting: true,
+            extraKeys: {"Tab": "autocomplete"},
+            hint: CodeMirror.hint.sql
+        });
+
+
+        /**
+         * 获取指定环境的schema
+         */
+        function getTargetSchema() {
+            let s_schema = $('#s_schema');
+            let envi_id = $('#s_envi').val();
+            let csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_get_target_schemas' %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    s_schema.empty();
+                    let html = '';
+                    $.each(data, function (index, row) {
+                        let result = [row.host, row.port, row.schema].join(',');
+                        let show_result = [row.comment, row.port, row.schema].join('_');
+                        html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
+                    });
+                    s_schema.append(html);
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            })
+        }
+
+        /**
+         * 获取抄送的用户和邮箱
+         */
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_get_user_mail' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    let $this = $("#s_email_cc");
+                    $this.empty();
+                    $.each(data, function (index, row) {
+                        $this.append(
+                            "<option data-icon='glyphicon-user' data-subtext=" + row.email + " value=" + row.email + ">" + row.username + "</option>");
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            })
+        });
+
+        /**
+         * 提交DML或DML工单
+         */
+
+        $('#SqlOrdersCommitForm').validator().on('submit', function (e) {
+            let contents = myCodeMirror.getValue();
+            if (contents.length < 10) {
+                displayPNotify(2, '审核内容不能为空或小于10个字符');
+                return false;
+            }
+            if (e.isDefaultPrevented()) {
+                // 验证不通过
+                displayPNotify(2, '表单无效，请完成填写');
+            } else {
+                // 验证通过
+                $(this).ajaxSubmit({
+                    data: {'contents': contents},
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === 0) {
+                            window.parent.location.href = result.jump_url
+                        } else {
+                            displayPNotify(result.status, result.msg)
+                        }
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+
+        /**
+         * 获取有审核权限的用户
+         */
+        $(function () {
+            $.ajax({
+                url: '/sqlorders/get_audit_user/',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    $("#s_operator").empty();
+                    $.each(result, function (index, row) {
+                        $("#s_operator").append(
+                            "<option data-icon='glyphicon-user' data-subtext=" + row.displayname + " value=" + row.username + ">" + row.username + "</option>"
+                        );
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            })
+        });
+
+        // 获取用户设置的环境
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_get_sql_orders_envi' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (data) {
+                    $("#s_envi").empty();
+                    $.each(data, function (index, row) {
+                        $("#s_envi").append(
+                            "<option data-icon='glyphicon-record' value=" + row.envi_id + ">" + row.envi_name + "</option>"
+                        );
+                    });
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            });
+        });
+
+        /**
+         * 设置左右两边的宽度为一致
+         */
+        $('#left_input_height').height($('#right_code_hight').height());
+
+    </script>
+{% endblock %}

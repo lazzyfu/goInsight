@@ -1,0 +1,49 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+        }
+    </style>
+</head>
+<body>
+{% if type == 'reply' %}
+    <p>您好，来自用户({{ username }})的回复</p>
+    <p>回复内容：</p>
+    <p>{{ data.reply_contents }}</p>
+    <p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_details/{{ data.reply_id }} 进行操作，谢谢。</p>
+
+{% elif type == 'hook' %}
+    <p>您好，用户({{ username }})进行了工单扭转</p>
+    <p>标题：{{ data.title }}</p>
+    <p>新环境：{{ envi_name }}</p>
+    <p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_details/{{ data.id }} 进行操作，谢谢。</p>
+
+{% else %}
+    {# 一些其他的状态：approve, feedback, close #}
+    {% if data.progress == '5' %}
+        <p>您好，用户({{ username }})关闭了该记录。</p>
+
+    {% elif data.progress == '2' %}
+        <p>您好，({{ username }})已批准，请运维人员协助处理，谢谢。</p>
+
+    {% elif data.progress == '1' %}
+        <p>您好，({{ username }})审核未通过。</p>
+
+    {% elif data.progress == '4' %}
+        <p>您好，({{ username }})已处理，请{{ data.proposer }}核对数据，谢谢。</p>
+
+    {% elif data.progress == '3' %}
+        <p>您好，({{ username }})正在处理中，请稍等，谢谢。</p>
+
+    {% endif %}
+    <p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_details/{{ data.id }} 进行操作，谢谢。</p>
+
+    {% if addition_info %}
+        <p>#附加信息:</p>
+        <p>{{ addition_info|safe }}</p>
+    {% endif %}
+{% endif %}
+</body>
+</html>

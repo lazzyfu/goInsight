@@ -1,0 +1,29 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p><span style="color: blue">标题：</span>{{ data.title }}</p>
+    {% if data.description %}
+        <p><span style="color: blue">需求：</span>{{ data.description }}</p>
+    {% endif %}
+    {% if data.task_version %}
+        <p><span style="color: blue">上线版本：</span>{{ data.task_version }}</p>
+    {% endif %}
+    <p><span style="color: blue">环境：</span>{{ envi_name }}</p>
+    <p><span style="color: blue">类型：</span>{{ data.sql_type }}</p>
+    <p><span style="color: blue">备注：</span>{{ data.remark }}</p>
+    <p><span style="color: blue">申请人：</span>{{ data.proposer }}</p>
+    <p><span style="color: blue">审核人：</span>{{ data.auditor }}</p>
+    <p><span style="color: blue">主机/库：</span>{{ data.host }}_{{ data.port }}_{{ data.database }}</p>
+    <p><span style="color: blue">提交时间：</span>{{ data.created_at|date:"Y-m-d H:i:s" }}</p>
+    <p style="color: blue"> 请访问 {{ domain_name_tips }}/sqlorders/sql_orders_details/{{ data.id }} 进行操作，谢谢。</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> 新建部署步骤（请根据实际需求自行创建）
+                        </h3>
+                    </div>
+                    <div class="mailbox-read-info">
+                        <p><small class="text-danger"><cite>请正确选择截止上线日期，到达该日期后，该任务自动过期，比如周三上线，截止上线日期应该选择为：周三当天的日期</cite></small></p>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="toolbar">
+                        <div class="form-inline" role="form">
+                            <button type="button" data-toggle="modal" data-target="#modal_new_tasks"
+                                    class="btn btn-primary"><i class="fa fa-plus"></i> 新建
+                            </button>
+                            <button type="button" onclick="delete_selected()" class="btn btn-primary"><i
+                                    class="fa fa-minus"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                    <table id="table"></table>
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建部署步骤模态框 -->
+    <div class="modal fade" id="modal_new_tasks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form class="form-horizontal" id="tasksForm" method="post"
+                      action="{% url 'p_get_sql_tasks_version' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"><i class="fa fa-pencil"></i> 新建部署步骤
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">版本号</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="新建部署步骤名称" name="tasks_version">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">截止上线日期</label>
+                                <div class="col-md-8 col-sm-8 col-xs-12">
+                                    <input placeholder="" type="date" class="form-control" name="expire_time">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 任务进度模态框 -->
+    <div class="modal fade" id="modal_tasks_show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title" id="myModalLabel">任务进度:
+                        <b id="s_tasks" class="text-danger"></b>
+                        &nbsp;&nbsp;&nbsp;<a href="#" onclick="dingNotice()"><i class="fa fa-bell-o" style="color: red">钉一下</i></a>
+                    </h5>
+                    <h5>
+                        <small><cite>
+                            <i class="fa fa-check" style="color: green"></i>: 表示已经执行，
+                            <i class="fa fa-close" style="color: red"></i>: 表示未推到该环境，
+                            其他状态: 表示该任务的进度
+                        </cite></small>
+                    </h5>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="box-body">
+                            <table id="tasks-table"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        /**
+         * 初始化bootstrap-table，生成表格
+         */
+        let $table = $('#table');
+        $(function () {
+            $table.bootstrapTable({
+                method: 'get',
+                dataType: 'json',
+                url: "{% url 'p_get_sql_tasks_version' %}",
+                search: true,
+                cache: false,
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                pageNumber: 1,
+                pageSize: 6,
+                locale: 'zh-CN',
+                pageList: [10, 20, 30],
+                toolbar: '#toolbar',
+                sidePagination: "client",
+                uniqueId: 'id',
+                classes: 'table table-hover table-no-bordered',
+                formatLoadingMessage: function () {
+                    return "请稍等，正在加载中...";
+                },
+                formatNoMatches: function () {
+                    return '没有查询到记录...';
+                },
+                columns: [
+                    {
+                        checkbox: true
+                    },
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        visible: false
+                    },
+                    {
+                        field: 'tasks_version',
+                        title: '版本',
+                        formatter: function (value) {
+                            return "<a href='#' onclick='deploy_tasks_table(" + "\"" + value + "\"" + ")'>" + value + "</a>"
+                        }
+                    },
+                    {
+                        field: 'username',
+                        title: '创建用户'
+                    },
+                    {
+                        field: 'expire_time',
+                        title: '截止上线日期',
+                        formatter: function winLOSSFormatter(value) {
+                            return moment(value).format('YYYY-MM-DD HH:mm:ss');
+                        }
+                    },
+                    {
+                        field: 'created_at',
+                        title: '创建时间',
+                        formatter: function winLOSSFormatter(value) {
+                            return moment(value).format('YYYY-MM-DD HH:mm:ss');
+                        }
+                    }
+                ],
+            })
+        });
+
+        // 新建任务
+        $('#tasksForm').submit(function () {
+            $(this).ajaxSubmit({
+                dataType: 'json',
+                resetForm: true,
+                data: {'action': 'new'},
+                success: function (result) {
+                    displayPNotify(result.status, result.msg);
+                    $('#modal_new_tasks').modal('hide');
+                    $table.bootstrapTable('refresh', {silent: true});
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        $('#modal_new_tasks').modal('hide');
+                        displayPNotify(jqXHR.status)
+                    }
+                }
+            });
+            return false
+        });
+
+        // 删除选择的数据
+        function delete_selected() {
+            let selectedContent = $table.bootstrapTable('getAllSelections');
+            let id = [];
+            selectedContent.forEach(function (val) {
+                id.push(val['id'])
+            });
+            console.log(id);
+            if (id.length === 0) {
+                displayPNotify(2, '请至少勾选一行数据');
+                return false;
+            } else {
+                let csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: '{% url 'p_get_sql_tasks_version' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    timeout: 1000,
+                    data: {
+                        'action': 'delete',
+                        'id': id.toString(),
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    cache: false,
+                    success: function (result) {
+                        displayPNotify(result.status, result.msg);
+                        $table.bootstrapTable('refresh', {silent: true});
+                    },
+                    error: function (jqXHR) {
+                        if (jqXHR.status === 403) {
+                            displayPNotify(jqXHR.status)
+                        }
+                    }
+                })
+            }
+         }
+
+    </script>
+{% endblock %}

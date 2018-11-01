@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 500px;
+            font-size: 13px;
+        }
+
+        .breadcrumb {
+            padding: 10px;
+            margin-bottom: 5px;
+            list-style: none;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .cm-highlightSearch {
+            background: yellow;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <ol class="breadcrumb">
+        <li><a href="/sqlorders/sql_orders_list/{{ contents.envi_id }}/"><i class="fa fa-arrow-circle-left"></i>
+            审核页面</a></li>
+    </ol>
+    <div class="row">
+        <div id="s_sql_details" style="display:none;">{{ contents.id }}</div>
+        <div class="col-md-4" style="padding-right: 2px">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img class="profile-user-img img-responsive img-circle"
+                         src="/media/{{ contents.proposer_avatar_file }}"
+                         alt="User profile picture">
+
+                    <h3 class="profile-username text-center">{{ contents.proposer }}</h3>
+                    <p class="text-muted text-center">{{ contents.proposer_info.user_role }}</p>
+
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            <b>提交人</b> <a class="pull-right">{{ contents.proposer }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>提交时间</b> <a class="pull-right">{{ contents.created_at }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>审核人</b> <a class="pull-right">{{ contents.auditor }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>审核时间</b> <a class="pull-right">{{ contents.operate_time }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>备注 </b> <a class="pull-right text-red">{{ contents.remark }}</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>进度</b> <a class="pull-right text-red">{{ contents.progress_value }}</a>
+                        </li>
+                        {% if contents.progress_value == '待批准' %}
+                            <li class="list-group-item">
+                                <b>审批</b>
+                                <a class="pull-right" href='#'
+                                   onclick='link_sql_orders_audit("{{ contents.id }}", "/sqlorders/sql_orders_approve/","通过", "不通过")'><i
+                                        class='fa fa-check-square-o fa-lg'></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    {% if contents.progress_value in '已完成,已勾住' %}
+                        <a href="#" onclick="viewSqlDetails()" class="btn btn-primary btn-block"><b>点击查看SQL执行详情</b></a>
+                    {% endif %}
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+            <!-- About Me Box -->
+            {% if contents.close_user %}
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h4 class="box-title">详情</h4>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <strong><i class="fa fa-user margin-r-5"></i> 记录关闭用户</strong>
+                        <p class="text-muted">
+                            {{ contents.close_user }}
+                        </p>
+                        <hr>
+
+                        <strong><i class="fa fa-calendar-times-o margin-r-5"></i> 关闭时间</strong>
+                        <p class="text-muted">
+                            {{ contents.close_time }}
+                        </p>
+                        <hr>
+
+                        <strong><i class="fa fa-question-circle margin-r-5"></i> 关闭原因</strong>
+                        <p class="text-muted">
+                            {{ contents.close_reason|safe }}
+                        </p>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            {% endif %}
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-8">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ contents.title }}</h3>
+                    <!-- 隐藏id，下面ajax调用 -->
+                    <h3 id="id" style="display: none">{{ contents.id }}</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    {% if contents.description %}
+                        <div class="mailbox-read-info">
+                            <h5>需求：<a href="{{ contents.url }}">{{ contents.description }}</a></h5>
+                        </div>
+                    {% endif %}
+
+                    <!-- /.mailbox-controls -->
+                    <div class="mailbox-read-message">
+                        <textarea title="" id="select_sql">{{ contents.contents|safe }}</textarea>
+                    </div>
+                    <!-- /.mailbox-read-message -->
+                </div>
+
+                <!-- /.box-footer -->
+                <div class="box-footer">
+                    <form class="form-horizontal" id="replyCommitForm" action="{% url 'p_commit_order_reply' %}"
+                          method="post">
+                        <div class="form-group margin-bottom-none">
+                            <div class="col-sm-10">
+                                <textarea rows="1" style="resize: vertical;max-height: 100px"
+                                          class="form-control input-sm" name="reply_contents"
+                                          placeholder="请输入回复内容..."></textarea>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit" class="btn btn-danger pull-down btn-block btn-sm">回复</button>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                    </form>
+                </div>
+
+                <div class="box-footer box-comments" id="s_reply">
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- /. box -->
+        </div>
+        <!-- /.col -->
+    </div>
+
+    <!-- 查看sql执行详情模态框 -->
+    <div class="modal fade modal-wide" id="modal_table_sql">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-table"></i> SQL执行详情</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table id="table_sql"></table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        let keyword = new RegExp('UNIQUE INDEX', 'i');
+
+        CodeMirror.defineMode("highlightSearch", function (config, parserConfig) {
+            let searchOverlay = {
+                token: function (stream, state) {
+                    if (stream.match(keyword)) {
+                        return "highlightSearch";
+                    }
+
+                    while (stream.next() != null && !stream.match(keyword, false)) {
+                    }
+                    return null;
+                }
+            };
+            return CodeMirror.overlayMode(CodeMirror.getMode(config, parserConfig.backdrop || "sql"), searchOverlay);
+        });
+        let myTextarea = document.getElementById('select_sql');
+        let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "highlightSearch",
+            readOnly: true,
+        });
+
+
+        <!-- 提交回复内容 -->
+        $(function () {
+            $('#replyCommitForm').submit(function () {
+                let reply_id = $('#id').text();
+
+                $('#replyCommitForm').ajaxSubmit({
+                    data: {'reply_id': reply_id},
+                    clearForm: true,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === 0) {
+                            get_order_reply()
+                        }
+                        else {
+                            displayPNotify(result.status, result.msg);
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+
+        <!-- 获取回复内容 -->
+        function get_order_reply() {
+            let reply_id = $('#id').text();
+
+            $.ajax({
+                url: "{% url 'p_get_order_reply' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'reply_id': reply_id},
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    let $this = $("#s_reply");
+                    $this.empty();
+                    $.each($.parseJSON(result.data), function (index, row) {
+                        $this.append(
+                            "<div class=\"post\">\n" +
+                            "<div class=\"user-block\">\n" +
+                            "<img class=\"img-circle img-bordered-sm\" src=\"/media/" + row.avatar_file + "\"\n" +
+                            "alt=\"user image\">\n" +
+                            "<span class=\"username\">\n" +
+                            "<a href=\"#\">" + row.username + "</a>\n" +
+                            "</span>\n" +
+                            "<span class=\"description\">" + moment(row.created_at).fromNow() + "</span>\n" +
+                            "</div>\n" +
+                            "<p>\n" + row.reply_contents +
+                            "</p>\n" +
+                            "</div>"
+                        )
+                    });
+                }
+            })
+        }
+
+
+        <!-- 获取sql执行的详情 -->
+        function viewSqlDetails() {
+            let $table_sql = $('#table_sql');
+            let id = $('#s_sql_details').text();
+            $.ajax({
+                url: "{% url 'p_get_sql_exec_details' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'id': id},
+                timeout: 30000,
+                cache: true
+            }).done(function (result) {
+                $('#modal_table_sql').modal('show');
+                $table_sql.bootstrapTable('destroy').bootstrapTable({
+                    columns: result.columns,
+                    data: result.data,
+                    pageNumber: 1,
+                    pageSize: 20,
+                    locale: 'zh-CN',
+                    sidePagination: "client",
+                    pagination: true,
+                    singleSelect: true,
+                    minimumCountColumns: 2,
+                    matchBrackets: true,
+                    lineWrapping: true,
+                    classes: 'table table-hover table-no-bordered'
+                });
+            });
+        }
+
+        <!-- 批准的快捷方式 -->
+        function link_sql_orders_audit(id, url, btn_left, btn_right) {
+            sql_orders_audit(id, url, btn_left, btn_right);
+            refresh_page()
+        }
+
+        get_order_reply()
+    </script>
+{% endblock %}

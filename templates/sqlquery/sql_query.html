@@ -1,0 +1,544 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 450px;
+            font-size: 13px;
+        }
+
+        .tab .nav-tabs {
+            padding-left: 15px;
+        }
+
+        .tab .nav-tabs li a {
+            padding: 10px 20px;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        .jstree-leaf {
+            font-size: 12px;
+        }
+
+        .jstree-default .jstree-anchor {
+            font-size: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header box-border">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-cog"></i> {{ envi_name }}-SQL查询
+                            <small>默认返回 limit 100条记录，最大支持limit 1000, 最大查询时间600s</small>
+                        </h3>
+                    </div>
+                    <div id="s_envi_id" style="display:none;">{{ envi_id }}</div>
+                </div>
+                <div class="row">
+                    <div class="box-body box-border">
+                        <div class="col-md-3" style="padding-right: 5px">
+                            <div style="height: 610px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 3px">
+                                <div id="container"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-9" style="padding-left: 2px">
+                            <div style="margin: 3px">
+                                <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm"><i
+                                        class="fa fa-magic"></i> 格式化SQL
+                                </button>
+                                <button onclick="commitSqlQueryForm()" class="btn bg-info btn-sm"><i
+                                        class="fa fa-flash"></i> 执行
+                                </button>
+                                <button class="btn bg-info btn-sm" onclick="getHistorySql()"><i
+                                        class="fa fa-history"></i> 我的SQL
+                                </button>
+                                <select onchange="selectTheme()" id=select title="选择主题..." class="pull-right">
+                                    <option selected>default</option>
+                                    <option>material</option>
+                                    <option>darcula</option>
+                                    <option>monokai</option>
+                                </select>
+                            </div>
+                            <div style="margin: 2px">
+                                <textarea title="" id="s_sql"></textarea>
+                            </div>
+                            <div style="margin: 2px">
+                                <textarea title="" id="query_log"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body with-border" id="typediv1" style="visibility: hidden">
+                    <div class="tab">
+                        <ul class="nav nav-tabs" id="li_append"></ul>
+                        <div class="tab-content" id="table_append"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SQL历史模态框 -->
+    <div class="modal fade" id="modal_history_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-history"></i> SQL历史
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="box-body">
+                            <div class="input-group">
+                                <input title="" id='search_contents' type="text" placeholder="输入关键字、搜索更多SQL记录"
+                                       class="form-control">
+                                <span class="input-group-btn">
+                                    <button type="button" onclick="getFilterHistorySql()" class="btn btn-info btn-flat">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <p>默认显示最近的1000条记录</p>
+                            <textarea title="" id="preview_history_sql"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 表结构模态框 -->
+    <div class="modal fade modal-wide" id="modal_table_stru">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-table"></i> 表结构和索引</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="box">
+                        <div class="box-body">
+                            <div>
+                                <h5><i class="fa fa-tag text-blue"> 表结构</i></h5>
+                                <pre><code class="sql" id="table_stru"></code></pre>
+                            </div>
+                            <div>
+                                <h5><i class="fa fa-italic text-blue"> 索引</i></h5>
+                                <table id="table_index"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <script>
+        let envi_id = $('#s_envi_id').text();
+        let myTextarea = document.getElementById('s_sql');
+        let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            smartIndent: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            keyMap: "sublime",
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            lineWrapping: true,
+            showCursorWhenSelecting: true,
+            hint: CodeMirror.hint.sql
+        });
+
+        let myQueryLog = CodeMirror.fromTextArea(document.getElementById('query_log'), {
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            readOnly: true,
+            autofocus: false,
+            lineWrapping: true,
+            theme: "material",
+            placeholder: '消息 ...'
+        });
+
+        myQueryLog.setSize('height', '120px');
+
+        myCodeMirror.on("keyup", function (cm, event) {
+            if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
+                event.keyCode !== 13 && /*delete不提示*/
+                event.keyCode !== 186 && /*分号；不提示*/
+                event.keyCode !== 8) {        /*Enter - do not open autocomplete list just after item has been selected in it*/
+                CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+            }
+        });
+
+        /**
+         * 获取生产环境的schemas和tables信息，左侧jstree展示使用
+         */
+        $(function () {
+            let csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_get_schemas_grant' %}',
+                type: 'POST',
+                data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (data) {
+                    if (data.length > 0) {
+                        // jstree
+                        $('#container').jstree({
+                            'core': {
+                                "animation": 0,
+                                {#"multiple": false,#}
+                                "themes": {
+                                    "responsive": false
+                                },
+                                'data': data
+                            },
+                            {#"checkbox": {#}
+                            {#    "three_state": false#}
+                            {# },#}
+                            "types": {
+                                "default": {
+                                    "icon": "fa fa-database text-green"
+                                }
+                            },
+                            "plugins": ["types", 'wholerow', "sort", "themes", 'state', 'search', 'contextmenu']
+                        });
+                        jstree_click();
+                    }
+                    else {
+                        $('#container').append('没有授权的库，请联系管理员');
+                    }
+                }
+            });
+        });
+
+
+        let query_schema = '';
+        let tab_schema = '';
+        let $table_index = $('#table_index');
+
+        function jstree_click() {
+            let $container = $('#container');
+            // 单击jstree时触发
+            $container.on("changed.jstree", function (e, data) {
+                query_schema = data.selected.toString();
+            });
+
+            $container.on("after_open.jstree", function (e, data) {
+                // tab补全
+                // 172.17.101.40-3306-test
+                tab_schema = data.node.id.split('___').join(',');
+                if (tab_schema) {
+                    get_table_info(tab_schema);
+                }
+            });
+            // 双击jstree时触发
+            $container.on("dblclick.jstree", function (event) {
+                $('#table_stru').empty();
+                let tree = $(this).jstree();
+                let node = tree.get_node(event.target);
+                console.log(node.id);
+                $.ajax({
+                    url: "{% url 'p_get_stru_info' %}",
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {'schema': node.id},
+                    timeout: 30000,
+                    cache: true,
+                    success: function (result) {
+                        if (result.status === 0) {
+                            let data = result.data;
+                            $('#modal_table_stru').modal('show');
+                            $('#table_stru').append(data.stru);
+                            highlightSQL();
+                            $table_index.bootstrapTable('destroy').bootstrapTable({
+                                columns: data.index.columnDefinition,
+                                data: data.index.data,
+                                pageNumber: 1,
+                                pageSize: 20,
+                                locale: 'zh-CN',
+                                sidePagination: "client",
+                                pagination: true,
+                                singleSelect: true,
+                                minimumCountColumns: 2,
+                                matchBrackets: true,
+                                lineWrapping: true,
+                                classes: 'table table-hover'
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        <!-- 语法高亮 -->
+        function highlightSQL() {
+            {# 模态框加载后，执行，否则顺序不对，无法高亮SQL语法 #}
+            $('pre code').each(function (i, block) {
+                hljs.highlightBlock(block);
+                hljs.configure({
+                    tabReplace: 4
+                })
+            });
+        }
+
+        // 获取查询日志
+        let socket = new WebSocket('ws://' + window.location.host + '/ws/');
+        socket.onmessage = function (message) {
+            let result = JSON.parse(message.data);
+            let msg = result.msg;
+            let currentDate = new Date();
+            let mytime = currentDate.toLocaleString();
+
+
+            if (result.type === 1) {
+                let query_log_html = '';
+                if (msg instanceof Array) {
+                    query_log_html = '时间：' + mytime + '\n' + msg.join('\n') + '\n';
+                } else {
+                    query_log_html = '时间：' + mytime + '\n' + msg + '\n\n'
+                }
+
+                myQueryLog.replaceRange(query_log_html, CodeMirror.Pos(myQueryLog.lastLine()));
+                myQueryLog.setCursor(myQueryLog.lineCount(), 0);
+            }
+        };
+
+        /**
+         * 执行MySQL查询语句
+         */
+        function commitSqlQueryForm() {
+            // 清空输出的结果
+            let csrftoken = $.cookie('csrftoken');
+            $('#li_append').empty();
+            $('#table_append').empty();
+
+            // 获取选中的内容，否则为全部内容
+            let contents = '';
+            if (myCodeMirror.somethingSelected()) {
+                contents = myCodeMirror.getSelection()
+            } else {
+                contents = myCodeMirror.getValue();
+            }
+            // 判断输入的内容是否为空
+            if (contents.length < 1) {
+                displayPNotify(2, '内容不能为空');
+                return false;
+            }
+
+            if (!query_schema) {
+                displayPNotify(2, '请点击选中左侧库或表，在执行查询');
+                return false;
+            }
+            $.ajax({
+                data: {
+                    'contents': contents,
+                    'schema': query_schema,
+                    'envi_id': envi_id,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                dataType: 'json',
+                url: '{% url 'p_exec_sql_query' %}',
+                method: 'POST',
+                timeout: 700000, // 700秒
+                beforeSubmit: showLoadingScreen($('body'), '数据查询中，请稍后...'),
+                success: function (result) {
+                    hideLoadingScreen($('body'));
+                    if (result.status === 0) {
+                        let data = result.data;
+                        document.getElementById('typediv1').style.visibility = "visible";
+
+                        let li_html = '';
+                        let table_html = '';
+                        for (let i in data) {
+                            li_html += "<li><a href=\"#tab_" + i + "\" data-toggle=\"tab\">" + "结果集" + i + "</a></li>";
+                            table_html += "<div class=\"tab-pane\" id=\"tab_" + i + "\">\n" +
+                                "<table id=\"table" + i + "\"></table>\n" +
+                                "</div>"
+                        }
+                        $('#table_append').append(table_html);
+                        $('#li_append').append(li_html);
+                        $('.nav-tabs>li>a').first().trigger('click');
+
+
+                        for (let key in data) {
+                            let d = data[key];
+                            let $table = $("#table" + key);
+
+                            $table.bootstrapTable('destroy').bootstrapTable({
+                                columns: d.columnDefinition,
+                                data: d.data,
+                                search: true,
+                                showRefresh: true,
+                                showExport: true,
+                                exportDataType: 'all',
+                                exportTypes: ['csv', 'txt', 'excel'],
+                                pageNumber: 1,
+                                pageSize: 20,
+                                locale: 'zh-CN',
+                                height: 800,
+                                sidePagination: "client",
+                                pagination: true,
+                                singleSelect: true,
+                                matchBrackets: true,
+                                lineWrapping: true,
+                                fixedColumns: true,
+                                fixedNumber: +1,
+                                rowspan: 5,
+                                iconSize: 'sm',
+                                rowStyle: function rowStyle(row, index) {
+                                    return {
+                                        classes: 'text-nowrap another-class',
+                                        css: {"font-size": "12px"}
+                                    };
+                                },
+                                classes: 'table table-hover'
+                            });
+                        }
+                    }
+                    else {
+                        document.getElementById('typediv1').style.visibility = "hidden";
+                        displayPNotify(result.status, result.msg)
+                    }
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status);
+                        hideLoadingScreen();
+                    }
+                }
+            })
+        }
+
+        $(function () {
+            // 保存用户输入
+            let user_input = localStorage.getItem("{{ envi_id }}");
+            let $textarea = $("textarea");
+            if (user_input) {
+                myCodeMirror.setValue(user_input);
+            }
+            $textarea.bind('input propertychange', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("{{ envi_id }}", contents);
+            });
+            $textarea.on('paste', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("{{ envi_id }}", contents);
+            });
+            $textarea.on('keyup', function (event) {
+                if (8 <= event.keyCode <= 46) {
+                    let contents = myCodeMirror.getValue();
+                    localStorage.setItem("{{ envi_id }}", contents);
+                }
+            });
+            $("button").on('click', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("{{ envi_id }}", contents);
+            });
+        });
+
+        // 设置主题
+        let input = document.getElementById("select");
+
+        function selectTheme() {
+            let theme = input.options[input.selectedIndex].textContent;
+            myCodeMirror.setOption("theme", theme);
+            location.hash = "#" + theme;
+        }
+
+        let choice = (location.hash && location.hash.slice(1)) ||
+            (document.location.search &&
+                decodeURIComponent(document.location.search.slice(1)));
+        if (choice) {
+            input.value = choice;
+            myCodeMirror.setOption("theme", choice);
+        }
+        CodeMirror.on(window, "hashchange", function () {
+            let theme = location.hash.slice(1);
+            if (theme) {
+                input.value = theme;
+                selectTheme();
+            }
+        });
+
+        // 获取当前用户执行的SQL记录
+        let hSTextarea = document.getElementById('preview_history_sql');
+        let hSCodeMirror = CodeMirror.fromTextArea(hSTextarea, {
+            mode: "text/x-mysql",
+            readOnly: true,
+            theme: 'material',
+            lineNumbers: true,
+            autoRefresh: true,
+            smartIndent: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            keyMap: "sublime",
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            lineWrapping: true,
+        });
+
+        function getHistorySql() {
+            $('#preview_history_sql').empty();
+            $.ajax({
+                url: '{% url 'p_get_history_sql' %}',
+                type: 'GET',
+                data: {'envi_id': envi_id},
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (result) {
+                    let data = result.data.join(';\n\n');
+                    hSCodeMirror.setValue(data);
+                    $('#modal_history_sql').modal('show')
+                }
+            })
+        }
+
+        function getFilterHistorySql() {
+            let contents = $('#search_contents').val();
+            let csrftoken = $.cookie('csrftoken');
+            $('#preview_history_sql').empty();
+            $.ajax({
+                url: '{% url 'p_get_history_sql' %}',
+                type: 'POST',
+                data: {'envi_id': envi_id, 'contents': contents, 'csrfmiddlewaretoken': csrftoken},
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (result) {
+                    let data = result.data.join(';\n\n');
+                    hSCodeMirror.setValue(data)
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

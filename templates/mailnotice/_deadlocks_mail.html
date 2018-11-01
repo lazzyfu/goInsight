@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+{% for i in data %}
+    {% for row in i.data %}
+        <p>业务主机：{{ row.src_host }}</p>
+        <p>时间：{{ row.ts }}</p>
+        <p>线程ID：{{ row.thread }}</p>
+        <p>事务运行时间：{{ row.txn_time }}s</p>
+        <p>用户：{{ row.user }}</p>
+        <p>IP：{{ row.ip }}</p>
+        <p>库名：{{ row.db }}</p>
+        <p>表名：{{ row.tbl }}</p>
+        <p>索引：{{ row.idx }}</p>
+        <p>锁定类型：{{ row.lock_type }}</p>
+        <p>锁定模式：{{ row.lock_mode }}</p>
+        <p>等待：{{ row.wait_hold }}</p>
+        <p>是否回滚：{% ifequal row.victim 0 %} 否 {% else %} 是 {% endifequal %}</p>
+        <p>查询：</p>
+        <p>{{ row.query }}</p>
+        <br>
+    {% endfor %}
+{% endfor %}
+</body>
+</html>

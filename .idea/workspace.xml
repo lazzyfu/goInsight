@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="1609bf2c-1d59-44d1-b9c1-c5db0e15fc81" name="Default" comment="" />
+    <list default="true" id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/sqlorders/my_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/my_orders.html" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -9,92 +12,69 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/AuditSQL$tests.coverage" NAME="tests Coverage Results" MODIFIED="1522394295522" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/ProjectManager" />
-    <SUITE FILE_PATH="coverage/AuditSQL$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1526529610512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../xb_backup" />
-    <SUITE FILE_PATH="coverage/AuditSQL$tt1.coverage" NAME="tt1 Coverage Results" MODIFIED="1526976479511" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../xb_backup" />
-    <SUITE FILE_PATH="coverage/AuditSQL$tests__2_.coverage" NAME="tests (2) Coverage Results" MODIFIED="1526455339558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/project_manager" />
-    <SUITE FILE_PATH="coverage/AuditSQL$test1.coverage" NAME="test1 Coverage Results" MODIFIED="1526867914494" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../xb_backup" />
-    <SUITE FILE_PATH="coverage/AuditSQL$tests__1_.coverage" NAME="tests (1) Coverage Results" MODIFIED="1523328060333" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps/mstats" />
-    <SUITE FILE_PATH="coverage/AuditSQL$test.coverage" NAME="test Coverage Results" MODIFIED="1523246050356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AuditSQL$test11.coverage" NAME="test11 Coverage Results" MODIFIED="1535981472927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AuditSQL$tets.coverage" NAME="tets Coverage Results" MODIFIED="1534561163185" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-  </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_TABLE_DETAILS" value="true" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <expand>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="Django default" type="feb32156:DbDataSourceImpl" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="Django default" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="Django default" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="auditsql: schema" type="c314c289:MysqlImplModel$Schema" />
-      </path>
-    </expand>
-    <select />
-  </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
-  <component name="FavoritesManager">
-    <favorites_list name="AuditSQL" />
-  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/user_manager/urls.py">
+      <file leaf-file-name="sql_orders_details.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="15" column="43" selection-start-line="15" selection-start-column="43" selection-end-line="15" selection-end-column="43" />
+            <state relative-caret-position="4607">
+              <caret line="271" column="28" selection-start-line="271" selection-start-column="28" selection-end-line="271" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/user_manager/views.py">
+      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="1275">
               <caret line="90" column="46" selection-start-line="90" selection-start-column="46" selection-end-line="90" selection-end-column="46" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
+=======
+            <state relative-caret-position="2975">
+              <caret line="175" column="40" selection-start-line="175" selection-start-column="40" selection-end-line="175" selection-end-column="40" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="permissions.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/user_manager/permissions.py">
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="221">
               <caret line="23" selection-start-line="23" selection-end-line="23" />
+=======
+            <state relative-caret-position="141">
+              <caret line="197" column="54" lean-forward="true" selection-start-line="197" selection-start-column="54" selection-end-line="197" selection-end-column="54" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
             </state>
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/project_manager/pt/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="315">
               <caret line="295" column="35" selection-start-line="295" selection-start-column="35" selection-end-line="295" selection-end-column="35" />
+=======
+      <file leaf-file-name="my_orders.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/sqlorders/my_orders.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="607">
+              <caret line="162" column="14" lean-forward="true" selection-start-line="162" selection-start-column="14" selection-end-line="162" selection-end-column="14" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
             </state>
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/mstats/urls.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -109,42 +89,69 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="323">
               <caret line="28" lean-forward="true" selection-start-line="28" selection-end-line="28" />
+=======
+      <file leaf-file-name="tasks.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1037">
+              <caret line="79" column="63" selection-start-line="79" selection-start-column="63" selection-end-line="79" selection-end-column="63" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
             </state>
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AuditSQL/urls.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="323">
               <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
+=======
+      <file leaf-file-name="sql_orders_list.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1853">
+              <caret line="109" column="40" selection-start-line="109" selection-start-column="40" selection-end-line="109" selection-end-column="40" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ol_tasks.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/ol_tasks.html">
+      <file leaf-file-name="inceptionApi.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/inceptionApi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3451">
-              <caret line="203" column="24" selection-start-line="203" selection-start-column="24" selection-end-line="203" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ol_work_order_audit.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/ol_work_order_audit.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4794">
-              <caret line="282" column="11" selection-start-line="282" selection-start-column="11" selection-end-line="282" selection-end-column="11" />
+            <state relative-caret-position="867">
+              <caret line="59" column="39" selection-start-line="59" selection-start-column="39" selection-end-line="59" selection-end-column="39" />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/project_manager/ol/views.py">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4828">
-              <caret line="303" column="45" selection-start-line="303" selection-start-column="45" selection-end-line="303" selection-end-column="45" />
+            <state relative-caret-position="2414">
+              <caret line="165" column="23" lean-forward="true" selection-start-line="165" selection-start-column="23" selection-end-line="165" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2482">
+              <caret line="153" column="17" selection-start-line="153" selection-start-column="17" selection-end-line="153" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/sqlorders/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="544">
+              <caret line="32" column="61" selection-start-line="32" selection-start-column="61" selection-end-line="32" selection-end-column="61" />
+              <folding>
+                <element signature="e#43#100#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -154,144 +161,99 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="CSS File" />
-        <option value="JavaScript File" />
-        <option value="HTML File" />
         <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>db_host</find>
-      <find>s_group</find>
-      <find>角色权限</find>
-      <find>云鸟</find>
-      <find>p_staging_records</find>
-      <find>m_one_records</find>
-      <find>m_one</find>
-      <find>使用温度</find>
-      <find>online_schema_query</find>
-      <find>p_of_work_order_audit</find>
-      <find>c</find>
-      <find>dba</find>
-      <find>#</find>
-      <find>Staging</find>
-      <find>Staging环境</find>
-      <find>role_id</find>
-      <find>userChangePassForm</find>
-      <find>M1</find>
-      <find>m1</find>
-      <find>Django_Celery_Results</find>
-      <find>apps</find>
-      <find>pill</find>
-      <find>ldap</find>
-      <find>animate</find>
-      <find>modal_tasks_show</find>
-      <find>demo-table</find>
-      <find>moment</find>
-      <find>fav</find>
-      <find>tasksForm</find>
-      <find>select</find>
+      <find>s_schema</find>
+      <find>show_result</find>
+      <find>p_get_sql_orders_list</find>
+      <find>GetParentSchemasForm</find>
+      <find>is_gh</find>
+      <find>GetPerformTasksResultView</find>
+      <find>&gt; 2000</find>
+      <find>ghost_cmd</find>
+      <find>wss</find>
+      <find>is_ghost</find>
+      <find>SqlOrdersAuditForm</find>
+      <find />
+      <find>&gt;</find>
+      <find>抄送</find>
+      <find>rd</find>
+      <find>rd@yun</find>
+      <find>static/js</find>
+      <find>opsorder</find>
+      <find>MySQLQueryLog</find>
+      <find>ExecSqlQueryForm</find>
+      <find>ws://</find>
+      <find>ws</find>
+      <find>p_get_offline_schemas</find>
+      <find>SqlOrdersCommitForm</find>
+      <find>get_table_info</find>
+      <find>yops</find>
+      <find>print</find>
+      <find>GetSqlExecuteDetailsView</find>
+      <find>GeneratePerformTasksForm</find>
+      <find>GetOfflineSchemasView</find>
     </findStrings>
-    <replaceStrings>
-      <replace>p_perform_exec</replace>
-      <replace>perform_exec</replace>
-      <replace>PerformExecView</replace>
-      <replace>p_perform_rollback</replace>
-      <replace>perform_rollback</replace>
-      <replace>PerformRollbackView</replace>
-      <replace>p_perform_stop</replace>
-      <replace>perform_stop</replace>
-      <replace>PerformStopView</replace>
-      <replace>OflineAuditForm</replace>
-      <replace>OnlineAuditForm</replace>
-      <replace>OnlineAuditRecordForm</replace>
-      <replace>OnlineApproveForm</replace>
-      <replace>OnlineFeedbackForm</replace>
-      <replace>OnlineCloseForm</replace>
-      <replace>OnlineReplyForm</replace>
-      <replace>can_scheduled</replace>
-      <replace>can_mysql_user</replace>
-      <replace>modal_new_account</replace>
-      <replace>html += &quot;&lt;option value=&quot; + comment + &quot;&gt;&quot; + comment + &quot;&lt;/option&gt;&quot;</replace>
-      <replace>ProjectForm</replace>
-      <replace>MysqlUserView</replace>
-      <replace>$mysql_user_table</replace>
-      <replace>MysqlUserManagerView</replace>
-      <replace>MysqlUserManager</replace>
-      <replace>host</replace>
-      <replace>schema_filter_query</replace>
-      <replace>#</replace>
-      <replace>预发布</replace>
-      <replace>预发布环境</replace>
-    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/apps/project_manager/utils.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/ol/forms.py" />
-        <option value="$PROJECT_DIR$/static/public.js" />
-        <option value="$PROJECT_DIR$/apps/project_manager/forms.py" />
-        <option value="$PROJECT_DIR$/templates/periodic_task.html" />
-        <option value="$PROJECT_DIR$/apps/scheduled_tasks/tasks.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/models.py" />
-        <option value="$PROJECT_DIR$/apps/mstats/urls.py" />
-        <option value="$PROJECT_DIR$/templates/mysql_user_manager.html" />
-        <option value="$PROJECT_DIR$/apps/mstats/views.py" />
-        <option value="$PROJECT_DIR$/templates/backup_task.html" />
-        <option value="$PROJECT_DIR$/templates/ol_audit.html" />
-        <option value="$PROJECT_DIR$/templates/of_audit.html" />
-        <option value="$PROJECT_DIR$/templates/sql_query.html" />
-        <option value="$PROJECT_DIR$/apps/project_manager/views.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/admin.py" />
-        <option value="$PROJECT_DIR$/apps/user_manager/models.py" />
-        <option value="$PROJECT_DIR$/templates/test_records.html" />
-        <option value="$PROJECT_DIR$/templates/staging_records.html" />
-        <option value="$PROJECT_DIR$/apps/mstats/models.py" />
-        <option value="$PROJECT_DIR$/apps/mstats/tasks.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/ol/views.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/inception/inception_api.py" />
-        <option value="$PROJECT_DIR$/celeryd" />
-        <option value="$PROJECT_DIR$/install.txt" />
-        <option value="$PROJECT_DIR$/initial_data.txt" />
-        <option value="$PROJECT_DIR$/apps/project_manager/tasks.py" />
-        <option value="$PROJECT_DIR$/AuditSQL/settings_bak.py" />
-        <option value="$PROJECT_DIR$/tets.py" />
-        <option value="$PROJECT_DIR$/apps/user_manager/views.py" />
-        <option value="$PROJECT_DIR$/templates/login.html" />
+        <option value="$PROJECT_DIR$/apps/webshell/views.py" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/models.py" />
+        <option value="$PROJECT_DIR$/sqlaudit/routing.py" />
+        <option value="$PROJECT_DIR$/apps/webshell/apps.py" />
+        <option value="$PROJECT_DIR$/apps/webshell/__init__.py" />
+        <option value="$PROJECT_DIR$/apps/webshell/admin.py" />
+        <option value="$PROJECT_DIR$/apps/webshell/models.py" />
+        <option value="$PROJECT_DIR$/sqlaudit/consumers.py" />
+        <option value="$PROJECT_DIR$/sqlaudit/asgi.py" />
+        <option value="$PROJECT_DIR$/apps/webshell/deadlocksNotice.py" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/deadlocksNotice.py" />
+        <option value="$PROJECT_DIR$/templates/mailnotice/_deadlocks_mail.html" />
+        <option value="$PROJECT_DIR$/apps/users/admin.py" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/utils.py" />
+        <option value="$PROJECT_DIR$/static/c_websocket.js" />
         <option value="$PROJECT_DIR$/templates/profile.html" />
-        <option value="$PROJECT_DIR$/apps/user_manager/utils.py" />
-        <option value="$PROJECT_DIR$/templates/webssh.html" />
-        <option value="$PROJECT_DIR$/apps/mstats/utils.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/migrations/0001_initial.py" />
-        <option value="$PROJECT_DIR$/templates/ol_tasks.html" />
-        <option value="$PROJECT_DIR$/AuditSQL/consumers.py" />
-        <option value="$PROJECT_DIR$/templates/ol_work_order_audit.html" />
-        <option value="$PROJECT_DIR$/templates/test_work_order_audit.html" />
-        <option value="$PROJECT_DIR$/apps/mstats/admin.py" />
-        <option value="$PROJECT_DIR$/apps/mstats/__init__.py" />
-        <option value="$PROJECT_DIR$/apps/mstats/apps.py" />
-        <option value="$PROJECT_DIR$/initial_data.json" />
-        <option value="$PROJECT_DIR$/deploy/install.txt" />
-        <option value="$PROJECT_DIR$/AuditSQL/settings.py" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_tasks_version.html" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/tasks.py" />
+        <option value="$PROJECT_DIR$/apps/users/models.py" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/admin.py" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/apps/user_manager/admin.py" />
+        <option value="$PROJECT_DIR$/sqlaudit/settings.py" />
+        <option value="$PROJECT_DIR$/apps/context_processors/global_values.py" />
+        <option value="$PROJECT_DIR$/sqlaudit/settings-bak.py" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_dml_orders.html" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/forms.py" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/views.py" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/urls.py" />
+        <option value="$PROJECT_DIR$/templates/mailnotice/_sqlorders_commit_mail.html" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/msgNotice.py" />
+        <option value="$PROJECT_DIR$/apps/sqlquery/sqlQueryApi.py" />
+        <option value="$PROJECT_DIR$/templates/sqlquery/sql_query.html" />
+        <option value="$PROJECT_DIR$/apps/users/forms.py" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
-        <option value="$PROJECT_DIR$/test11.py" />
-        <option value="$PROJECT_DIR$/apps/project_manager/pt/views.py" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/models.py" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/forms.py" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/tasks.py" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/urls.py" />
+        <option value="$PROJECT_DIR$/apps/sqlorders/views.py" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/my_orders.html" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsFlowSettings">
-    <service-enabled>true</service-enabled>
-    <exe-path />
-    <other-services-enabled>true</other-services-enabled>
-    <auto-save>true</auto-save>
-  </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
@@ -311,31 +273,17 @@
       <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/ion.rangeSlider/package.json" />
       <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/jquery-knob/package.json" />
       <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/jquery-slimscroll/package.json" />
-      <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/jquery-treegrid/package.json" />
       <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/jquery-ui/package.json" />
       <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/morris.js/package.json" />
       <path value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/select2/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/Flot/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/bootstrap-datepicker/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/bootstrap-daterangepicker/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/bootstrap-select/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/bootstrap/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/chart.js/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/ckeditor/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/eve-raphael/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/ion.rangeSlider/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/jquery-knob/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/jquery-slimscroll/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/jquery-ui/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/morris.js/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/AdminLTE/bower_components/select2/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/codemirror-5.34.0/package.json" />
-      <path value="$PROJECT_DIR$/../auditdb/static/cropper/package.json" />
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1440" />
-    <option name="height" value="900" />
+    <option name="width" value="1680" />
+    <option name="height" value="1050" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -358,23 +306,28 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
+<<<<<<< HEAD
               <item name="mstats" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="context_processors" type="462c0819:PsiDirectoryNode" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
-              <item name="user_manager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
-              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -384,31 +337,27 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="list.type.of.created.stylesheet" value="CSS" />
-    <property name="node.js.detected.package.stylelint" value="true" />
-    <property name="node.js.path.for.package.stylelint" value="project" />
-    <property name="node.js.selected.package.stylelint" value="" />
-    <property name="python.debugger.dataview.coloredbydefault" value="false" />
-    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/../yops/apps/opsorder/views.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/media" />
-      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.2/bower_components" />
-      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.2/bower_components/bootstrap3-editable" />
-      <recent name="$PROJECT_DIR$/apps/project_manager/user" />
-      <recent name="$PROJECT_DIR$/templates" />
+      <recent name="$PROJECT_DIR$/templates/sqlorders" />
+      <recent name="$PROJECT_DIR$/apps/sqlorders" />
+      <recent name="$PROJECT_DIR$/templates/mailnotice" />
+      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/bootstrap-table" />
+      <recent name="$PROJECT_DIR$/sqlaudit" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/apps" />
       <recent name="$PROJECT_DIR$/media/png" />
-      <recent name="$PROJECT_DIR$/deploy" />
-      <recent name="$PROJECT_DIR$/media/img" />
-      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.2/bower_components/bootstrap-table" />
-      <recent name="$PROJECT_DIR$/static" />
+      <recent name="$PROJECT_DIR$/media/png/admin" />
+      <recent name="$PROJECT_DIR$/media" />
+      <recent name="$PROJECT_DIR$/apps/sqlquery" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -423,190 +372,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test11">
-    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="TARGET" value="" />
-      <option name="SETTINGS_FILE" value="" />
-      <option name="CUSTOM_SETTINGS" value="false" />
-      <option name="USE_OPTIONS" value="false" />
-      <option name="OPTIONS" value="" />
-    </configuration>
-    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-    </configuration>
-    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-    </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="test (1)" type="PythonConfigurationType" factoryName="Python">
-      <module name="xb_backup" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../xb_backup" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../xb_backup/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="test1" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="xb_backup" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../xb_backup" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../xb_backup/test1.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="test11" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test11.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="tests (2)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/apps/project_manager" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/apps/project_manager/tests.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="tets" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tets.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="tt1" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="xb_backup" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../xb_backup" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../xb_backup/tt1.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
+  <component name="RunManager">
     <configuration name="AuditSQL" type="Python.DjangoServer" factoryName="Django server">
       <module name="AuditSQL" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
-        <env name="DJANGO_SETTINGS_MODULE" value="AuditSQL.settings" />
+        <env name="DJANGO_SETTINGS_MODULE" value="sqlaudit.settings" />
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="" />
@@ -623,140 +396,26 @@
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
     </configuration>
-    <configuration default="true" type="Python.DjangoServer" factoryName="Django server">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="launchJavascriptDebuger" value="false" />
-      <option name="port" value="8000" />
-      <option name="host" value="" />
-      <option name="additionalOptions" value="" />
-      <option name="browserUrl" value="" />
-      <option name="runTestServer" value="false" />
-      <option name="runNoReload" value="false" />
-      <option name="useCustomRunCommand" value="false" />
-      <option name="customRunCommand" value="" />
-    </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerJest" factoryName="Jest">
-      <node-interpreter value="project" />
-      <working-dir value="" />
-      <envs />
-      <scope-kind value="ALL" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
-      <config-file value="" />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
-      <method />
-    </configuration>
-    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run" />
-      <scripts />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <gulpfile />
-      <tasks />
-      <arguments />
-      <envs />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Unittests">
-      <module name="AuditSQL" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;.&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-    </configuration>
-    <list>
-      <item itemvalue="Django server.AuditSQL" />
-      <item itemvalue="Python.test (1)" />
-      <item itemvalue="Python.test1" />
-      <item itemvalue="Python.tests (2)" />
-      <item itemvalue="Python.tt1" />
-      <item itemvalue="Python.tets" />
-      <item itemvalue="Python.test11" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.test11" />
-        <item itemvalue="Python.tets" />
-        <item itemvalue="Python.tt1" />
-        <item itemvalue="Python.test1" />
-        <item itemvalue="Python.tests (2)" />
-      </list>
-    </recent_temporary>
   </component>
-  <component name="SvnConfiguration" cleanupOnStartRun="true">
-    <configuration>$USER_HOME$/.subversion</configuration>
-    <supportedVersion>125</supportedVersion>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="1609bf2c-1d59-44d1-b9c1-c5db0e15fc81" name="Default" comment="" />
-      <created>1517535579961</created>
+      <changelist id="9a132528-50e5-40cd-83a3-2079ee1a8dd9" name="Default" comment="" />
+      <created>1536994692700</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1517535579961</updated>
+      <updated>1536994692700</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
+<<<<<<< HEAD
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.52129924" side_tool="true" weight="0.33120206" />
       <window_info anchor="bottom" id="Database Changes" order="8" weight="0.3299389" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47870076" weight="0.1713555" />
@@ -767,20 +426,31 @@
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" weight="0.3297568" />
       <window_info anchor="right" id="SciView" order="3" weight="0.3297568" />
+=======
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.501221" side_tool="true" weight="0.25738397" />
+      <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4993895" weight="0.4753219" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.32848233" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.498779" weight="0.25738397" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25457877" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="right" id="Database" order="3" />
+      <window_info anchor="right" id="SciView" order="3" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.41751528" />
-      <window_info id="Favorites" order="2" sideWeight="0.5372907" side_tool="true" weight="0.23003195" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39806867" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" id="Data View" order="3" />
-      <window_info anchor="bottom" id="manage.py@AuditSQL" order="8" sideWeight="0.49427754" weight="0.32790223" />
+      <window_info anchor="bottom" id="manage.py@AuditSQL" order="7" weight="0.32805908" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Database Console" order="9" sideWeight="0.49713877" weight="0.329602" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32825205" />
+      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
+<<<<<<< HEAD
     <layout-to-restore>
       <window_info anchor="bottom" id="Database Console" order="13" sideWeight="0.49713877" weight="0.329602" />
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46270928" visible="true" weight="0.07082002" />
@@ -806,6 +476,8 @@
       <window_info anchor="bottom" id="Debug" order="3" weight="0.41768292" />
       <window_info id="Favorites" order="2" sideWeight="0.5372907" side_tool="true" weight="0.23003195" />
     </layout-to-restore>
+=======
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -815,143 +487,152 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <default-breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </default-breakpoints>
-      <option name="time" value="207" />
+      <option name="time" value="7" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/deploy/initial_data.txt" />
     <entry file="file://$PROJECT_DIR$/apps/project_manager/tasks.py">
+=======
+    <entry file="file://$PROJECT_DIR$/sqlaudit/routing.py">
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="128" column="27" lean-forward="true" selection-start-line="128" selection-start-column="27" selection-end-line="128" selection-end-column="27" />
+        <state relative-caret-position="136">
+          <caret line="12" column="39" lean-forward="true" selection-start-line="12" selection-start-column="39" selection-end-line="12" selection-end-column="39" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/celery.py">
+    <entry file="file://$PROJECT_DIR$/apps/webshell/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
           <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logs/all.log">
+    <entry file="file://$PROJECT_DIR$/sqlaudit/consumers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+        <state relative-caret-position="612">
+          <caret line="36" column="34" lean-forward="true" selection-start-line="36" selection-start-column="34" selection-end-line="36" selection-end-column="34" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tets.py" />
-    <entry file="file://$PROJECT_DIR$/templates/login.html">
+    <entry file="file://$PROJECT_DIR$/sqlaudit/asgi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="70" column="29" selection-start-line="70" selection-start-column="29" selection-end-line="70" selection-end-column="29" />
+        <state relative-caret-position="221">
+          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/migrations/0001_initial.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/deadlocksNotice.py" />
+    <entry file="file://$PROJECT_DIR$/apps/webshell/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
-          <caret line="58" column="10" selection-start-line="58" selection-start-column="10" selection-end-line="58" selection-end-column="10" />
+        <state relative-caret-position="795">
+          <caret line="103" lean-forward="true" selection-start-line="103" selection-end-line="103" />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/templates/webssh.html">
+=======
+    <entry file="file://$PROJECT_DIR$/templates/mailnotice/_deadlocks_mail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1054">
-          <caret line="62" column="74" selection-start-line="62" selection-start-column="12" selection-end-line="62" selection-end-column="74" />
+        <state relative-caret-position="544">
+          <caret line="32" column="7" lean-forward="true" selection-start-line="32" selection-start-column="7" selection-end-line="32" selection-end-column="7" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/test_work_order_audit.html">
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/utils.py" />
+    <entry file="file://$PROJECT_DIR$/apps/users/views.py">
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
-          <caret line="120" column="52" selection-start-line="120" selection-start-column="52" selection-end-line="120" selection-end-column="52" />
+        <state relative-caret-position="340">
+          <caret line="20" column="23" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/c_websocket.js">
+    <entry file="file://$PROJECT_DIR$/apps/users/admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="666">
-          <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
+        <state relative-caret-position="612">
+          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/profile.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="65" selection-start-line="16" selection-start-column="65" selection-end-line="16" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/yops/lib/python3.6/site-packages/django/db/models/fields/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="515">
+          <caret line="2086" lean-forward="true" selection-start-line="2086" selection-end-line="2086" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="223">
+          <caret line="217" column="27" lean-forward="true" selection-start-line="217" selection-start-column="27" selection-end-line="217" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_tasks_version.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="329">
+          <caret line="154" column="36" lean-forward="true" selection-start-line="154" selection-start-column="36" selection-end-line="154" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/webshell/webssh.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3570">
+          <caret line="210" selection-start-line="210" selection-end-line="210" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/yops/lib/python3.6/site-packages/django/views/generic/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="422">
+          <caret line="100" column="40" lean-forward="true" selection-start-line="100" selection-start-column="40" selection-end-line="100" selection-end-column="40" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/public.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="666">
-          <caret line="92" column="13" selection-start-line="92" selection-start-column="13" selection-end-line="92" selection-end-column="13" />
+        <state relative-caret-position="391">
+          <caret line="23" column="38" lean-forward="true" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/tasks.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="36" selection-start-line="36" selection-end-line="36" />
+        <state relative-caret-position="442">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/consumers.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="152" column="35" selection-start-line="152" selection-start-column="35" selection-end-line="152" selection-end-column="35" />
+        <state relative-caret-position="782">
+          <caret line="59" column="32" lean-forward="true" selection-start-line="59" selection-start-column="32" selection-end-line="59" selection-end-column="32" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/routing.py">
+    <entry file="file://$PROJECT_DIR$/apps/users/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/tasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1802">
-          <caret line="119" column="38" selection-start-line="119" selection-start-column="38" selection-end-line="119" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deploy/initial_data.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret column="8849" selection-start-column="8849" selection-end-column="8849" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings_bak.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="821">
-          <caret line="279" column="1" lean-forward="true" selection-start-line="279" selection-start-column="1" selection-end-line="279" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deploy/celeryd">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="399" column="16" lean-forward="true" selection-start-line="399" selection-start-column="16" selection-end-line="399" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deploy/install.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="651">
-          <caret line="410" column="5" selection-start-line="410" selection-start-column="5" selection-end-line="410" selection-end-column="5" />
+        <state relative-caret-position="1054">
+          <caret line="67" lean-forward="true" selection-start-line="67" selection-end-line="67" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-        <state split_layout="FIRST">
-          <first_editor relative-caret-position="251">
-            <caret line="98" column="4" lean-forward="true" selection-start-line="98" selection-start-column="4" selection-end-line="98" selection-end-column="4" />
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="262">
+            <caret line="61" lean-forward="true" selection-start-line="61" selection-end-line="61" />
           </first_editor>
           <second_editor>
             <js_state />
@@ -959,207 +640,222 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/readme.txt">
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/perform_tasks.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3376">
+          <caret line="443" column="48" selection-start-line="443" selection-start-column="48" selection-end-line="443" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/yops/lib/python3.6/site-packages/django/contrib/messages/context_processors.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
-          <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
+          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/apps.py">
+    <entry file="file://$PROJECT_DIR$/static/js/order-1.js" />
+    <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        <state relative-caret-position="522">
+          <caret line="70" column="30" lean-forward="true" selection-start-line="70" selection-start-column="30" selection-end-line="70" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/__init__.py">
+    <entry file="file://$PROJECT_DIR$/apps/context_processors/global_values.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" selection-end-line="1" />
+        <state relative-caret-position="306">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/__init__.py">
+    <entry file="file://$PROJECT_DIR$/templates/mailnotice/_sqlorders_commit_mail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        <state relative-caret-position="476">
+          <caret line="28" column="7" lean-forward="true" selection-start-line="28" selection-start-column="7" selection-end-line="28" selection-end-column="7" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/apps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" selection-start-line="6" selection-end-line="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/virtualenv_python3.6.2/lib/python3.6/site-packages/django_celery_results/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="27" column="5" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/settings.py">
+    <entry file="file://$PROJECT_DIR$/templates/mailnotice/_sqlorders_verify_mail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="510">
-          <caret line="36" column="27" selection-start-line="36" selection-start-column="27" selection-end-line="36" selection-end-column="27" />
+          <caret line="30" column="35" lean-forward="true" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/forms.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/msgNotice.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="476">
+          <caret line="28" column="11" lean-forward="true" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/mstats/admin.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/sqlQueryApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        <state relative-caret-position="407">
+          <caret line="203" column="28" lean-forward="true" selection-start-line="203" selection-start-column="28" selection-end-line="203" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="77" column="78" selection-start-line="77" selection-start-column="78" selection-end-line="77" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="799">
+          <caret line="47" column="27" selection-start-line="47" selection-start-column="27" selection-end-line="47" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlquery/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="18" column="49" selection-start-line="18" selection-start-column="49" selection-end-line="18" selection-end-column="49" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="444">
-          <caret line="54" column="15" lean-forward="true" selection-start-line="54" selection-start-column="15" selection-end-line="54" selection-end-column="15" />
+        <state>
+          <caret line="31" column="14" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/userpic.html">
+    <entry file="file://$PROJECT_DIR$/sqlaudit/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1241">
-          <caret line="73" column="18" lean-forward="true" selection-start-line="73" selection-start-column="18" selection-end-line="73" selection-end-column="18" />
+        <state relative-caret-position="17">
+          <caret line="94" column="63" selection-start-line="94" selection-start-column="63" selection-end-line="94" selection-end-column="63" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/admin.py">
+    <entry file="file://$PROJECT_DIR$/templates/sqlquery/sql_query.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="90" lean-forward="true" selection-start-line="90" selection-end-line="90" />
+        <state relative-caret-position="17">
+          <caret line="311" column="38" selection-start-line="311" selection-start-column="36" selection-end-line="311" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/models.py">
+    <entry file="file://$PROJECT_DIR$/static/c_websocket.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="107" selection-start-line="107" selection-end-line="107" />
+        <state relative-caret-position="17">
+          <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/profile.html">
+    <entry file="file://$PROJECT_DIR$/apps/users/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2195">
-          <caret line="135" column="61" selection-start-line="135" selection-start-column="61" selection-end-line="135" selection-end-column="61" />
+        <state relative-caret-position="430">
+          <caret line="59" column="21" lean-forward="true" selection-start-line="59" selection-start-column="21" selection-end-line="59" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/ol_records.html">
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1802">
-          <caret line="106" column="25" selection-start-line="99" selection-start-column="24" selection-end-line="106" selection-end-column="25" />
+        <state relative-caret-position="1717">
+          <caret line="101" column="100" selection-start-line="101" selection-start-column="86" selection-end-line="101" selection-end-column="100" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/ol/views.py">
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_dml_orders.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4828">
-          <caret line="303" column="45" selection-start-line="303" selection-start-column="45" selection-end-line="303" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/ol_tasks.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3451">
-          <caret line="203" column="24" selection-start-line="203" selection-start-column="24" selection-end-line="203" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/ol/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="25" column="71" lean-forward="true" selection-start-line="25" selection-start-column="71" selection-end-line="25" selection-end-column="71" />
+        <state relative-caret-position="4199">
+          <caret line="247" column="11" selection-start-line="247" selection-start-column="11" selection-end-line="247" selection-end-column="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="54" column="27" lean-forward="true" selection-start-line="54" selection-start-column="27" selection-end-line="54" selection-end-column="27" />
+        <state relative-caret-position="2975">
+          <caret line="175" column="40" selection-start-line="175" selection-start-column="40" selection-end-line="175" selection-end-column="40" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/ol_work_order_audit.html">
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_details.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4794">
-          <caret line="282" column="11" selection-start-line="282" selection-start-column="11" selection-end-line="282" selection-end-column="11" />
+        <state relative-caret-position="4607">
+          <caret line="271" column="28" selection-start-line="271" selection-start-column="28" selection-end-line="271" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/urls.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="15" column="43" selection-start-line="15" selection-start-column="43" selection-end-line="15" selection-end-column="43" />
+        <state relative-caret-position="2482">
+          <caret line="153" column="17" selection-start-line="153" selection-start-column="17" selection-end-line="153" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AuditSQL/urls.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/inceptionApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
+        <state relative-caret-position="867">
+          <caret line="59" column="39" selection-start-line="59" selection-start-column="39" selection-end-line="59" selection-end-column="39" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/views.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1037">
+          <caret line="79" column="63" selection-start-line="79" selection-start-column="63" selection-end-line="79" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="1275">
           <caret line="90" column="46" selection-start-line="90" selection-start-column="46" selection-end-line="90" selection-end-column="46" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
+=======
+        <state relative-caret-position="1853">
+          <caret line="109" column="40" selection-start-line="109" selection-start-column="40" selection-end-line="109" selection-end-column="40" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test11.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="3" lean-forward="true" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
+        <state relative-caret-position="544">
+          <caret line="32" column="61" selection-start-line="32" selection-start-column="61" selection-end-line="32" selection-end-column="61" />
+          <folding>
+            <element signature="e#43#100#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/user_manager/permissions.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="221">
           <caret line="23" selection-start-line="23" selection-end-line="23" />
+=======
+        <state relative-caret-position="2414">
+          <caret line="165" column="23" lean-forward="true" selection-start-line="165" selection-start-column="23" selection-end-line="165" selection-end-column="23" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/inception/inception_api.py">
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="346" column="21" lean-forward="true" selection-start-line="346" selection-start-column="21" selection-end-line="346" selection-end-column="21" />
+        <state relative-caret-position="141">
+          <caret line="197" column="54" lean-forward="true" selection-start-line="197" selection-start-column="54" selection-end-line="197" selection-end-column="54" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/project_manager/pt/views.py">
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/my_orders.html">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="315">
           <caret line="295" column="35" selection-start-line="295" selection-start-column="35" selection-end-line="295" selection-end-column="35" />
         </state>
@@ -1176,6 +872,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
           <caret line="28" lean-forward="true" selection-start-line="28" selection-end-line="28" />
+=======
+        <state relative-caret-position="607">
+          <caret line="162" column="14" lean-forward="true" selection-start-line="162" selection-start-column="14" selection-end-line="162" selection-end-column="14" />
+>>>>>>> 4db195cc41b70fbb7dd0984a17168bdc62b5b916
         </state>
       </provider>
     </entry>

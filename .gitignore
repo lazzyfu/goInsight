@@ -11,3 +11,4 @@ apps/project_manager/inception/__pycache__/inception_api.cpython-36.pyc
 AuditSQL/media/files
 *.zip
 apps/project_manager/tests.py
+*.jpg
