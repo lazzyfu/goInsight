@@ -74,15 +74,12 @@ class ExecuteSql(object):
 
     def _connect(self):
         """新建连接"""
-        try:
-            cnx = pymysql.connect(host=self.host, port=self.port,
-                                  user=self.user, password=self.password,
-                                  charset=self.charset, database=self.database,
-                                  cursorclass=pymysql.cursors.DictCursor
-                                  )
-            return cnx
-        except Exception as err:
-            sys.exit(1)
+        cnx = pymysql.connect(host=self.host, port=self.port,
+                              user=self.user, password=self.password,
+                              charset=self.charset, database=self.database,
+                              cursorclass=pymysql.cursors.DictCursor
+                              )
+        return cnx
 
     def _sql_parser(self):
         """返回是DML还是DDL"""
@@ -353,33 +350,39 @@ class ExecuteSql(object):
         return result
 
     def run_by_sql(self, sql):
-        cnx = self._connect()
+        try:
+            cnx = self._connect()
 
-        # 传入单条SQL语句
-        # 处理注释
-        self.sql = self._remove_comment(sql)
+            # 传入单条SQL语句
+            # 处理注释
+            self.sql = self._remove_comment(sql)
 
-        # 判断传入SQL的类型，为DML还是DDL
-        type = self._sql_parser()
+            # 判断传入SQL的类型，为DML还是DDL
+            type = self._sql_parser()
 
-        if type == 'DML':
-            result = self._op_dml(cnx)
-        elif type == 'DDL':
-            result = self._op_ddl(cnx)
-        else:
-            # 匹配USE语法，单独处理
-            usecompile = re.compile('^(USE)([\s\S]*)', re.I)
-            usematch = usecompile.match(self.sql)
-
-            if usematch is not None:
-                exec_log = f"状态: 执行成功\n"
-                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': 0,
-                          'runtime': '0.00s', 'exec_log': exec_log}
+            if type == 'DML':
+                result = self._op_dml(cnx)
+            elif type == 'DDL':
+                result = self._op_ddl(cnx)
             else:
-                # 其他语法的SQL，不执行，直接返回警告
-                exec_log = f"状态: 警告\n" \
-                           f"错误信息：非DML和DDL语句，执行失败\n"
-                result = {'status': 'warn', 'exec_log': exec_log}
+                # 匹配USE语法，单独处理
+                usecompile = re.compile('^(USE)([\s\S]*)', re.I)
+                usematch = usecompile.match(self.sql)
+
+                if usematch is not None:
+                    exec_log = f"状态: 执行成功\n"
+                    result = {'status': 'success', 'rollbacksql': '', 'affected_rows': 0,
+                              'runtime': '0.00s', 'exec_log': exec_log}
+                else:
+                    # 其他语法的SQL，不执行，直接返回警告
+                    exec_log = f"状态: 警告\n" \
+                               f"错误信息：非DML和DDL语句，执行失败\n"
+                    result = {'status': 'warn', 'exec_log': exec_log}
+        except Exception as err:
+            pull_msg = {'status': 3, 'data': str(err)}
+            async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
+                                                                    'text': json.dumps(pull_msg)})
+            result = {'status': 'fail', 'exec_log': err}
         return result
 
     def _close(self, cnx):

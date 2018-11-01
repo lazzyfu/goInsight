@@ -406,7 +406,6 @@ class PerformTasksSQLPreView(View):
 class FullPerformTasksView(View):
     """全部执行"""
 
-    @method_decorator(check_incep_alive)
     @permission_required('can_execute_sql')
     @transaction.atomic
     def post(self, request):
@@ -422,7 +421,6 @@ class FullPerformTasksView(View):
 class SinglePerformTasksView(View):
     """单条执行"""
 
-    @method_decorator(check_incep_alive)
     @permission_required('can_execute_sql')
     @transaction.atomic
     def post(self, request):
@@ -441,7 +439,6 @@ class PerformTasksOpView(View):
     只支持停止修改表结构的操作
     """
 
-    @method_decorator(check_incep_alive)
     @permission_required('can_execute_sql')
     @transaction.atomic
     def post(self, request):
