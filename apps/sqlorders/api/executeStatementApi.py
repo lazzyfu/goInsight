@@ -32,7 +32,6 @@ class CnxStatusCheckThread(threading.Thread):
         self.username = username
         self.cnx = cnx
         self.watch_thread_id = watch_thread_id
-        print('监控id:', self.watch_thread_id)
 
     def run(self):
         # 每秒查询一次状态
@@ -134,6 +133,7 @@ class ExecuteSql(object):
 
                 if data['Variable_name'] == 'gtid_mode' and data['Value'] == 'OFF':
                     rr.append('mysql gtid mode not enable')
+        self._close(cnx)
         return rr
 
     def _get_position(self, cnx):
@@ -145,7 +145,7 @@ class ExecuteSql(object):
         with cnx.cursor() as cursor:
             cursor.execute(position_cmd)
             r = cursor.fetchone()
-            return r['Position'], r['File']
+        return r['Position'], r['File']
 
     def _get_processlist(self, watch_thread_id):
         """启动获取processlist的线程"""
@@ -160,6 +160,7 @@ class ExecuteSql(object):
             cursor.execute(self.sql)
             affected_rows = cursor.rowcount
         cnx.commit()
+
         end_time = time.time()
         runtime = str(round(float(end_time - start_time), 3)) + 's'
         exec_log = f"状态: 执行成功\n" \
@@ -241,6 +242,7 @@ class ExecuteSql(object):
             try:
                 # 执行SQL
                 affected_rows, runtime, exec_log = self._execute_sql(cnx)
+                self._close(cnx)
                 result = {'status': 'success', 'rollbacksql': '', 'runtime': runtime,
                           'affected_rows': f'{affected_rows}',
                           'exec_log': exec_log}
@@ -261,6 +263,7 @@ class ExecuteSql(object):
                 try:
                     # 直接执行ALTER语句
                     affected_rows, runtime, exec_log = self._execute_sql(cnx)
+                    self._close(cnx)
                     result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                               'runtime': runtime,
                               'exec_log': exec_log}
@@ -273,7 +276,7 @@ class ExecuteSql(object):
     def _op_dml(self, cnx):
         # 检查mysql相关配置
         # 如果check_result列表长度大于0，说明不支持备份
-        binlog_file = start_pos = end_pos = None
+        binlog_file = start_pos = end_pos = result = None
         check_result = self._check_mysql_environment(self._connect())
 
         # 操作DML语句
@@ -295,6 +298,7 @@ class ExecuteSql(object):
             # 事务执行完成后，获取end position
             if len(check_result) == 0:
                 end_pos, _ = self._get_position(cnx)
+            self._close(cnx)
 
             # 判断影响行数
             if affected_rows > 0:
@@ -303,6 +307,10 @@ class ExecuteSql(object):
                     matchcompile = re.compile('^(UPDATE|DELETE|INSERT)([\s\S]*)', re.I)
                     match = matchcompile.match(self.sql)
                     sql_type = match.group(1).upper()
+
+                    pull_msg = {'status': 3, 'data': '正在执行当前SQL的备份，这可能需要花费些时间...'}
+                    async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
+                                                                            'text': json.dumps(pull_msg)})
 
                     data = ReadRemoteBinlog(binlog_file=binlog_file,
                                             start_pos=start_pos,
@@ -314,12 +322,21 @@ class ExecuteSql(object):
                                             sql_type=sql_type,
                                             affected_rows=affected_rows)
 
-                    # 返回回滚语句的列表
-                    # 格式：[{'gtid': gtid, 'rbsql': rbsql}, {'gtid': gtid, 'rbsql': rbsql} ...]
-                    rollbacksql = '\n\n'.join(
-                        ['\n'.join([i['gtid'], '\n\n'.join(i['rbsql'])]) for i in data.run_by_rows()])
-                    result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
-                              'runtime': runtime, 'exec_log': exec_log}
+                    # 接收数据格式
+                    r_data = data.run_by_rows()
+                    if r_data['status'] == 'success':
+                        rollbacksql = '\n\n'.join(
+                            ['\n'.join([i['gtid'], '\n\n'.join(i['rbsql'])]) for i in r_data['data']])
+                        result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
+                                  'runtime': runtime, 'exec_log': exec_log}
+                        pull_msg = {'status': 3, 'data': '备份成功，请点击结果按钮查看回滚SQL语句...'}
+                        async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
+                                                                                'text': json.dumps(pull_msg)})
+                    elif r_data['status'] == 'fail':
+                        result = {'status': 'fail', 'exec_log': exec_log}
+                        pull_msg = {'status': 3, 'data': f'备份失败, 失败原因：{exec_log}'}
+                        async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
+                                                                                'text': json.dumps(pull_msg)})
                 else:
                     check_result = ', '.join(check_result)
                     exec_log = f"状态: 执行成功，备份失败\n" \
@@ -363,7 +380,6 @@ class ExecuteSql(object):
                 exec_log = f"状态: 警告\n" \
                            f"错误信息：非DML和DDL语句，执行失败\n"
                 result = {'status': 'warn', 'exec_log': exec_log}
-        self._close(cnx)
         return result
 
     def _close(self, cnx):

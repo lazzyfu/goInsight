@@ -17,8 +17,10 @@ class ReadRemoteBinlog(object):
     start_pos：开始读取的position
     end_pos：结束读取的position
     sql_type：INSERT、UPDATE、DELETE
-    返回格式：
-    [{'gtid': gtid, 'rbsql': rbsql}, {'gtid': gtid, 'rbsql': rbsql} ...]
+
+    返回数据：
+    success: {'status': 'success', 'data': [{'gtid': gtid, 'rbsql': rbsql}, {'gtid': gtid, 'rbsql': rbsql} ...]}
+    fail: result = {'status': 'fail', 'msg': str(err)}
     """
 
     def __init__(self, binlog_file=None, start_pos=None, end_pos=None,
@@ -151,16 +153,16 @@ class ReadRemoteBinlog(object):
         return rollbacksql
 
     def run_by_rows(self):
-        stream = BinLogStreamReader(connection_settings=self.mysql_setting,
-                                    server_id=101213112,
-                                    only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, GtidEvent],
-                                    resume_stream=True,
-                                    blocking=False,
-                                    log_file=self.binlog_file,
-                                    log_pos=self.start_pos,
-                                    )
-        rows = []
         try:
+            stream = BinLogStreamReader(connection_settings=self.mysql_setting,
+                                        server_id=101213112,
+                                        only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, GtidEvent],
+                                        resume_stream=True,
+                                        blocking=False,
+                                        log_file=self.binlog_file,
+                                        log_pos=self.start_pos,
+                                        )
+            rows = []
             for binlogevent in stream:
                 log_pos = stream.log_pos
                 if log_pos >= self.end_pos:
@@ -197,7 +199,9 @@ class ReadRemoteBinlog(object):
                                     binlog['values'] = row["values"]
                                     binlog['type'] = 'INSERT'
                                     rows.append(binlog)
+            stream.close()
+            result = {'status': 'success', 'data': self._filter_gtid(rows)}
         except Exception as err:
-            print(err)
-        stream.close()
-        return self._filter_gtid(rows)
+            result = {'status': 'fail', 'msg': str(err)}
+
+        return result

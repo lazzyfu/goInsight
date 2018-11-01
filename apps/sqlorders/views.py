@@ -331,7 +331,7 @@ class PerformTasksDetailsView(View):
                 When(exec_status='5', then=Value('失败')),
                 output_field=CharField(),
             )
-        ).filter(taskid=taskid).values('id', 'user', 'sql', 'taskid', 'status')
+        ).filter(taskid=taskid).values('id', 'user', 'sql', 'taskid', 'status', 'sql_type')
 
         i = 1
         task_details = []
@@ -343,7 +343,8 @@ class PerformTasksDetailsView(View):
                 'user': row['user'],
                 'sql': row['sql'],
                 'taskid': row['taskid'],
-                'exec_status': row['status']
+                'exec_status': row['status'],
+                'sql_type': row['sql_type']
             })
             i += 1
         return HttpResponse(json.dumps(task_details))

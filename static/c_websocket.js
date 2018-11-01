@@ -7,6 +7,7 @@
  * status
  * 1: 输出执行当前SQL语句的processlist信息
  * 2：渲染gh-ost输出
+ * 3：备份进度输出
  */
 function CreateWebSocket() {
     let socket = new WebSocket('ws://' + window.location.host + '/ws/');
@@ -29,6 +30,11 @@ function CreateWebSocket() {
             let element = document.getElementById('output_append');
             element.scrollTop = element.scrollHeight;
         }
+        if (status === 3) {
+            $this.empty();
+            output_html = renderRollbackResult(data);
+            $this.append(output_html);
+        }
     };
     socket.onclose = function () {
         setTimeout(function () {
@@ -44,7 +50,7 @@ function CreateWebSocket() {
    'ROWS_SENT': 0, 'ROWS_EXAMINED': 0}
  */
 function renderSqlProcesslistResult(data) {
-    let html = "<p class=\"text-danger\">该SQL的SHOW PROCESSLIST实时输出：</p>";
+    let html = "<p class=\"text-danger\">当前SQL SESSION ID的SHOW PROCESSLIST实时输出：</p>";
     for (let key in data) {
         html += "<p><b class='text-blue'>" + key + "</b>: " + data[key] + "</p>"
     }
@@ -56,4 +62,8 @@ function renderSqlProcesslistResult(data) {
  */
 function renderGhostResult(data) {
     return "<p>" + data.replace(/\n/g, '\.' + '<br>') + "</p>";
+}
+
+function renderRollbackResult(data) {
+    return "<p>" + data + "</p>"
 }

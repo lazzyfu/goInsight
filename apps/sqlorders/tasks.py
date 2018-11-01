@@ -9,7 +9,9 @@ status = 2: 推送inception processlist
 
 import ast
 import logging
+import os
 import time
+from datetime import datetime
 
 from celery import shared_task
 from channels.layers import get_channel_layer
@@ -17,11 +19,21 @@ from django.core.cache import cache
 from django.utils import timezone
 
 from sqlorders.api.executeStatementApi import ExecuteSql
-from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, SysConfig, MysqlSchemas
+from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlSchemas
 from sqlorders.msgNotice import SqlOrdersMsgPull
 
 channel_layer = get_channel_layer()
 logger = logging.getLogger('django')
+
+
+def save_rbsql_as_file(rollbacksql):
+    """当备份的数据太大时，数据库由于max_allowed_packet问题无法保存，此时保存到文件"""
+    if not os.path.exists(r'media/rbsql'):
+        os.makedirs('media/rbsql')
+    filename = f"media/rbsql/rbsql_{datetime.now().strftime('%Y%m%d%H%M%S%f')}.sql"
+    with open(filename, 'w') as f:
+        f.write(rollbacksql)
+    return filename
 
 
 def upd_current_task_status(id=None, exec_result=None, exec_status=None):
@@ -39,12 +51,28 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
     elif exec_result['status'] == 'success':
         # 执行状态为处理中时，状态变为已完成
         if exec_status == '2':
-            data.exec_status = '1'
-            data.affected_row = int(exec_result.get('affected_rows'))
-            data.rollback_sql = exec_result.get('rollbacksql')
-            data.runtime = exec_result.get('runtime')
-            data.exec_log = exec_result.get('exec_log')
-            data.save()
+            rbsql = exec_result.get('rollbacksql')
+            affected_rows = int(exec_result.get('affected_rows'))
+            runtime = exec_result.get('runtime')
+            exec_log = exec_result.get('exec_log')
+            try:
+                data.rollback_sql = rbsql
+                data.save()
+            except Exception as err:
+                print(err)
+                filename = save_rbsql_as_file(rbsql)
+                data.rollback_sql = '\n'.join([
+                    '数据超出max_allowed_packet，写入到数据库失败',
+                    '备份数据已经以文本的形式进行了保存',
+                    '存储路径：',
+                    filename
+                ])
+            finally:
+                data.runtime = runtime
+                data.exec_log = exec_log
+                data.exec_status = '1'
+                data.affected_row = affected_rows
+                data.save()
 
 
 def update_audit_content_progress(username, taskid):

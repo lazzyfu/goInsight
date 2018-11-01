@@ -87,7 +87,7 @@
                         <div class="box-body box-comments">
                             <div class="box-comment">
                                 <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
-                                <textarea title="" style="resize: none" readonly="readonly" id="rbsql"></textarea>
+                                <textarea title="" id="rbsql"></textarea>
                             </div>
                             <div class="box-comment">
                                 <h5><i class="fa fa-info-circle"> 执行日志</i></h5>
@@ -141,7 +141,8 @@
          */
         let taskid = '\'' + $('#taskid').text() + '\'';
         $(function () {
-            $('#demo-table').bootstrapTable({
+            let $table = $('#demo-table');
+            $table.bootstrapTable({
                 method: 'get',
                 dataType: 'json',
                 url: "{% url 'p_perform_tasks_details' %}",
@@ -207,7 +208,7 @@
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'execute',
                         title: "执行",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="execSingleTasks(' + row.id + ')"><i class="fa fa-play"></i></a> ';
@@ -215,34 +216,44 @@
                     },
 
                     {
-                        field: 'id',
+                        field: 'pause',
                         title: "暂停(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'pause_ghost\')"><i class="fa fa-pause"></i></a> ';
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'recovery',
                         title: "恢复(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'recovery_ghost\')"><i class="fa fa-play"></i></a> ';
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'stop',
                         title: "终止(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ghost\')"><i class="fa fa-power-off"></i></a> ';
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'result',
                         title: "结果",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="getPerformTasksResult(' + row.id + ')"><i class="fa fa-list-ol"></i></a> ';
                         }
                     }
-                ]
+                ],
+                onLoadSuccess: function (value) {
+                    // 权限视图隐藏
+                    // DML语句不需要看见其他操作
+                    let sql_type = value[0].sql_type;
+                    if (sql_type === 'DML') {
+                        $table.bootstrapTable('hideColumn', 'pause');
+                        $table.bootstrapTable('hideColumn', 'recovery');
+                        $table.bootstrapTable('hideColumn', 'stop')
+                    }
+                }
             })
         });
 
@@ -270,27 +281,27 @@
 
         <!-- 获取回滚语句和执行结果日志 -->
         function getPerformTasksResult(id) {
-            let rbsql = $('#rbsql');
+            $('#rollbackupModal').modal('show');
+
             let exec_log = $('#execLog');
+            exec_log.empty();
             $.ajax({
                 url: "{% url 'p_get_perform_tasks_result' %}",
                 type: 'GET',
                 dataType: 'json',
                 data: {'id': id},
-                timeout: 10000,
+                timeout: 60000,
                 cache: false,
                 success: function (result) {
-                    rbsql.empty();
-                    exec_log.empty();
+
                     if (result.status === 0) {
                         let log_html = result.data.exec_log.replace(/\n/g, '\.' + '<br>');
                         let rollback_sql = '';
                         if (result.data.rollback_log) {
                             rollback_sql = result.data.rollback_log
                         }
-                        {#select_sql.append(rollback_sql);#}
-                        rbsqlCodeMirror.setValue(rollback_sql);
                         exec_log.append(log_html);
+                        rbsqlCodeMirror.setValue(rollback_sql);
                         $('#rollbackupModal').modal('show');
                     } else if (result.status === 1) {
                         exec_log.append(result.data.exec_log.replace(/\n/g, '\.' + '<br>'));
@@ -412,6 +423,12 @@
                 }
             })
         }
+
+        $('#rollbackupModal').on('shown.bs.modal', function (e) {
+            setTimeout(function () {
+                rbsqlCodeMirror.refresh()
+            }, 1);
+        });
 
         <!-- 创建websocket，获取执行进度 -->
         $(document).ready(function () {
