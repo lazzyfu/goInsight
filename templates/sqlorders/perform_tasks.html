@@ -181,8 +181,8 @@
                         title: 'sql语句',
                         sortable: true,
                         formatter: function (value) {
-                            if (value.length >= 88) {
-                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 88) + '&nbsp;...' + '</a>'
+                            if (value.length >= 128) {
+                                return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value.slice(0, 128) + '&nbsp;...' + '</a>'
                             }
                             else {
                                 return '<a href="#" data-toggle="tooltip" title=\"' + value + '\">' + value + '</a>'

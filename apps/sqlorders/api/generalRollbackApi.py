@@ -33,6 +33,7 @@ class ReadRemoteBinlog(object):
         self.affected_rows = affected_rows
         self.sql_type = sql_type
 
+        # only_schema和only_table必须为list类型
         self.only_schemas = only_schema
         self.only_tables = only_tables
 
@@ -161,6 +162,8 @@ class ReadRemoteBinlog(object):
                                         blocking=False,
                                         log_file=self.binlog_file,
                                         log_pos=self.start_pos,
+                                        only_schemas=self.only_schemas,
+                                        only_tables=self.only_tables
                                         )
             rows = []
             for binlogevent in stream:

@@ -5,7 +5,6 @@ import logging
 import os
 import re
 import subprocess
-import sys
 import threading
 import time
 
@@ -14,6 +13,7 @@ import sqlparse
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+from sqlorders.api.extractTable import extract_tables
 from sqlorders.api.generalRollbackApi import ReadRemoteBinlog
 from sqlorders.models import SysConfig
 
@@ -223,6 +223,10 @@ class ExecuteSql(object):
 
         return result
 
+    def _extract_tables(self):
+        """获取sql语句中的表名"""
+        return [i.name for i in extract_tables(self.sql)]
+
     def _op_ddl(self, cnx):
         # 操作DDL语句
         # 匹配CREATE/DROP/RENAME/TRUNCATE语句
@@ -309,6 +313,12 @@ class ExecuteSql(object):
                     async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
                                                                             'text': json.dumps(pull_msg)})
 
+                    # 备份时，传入schema和tables的列表
+                    # 只读取指定schema和tables的binlog
+                    rrb_schemas = [self.database]
+                    rrb_tables = self._extract_tables()
+                    print(rrb_schemas, rrb_tables)
+
                     data = ReadRemoteBinlog(binlog_file=binlog_file,
                                             start_pos=start_pos,
                                             end_pos=end_pos,
@@ -317,6 +327,8 @@ class ExecuteSql(object):
                                             user=self.user,
                                             password=self.password,
                                             sql_type=sql_type,
+                                            only_schema=rrb_schemas,
+                                            only_tables=rrb_tables,
                                             affected_rows=affected_rows)
 
                     # 接收数据格式
