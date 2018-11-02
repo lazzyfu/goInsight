@@ -115,7 +115,10 @@ def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, da
 
 @shared_task
 def async_execute_multi_sql(username, query, key):
-    """批量执行SQL"""
+    """
+    批量执行SQL
+    串行执行
+    """
     taskid = key
     for row in SqlOrdersExecTasks.objects.raw(query):
         id = row.id
@@ -141,7 +144,9 @@ def async_execute_multi_sql(username, query, key):
                 port=port,
                 database=database,
                 exec_status='2')
-        time.sleep(0.1)
+        while SqlOrdersExecTasks.objects.get(id=id).exec_status == '2':
+            time.sleep(0.2)
+            continue
     cache.delete(key)
     # 更新父任务进度
     update_audit_content_progress(username, ast.literal_eval(taskid))

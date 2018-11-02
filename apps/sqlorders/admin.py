@@ -1,16 +1,11 @@
-from django import forms
-from django.contrib import admin
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
 
-# Register your models here.
+from django.contrib import admin
 from django_celery_results.models import TaskResult
 
-from sqlorders.models import MysqlConfig, SqlOrdersExecTasks, SysConfig, SqlOrdersEnvironment
-
-
-class MysqlConfigAdmin(admin.ModelAdmin):
-    list_display = ('host', 'port', 'user', 'envi_id', 'is_master', 'comment', 'updated_at')
-    ordering = ('-created_at',)
-    list_display_links = ('host',)
+from sqlorders.models import MysqlConfig, SysConfig, SqlOrdersEnvironment, SqlOrdersContents
+from sqlorders.models import SqlOrdersExecTasks
 
 
 class SqlOrdersExecTasksAdmin(admin.ModelAdmin):
@@ -25,6 +20,29 @@ class SqlOrdersExecTasksAdmin(admin.ModelAdmin):
     readonly_fields = ('user', 'taskid', 'envi_id', 'host', 'port', 'sql_type')
 
 
+class SqlOrdersContentsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'sql_type', 'envi_id', 'proposer', 'progress', 'created_at')
+    list_display_links = ('title',)
+    search_fields = ('title', 'proposer')
+    fieldsets = (
+        ('详情',
+         {'fields': ['title', 'description', 'envi_id', 'progress', 'remark', 'task_version', 'proposer', 'auditor',
+                     'email_cc', 'sql_type', 'host', 'port',
+                     'database']}
+         ),
+        ('内容',
+         {'fields': ['contents']}
+         )
+    )
+    readonly_fields = ('host', 'port', 'database', 'proposer', 'auditor', 'sql_type', 'email_cc')
+
+
+class MysqlConfigAdmin(admin.ModelAdmin):
+    list_display = ('host', 'port', 'user', 'envi_id', 'is_master', 'comment', 'updated_at')
+    ordering = ('-created_at',)
+    list_display_links = ('host',)
+
+
 class SysConfigAdmin(admin.ModelAdmin):
     list_display = ('name', 'value', 'is_enabled')
     list_display_links = ('name',)
@@ -37,8 +55,9 @@ class SqlOrdersEnvironmentAdmin(admin.ModelAdmin):
     list_display_links = ('envi_name',)
 
 
+admin.site.unregister(TaskResult)
 admin.site.register(SqlOrdersEnvironment, SqlOrdersEnvironmentAdmin)
 admin.site.register(MysqlConfig, MysqlConfigAdmin)
 admin.site.register(SysConfig, SysConfigAdmin)
+admin.site.register(SqlOrdersContents, SqlOrdersContentsAdmin)
 admin.site.register(SqlOrdersExecTasks, SqlOrdersExecTasksAdmin)
-admin.site.unregister(TaskResult)

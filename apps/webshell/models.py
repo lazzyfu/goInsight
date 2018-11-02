@@ -1,5 +1,6 @@
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
 from django.db import models
-
 
 # Create your models here.
 from sqlorders.models import envi_choice

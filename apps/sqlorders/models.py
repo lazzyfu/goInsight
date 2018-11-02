@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
 import logging
 
 from django.db import models
@@ -111,19 +113,19 @@ sql_type_choice = (
 class SqlOrdersContents(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     title = models.CharField(max_length=100, verbose_name=u'标题')
-    description = models.CharField(max_length=2048, default='', null=False, verbose_name=u'需求url或者描述性文字')
+    description = models.CharField(max_length=2048, default='', null=False, verbose_name=u'需求')
     sql_type = models.CharField(max_length=5, default='DML', choices=sql_type_choice,
                                 verbose_name=u'SQL类型: DDL or DML')
     envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
-    proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人， 一般为开发或者产品，存储username')
+    proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人')
     auditor = models.CharField(max_length=30, default='', verbose_name=u'审核人')
     operate_time = models.DateTimeField(auto_now_add=True, verbose_name=u'审核时间')
-    email_cc = models.CharField(max_length=4096, default='', verbose_name=u'抄送联系人')
-    host = models.CharField(null=False, default='', max_length=128, verbose_name=u'mysql主机')
+    email_cc = models.CharField(max_length=4096, default='', verbose_name=u'抄送人')
+    host = models.CharField(null=False, default='', max_length=128, verbose_name=u'主机')
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
     database = models.CharField(null=False, default='', max_length=80, verbose_name=u'库名')
     progress = models.CharField(max_length=10, default='0', choices=progress_choices, verbose_name=u'任务进度')
-    remark = models.CharField(max_length=32, default='', null=False, verbose_name=u'工单备注')
+    remark = models.CharField(max_length=32, default='', null=False, verbose_name=u'备注')
     task_version = models.CharField(max_length=256, default='', verbose_name=u'上线任务版本')
     close_user = models.CharField(max_length=30, default='', verbose_name=u'关闭记录的用户')
     close_reason = models.CharField(max_length=1024, default='', verbose_name=u'关闭原因')

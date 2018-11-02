@@ -317,7 +317,6 @@ class ExecuteSql(object):
                     # 只读取指定schema和tables的binlog
                     rrb_schemas = [self.database]
                     rrb_tables = self._extract_tables()
-                    print(rrb_schemas, rrb_tables)
 
                     data = ReadRemoteBinlog(binlog_file=binlog_file,
                                             start_pos=start_pos,

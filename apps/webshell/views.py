@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
+
 from django.http import JsonResponse
 from django.shortcuts import render
 

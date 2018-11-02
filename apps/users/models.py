@@ -1,4 +1,6 @@
 # Create your models here.
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 

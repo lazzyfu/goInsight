@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
+
 from django.contrib import admin
 
 from webshell.models import WebShellInfo

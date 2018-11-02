@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
+
 import ast
 import datetime
 import json
