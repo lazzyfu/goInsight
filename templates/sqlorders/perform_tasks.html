@@ -11,12 +11,19 @@
             margin: 8px;
         }
 
-        textarea {
-            width: 850px;
-            border: 1px solid #eee;
-            height: 300px;
-            color: #999;
+        .exec-log {
+            width: auto;
+            height: 250px;
+            padding: 8px;
+            overflow: scroll;
+            background-color: white;
         }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 450px;
+        }
+
     </style>
 {% endblock %}
 
@@ -26,7 +33,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务--> 执行</h3>
+                        <h3 class="box-title"><i class="fa fa-cog"></i> SQL执行任务</h3>
                         <h3 id="taskid" style="display: none">{{ taskid }}</h3>
                     </div>
                 </div>
@@ -60,8 +67,8 @@
             </div>
 
             <div class="box-body no-padding">
-                <dl id="output_append" class="log-ul">
-                </dl>
+                <div class="log-ul" id="output_append">
+                </div>
             </div>
         </div>
     </div>
@@ -80,13 +87,13 @@
                         <div class="box-body box-comments">
                             <div class="box-comment">
                                 <h5><i class="fa fa-tag"> 回滚SQL</i></h5>
-                                <textarea title="" style="resize: none" readonly="readonly" id="select_sql"></textarea>
+                                <textarea title="" id="rbsql"></textarea>
                             </div>
                             <div class="box-comment">
-                                <h5><i class="fa  fa-info-circle"> 执行日志</i></h5>
+                                <h5><i class="fa fa-info-circle"> 执行日志</i></h5>
                                 <hr>
-                                <dl id="execLog">
-                                </dl>
+                                <div id="execLog" class="exec-log">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -134,7 +141,8 @@
          */
         let taskid = '\'' + $('#taskid').text() + '\'';
         $(function () {
-            $('#demo-table').bootstrapTable({
+            let $table = $('#demo-table');
+            $table.bootstrapTable({
                 method: 'get',
                 dataType: 'json',
                 url: "{% url 'p_perform_tasks_details' %}",
@@ -166,7 +174,7 @@
                     },
                     {
                         field: 'user',
-                        title: '用户',
+                        title: '申请人',
                         sortable: true
                     }, {
                         field: 'sql',
@@ -182,24 +190,13 @@
                         }
                     },
                     {
-                        field: 'sqlsha1',
-                        title: 'sqlsha1',
-                        sortable: true
-                    },
-                    {
                         field: 'exec_status',
-                        title: '任务进度',
+                        title: '进度',
                         formatter: function (value, row, index) {
                             if (value === '已完成') {
                                 return "<p class='text-green'>" + value + "</p>"
                             }
-                            else if (value === '已回滚') {
-                                return "<p class='text-blue'>" + value + "</p>"
-                            }
                             else if (value === '处理中') {
-                                return "<p class='text-yellow'>" + value + "</p>"
-                            }
-                            else if (value === '回滚中') {
                                 return "<p class='text-yellow'>" + value + "</p>"
                             }
                             else if (value === '未执行') {
@@ -208,13 +205,10 @@
                             else if (value === '失败') {
                                 return "<p class='text-red'>" + value + "</p>"
                             }
-                            else if (value === '异常') {
-                                return "<p class='text-red'>" + value + "</p>"
-                            }
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'execute',
                         title: "执行",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="execSingleTasks(' + row.id + ')"><i class="fa fa-play"></i></a> ';
@@ -222,48 +216,44 @@
                     },
 
                     {
-                        field: 'id',
+                        field: 'pause',
                         title: "暂停(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'pause_ghost\')"><i class="fa fa-pause"></i></a> ';
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'recovery',
                         title: "恢复(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'recovery_ghost\')"><i class="fa fa-play"></i></a> ';
                         }
                     },
                     {
-                        field: 'id',
+                        field: 'stop',
                         title: "终止(gh-ost)",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ghost\')"><i class="fa fa-power-off"></i></a> ';
                         }
                     },
                     {
-                        field: 'id',
-                        title: "终止(pt-osc)",
-                        formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksStop(' + row.id + ', \'stop_ptosc\')"><i class="fa fa-power-off"></i></a> ';
-                        }
-                    },
-                    {
-                        field: 'id',
-                        title: "回滚",
-                        formatter: function (value, row) {
-                            return '<a href="#" onclick="PerformTasksRollback(' + row.id + ')"><i class="fa fa-undo"></i></a> ';
-                        }
-                    },
-                    {
-                        field: 'id',
+                        field: 'result',
                         title: "结果",
                         formatter: function (value, row) {
                             return '<a href="#" onclick="getPerformTasksResult(' + row.id + ')"><i class="fa fa-list-ol"></i></a> ';
                         }
                     }
-                ]
+                ],
+                onLoadSuccess: function (value) {
+                    // 权限视图隐藏
+                    // DML语句不需要看见其他操作
+                    let sql_type = value[0].sql_type;
+                    if (sql_type === 'DML') {
+                        $table.bootstrapTable('hideColumn', 'pause');
+                        $table.bootstrapTable('hideColumn', 'recovery');
+                        $table.bootstrapTable('hideColumn', 'stop')
+                    }
+                }
             })
         });
 
@@ -279,31 +269,41 @@
             setInterval(refreshTable, 3000);
         });
 
+
+        let rbsqlTextarea = document.getElementById('rbsql');
+        let rbsqlCodeMirror = CodeMirror.fromTextArea(rbsqlTextarea, {
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            readOnly: true,
+            lineNumbers: true,
+            lineWrapping: true,
+            theme: 'material'
+        });
+
+
         <!-- 获取回滚语句和执行结果日志 -->
         function getPerformTasksResult(id) {
-            let select_sql = $('#select_sql');
+            $('#rollbackupModal').modal('show');
+
             let exec_log = $('#execLog');
+            exec_log.empty();
             $.ajax({
                 url: "{% url 'p_get_perform_tasks_result' %}",
                 type: 'GET',
                 dataType: 'json',
                 data: {'id': id},
-                timeout: 10000,
+                timeout: 60000,
                 cache: false,
                 success: function (result) {
-                    select_sql.empty();
-                    exec_log.empty();
+
                     if (result.status === 0) {
-                        let log_html = renderIncepExecResult(result.data.exec_log);
+                        let log_html = result.data.exec_log.replace(/\n/g, '\.' + '<br>');
                         let rollback_sql = '';
                         if (result.data.rollback_log) {
                             rollback_sql = result.data.rollback_log
                         }
-                        else {
-                            rollback_sql = ' 无记录'
-                        }
-                        select_sql.append(rollback_sql);
                         exec_log.append(log_html);
+                        rbsqlCodeMirror.setValue(rollback_sql);
                         $('#rollbackupModal').modal('show');
                     } else if (result.status === 1) {
                         exec_log.append(result.data.exec_log.replace(/\n/g, '\.' + '<br>'));
@@ -393,32 +393,6 @@
             })
         }
 
-        <!-- 回滚 -->
-        function PerformTasksRollback(id) {
-            let csrftoken = $.cookie('csrftoken');
-
-            $.ajax({
-                url: "{% url 'p_perform_tasks_rollback' %}",
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    'id': id,
-                    'taskid': taskid,
-                    'csrfmiddlewaretoken': csrftoken
-                },
-                timeout: 10000,
-                cache: false,
-                success: function (result) {
-                    displayPNotify(result.status, result.msg);
-                },
-                error: function (jqXHR) {
-                    if (jqXHR.status === 403) {
-                        displayPNotify(jqXHR.status)
-                    }
-                }
-            })
-        }
-
         <!-- 预览SQL -->
         let myTextarea = document.getElementById('preview_sql_contents');
         let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
@@ -451,6 +425,12 @@
                 }
             })
         }
+
+        $('#rollbackupModal').on('shown.bs.modal', function (e) {
+            setTimeout(function () {
+                rbsqlCodeMirror.refresh()
+            }, 1);
+        });
 
         <!-- 创建websocket，获取执行进度 -->
         $(document).ready(function () {

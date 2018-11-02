@@ -2,18 +2,19 @@
 # edit by fuzongfei
 import json
 import os
+import subprocess
 from datetime import datetime
 
 import psutil
 import sqlparse
 from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Max, Case, When, Value, CharField, Q
+from django.db.models import Case, When, Value, CharField, Q
 from django.shortcuts import get_object_or_404
 
-from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, MysqlSchemas, \
-    SqlOrdersTasksVersions, SysConfig, SqlOrderReply
-from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter, GetInceptionBackupApi
+from sqlorders.inceptionApi import InceptionSqlApi
+from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, SqlOrdersTasksVersions, SqlOrderReply
+from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter
 from users.models import RolePermission
 from .tasks import *
 
@@ -444,30 +445,21 @@ class GeneratePerformTasksForm(forms.Form):
                     context = {'status': 0,
                                'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
                 else:
-                    host = obj.host
-                    database = obj.database
-                    port = obj.port
-                    sql_content = obj.contents
-
-                    # 实例化
-                    incep_audit = InceptionSqlApi(host, port, database, sql_content, request.user.username)
-
-                    # 对OSC执行的SQL生成sqlsha1
-                    result = incep_audit.make_sqlsha1()
+                    # 分割SQL，转换成sql列表
+                    # 移除sql头尾的分号;
+                    split_sqls = [sql.strip(';') for sql in sqlparse.split(obj.contents, encoding='utf8')]
                     taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
 
                     # 生成执行任务记录
-                    for row in result:
+                    for sql in split_sqls:
                         SqlOrdersExecTasks.objects.create(
                             uid=request.user.uid,
                             user=obj.proposer,
                             taskid=taskid,
-                            host=host,
-                            port=port,
-                            database=database,
-                            sql=row['SQL'],
-                            sqlsha1=row['sqlsha1'],
-                            affected_row=row['Affected_rows'],
+                            host=obj.host,
+                            port=obj.port,
+                            database=obj.database,
+                            sql=sql.strip(';'),
                             sql_type=obj.sql_type,
                             envi_id=envi_id,
                             related_id=id
@@ -479,6 +471,28 @@ class GeneratePerformTasksForm(forms.Form):
                 context = {'status': 2, 'msg': '审核未通过或任务已关闭'}
         else:
             context = {'status': 2, 'msg': f'无法连接到数据库，请联系系统管理员\n主机: {obj.host}\n端口: {obj.port}'}
+
+        return context
+
+
+class FullPerformTasksForm(forms.Form):
+    taskid = forms.CharField()
+
+    def exec(self, request):
+        cdata = self.cleaned_data
+        taskid = cdata.get('taskid')
+
+        query = f"select * from sqlaudit_sql_orders_execute_tasks where taskid={taskid} order by id asc"
+
+        key = ast.literal_eval(taskid)
+        if 'run' == cache.get(key):
+            context = {'status': 1, 'msg': '当前任务正在运行，请不要重复执行'}
+        else:
+            cache.set(key, 'run', timeout=60)
+            async_execute_multi_sql.delay(username=request.user.username,
+                                          query=query,
+                                          key=key)
+            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
 
         return context
 
@@ -520,62 +534,15 @@ class SinglePerformTasksForm(forms.Form):
                     obj.exec_status = '2'
                     obj.save()
 
-                    # 如果sqlsha1存在，说明是大表，需要使用工具进行修改
-                    # inception_osc_min_table_size默认为16M
-                    # 如果此处向走gh-ost，则设置inception_osc_min_table_size=0
-                    if obj.sqlsha1:
-                        # 判断是否使用gh-ost执行
-                        if SysConfig.objects.get(key='is_ghost').is_enabled == '0':
-                            ghost_async_tasks.delay(user=request.user.username,
-                                                    id=id,
-                                                    sql=sql,
-                                                    host=obj.host,
-                                                    port=obj.port,
-                                                    database=obj.database)
-                            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-                        else:
-                            # 使用pt-online-schema-change执行
-                            # 异步执行SQL任务
-                            r = incep_async_tasks.delay(user=request.user.username,
-                                                        id=id,
-                                                        sql=sql,
-                                                        host=host,
-                                                        port=port,
-                                                        database=database,
-                                                        sqlsha1=obj.sqlsha1,
-                                                        backup='yes',
-                                                        exec_status='2')
-                            task_id = r.task_id
-                            # 将celery task_id写入到表
-                            obj.celery_task_id = task_id
-                            obj.save()
-                            # 获取OSC执行进度
-                            get_osc_percent.delay(task_id=task_id)
-
-                            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-
-                    else:
-                        # 当affected_row>100000时，只执行不备份
-                        if obj.affected_row > 1000000:
-                            incep_async_tasks.delay(user=request.user.username,
-                                                    id=id,
-                                                    sql=sql,
-                                                    host=host,
-                                                    port=port,
-                                                    database=database,
-                                                    exec_status='2')
-                        else:
-                            # 当affected_row<=100000时，执行并备份
-                            incep_async_tasks.delay(user=request.user.username,
-                                                    id=id,
-                                                    backup='yes',
-                                                    sql=sql,
-                                                    host=host,
-                                                    port=port,
-                                                    database=database,
-                                                    exec_status='2')
-
-                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+                    async_execute_sql.delay(
+                        username=request.user.username,
+                        id=id,
+                        sql=sql,
+                        host=host,
+                        port=port,
+                        database=database,
+                        exec_status='2')
+                    context = {'status': 1, 'msg': '任务已提交，请查看输出'}
             # 更新父任务进度
             update_audit_content_progress(request.user.username, obj.taskid)
         return context
@@ -598,8 +565,6 @@ class PerformTasksOpForm(forms.Form):
         action = cdata.get('action')
 
         obj = SqlOrdersExecTasks.objects.get(id=id)
-        celery_task_id = obj.celery_task_id
-
         context = {}
         if obj.exec_status in ('0', '1', '4'):
             context = {'status': 2, 'msg': '请不要重复操作任务'}
@@ -653,102 +618,6 @@ class PerformTasksOpForm(forms.Form):
                 else:
                     os.remove(sock) if os.path.exists(sock) else None
                     context = {'status': 2, 'msg': '进程不存在，操作失败'}
-            else:
-                # pt-osc操作
-                if action == 'stop_ptosc':
-                    # 停止pt-osc进程
-                    stop_incep_osc.delay(user=request.user.username,
-                                         id=id,
-                                         celery_task_id=celery_task_id)
-                    context = {'status': 2, 'msg': '终止动作已执行，请查看输出'}
-                else:
-                    context = {'status': 2, 'msg': '非ghost任务，操作失败'}
-        return context
-
-
-class FullPerformTasksForm(forms.Form):
-    taskid = forms.CharField()
-
-    def exec(self, request):
-        cdata = self.cleaned_data
-        taskid = cdata.get('taskid')
-
-        query = f"select * from sqlaudit_sql_orders_execute_tasks where taskid={taskid} order by id asc"
-
-        key = ast.literal_eval(taskid)
-        if 'run' == cache.get(key):
-            context = {'status': 1, 'msg': '当前任务正在运行，请不要重复执行'}
-        else:
-            cache.set(key, 'run', timeout=600)
-            incep_multi_tasks.delay(username=request.user.username,
-                                    query=query,
-                                    key=key)
-            context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-
-        return context
-
-
-class PerformTasksRollbackForm(forms.Form):
-    id = forms.IntegerField(required=True)
-
-    def rollback(self, request):
-        cdata = self.cleaned_data
-        id = cdata.get('id')
-        obj = SqlOrdersExecTasks.objects.get(id=id)
-        host = obj.host
-        port = obj.port
-        database = obj.database
-
-        if obj.exec_status in ('0', '3', '4'):
-            context = {'status': 2, 'msg': '请不要重复操作'}
-        else:
-            # 获取回滚语句
-            rollback_sql = GetInceptionBackupApi(
-                {'backupdbName': obj.backup_dbname, 'sequence': obj.sequence}).get_rollback_statement()
-            if rollback_sql is None:
-                context = {'status': 2, 'msg': '没有找到备份记录，回滚失败'}
-            else:
-                of_audit = InceptionSqlApi(host, port, database, rollback_sql, request.user.username)
-                result = of_audit.make_sqlsha1()[1:]
-
-                for row in result:
-                    rollback_sql = row['SQL'] + ';'
-                    rollback_sqlsha1 = row['sqlsha1']
-
-                    # 将任务进度设置为：回滚中
-                    obj.exec_status = 3
-                    obj.rollback_sqlsha1 = rollback_sqlsha1
-                    obj.save()
-
-                    if row['sqlsha1']:
-                        # 异步执行SQL任务
-                        r = incep_async_tasks.delay(user=request.user.username,
-                                                    id=id,
-                                                    host=host,
-                                                    port=port,
-                                                    database=database,
-                                                    sql=rollback_sql,
-                                                    sqlsha1=rollback_sqlsha1,
-                                                    exec_status='3')
-                        task_id = r.task_id
-                        # 将celery task_id写入到表
-                        obj.celery_task_id = task_id
-                        obj.save()
-                        # 获取OSC执行进度
-                        get_osc_percent.delay(task_id=task_id)
-
-                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-                    else:
-                        incep_async_tasks.delay(user=request.user.username,
-                                                id=id,
-                                                sql=rollback_sql,
-                                                host=host,
-                                                port=port,
-                                                database=database,
-                                                exec_status='3')
-
-                        context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-
         return context
 
 
@@ -797,6 +666,7 @@ class CommitOrderReplyForm(forms.Form):
         msg_pull.run()
         context = {'status': 0, 'msg': ''}
         return context
+
 
 class MyOrdersForm(forms.Form):
     """我的工单"""

@@ -149,10 +149,7 @@ exec_progress = (
     ('0', u'未执行'),
     ('1', u'已完成'),
     ('2', u'处理中'),
-    ('3', u'回滚中'),
-    ('4', u'已回滚'),
     ('5', u'失败'),
-    ('6', u'异常')
 )
 
 
@@ -174,14 +171,10 @@ class SqlOrdersExecTasks(models.Model):
                                 verbose_name=u'SQL类型')
     is_ghost = models.IntegerField(choices=((0, '否'), (1, '是')), default=0, verbose_name=u'是否启用ghost改表')
     ghost_pid = models.IntegerField(null=False, default=0, verbose_name=u'ghost进程pid')
-    sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'sqlsha1')
-    rollback_sqlsha1 = models.CharField(null=False, max_length=120, default='', verbose_name=u'rollback sqlsha1')
-    celery_task_id = models.CharField(null=False, max_length=256, default='', verbose_name=u'celery执行任务ID')
     exec_status = models.CharField(max_length=10, default='0', choices=exec_progress, verbose_name=u'执行进度')
-    sequence = models.CharField(null=False, default='', max_length=1024, verbose_name=u'备份记录id，inception生成的sequence')
-    affected_row = models.IntegerField(null=False, default=0, verbose_name=u'预计影响行数')
-    backup_dbname = models.CharField(null=False, max_length=1024, default='', verbose_name=u'inception生成的备份的库名')
+    affected_row = models.IntegerField(null=False, default=0, verbose_name=u'影响行数')
     exec_log = models.TextField(verbose_name=u'执行的记录', default='')
+    rollback_sql = models.TextField(verbose_name=u'回滚的SQL', default='')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=u'生成时间')
 
     class Meta:

@@ -8,8 +8,8 @@ from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAud
     SqlOrdersListView, SyntaxCheckView, BeautifySQLView, SqlOrdersDetailsView, SqlOrdersApproveView, \
     SqlOrdersFeedbackView, SqlOrdersCloseView, GetParentSchemasView, HookSqlOrdersView, GeneratePerformTasksView, \
     RenderPerformTasksView, PerformTasksDetailsView, PerformTasksSQLPreView, SinglePerformTasksView, \
-    FullPerformTasksView, GetPerformTasksResultView, PerformTasksRollbackView, \
-    SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, SqlOrdersTasksVersionListView, GetVersionOrdersList, \
+    FullPerformTasksView, GetPerformTasksResultView, SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, \
+    SqlOrdersTasksVersionListView, GetVersionOrdersList, \
     PerformTasksOpView, GetTargetSchemasView, CommitOrderReplyView, GetOrderReplyView, RenderMyOrdersView, MyOrdersView, \
     GetSqlExecuteDetailsView
 
@@ -53,10 +53,9 @@ urlpatterns = [
     # 预览SQL
     path(r'perform_tasks_sqlpre/', login_required(PerformTasksSQLPreView.as_view()),
          name='p_perform_tasks_sqlpre'),
-    # 执行任务，执行、回滚、停止
+    # 执行任务，执行、停止
     path(r'full_perform_tasks/', login_required(FullPerformTasksView.as_view()), name='p_full_perform_tasks'),
     path(r'single_perform_tasks/', login_required(SinglePerformTasksView.as_view()), name='p_single_perform_tasks'),
-    re_path(r'perform_rollback/', login_required(PerformTasksRollbackView.as_view()), name='p_perform_tasks_rollback'),
     re_path(r'perform_tasks_stop/', login_required(PerformTasksOpView.as_view()), name='p_perform_tasks_stop'),
     # 执行任务结果
     path(r'get_perform_tasks_result/', login_required(GetPerformTasksResultView.as_view()),
