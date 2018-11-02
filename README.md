@@ -48,6 +48,9 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 ## 联系方式
 
-微信(欢迎加入)：
+群聊(欢迎加入)：
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/wx.png)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ql.png)
+
+打赏：
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ds.png)
