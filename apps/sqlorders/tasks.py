@@ -141,7 +141,7 @@ def async_execute_multi_sql(username, query, key):
                 port=port,
                 database=database,
                 exec_status='2')
-        time.sleep(0.02)
+        time.sleep(0.1)
     cache.delete(key)
     # 更新父任务进度
     update_audit_content_progress(username, ast.literal_eval(taskid))
