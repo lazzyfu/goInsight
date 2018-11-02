@@ -1,9 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
-import os
 import subprocess
-from datetime import datetime
 
 import psutil
 import sqlparse

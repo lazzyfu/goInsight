@@ -8,8 +8,8 @@ import socket
 import pymysql
 from django.http import HttpResponse
 
-from sqlorders.models import MysqlSchemas
 from sqlaudit import settings
+from sqlorders.models import MysqlSchemas
 
 logger = logging.getLogger('django')
 
