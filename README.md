@@ -28,12 +28,15 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
    - 提供xterm集成，支持绑定redis、mongodb等查询接口
    - 支持自动检测已配置数据库实例的死锁检测功能，并提供推送
 
+## 设计流程
+https://github.com/lazzyfu/AuditSQL/wiki/design
 
-## 截图展示地址
+
+## 功能截图地址
 https://github.com/lazzyfu/AuditSQL/wiki/show
 
 
-## 文档地址（功能和部署）
+## 文档地址
 https://github.com/lazzyfu/AuditSQL/wiki
 
 
