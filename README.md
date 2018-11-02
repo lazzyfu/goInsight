@@ -50,4 +50,4 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 微信(欢迎加入)：
 
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/wx.JPG)
+![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/wx.png)
