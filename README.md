@@ -5,9 +5,13 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
 本系统经过生产业务验证，稳定，可长期使用，支持rds，谢谢.
 
 - __开发组件__
-   * Python 3.6+
-   * Django 2.0+
-   * Celery 4.2.0+
+   - Python 3.6+
+   - Django 2.0+
+   - Celery 4.2.0+
+   - Django-channel
+   - Paramiko
+   - Pymysql
+   - Python-mysql-replication
 
 - __功能__
    - 支持自定义级联环境（比如：测试环境--> 预发布环境 -->生产环境）
@@ -25,25 +29,12 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
    - 支持自动检测已配置数据库实例的死锁检测功能，并提供推送
 
 
+## 截图展示地址
+https://github.com/lazzyfu/AuditSQL/wiki/show
 
 
-## 文档地址
+## 文档地址（功能和部署）
 https://github.com/lazzyfu/AuditSQL/wiki
-
-
-## 页面展示(简单展示几处)
-
-**登陆页面：**
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/login.png)
-
-**个人详情页面：**
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/profile.png)
-
-**上线版本页面：**
-
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/version.png)
 
 
 ## 联系方式
@@ -53,7 +44,6 @@ https://github.com/lazzyfu/AuditSQL/wiki
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ql.png)
 
 
-打赏：
-
+打赏(感谢支持)：
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ds.png)
