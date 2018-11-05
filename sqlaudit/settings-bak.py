@@ -190,12 +190,6 @@ ASGI_APPLICATION = "sqlaudit.routing.application"
 INCEPTION_HOST = '127.0.0.1'
 INCEPTION_PORT = 6033
 
-# 从inception备份服务器读取备份数据
-INCEPTION_BACKUP_HOST = '127.0.0.1'
-INCEPTION_BACKUP_USER = 'root'
-INCEPTION_BACKUP_PASSWORD = '123.com'
-INCEPTION_BACKUP_PORT = 3306
-
 # 邮箱设置
 EMAIL_HOST = 'smtp.exmail.qq.com'
 EMAIL_PORT = 465
