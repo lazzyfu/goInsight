@@ -42,6 +42,12 @@ class MysqlConfigAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
     list_display_links = ('host',)
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["host", ]
+        else:
+            return []
+
 
 class SysConfigAdmin(admin.ModelAdmin):
     list_display = ('name', 'value', 'is_enabled')

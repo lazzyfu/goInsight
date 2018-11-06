@@ -35,6 +35,14 @@ def sync_schemas():
             'comment': row.comment
         })
 
+    # 删除mysql schema统计表中在mysql配置表中已经移除的主机
+    # 该操作会自动移除用户该主机的schema授权
+    all_host = list(MysqlSchemas.objects.values_list('host', flat=True).distinct())
+    exisit_host = list(MysqlConfig.objects.values_list('host', flat=True).distinct())
+    delete_host = list(set(all_host).difference(set(exisit_host)))
+    delete_schema_join = MysqlSchemas.objects.filter(host__in=delete_host).values_list('schema_join', flat=True)
+    MysqlSchemas.objects.filter(schema_join__in=delete_schema_join).delete()
+
     # 连接到目标数据库，统计schema
     for row in collect_from_host:
         try:
