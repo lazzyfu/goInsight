@@ -300,7 +300,6 @@ class HookSqlOrdersView(View):
 class GeneratePerformTasksView(View):
     """工单转换成执行任务"""
 
-    @method_decorator(check_incep_alive)
     @permission_required('can_execute_sql')
     def post(self, request):
         form = GeneratePerformTasksForm(request.POST)

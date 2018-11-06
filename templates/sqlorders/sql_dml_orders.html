@@ -63,6 +63,15 @@
                                         </div>
                                     </div>
 
+                                    <div class="form-group has-feedback" id="is_show_deploy">
+                                        <label class="control-label col-sm-3">版本 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_task" name="task_version" style="width: 100%" required
+                                                    class="selectpicker form-control" title="上线版本">
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group has-feedback">
                                         <label class="control-label col-sm-3">操作 <span class="text-red">*</span></label>
                                         <div class="col-sm-9">
@@ -265,6 +274,31 @@
                     $('.selectpicker').selectpicker('refresh');
                 }
             })
+        });
+
+        /**
+         * 获取任务名
+         */
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_get_sql_tasks_version_list' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, data) {
+                        let option_data = '';
+                        if (data.is_disable === 1) {
+                            option_data = "<option data-subtext='已过期' data-icon='glyphicon-flag' value=" + data.tasks_version + " disabled>" + data.tasks_version + "</option>";
+                        } else if (data.is_disable === 0) {
+                            option_data = "<option data-icon='glyphicon-flag' value=" + data.tasks_version + ">" + data.tasks_version + "</option>";
+                        }
+                        $("#s_task").append(option_data);
+                        $('.selectpicker').selectpicker('refresh');
+                    })
+                }
+            });
         });
 
         /**

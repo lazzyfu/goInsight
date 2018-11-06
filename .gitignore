@@ -12,3 +12,4 @@ AuditSQL/media/files
 *.zip
 apps/project_manager/tests.py
 *.jpg
+*.sql

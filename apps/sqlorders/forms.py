@@ -73,12 +73,6 @@ class SqlOrdersAuditForm(forms.Form):
         contents = cdata.get('contents')
         envi_id = cdata.get('envi_id')
 
-        # if sql_type == 'DDL':
-        #     max_parent_id = SqlOrdersEnvironment.objects.all().aggregate(Max('parent_id'))['parent_id__max']
-        #     envi_id = SqlOrdersEnvironment.objects.get(parent_id=max_parent_id).envi_id
-        # elif sql_type == 'DML':
-        envi_id = envi_id
-
         result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
         if result.get('status') == 2:
             context = result
@@ -134,36 +128,40 @@ class SyntaxCheckForm(forms.Form):
 
 
 class BeautifySQLForm(forms.Form):
+    """
+    注释格式必须符合规范即可
+    格式：# 这是注释 中间要有空格
+    """
     contents = forms.CharField(widget=forms.Textarea)
 
     def beautify(self):
         cdata = self.cleaned_data
-        contents = cdata.get('contents').strip()
+        contents = cdata.get('contents')
 
-        sql_split = []
+        split_sqls = []
         for stmt in sqlparse.split(contents):
             sql = sqlparse.parse(stmt)[0]
             sql_comment = sql.token_first()
             if isinstance(sql_comment, sqlparse.sql.Comment):
-                sql_split.append({'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')})
+                split_sqls.append({'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')})
             else:
-                sql_split.append({'comment': '', 'sql': sql.value})
+                split_sqls.append({'comment': '', 'sql': sql.value})
 
-        beautify_sql_list = []
-        for row in sql_split:
+        beautify_sqls = []
+        for row in split_sqls:
             comment = row['comment']
             sql = row['sql']
             res = sqlparse.parse(sql)
             syntax_type = res[0].token_first().ttype.__str__()
             if syntax_type == 'Token.Keyword.DDL':
                 sql_format = sqlparse.format(sql)
-                beautify_sql_list.append(comment + sql_format)
+                beautify_sqls.append(comment + sql_format)
             elif syntax_type == 'Token.Keyword.DML':
-                sql_format = sqlparse.format(sql, reindent=True)
-                beautify_sql_list.append(comment + sql_format)
-            elif syntax_type == 'Token.Keyword':
-                beautify_sql_list.append(comment + sql)
-        context = {'data': '\n\n'.join(beautify_sql_list)}
+                sql_format = sqlparse.format(sql, strip_whitespace=True, reindent=True)
+                beautify_sqls.append(comment + sql_format)
+            else:
+                beautify_sqls.append(comment + sql)
+        context = {'data': '\n\n'.join(beautify_sqls)}
         return context
 
 
