@@ -30,6 +30,7 @@
     </ol>
     <div class="row">
         <div id="s_sql_details" style="display:none;">{{ contents.id }}</div>
+        <div id="s_sql_type" style="display:none;">{{ contents.sql_type }}</div>
         <div class="col-md-4" style="padding-right: 2px">
             <!-- Profile Image -->
             <div class="box box-primary">
@@ -204,6 +205,14 @@
             mode: "highlightSearch",
             readOnly: true,
         });
+
+        let sql_type = $('#s_sql_type').text();
+        if (sql_type === 'OPS') {
+            myCodeMirror.setOption('mode', 'text/x-sh')
+        }
+        else {
+            myCodeMirror.setOption('mode', 'text/x-mysql')
+        }
 
 
         <!-- 提交回复内容 -->

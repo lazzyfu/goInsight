@@ -12,7 +12,6 @@ from django.db.models import F, When, Value, CharField, Case
 from django.http import HttpResponse, JsonResponse
 # Create your views here.
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import FormView
 
@@ -22,7 +21,6 @@ from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm,
     PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
     SqlOrdersTasksVersions, SqlOrderReply
-from sqlorders.utils import check_incep_alive
 from users.models import RolePermission, UserRoles
 from users.permissionsVerify import permission_required
 
@@ -53,6 +51,13 @@ class RenderSqlDdlOrdersView(View):
         return render(request, 'sqlorders/sql_ddl_orders.html')
 
 
+class RenderOpsOrdersView(View):
+    """渲染运维工单"""
+
+    def get(self, request):
+        return render(request, 'sqlorders/ops_orders.html')
+
+
 class GetAuditUserView(View):
     """获取有审核权限的用户"""
 
@@ -70,21 +75,15 @@ class GetAuditUserView(View):
 
 
 class GetTargetSchemasView(View):
-    """获取dml工单指定环境的schema列表"""
+    """获取dml和ddl工单指定环境的schema列表"""
 
     @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
     def post(self, request):
         envi_id = request.POST.get('envi_id')
-        parent_id = SqlOrdersEnvironment.objects.get(envi_id=envi_id).parent_id
-        if parent_id == 0:
-            # 为生产环境
-            queryset = MysqlSchemas.objects.filter(envi_id=envi_id, is_master=1).values('host', 'port', 'schema',
-                                                                                        'comment')
-        else:
-            # 为非生产环境
-            queryset = MysqlSchemas.objects.filter(envi_id=envi_id).values('host', 'port', 'schema',
-                                                                           'comment')
 
+        queryset = MysqlSchemas.objects.filter(
+            envi_id=envi_id, is_type=1
+        ).values('host', 'port', 'schema', 'comment')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
 
