@@ -18,12 +18,15 @@ class RenderSqlQueryView(View):
 
 
 class GetSchemasGrantView(View):
-    """获取指定环境授权给用户的schema信息"""
+    """获取指定环境授权给用户的schema列表"""
 
     def post(self, request):
         form = GetSchemasGrantForm(request.POST)
         if form.is_valid():
             context = form.query(request)
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
         return JsonResponse(context, safe=False)
 
 
