@@ -49,7 +49,9 @@ class MysqlSchemasGrantInline(admin.TabularInline):
     # 将生产环境的主库过滤掉
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         try:
-            kwargs['queryset'] = MysqlSchemas.objects.filter(is_type__in=(0, 2))
+            parent_id_min = SqlOrdersEnvironment.objects.all().aggregate(Min('parent_id'))['parent_id__min']
+            envi_id = SqlOrdersEnvironment.objects.get(parent_id=parent_id_min).envi_id
+            kwargs['queryset'] = MysqlSchemas.objects.filter(Q(envi_id=envi_id, is_master=0) | ~Q(envi_id=envi_id))
         except Exception as err:
             pass
         finally:
