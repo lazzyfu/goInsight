@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import re
 import subprocess
 
 import psutil
@@ -11,7 +12,8 @@ from django.db.models import Case, When, Value, CharField, Q
 from django.shortcuts import get_object_or_404
 
 from sqlorders.inceptionApi import InceptionSqlApi
-from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, SqlOrdersTasksVersions, SqlOrderReply
+from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, SqlOrdersTasksVersions, SqlOrderReply, \
+    SysConfig
 from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter
 from users.models import RolePermission
 from .tasks import *
