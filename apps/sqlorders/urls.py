@@ -6,7 +6,7 @@ from django.urls import path, re_path
 from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAuditUserView, GetTablesView, \
     RenderSqlDdlOrdersView, SqlOrdersAuditView, RenderSqlOrdersListView, \
     SqlOrdersListView, SyntaxCheckView, BeautifySQLView, SqlOrdersDetailsView, SqlOrdersApproveView, \
-    SqlOrdersFeedbackView, SqlOrdersCloseView, GetParentSchemasView, HookSqlOrdersView, GeneratePerformTasksView, \
+    SqlOrdersFeedbackView, SqlOrdersCloseView, HookSqlOrdersView, GeneratePerformTasksView, \
     RenderPerformTasksView, PerformTasksDetailsView, PerformTasksSQLPreView, SinglePerformTasksView, \
     FullPerformTasksView, GetPerformTasksResultView, SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, \
     SqlOrdersTasksVersionListView, GetVersionOrdersList, \
@@ -21,13 +21,12 @@ urlpatterns = [
     path(r'get_audit_user/', login_required(GetAuditUserView.as_view()), name='p_get_audit_user'),
     # 获取schema列表
     path(r'get_product_schemas/', login_required(GetTargetSchemasView.as_view()), name='p_get_target_schemas'),
-    path(r'get_parent_schemas/', login_required(GetParentSchemasView.as_view()), name='p_get_parent_schemas'),
     path(r'get_tables/', login_required(GetTablesView.as_view()), name='p_get_tables'),
     # inceotion语法检查
     path(r'syntax_check/', login_required(SyntaxCheckView.as_view())),
     # sql格式化
     path(r'beautify_sql/', login_required(BeautifySQLView.as_view())),
-    # 处理提交的DDL、DML工单
+    # 处理提交的DDL/DML/OPS工单
     path(r'sql_order_audit/', login_required(SqlOrdersAuditView.as_view()), name='p_sql_orders_audit'),
     # 查看工单
     re_path(r'sql_orders_list/(?P<envi_id>\d+)/', login_required(RenderSqlOrdersListView.as_view())),

@@ -36,20 +36,6 @@ class GetTablesForm(forms.Form):
         return context
 
 
-class GetParentSchemasForm(forms.Form):
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境')
-
-    def query(self):
-        cdata = self.cleaned_data
-        envi_id = cdata.get('envi_id')
-        parent_id = SqlOrdersEnvironment.objects.get(envi_id=envi_id).parent_id
-
-        queryset = MysqlSchemas.objects.filter(envi_id=parent_id).filter(is_master=1).values('host', 'port', 'schema',
-                                                                                             'comment')
-        serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-        return serialize_data
-
-
 class SqlOrdersAuditForm(forms.Form):
     title = forms.CharField(max_length=100, required=True, label=u'标题')
     description = forms.CharField(max_length=1024, required=False, label=u'需求url或描述性文字')
@@ -406,13 +392,13 @@ class HookSqlOrdersForm(forms.Form):
 
     def save(self, request):
         cdata = self.cleaned_data
-        host, port, database = cdata['database'].split(',')
         id = cdata.get('id')
-        parent_id = SqlOrdersEnvironment.objects.get(envi_id=cdata['envi_id']).parent_id
-        jump_url = f'/sqlorders/sql_orders_list/{parent_id}'
+        envi_id = cdata.get('envi_id')
+        host, port, database = cdata['database'].split(',')
+        jump_url = f'/sqlorders/sql_orders_list/{envi_id}'
 
         data = SqlOrdersContents.objects.get(pk=id)
-        if SqlOrdersContents.objects.filter(title=data.title, envi_id=parent_id).exists():
+        if SqlOrdersContents.objects.filter(title=data.title, envi_id=envi_id).exists():
             # 如果指定的环境存在已被钩的工单，直接跳转
             context = {'status': 0, 'jump_url': jump_url}
         else:
@@ -426,7 +412,7 @@ class HookSqlOrdersForm(forms.Form):
                     host=host,
                     database=database,
                     port=port,
-                    envi_id=parent_id,
+                    envi_id=envi_id,
                     progress='2',
                     remark=data.remark,
                     proposer=data.proposer,

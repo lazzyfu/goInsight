@@ -85,7 +85,6 @@ class ExecSqlQueryForm(forms.Form):
                 raise PermissionDenied
         else:
             raise PermissionDenied
-
         return result
 
 

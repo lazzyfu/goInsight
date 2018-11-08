@@ -16,7 +16,7 @@ from django.views import View
 from django.views.generic import FormView
 
 from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm, SyntaxCheckForm, BeautifySQLForm, \
-    SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, GetParentSchemasForm, HookSqlOrdersForm, \
+    SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, HookSqlOrdersForm, \
     GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, SqlOrdersTasksVersionForm, \
     PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
@@ -85,16 +85,6 @@ class GetTargetSchemasView(View):
             envi_id=envi_id, is_type=1
         ).values('host', 'port', 'schema', 'comment')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-        return HttpResponse(serialize_data)
-
-
-class GetParentSchemasView(View):
-    """当前环境envi_id的父环境schema列表"""
-
-    def post(self, request):
-        form = GetParentSchemasForm(request.POST)
-        if form.is_valid():
-            serialize_data = form.query()
         return HttpResponse(serialize_data)
 
 
