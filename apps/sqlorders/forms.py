@@ -387,23 +387,26 @@ class SqlOrdersCloseForm(forms.Form):
 
 class HookSqlOrdersForm(forms.Form):
     id = forms.CharField(required=True, label=u'审核内容id')
-    database = forms.CharField(required=True)
+    database = forms.CharField(required=False)
     envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境')
 
     def save(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         envi_id = cdata.get('envi_id')
-        host, port, database = cdata['database'].split(',')
         jump_url = f'/sqlorders/sql_orders_list/{envi_id}'
 
         data = SqlOrdersContents.objects.get(pk=id)
-        if SqlOrdersContents.objects.filter(title=data.title, envi_id=envi_id).exists():
-            # 如果指定的环境存在已被钩的工单，直接跳转
-            context = {'status': 0, 'jump_url': jump_url}
+        if data.progress == '6':
+            context = {'status': 2, 'msg': '当前工单已被勾住，操作失败'}
         else:
+            # OPS默认为
+            host, port, database = [0, 0, '']
+            if data.sql_type in ['DML', 'DDL']:
+                host, port, database = cdata['database'].split(',')
+
             # 工单状态必须为已完成
-            if data.progress in ('4', '6'):
+            if data.progress in ['4']:
                 obj = SqlOrdersContents.objects.create(
                     title=data.title,
                     description=data.description,

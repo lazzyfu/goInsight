@@ -221,34 +221,9 @@
             matchBrackets: true,
             showCursorWhenSelecting: true,
             extraKeys: {"Tab": "autocomplete"},
-            hint: CodeMirror.hint.sql,
-            placeholder:
-                "# 这是注释\n/* 这也是注释 */\ninsert into tbl(id,name) values(1,'zs');"
+            hint: CodeMirror.hint.sql
         });
 
-
-        /**
-         * 获取非生产环境schema列表
-         */
-        {#$(function () {#}
-        {#    $.ajax({#}
-        {#        url: '{% url 'p_get_offline_schemas' %}',#}
-        {#        type: 'GET',#}
-        {#        dataType: 'json',#}
-        {#        timeout: 5000,#}
-        {#        cache: false,#}
-        {#        success: function (data) {#}
-        {#            let html = '';#}
-        {#            $.each(data, function (index, row) {#}
-        {#                let result = [row.host, row.port, row.schema].join(',');#}
-        {#                let show_result = [row.comment, row.port, row.schema].join('_');#}
-        {#                html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"#}
-        {#            });#}
-        {#            $('#s_schema').append(html);#}
-        {#            $('.selectpicker').selectpicker('refresh')#}
-        {#        }#}
-        {#    })#}
-        {# });#}
 
         /**
          * 获取指定环境的schema

@@ -83,7 +83,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id="is_show_schema">
                                 <label class="control-label col-sm-2 col-sm-2 col-xs-12">目标库名*</label>
                                 <div class="col-sm-8">
                                     <select id="s_schema" name="database" style="width: 100%" required
@@ -217,7 +217,7 @@
                         field: 'id',
                         title: '钩子',
                         formatter: function (value, row) {
-                            return "<a href='#' type='button' data-toggle='modal' data-target='#hook_modal' data-whatever_id=\"" + row.id + "\"><i class='fa fa-magnet fa-lg'></i></a>"
+                            return "<a href='#' type='button' data-toggle='modal' data-target='#hook_modal' data-whatever_id=\"" + row.id + "\" data-whatever_sqltype=\"" + row.sql_type + "\"><i class='fa fa-magnet fa-lg'></i></a>"
                         }
                     },
                     {
@@ -347,6 +347,14 @@
             let button = $(event.relatedTarget);
             // 获取值
             let recipient_id = button.data('whatever_id');
+            let recipient_sqltype = button.data('whatever_sqltype');
+            if (recipient_sqltype === 'OPS') {
+                document.getElementById("is_show_schema").style.display = "none";
+                $('#s_schema').prop('required', false);
+            } else {
+                document.getElementById("is_show_schema").style.display = "";
+                $('#s_schema').prop('required', true);
+            }
             let modal = $(this);
             let id = $('.modal-body input')[0];
             modal.find(id).val(recipient_id);
