@@ -18,17 +18,11 @@ class GetSchemasGrantForm(forms.Form):
     def query(self, request):
         cdata = self.cleaned_data
         envi_id = cdata.get('envi_id')
-        is_master = 1
-
-        # 判断是否为只读环境，查找parent_id最小的，即认为为只读环境（一般为生产环境的从库）
-        parent_id_min = SqlOrdersEnvironment.objects.all().aggregate(Min('parent_id'))['parent_id__min']
-        if int(envi_id) == SqlOrdersEnvironment.objects.get(parent_id=parent_id_min).envi_id:
-            is_master = 0
 
         query = f"select b.id, b.host, b.port, b.schema from sqlaudit_schemas_grant a " \
                 f"join sqlaudit_mysql_schemas b on a.schema_id = b.schema_join join sqlaudit_user_accounts c  " \
                 f"on c.uid = a.user_id where c.uid={request.user.uid} " \
-                f"and b.envi_id={envi_id} and b.is_master={is_master}"
+                f"and b.envi_id={envi_id} and b.is_type in (0, 2)"
 
         context = []
         for row in MysqlSchemas.objects.raw(query):
@@ -78,18 +72,19 @@ class ExecSqlQueryForm(forms.Form):
                 schemas=F('schema__schema')).values_list('schemas', flat=True)
             if schema in schemas:
                 # 判断是否是只读
-                # 判断依据：parent_id最小的
-                parent_id_min = SqlOrdersEnvironment.objects.all().aggregate(Min('parent_id'))['parent_id__min']
-                if int(envi_id) == SqlOrdersEnvironment.objects.get(parent_id=parent_id_min).envi_id:
-                    mysql_query = MySQLQuery(querys=contents, host=host, port=port, schema=schema, rw='r', envi=envi_id)
-                else:
-                    mysql_query = MySQLQuery(querys=contents, host=host, port=port, schema=schema, rw='rw', envi=envi_id)
+                is_type = MysqlSchemas.objects.get(host=host, port=port, schema=schema).is_type
+                is_rw = None
+                if is_type == 0:
+                    is_rw = 'r'
+                if is_type == 2:
+                    is_rw = 'rw'
+                mysql_query = MySQLQuery(querys=contents, host=host, port=port, schema=schema, rw=is_rw,
+                                         envi=envi_id)
                 result = mysql_query.query(request)
             else:
                 raise PermissionDenied
         else:
             raise PermissionDenied
-
         return result
 
 

@@ -74,10 +74,20 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label col-sm-2 col-sm-2 col-xs-12">库名*</label>
+                                <label class="control-label col-sm-2 col-sm-2 col-xs-12">目标环境*</label>
+                                <div class="col-sm-8">
+                                    <select id="s_envi" name="envi_id" style="width: 100%" required
+                                            class="form-control selectpicker" title="选择目标环境..."
+                                            data-live-search="true" onchange="getTargetSchema()">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="is_show_schema">
+                                <label class="control-label col-sm-2 col-sm-2 col-xs-12">目标库名*</label>
                                 <div class="col-sm-8">
                                     <select id="s_schema" name="database" style="width: 100%" required
-                                            class="form-control selectpicker" title="选择库名..."
+                                            class="form-control selectpicker" title="选择目标库名..."
                                             data-live-search="true">
                                     </select>
                                 </div>
@@ -207,7 +217,7 @@
                         field: 'id',
                         title: '钩子',
                         formatter: function (value, row) {
-                            return "<a href='#' type='button' data-toggle='modal' data-target='#hook_modal' data-whatever_id=\"" + row.id + "\"><i class='fa fa-magnet fa-lg'></i></a>"
+                            return "<a href='#' type='button' data-toggle='modal' data-target='#hook_modal' data-whatever_id=\"" + row.id + "\" data-whatever_sqltype=\"" + row.sql_type + "\"><i class='fa fa-magnet fa-lg'></i></a>"
                         }
                     },
                     {
@@ -256,30 +266,53 @@
             setInterval(refreshTable, 3000);
         });
 
-        /**
-         * 获取当前环境的父环境的schema列表
-         */
+        // 获取用户设置的环境
         $(function () {
+            $.ajax({
+                url: '{% url 'p_get_sql_orders_envi' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (data) {
+                    $("#s_envi").empty();
+                    $.each(data, function (index, row) {
+                        $("#s_envi").append(
+                            "<option data-icon='glyphicon-record' value=" + row.envi_id + ">" + row.envi_name + "</option>"
+                        );
+                    });
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            });
+        });
+
+        /**
+         * 获取指定环境的schema
+         */
+        function getTargetSchema() {
+            let s_schema = $('#s_schema');
+            let envi_id = $('#s_envi').val();
             let csrftoken = $.cookie('csrftoken');
             $.ajax({
-                url: '{% url 'p_get_parent_schemas' %}',
+                url: '{% url 'p_get_target_schemas' %}',
                 type: 'POST',
                 dataType: 'json',
                 data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
+                    s_schema.empty();
                     let html = '';
                     $.each(data, function (index, row) {
                         let result = [row.host, row.port, row.schema].join(',');
                         let show_result = [row.comment, row.port, row.schema].join('_');
                         html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
                     });
-                    $('#s_schema').append(html);
+                    s_schema.append(html);
                     $('.selectpicker').selectpicker('refresh')
                 }
             })
-        });
+        }
 
         /**
          * 提交钩子数据
@@ -291,7 +324,6 @@
             $(this).ajaxSubmit({
                 dataType: 'json',
                 resetForm: true,
-                data: {'envi_id': envi_id},
                 success: function (result) {
                     hook_modal_selector.modal('hide');
                     if (result.status === 0) {
@@ -315,6 +347,14 @@
             let button = $(event.relatedTarget);
             // 获取值
             let recipient_id = button.data('whatever_id');
+            let recipient_sqltype = button.data('whatever_sqltype');
+            if (recipient_sqltype === 'OPS') {
+                document.getElementById("is_show_schema").style.display = "none";
+                $('#s_schema').prop('required', false);
+            } else {
+                document.getElementById("is_show_schema").style.display = "";
+                $('#s_schema').prop('required', true);
+            }
             let modal = $(this);
             let id = $('.modal-body input')[0];
             modal.find(id).val(recipient_id);
@@ -323,7 +363,7 @@
         <!-- 当模态框关闭时 -->
         hook_modal_selector.on('hidden.bs.modal', function (event) {
             $('.selectpicker').selectpicker('refresh')
-        })
+        });
 
         /**
          * 渲染行的样式

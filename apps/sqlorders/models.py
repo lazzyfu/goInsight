@@ -15,7 +15,6 @@ logger = logging.getLogger('django')
 class SqlOrdersEnvironment(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     envi_id = models.IntegerField(null=False, default=1, verbose_name=u'ID，起始值：1')
-    parent_id = models.IntegerField(null=False, default=0, verbose_name=u'父ID，起始值：0')
     envi_name = models.CharField(max_length=30, default='', null=False, verbose_name=u'环境')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
@@ -27,12 +26,12 @@ class SqlOrdersEnvironment(models.Model):
         db_table = 'sqlaudit_sql_order_environment'
 
         # 建立唯一索引
-        unique_together = (('envi_id',), ('parent_id',))
+        unique_together = (('envi_id',),)
 
 
 envi_choice = [(x, y) for x, y in list(SqlOrdersEnvironment.objects.all().values_list('envi_id', 'envi_name'))]
 # envi_choice = ((0, '1'), (1, '1'))
-type_choice = ((0, '数据查询'), (1, 'SQL审核'))
+type_choice = ((0, '查询_只读'), (1, 'SQL审核'), (2, '查询_读写'))
 
 
 class MysqlConfig(models.Model):
@@ -42,7 +41,7 @@ class MysqlConfig(models.Model):
     user = models.CharField(max_length=32, default='', null=False, verbose_name=u'用户名')
     password = models.CharField(max_length=64, default='', null=False, verbose_name=u'密码')
     envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
-    is_master = models.SmallIntegerField(choices=type_choice, verbose_name=u'用途')
+    is_type = models.SmallIntegerField(choices=type_choice, default=0, verbose_name=u'用途')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'主机描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
@@ -67,7 +66,7 @@ class MysqlSchemas(models.Model):
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
     schema = models.CharField(null=False, max_length=64, default='', verbose_name=u'schema信息')
     envi_id = models.IntegerField(null=False, verbose_name=u'环境')
-    is_master = models.SmallIntegerField(null=False, verbose_name=u'用途, 主库：1， 从库：0')
+    is_type = models.SmallIntegerField(choices=type_choice, default=0, verbose_name=u'用途')
     schema_join = models.CharField(null=False, max_length=128,
                                    verbose_name=u'host、port、schema的组合')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'主机描述')
@@ -106,7 +105,8 @@ progress_choices = (
 # 操作类型选择
 sql_type_choice = (
     ('DDL', u'DDL'),
-    ('DML', u'DML')
+    ('DML', u'DML'),
+    ('OPS', u'OPS')
 )
 
 
@@ -115,7 +115,7 @@ class SqlOrdersContents(models.Model):
     title = models.CharField(max_length=100, verbose_name=u'标题')
     description = models.CharField(max_length=2048, default='', null=False, verbose_name=u'需求')
     sql_type = models.CharField(max_length=5, default='DML', choices=sql_type_choice,
-                                verbose_name=u'SQL类型: DDL or DML')
+                                verbose_name=u'类型: DDL 、DML or OPS')
     envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
     proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人')
     auditor = models.CharField(max_length=30, default='', verbose_name=u'审核人')

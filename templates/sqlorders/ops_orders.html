@@ -5,7 +5,7 @@
     <style>
         .CodeMirror {
             border: 1px solid #eee;
-            height: 650px;
+            height: 550px;
         }
     </style>
 {% endblock %}
@@ -16,7 +16,7 @@
             <div class="box box-info">
                 <div class="box-header box-border">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-code"></i> 提交DDL工单
+                        <h3 class="box-title"><i class="fa fa-code"></i> 提交运维工单
                         </h3>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                                     <div class="form-group has-feedback">
                                         <label class="control-label col-sm-3">标题 <span class="text-red">*</span></label>
                                         <div class="col-sm-9">
-                                            <input type="text" id="s_title" name="title" data-minlength="5"
+                                            <input type="text" name="title" data-minlength="5"
                                                    class="form-control" spellcheck="false"
                                                    placeholder="描述操作的目的" required>
                                         </div>
@@ -54,7 +54,6 @@
                                         <label class="control-label col-sm-3">备注 <span class="text-red">*</span></label>
                                         <div class="col-sm-9">
                                             <select id="s_remark" style="width: 100%" name="remark" required
-                                                    onchange="change_deploy()"
                                                     class="selectpicker form-control" title="请选择...">
                                                 <option data-icon="glyphicon-paperclip" selected value="例行上线">例行上线
                                                 </option>
@@ -78,7 +77,7 @@
                                             <select name="sql_type" id="s_sql_type"
                                                     style="width: 100%" required
                                                     class="selectpicker form-control" title="请选择...">
-                                                <option data-icon="glyphicon-pushpin" selected value="DDL">DDL
+                                                <option data-icon="glyphicon-pushpin" selected value="OPS">OPS
                                                 </option>
                                             </select>
                                         </div>
@@ -88,21 +87,11 @@
                                         <label class="control-label col-sm-3">环境 <span class="text-red">*</span></label>
                                         <div class="col-sm-9">
                                             <select id="s_envi" name="envi_id" style="width: 100%" required
-                                                    class="form-control selectpicker" title="选择环境..."
-                                                    onchange="getTargetSchema()">
+                                                    class="form-control selectpicker" title="选择环境...">
                                             </select>
                                         </div>
                                     </div>
 
-                                    <div class="form-group has-feedback">
-                                        <label class="control-label col-sm-3">库名 <span class="text-red">*</span></label>
-                                        <div class="col-sm-9">
-                                            <select id="s_schema" name="database" style="width: 100%" required
-                                                    class="form-control selectpicker" title="选择库名..."
-                                                    data-live-search="true" onchange="get_table_info()">
-                                            </select>
-                                        </div>
-                                    </div>
 
                                     <div class="form-group has-feedback">
                                         <label class="control-label col-sm-3">审核人 <span
@@ -117,31 +106,19 @@
 
                                     {% ifequal is_enable_mail '0' %}
                                         <div class="form-group has-feedback">
-                                            <label class="control-label col-md-3">抄送 </label>
+                                            <label class="control-label col-md-3">抄送 <span
+                                                    class="text-red">*</span></label>
                                             <div class="col-md-9">
                                                 <select id="s_email_cc" name="email_cc" data-live-search="true"
                                                         title="选择需要抄送的联系人..."
                                                         data-actions-box="true"
                                                         style="width: 100%" class="selectpicker form-control dropup"
-                                                        multiple>
+                                                        multiple required>
                                                 </select>
                                             </div>
                                             <div class="help-block with-errors col-md-2"></div>
                                         </div>
                                     {% endifequal %}
-
-                                    <div class="form-group">
-                                        <label class="control-label col-sm-3"></label>
-                                        <div class="col-sm-9">
-                                            <button type="button" onclick="beautifySQL()"
-                                                    class="btn bg-info btn-sm">格式化SQL
-                                            </button>
-
-                                            <button type="button" onclick="incepSyntaxCheckForm()"
-                                                    class="btn bg-info btn-sm">语法检测
-                                            </button>
-                                        </div>
-                                    </div>
 
                                     <div class="form-group">
                                         <label class="control-label col-sm-3"></label>
@@ -157,9 +134,7 @@
                             <div class="box box-gray">
                                 <div class="box-body no-padding">
                                     <div class="mailbox-read-info">
-                                        <h5>填写SQL语句
-                                            <small class="text-muted"><cite>使用Tab自动补全(必须先选择左侧的主机)</cite></small>
-                                        </h5>
+                                        <h5>填写SHELL命令</h5>
                                     </div>
                                 </div>
                                 <div class="box-body no-padding">
@@ -210,7 +185,7 @@
         let myTextarea = document.getElementById('s_sql');
         let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
-            mode: "text/x-mysql",
+            mode: "text/x-sh",
             autoRefresh: true,
             smartIndent: true,
             indentWithTabs: true,
@@ -220,39 +195,30 @@
             autoCloseBrackets: true,
             matchBrackets: true,
             showCursorWhenSelecting: true,
-            extraKeys: {"Tab": "autocomplete"},
-            hint: CodeMirror.hint.sql
         });
 
 
         /**
-         * 获取指定环境的schema
+         * 获取抄送的用户和邮箱
          */
-        function getTargetSchema() {
-            let s_schema = $('#s_schema');
-            let envi_id = $('#s_envi').val();
-            let csrftoken = $.cookie('csrftoken');
+        $(function () {
             $.ajax({
-                url: '{% url 'p_get_target_schemas' %}',
-                type: 'POST',
+                url: '{% url 'p_get_user_mail' %}',
+                type: 'GET',
                 dataType: 'json',
-                data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
-                    s_schema.empty();
-                    let html = '';
+                    let $this = $("#s_email_cc");
+                    $this.empty();
                     $.each(data, function (index, row) {
-                        let result = [row.host, row.port, row.schema].join(',');
-                        let show_result = [row.comment, row.port, row.schema].join('_');
-                        html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
+                        $this.append(
+                            "<option data-icon='glyphicon-user' data-subtext=" + row.email + " value=" + row.email + ">" + row.username + "</option>");
                     });
-                    s_schema.append(html);
-                    $('.selectpicker').selectpicker('refresh')
+                    $('.selectpicker').selectpicker('refresh');
                 }
             })
-        }
-
+        });
 
         /**
          * 获取任务名
@@ -280,43 +246,7 @@
         });
 
         /**
-         * 获取抄送的用户和邮箱
-         */
-        $(function () {
-            $.ajax({
-                url: '{% url 'p_get_user_mail' %}',
-                type: 'GET',
-                dataType: 'json',
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    $("#s_email_cc").empty();
-                    $.each(data, function (index, row) {
-                        $("#s_email_cc").append(
-                            "<option data-icon='glyphicon-user' data-subtext=" + row.email + " value=" + row.email + ">" + row.username + "</option>");
-                    });
-                    $('.selectpicker').selectpicker('refresh');
-                }
-            })
-        });
-
-
-        /**
-         * 根据用户选择不同的上线类型，进行隐藏或显示部署步骤
-         */
-        function change_deploy() {
-            let type = $('#s_remark').val();
-            if (type === '例行上线') {
-                document.getElementById("is_show_deploy").style.display = "";
-                $('#s_task').prop('required', true);
-            } else if (type === '紧急上线') {
-                document.getElementById("is_show_deploy").style.display = "none";
-                $('#s_task').prop('required', false);
-            }
-        }
-
-        /**
-         * 提交DML或DML工单
+         * 提交OPS工单
          */
 
         $('#SqlOrdersCommitForm').validator().on('submit', function (e) {
@@ -364,7 +294,8 @@
                     $("#s_operator").empty();
                     $.each(result, function (index, row) {
                         $("#s_operator").append(
-                            "<option data-icon='glyphicon-user' data-subtext=" + row.displayname + " value=" + row.username + ">" + row.username + "</option>");
+                            "<option data-icon='glyphicon-user' data-subtext=" + row.displayname + " value=" + row.username + ">" + row.username + "</option>"
+                        );
                     });
                     $('.selectpicker').selectpicker('refresh');
                 }
@@ -396,9 +327,5 @@
          */
         $('#left_input_height').height($('#right_code_hight').height());
 
-
     </script>
 {% endblock %}
-
-
-

@@ -36,29 +36,15 @@ class GetTablesForm(forms.Form):
         return context
 
 
-class GetParentSchemasForm(forms.Form):
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境')
-
-    def query(self):
-        cdata = self.cleaned_data
-        envi_id = cdata.get('envi_id')
-        parent_id = SqlOrdersEnvironment.objects.get(envi_id=envi_id).parent_id
-
-        queryset = MysqlSchemas.objects.filter(envi_id=parent_id).filter(is_master=1).values('host', 'port', 'schema',
-                                                                                             'comment')
-        serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-        return serialize_data
-
-
 class SqlOrdersAuditForm(forms.Form):
     title = forms.CharField(max_length=100, required=True, label=u'标题')
     description = forms.CharField(max_length=1024, required=False, label=u'需求url或描述性文字')
     task_version = forms.CharField(max_length=256, required=False, label=u'上线版本号')
     auditor = forms.CharField(required=True, label=u'工单审核人')
     email_cc = forms.CharField(required=False, label=u'抄送联系人')
-    database = forms.CharField(required=True, max_length=64, label=u'数据库')
+    database = forms.CharField(required=False, max_length=64, label=u'数据库')
     remark = forms.CharField(required=True, max_length=256, min_length=1, label=u'工单备注')
-    sql_type = forms.ChoiceField(choices=sql_type_choice, label=u'操作类型，是DDL还是DML')
+    sql_type = forms.ChoiceField(choices=sql_type_choice, label=u'操作类型，是DDL、DML还是OPS')
     contents = forms.CharField(widget=forms.Textarea, label=u'审核内容')
     envi_id = forms.ChoiceField(choices=envi_choice, required=False)
 
@@ -70,23 +56,49 @@ class SqlOrdersAuditForm(forms.Form):
         auditor = cdata.get('auditor')
         email_cc = ','.join(self.data.getlist('email_cc'))
         remark = cdata.get('remark')
-        host, port, database = cdata.get('database').split(',')
         sql_type = cdata.get('sql_type')
         contents = cdata.get('contents')
         envi_id = cdata.get('envi_id')
 
-        result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
-        if result.get('status') == 2:
-            context = result
-        else:
+        context = {}
+        if sql_type in ['DDL', 'DML']:
+            host, port, database = cdata.get('database').split(',')
+
+            result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
+            if result.get('status') == 2:
+                context = result
+            else:
+                obj = SqlOrdersContents.objects.create(
+                    title=title,
+                    description=description,
+                    task_version=task_version,
+                    sql_type=sql_type,
+                    host=host,
+                    database=database,
+                    port=port,
+                    envi_id=envi_id,
+                    remark=remark,
+                    proposer=request.user.username,
+                    auditor=auditor,
+                    email_cc=email_cc,
+                    contents=contents
+                )
+
+                # 发送邮件
+                msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='commit')
+                msg_pull.run()
+
+                # 跳转到工单记录页面
+                context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
+        elif sql_type in ['OPS']:
             obj = SqlOrdersContents.objects.create(
                 title=title,
                 description=description,
                 task_version=task_version,
                 sql_type=sql_type,
-                host=host,
-                database=database,
-                port=port,
+                host=0,
+                database='',
+                port=0,
                 envi_id=envi_id,
                 remark=remark,
                 proposer=request.user.username,
@@ -375,23 +387,26 @@ class SqlOrdersCloseForm(forms.Form):
 
 class HookSqlOrdersForm(forms.Form):
     id = forms.CharField(required=True, label=u'审核内容id')
-    database = forms.CharField(required=True)
+    database = forms.CharField(required=False)
     envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境')
 
     def save(self, request):
         cdata = self.cleaned_data
-        host, port, database = cdata['database'].split(',')
         id = cdata.get('id')
-        parent_id = SqlOrdersEnvironment.objects.get(envi_id=cdata['envi_id']).parent_id
-        jump_url = f'/sqlorders/sql_orders_list/{parent_id}'
+        envi_id = cdata.get('envi_id')
+        jump_url = f'/sqlorders/sql_orders_list/{envi_id}'
 
         data = SqlOrdersContents.objects.get(pk=id)
-        if SqlOrdersContents.objects.filter(title=data.title, envi_id=parent_id).exists():
-            # 如果指定的环境存在已被钩的工单，直接跳转
-            context = {'status': 0, 'jump_url': jump_url}
+        if data.progress == '6':
+            context = {'status': 2, 'msg': '当前工单已被勾住，操作失败'}
         else:
+            # OPS默认为
+            host, port, database = [0, 0, '']
+            if data.sql_type in ['DML', 'DDL']:
+                host, port, database = cdata['database'].split(',')
+
             # 工单状态必须为已完成
-            if data.progress in ('4', '6'):
+            if data.progress in ['4']:
                 obj = SqlOrdersContents.objects.create(
                     title=data.title,
                     description=data.description,
@@ -400,7 +415,7 @@ class HookSqlOrdersForm(forms.Form):
                     host=host,
                     database=database,
                     port=port,
-                    envi_id=parent_id,
+                    envi_id=envi_id,
                     progress='2',
                     remark=data.remark,
                     proposer=data.proposer,
@@ -434,41 +449,45 @@ class GeneratePerformTasksForm(forms.Form):
         envi_id = cdata.get('envi_id')
 
         obj = get_object_or_404(SqlOrdersContents, pk=id)
-        status, msg = check_db_conn_status(obj.host, obj.port)
-        if status:
-            # 只要审核通过后，才能生成执行任务
-            if obj.progress in ('2', '3', '4', '6'):
-                if SqlOrdersExecTasks.objects.filter(related_id=id).exists():
-                    taskid = SqlOrdersExecTasks.objects.filter(related_id=id).first().taskid
-                    context = {'status': 0,
-                               'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
+        context = {}
+        if obj.sql_type in ['DDL', 'DML']:
+            status, msg = check_db_conn_status(obj.host, obj.port)
+            if status:
+                # 只要审核通过后，才能生成执行任务
+                if obj.progress in ('2', '3', '4', '6'):
+                    if SqlOrdersExecTasks.objects.filter(related_id=id).exists():
+                        taskid = SqlOrdersExecTasks.objects.filter(related_id=id).first().taskid
+                        context = {'status': 0,
+                                   'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
+                    else:
+                        # 分割SQL，转换成sql列表
+                        # 移除sql头尾的分号;
+                        split_sqls = [sql.strip(';') for sql in sqlparse.split(obj.contents, encoding='utf8')]
+                        taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
+
+                        # 生成执行任务记录
+                        for sql in split_sqls:
+                            SqlOrdersExecTasks.objects.create(
+                                uid=request.user.uid,
+                                user=obj.proposer,
+                                taskid=taskid,
+                                host=obj.host,
+                                port=obj.port,
+                                database=obj.database,
+                                sql=sql.strip(';'),
+                                sql_type=obj.sql_type,
+                                envi_id=envi_id,
+                                related_id=id
+                            )
+
+                        context = {'status': 0,
+                                   'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
                 else:
-                    # 分割SQL，转换成sql列表
-                    # 移除sql头尾的分号;
-                    split_sqls = [sql.strip(';') for sql in sqlparse.split(obj.contents, encoding='utf8')]
-                    taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
-
-                    # 生成执行任务记录
-                    for sql in split_sqls:
-                        SqlOrdersExecTasks.objects.create(
-                            uid=request.user.uid,
-                            user=obj.proposer,
-                            taskid=taskid,
-                            host=obj.host,
-                            port=obj.port,
-                            database=obj.database,
-                            sql=sql.strip(';'),
-                            sql_type=obj.sql_type,
-                            envi_id=envi_id,
-                            related_id=id
-                        )
-
-                    context = {'status': 0,
-                               'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
+                    context = {'status': 2, 'msg': '审核未通过或任务已关闭'}
             else:
-                context = {'status': 2, 'msg': '审核未通过或任务已关闭'}
-        else:
-            context = {'status': 2, 'msg': f'无法连接到数据库，请联系系统管理员\n主机: {obj.host}\n端口: {obj.port}'}
+                context = {'status': 2, 'msg': f'无法连接到数据库，请联系系统管理员\n主机: {obj.host}\n端口: {obj.port}'}
+        elif obj.sql_type in ['OPS']:
+            context = {'status': 2, 'msg': '运维工单无法生成执行任务，请手动执行'}
 
         return context
 

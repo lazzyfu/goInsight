@@ -31,7 +31,7 @@ def sync_schemas():
             'db_host': row.host,
             'db_port': row.port,
             'envi_id': row.envi_id,
-            'is_master': row.is_master,
+            'is_type': row.is_type,
             'comment': row.comment
         })
 
@@ -61,7 +61,7 @@ def sync_schemas():
                             schema_join=schema_join,
                             defaults={'user': row['user'], 'password': row['password'], 'host': row['db_host'],
                                       'port': row['db_port'], 'schema': i['schema_name'], 'envi_id': row['envi_id'],
-                                      'is_master': row['is_master'], 'comment': row['comment']}
+                                      'is_type': row['is_type'], 'comment': row['comment']}
                         )
             finally:
                 cnx.close()
@@ -90,7 +90,7 @@ def detect_deadlock(*args):
               "--dest h=localhost,u=root,p=123.com,D=sqlaudit,t=sqlaudit_deadlocks_records --iterations 1"
 
     query = "SELECT id, `user`, `password`, `host`, `port` FROM sqlaudit_mysql_schemas " \
-            "WHERE sqlaudit_mysql_schemas.is_master = 1 group by host,port"
+            "WHERE sqlaudit_mysql_schemas.is_type = 1 group by host,port"
 
     for row in MysqlSchemas.objects.raw(query):
         format_command = command.format(user=row.user, password=row.password, host=row.host, port=row.port)
