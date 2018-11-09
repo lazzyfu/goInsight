@@ -1,4 +1,4 @@
-周期迭代：2018-11 ~ 2018-12
+迭代周期：2018-11 ~ 2018-12
 改进：
 1. 去掉级联环境关系，提供更自由的环境定义
 2. 优化钩子功能，当前环境的工单可勾到任意目标环境
@@ -14,3 +14,12 @@
 1. 增加导出功能支持，支持导出美化后的xlsx格式
 2. 增加开发『核对』 按钮，工单必须由开发核对完成后，才算真正的完成
 
+本次更新方法：
+> git pull
+> pip install -r requirements.txt
+> python manage.py makemigrations --merge
+> python manage.py migrate
+> python manage.py migrate --fake
+> python manage.py collectstatic
+> alter table sqlaudit_mysql_schemas change is_master is_type smallint(6) NOT NULL;
+> alter table sqlaudit_mysql_config change is_master is_type smallint(6) NOT NULL;
