@@ -30,22 +30,19 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
 ## 设计流程
 https://github.com/lazzyfu/AuditSQL/wiki/design
 
-
-## 功能截图地址
+## 效果展示
 https://github.com/lazzyfu/AuditSQL/wiki/show
 
-
-## 文档地址
+## 文档（使用和安装）
 https://github.com/lazzyfu/AuditSQL/wiki
 
+## 迭代周期
+https://github.com/lazzyfu/AuditSQL/blob/master/upgrade.txt
 
-## 联系方式
-
-群聊(欢迎加入)：
+## 联系方式（扫描加入）：
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ql.png)
 
-
-打赏(感谢支持)：
+## 打赏（感谢支持）：
 
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/ds.png)
