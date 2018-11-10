@@ -1,4 +1,4 @@
-迭代周期：2018-11 ~ 2018-12
+迭代：2018-11-08
 改进：
 1. 去掉级联环境关系，提供更自由的环境定义
 2. 优化钩子功能，当前环境的工单可勾到任意目标环境
@@ -10,9 +10,6 @@
 2. 修复SQL格式化格式化SQL时注释不符合可能丢失SQL的BUG
 3. 优化执行任务页面
 
-即将到来的功能：
-1. 增加导出功能支持，支持导出美化后的xlsx格式
-
 本次更新方法：
 > git pull
 > pip install -r requirements.txt
@@ -22,3 +19,8 @@
 > python manage.py collectstatic
 > alter table sqlaudit_mysql_schemas change is_master is_type smallint(6) NOT NULL;
 > alter table sqlaudit_mysql_config change is_master is_type smallint(6) NOT NULL;
+
+
+迭代：2018-11-10
+新增功能：
+1. 增加导出功能支持，支持导出美化后的xlsx格式
