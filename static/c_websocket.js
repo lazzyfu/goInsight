@@ -24,16 +24,11 @@ function CreateWebSocket() {
             output_html = renderSqlProcesslistResult(data);
             $this.append(output_html);
         }
-        else if (status === 2) {
-            output_html = renderGhostResult(data);
+        else if (status === 2 || status === 3) {
+            output_html = renderOutputResult(data);
             $this.append(output_html);
             let element = document.getElementById('output_append');
             element.scrollTop = element.scrollHeight;
-        }
-        if (status === 3) {
-            $this.empty();
-            output_html = renderRollbackResult(data);
-            $this.append(output_html);
         }
     };
     socket.onclose = function () {
@@ -58,12 +53,9 @@ function renderSqlProcesslistResult(data) {
 }
 
 /**
- * 渲染gh-ost输出
+ * 渲染推送t输出
+ * 包括gh-ost
  */
-function renderGhostResult(data) {
+function renderOutputResult(data) {
     return "<p>" + data.replace(/\n/g, '\.' + '<br>') + "</p>";
-}
-
-function renderRollbackResult(data) {
-    return "<p>" + data + "</p>"
 }

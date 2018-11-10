@@ -168,7 +168,20 @@
                     },
                     {
                         field: 'remark',
-                        title: '备注'
+                        title: '备注',
+                        formatter: function (value) {
+                            if (value === '数据导出') {
+                                return "<span class='text-primary'>" + value + "</span>"
+                            }
+                            else if (value === '紧急上线') {
+                                return "<span class='text-danger'>" + value + "</span>"
+                            }
+                            else if (value === '例行上线') {
+                                return "<span class='text-success'>" + value + "</span>"
+                            } else {
+                                return "<span class='text-muted'>" + value + "</span>"
+                            }
+                        }
                     },
                     {
                         field: 'task_version',

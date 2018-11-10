@@ -240,3 +240,24 @@ class SqlOrderReply(models.Model):
 
     def user_id(self):
         return self.user.uid
+
+
+class SqlExportFiles(models.Model):
+    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    task = models.ForeignKey(SqlOrdersExecTasks, on_delete=models.CASCADE, null=False, default='',
+                             verbose_name=u'关联执行任务的主键id')
+    file_name = models.CharField(max_length=256, default='', verbose_name=u'文件名')
+    file_size = models.IntegerField(default=0, verbose_name=u'文件大小，单位B')
+    files = models.FileField(upload_to='files/%Y/%m/%d/')
+    content_type = models.CharField(max_length=100, default='', verbose_name=u'文件的类型')
+
+    def size(self):
+        return ''.join((str(round(self.file_size / 1024 / 1024, 2)), 'MB')) if self.file_size > 1048576 else ''.join(
+            (str(round(self.file_size / 1024, 2)), 'KB'))
+
+    class Meta:
+        verbose_name = u'sql导出excel表'
+        verbose_name_plural = verbose_name
+
+        default_permissions = ()
+        db_table = 'sqlaudit_sql_export_excel'

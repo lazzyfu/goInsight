@@ -18,9 +18,9 @@ from django.views.generic import FormView
 from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm, SyntaxCheckForm, BeautifySQLForm, \
     SqlOrdersApproveForm, SqlOrdersFeedbackForm, SqlOrdersCloseForm, HookSqlOrdersForm, \
     GeneratePerformTasksForm, SinglePerformTasksForm, FullPerformTasksForm, SqlOrdersTasksVersionForm, \
-    PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm
+    PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm, ExecuteExportTasksForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
-    SqlOrdersTasksVersions, SqlOrderReply
+    SqlOrdersTasksVersions, SqlOrderReply, SqlExportFiles
 from users.models import RolePermission, UserRoles
 from users.permissionsVerify import permission_required
 
@@ -328,7 +328,7 @@ class PerformTasksDetailsView(View):
         task_details = []
 
         for row in queryset:
-            task_details.append({
+            result = {
                 'sid': i,
                 'id': row['id'],
                 'user': row['user'],
@@ -336,7 +336,13 @@ class PerformTasksDetailsView(View):
                 'taskid': row['taskid'],
                 'exec_status': row['status'],
                 'sql_type': row['sql_type']
-            })
+            }
+            if SqlExportFiles.objects.filter(task_id=row['id']).exists():
+                file_path = SqlExportFiles.objects.get(task_id=row['id']).files.url
+            else:
+                file_path = None
+            result['file_path'] = file_path
+            task_details.append(result)
             i += 1
         return HttpResponse(json.dumps(task_details))
 
@@ -576,3 +582,30 @@ class MyOrdersView(View):
             context = form.query(request)
 
         return JsonResponse(context, safe=False)
+
+
+class RenderSqlExportView(View):
+    def get(self, request):
+        return render(request, 'sqlorders/export_orders.html')
+
+
+class RenderExportTasksView(View):
+    """渲染指定导出数据执行任务详情页面"""
+
+    def get(self, request, taskid):
+        return render(request, 'sqlorders/export_tasks.html', {'taskid': taskid})
+
+
+class ExecuteExportTasksView(View):
+    """执行导出任务"""
+
+    @permission_required('can_execute_sql')
+    @transaction.atomic
+    def post(self, request):
+        form = ExecuteExportTasksForm(request.POST)
+        if form.is_valid():
+            context = form.exec(request)
+        else:
+            error = form.errors.as_text()
+            context = {'status': 2, 'msg': error}
+        return HttpResponse(json.dumps(context))

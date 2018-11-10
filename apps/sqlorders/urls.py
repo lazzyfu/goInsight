@@ -11,7 +11,7 @@ from sqlorders.views import GetSqlOrdersEnviView, RenderSqlDmlOrdersView, GetAud
     FullPerformTasksView, GetPerformTasksResultView, SqlOrdersTasksVersionView, RenderSqlOrdersTasksVersionView, \
     SqlOrdersTasksVersionListView, GetVersionOrdersList, \
     PerformTasksOpView, GetTargetSchemasView, CommitOrderReplyView, GetOrderReplyView, RenderMyOrdersView, MyOrdersView, \
-    GetSqlExecuteDetailsView, RenderOpsOrdersView
+    GetSqlExecuteDetailsView, RenderOpsOrdersView, RenderSqlExportView, RenderExportTasksView, ExecuteExportTasksView
 
 urlpatterns = [
     path('get_sql_orders_envi/', login_required(GetSqlOrdersEnviView.as_view()), name='p_get_sql_orders_envi'),
@@ -72,4 +72,8 @@ urlpatterns = [
     # 我的工单
     re_path(r'render_my_orders/', login_required(RenderMyOrdersView.as_view()), name='p_render_my_orders'),
     path(r'get_my_orders/', login_required(MyOrdersView.as_view()), name='p_get_my_orders'),
+    # sql导出
+    path(r'render_sql_export/', login_required(RenderSqlExportView.as_view()), name='p_render_sql_export'),
+    re_path(r'export_tasks/(?P<taskid>.*)/', login_required(RenderExportTasksView.as_view())),
+    path(r'execute_export_tasks/', login_required(ExecuteExportTasksView.as_view()), name='p_execute_export_tasks'),
 ]
