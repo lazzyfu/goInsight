@@ -21,6 +21,7 @@ from django.utils import timezone
 from sqlorders.api.executeStatementApi import ExecuteSql
 from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlSchemas
 from sqlorders.msgNotice import SqlOrdersMsgPull
+from sqlorders.utils import ExportToExcel
 
 channel_layer = get_channel_layer()
 logger = logging.getLogger('django')
@@ -150,3 +151,19 @@ def async_execute_multi_sql(username, query, key):
     cache.delete(key)
     # 更新父任务进度
     update_audit_content_progress(username, ast.literal_eval(taskid))
+
+
+@shared_task
+def async_export_tasks(user=None, id=None, sql=None, host=None, port=None, database=None):
+    queryset = SqlOrdersExecTasks.objects.get(id=id)
+    start = time.time()
+
+    export_to_excel = ExportToExcel(id, user, sql, host, port, database)
+    execute_log = export_to_excel.run()
+
+    end = time.time()
+    runtime = str(round((end - start), 3))
+    queryset.exec_log = ''.join(execute_log)
+    queryset.exec_status = '1'
+    queryset.runtime = runtime
+    queryset.save()

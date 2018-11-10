@@ -1,18 +1,16 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-import json
 import re
 import subprocess
 
 import psutil
 import sqlparse
 from django import forms
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Case, When, Value, CharField, Q
 from django.shortcuts import get_object_or_404
 
 from sqlorders.inceptionApi import InceptionSqlApi
-from sqlorders.models import sql_type_choice, SqlOrdersEnvironment, envi_choice, SqlOrdersTasksVersions, SqlOrderReply, \
+from sqlorders.models import sql_type_choice, envi_choice, SqlOrdersTasksVersions, SqlOrderReply, \
     SysConfig
 from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter
 from users.models import RolePermission
@@ -59,11 +57,11 @@ class SqlOrdersAuditForm(forms.Form):
         sql_type = cdata.get('sql_type')
         contents = cdata.get('contents')
         envi_id = cdata.get('envi_id')
-
+        host, port, database = cdata.get('database').split(',') if cdata.get('database') else [0, 0, '']
         context = {}
-        if sql_type in ['DDL', 'DML']:
-            host, port, database = cdata.get('database').split(',')
 
+        if remark != u'数据导出':
+            # 此时检测语法规则
             result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
             if result.get('status') == 2:
                 context = result
@@ -83,22 +81,23 @@ class SqlOrdersAuditForm(forms.Form):
                     email_cc=email_cc,
                     contents=contents
                 )
-
                 # 发送邮件
                 msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='commit')
                 msg_pull.run()
-
                 # 跳转到工单记录页面
                 context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
-        elif sql_type in ['OPS']:
+
+        if remark == u'数据导出':
+
+            # 不检测语法
             obj = SqlOrdersContents.objects.create(
                 title=title,
                 description=description,
                 task_version=task_version,
                 sql_type=sql_type,
-                host=0,
-                database='',
-                port=0,
+                host=host,
+                database=database,
+                port=port,
                 envi_id=envi_id,
                 remark=remark,
                 proposer=request.user.username,
@@ -110,7 +109,6 @@ class SqlOrdersAuditForm(forms.Form):
             # 发送邮件
             msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='commit')
             msg_pull.run()
-
             # 跳转到工单记录页面
             context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
         return context
@@ -457,8 +455,12 @@ class GeneratePerformTasksForm(forms.Form):
                 if obj.progress in ('2', '3', '4', '6'):
                     if SqlOrdersExecTasks.objects.filter(related_id=id).exists():
                         taskid = SqlOrdersExecTasks.objects.filter(related_id=id).first().taskid
+                        if obj.remark == u'数据导出':
+                            jump_url = f'/sqlorders/export_tasks/{taskid}'
+                        else:
+                            jump_url = f'/sqlorders/perform_tasks/{taskid}'
                         context = {'status': 0,
-                                   'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
+                                   'jump_url': jump_url}
                     else:
                         # 分割SQL，转换成sql列表
                         # 移除sql头尾的分号;
@@ -479,9 +481,12 @@ class GeneratePerformTasksForm(forms.Form):
                                 envi_id=envi_id,
                                 related_id=id
                             )
-
+                        if obj.remark == u'数据导出':
+                            jump_url = f'/sqlorders/export_tasks/{taskid}'
+                        else:
+                            jump_url = f'/sqlorders/perform_tasks/{taskid}'
                         context = {'status': 0,
-                                   'jump_url': f'/sqlorders/perform_tasks/{taskid}'}
+                                   'jump_url': jump_url}
                 else:
                     context = {'status': 2, 'msg': '审核未通过或任务已关闭'}
             else:
@@ -747,3 +752,47 @@ class MyOrdersForm(forms.Form):
             rows.append(x)
         result = {'total': ol_total, 'rows': rows}
         return result
+
+
+class ExecuteExportTasksForm(forms.Form):
+    id = forms.IntegerField()
+
+    def exec(self, request):
+        cdata = self.cleaned_data
+        id = cdata.get('id')
+
+        obj = SqlOrdersExecTasks.objects.get(id=id)
+        sql = obj.sql.strip(';') if obj.sql.endswith(';') else obj.sql
+
+        status = ''
+        query = f"select id,group_concat(exec_status) as exec_status from sqlaudit_sql_orders_execute_tasks " \
+                f"where taskid={obj.taskid} group by taskid"
+        for row in SqlOrdersExecTasks.objects.raw(query):
+            status = row.exec_status.split(',')
+
+        # 每次只能执行一条任务，不可同时执行，避免数据库压力
+        if '2' in status or '3' in status:
+            context = {'status': 2, 'msg': '请等待当前任务执行完成'}
+        else:
+            # 避免任务重复点击执行
+            if obj.exec_status not in ('0', '5', '6'):
+                context = {'status': 2, 'msg': '请不要重复操作任务'}
+            else:
+                # 将任务进度设置为：处理中
+                obj.executor = request.user.username
+                obj.execition_time = timezone.now()
+                # 此处的is_ghost没有其他意义，为了html显示
+                obj.is_ghost = 1
+                obj.exec_status = '2'
+                obj.save()
+
+                async_export_tasks.delay(user=request.user.username,
+                                         id=id,
+                                         sql=sql,
+                                         host=obj.host,
+                                         port=obj.port,
+                                         database=obj.database)
+                context = {'status': 1, 'msg': '任务已提交，请查看输出'}
+        # 更新父任务进度
+        update_audit_content_progress(request.user.username, obj.taskid)
+        return context
