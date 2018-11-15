@@ -2,8 +2,7 @@
 
 AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成本.
 
-- __开发组件__
-
+## 开发组件
 ```text
  Python 3.6+
  Django 2.0+
@@ -16,6 +15,7 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
 
   
 ## 功能
+```text
 * 自定义环境
   - 可以根据自己环境需求，定义多个环境，比如：测试环境、预发布环境、生产环境等
 
@@ -53,6 +53,7 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
 * 其他功能
    - 支持LDAP或本地手动创建用户授权登陆功能，支持修改头像，密码等功能
    - 支持自动检测已配置数据库实例的死锁检测功能，并提供推送
+```
 
 ## 设计流程
 ![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/design.png)
