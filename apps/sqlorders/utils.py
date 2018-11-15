@@ -18,7 +18,7 @@ from openpyxl import Workbook
 from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 
 from sqlaudit import settings
-from sqlorders.models import MysqlSchemas, MysqlConfig, SqlExportFiles
+from sqlorders.models import MysqlSchemas, MysqlConfig, SqlExportFiles, SqlOrdersExecTasks
 
 logger = logging.getLogger('django')
 channel_layer = get_channel_layer()
@@ -210,9 +210,11 @@ class ExportToExcel(object):
                                     password=obj.password,
                                     port=obj.port,
                                     db=database,
+                                    max_allowed_packet=1024 * 1024 * 1024,
                                     charset='utf8')
 
         self.execute_log = []
+        self.affected_row = 0
 
         # 文件名
         num = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -220,29 +222,45 @@ class ExportToExcel(object):
         self.file = self.title + '.xlsx'
         self.zip_file = self.file + '.zip'
 
-    def get_count(self):
-        # 查询当前SQL的返回的查询数量，返回分页的SQL列表
-        count_query = f"select count(*) as count from ({self.sql}) as subquery"
-
-        self.conn.cursorclass = pymysql.cursors.DictCursor
-        with self.conn.cursor() as cursor:
-            cursor.execute(count_query)
-            count = cursor.fetchone()
-
+    def pull_msg(self, msg):
         # 推送消息
-        msg = f"SQL导出记录总数：{count['count']} \n"
-        self.execute_log.append(msg)
+        msg = f"{msg} \n"
         pull_msg = {'status': 3, 'data': msg}
         async_to_sync(channel_layer.group_send)(self.user, {"type": "user.message",
                                                             'text': json.dumps(pull_msg)})
+
+    def set_session_timeout(self):
+        with self.conn.cursor() as cursor:
+            cursor.execute("set session net_read_timeout=3600")
+
+        with self.conn.cursor() as cursor:
+            cursor.execute("set session net_write_timeout=3600")
+
+    def get_count(self):
+        # 查询当前SQL的返回的查询数量，返回分页的SQL列表
+        status = True
+        msg = None
+        try:
+            count_query = f"select count(*) as count from ({self.sql}) as subquery"
+            self.conn.cursorclass = pymysql.cursors.DictCursor
+            with self.conn.cursor() as cursor:
+                cursor.execute(count_query)
+                count = cursor.fetchone()
+                self.affected_row = count['count']
+            msg = f"SQL导出记录总数：{count['count']}"
+        except Exception as err:
+            msg = f"导出失败，发现错误：{str(err.args[1])}"
+            status = False
+        finally:
+            self.execute_log.append(msg)
+            self.pull_msg(msg)
+            return status
 
     def compress_file(self):
         # 压缩文件
-        msg = f'正在压缩文件：{self.file} ---> {self.zip_file}\n'
+        msg = f'正在压缩文件：{self.file} ---> {self.zip_file}'
+        self.pull_msg(msg)
         self.execute_log.append(msg)
-        pull_msg = {'status': 3, 'data': msg}
-        async_to_sync(channel_layer.group_send)(self.user, {"type": "user.message",
-                                                            'text': json.dumps(pull_msg)})
         with zipfile.ZipFile(self.zip_file, 'w', allowZip64=True, compression=zipfile.ZIP_DEFLATED) as filezip:
             filezip.write(self.file)
 
@@ -257,21 +275,20 @@ class ExportToExcel(object):
                 content_type='xlsx'
             )
 
-        # 删除临时文件
-        msg = f'删除源文件：{self.file}\n'
+        # 删除临时文件`
+        msg = f'删除源文件：{self.file}'
+        self.pull_msg(msg)
         self.execute_log.append(msg)
-        pull_msg = {'status': 3, 'data': msg}
-        async_to_sync(channel_layer.group_send)(self.user, {"type": "user.message",
-                                                            'text': json.dumps(pull_msg)})
         os.remove(self.file) if os.path.exists(self.file) else None
         os.remove(self.zip_file) if os.path.exists(self.zip_file) else None
 
     def export_xlsx(self):
         # 导出成xlsx格式
         # num：保存文件的结尾_num标识，为str类型
-        wb = Workbook()
+        # 使用write_only能够有效降低内存的使用
+        wb = Workbook(write_only=True)
         wb.encoding = f'{self.encoding}'
-        ws = wb.active
+        ws = wb.create_sheet()
         ws.title = self.title
 
         # 获取列名作为标题
@@ -284,21 +301,22 @@ class ExportToExcel(object):
         ws.append(title)
 
         # 获取数据，并写入到表格
-        # 使用SSCursor
-        # Unbuffered Cursor,
-        # mainly useful for queries that return a lot of data,
-        # or for connections to remote servers over a slow network.
-        self.conn.cursorclass = pymysql.cursors.SSCursor
-        with self.conn.cursor() as cursor:
-            msg = f'正在导出SQL：{self.sql}\n'
-            self.execute_log.append(msg)
-            pull_msg = {'status': 3, 'data': msg}
-            async_to_sync(channel_layer.group_send)(self.user, {"type": "user.message",
-                                                                'text': json.dumps(pull_msg)})
-            cursor.execute(self.sql)
-            while True:
-                row = cursor.fetchone()
-                if row:
+        if self.affected_row <= 100000:
+            # 当导出数据量小于10W时，使用fetchall直接读取到内存中
+            self.conn.cursorclass = pymysql.cursors.Cursor
+            with self.conn.cursor() as cursor:
+                msg = f'正在导出SQL：{self.sql}'
+                self.pull_msg(msg)
+                self.execute_log.append(msg)
+
+                cursor.execute(self.sql)
+                rows = cursor.fetchall()
+
+                msg = f'正在处理数据...'
+                self.pull_msg(msg)
+                self.execute_log.append(msg)
+
+                for row in rows:
                     # 过滤掉特殊字符
                     filter_illegal_characters_row = list(
                         map(
@@ -306,20 +324,46 @@ class ExportToExcel(object):
                         )
                     )
                     ws.append(filter_illegal_characters_row)
-                else:
-                    break
-        wb.save(self.file)
+            wb.save(self.file)
+        else:
+            # 当导出数据量大于10W时，使用SSCursor进行迭代读取，避免内存使用过大
+            self.conn.cursorclass = pymysql.cursors.SSCursor
+            with self.conn.cursor() as cursor:
+                msg = f'正在导出SQL：{self.sql}'
+                self.pull_msg(msg)
+                self.execute_log.append(msg)
+
+                cursor.execute(self.sql)
+                while True:
+                    row = cursor.fetchone()
+                    if row:
+                        # 过滤掉特殊字符
+                        filter_illegal_characters_row = list(
+                            map(
+                                (lambda x: ILLEGAL_CHARACTERS_RE.sub(r'', x) if isinstance(x, str) else x), row
+                            )
+                        )
+                        ws.append(filter_illegal_characters_row)
+                    else:
+                        break
+            wb.save(self.file)
         self.compress_file()
 
     def run(self):
-        self.get_count()
-        start_time = time.time()
-        self.export_xlsx()
-        end_time = time.time()
-        consume_time = ''.join((str(round(end_time - start_time, 2)), 's'))
-        msg = f'执行耗时：{consume_time}\n'
-        self.execute_log.append(msg)
-        pull_msg = {'status': 3, 'data': msg}
-        async_to_sync(channel_layer.group_send)(self.user, {"type": "user.message",
-                                                            'text': json.dumps(pull_msg)})
-        return self.execute_log
+        queryset = SqlOrdersExecTasks.objects.get(id=self.id)
+        status = self.get_count()
+        if status:
+            start_time = time.time()
+            self.set_session_timeout()
+            self.export_xlsx()
+            end_time = time.time()
+            consume_time = ''.join((str(round(end_time - start_time, 2)), 's'))
+            msg = f'执行耗时：{consume_time}'
+            self.execute_log.append(msg)
+            self.pull_msg(msg)
+            queryset.runtime = consume_time
+            queryset.exec_status = '1'
+        else:
+            queryset.exec_status = '5'
+        queryset.exec_log = '\n'.join(self.execute_log)
+        queryset.save()

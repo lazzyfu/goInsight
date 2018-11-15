@@ -155,15 +155,5 @@ def async_execute_multi_sql(username, query, key):
 
 @shared_task
 def async_export_tasks(user=None, id=None, sql=None, host=None, port=None, database=None):
-    queryset = SqlOrdersExecTasks.objects.get(id=id)
-    start = time.time()
-
     export_to_excel = ExportToExcel(id, user, sql, host, port, database)
-    execute_log = export_to_excel.run()
-
-    end = time.time()
-    runtime = str(round((end - start), 3))
-    queryset.exec_log = ''.join(execute_log)
-    queryset.exec_status = '1'
-    queryset.runtime = runtime
-    queryset.save()
+    export_to_excel.run()

@@ -24,9 +24,6 @@ def check_ldap_connection():
             return False, msg
 
 
-
-
-
 class GroupConcat(Aggregate):
     # 自定义聚合函数GROUP_CONCAT
     # supports GROUP_CONCAT(distinct field)

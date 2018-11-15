@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 import json
+import re
 import socket
 import threading
 
@@ -94,7 +95,7 @@ class MyThread(threading.Thread):
             wait_read(self.channel.fileno())
             try:
                 data = self.channel.recv(65535).decode('utf8')
-                self.send(text_data=data)
+                self.send(text_data=json.dumps({'status': 0, 'data': data}))
             except socket.timeout as err:
                 pass
             except ValueError as err:
@@ -128,9 +129,12 @@ class SSHTerminalConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
         resize = data.get('resize')
+        initial_cmd = data.get('initial_cmd')
         if resize and len(resize) == 2:
             # 设置paramiko的窗口尺寸
             self.channel.resize_pty(width=resize[0], height=resize[1])
+        elif initial_cmd:
+            self.handler_write(initial_cmd + '\n\r')
         else:
             self.handler_write(data.get('data'))
 
@@ -144,7 +148,6 @@ class SSHTerminalConsumer(WebsocketConsumer):
             if data.endswith('\r'):
                 if len(data.strip()) > 1:
                     self.cmd_string = data
-
                 if self.cmd_string.strip():
                     self.logging_op(self.cmd_string)
                 self.cmd_string = ''
