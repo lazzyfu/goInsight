@@ -35,6 +35,7 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
   - DDL语句支持gh-ost改表，抛弃pt-osc
   - DML语句实现事务级别的执行保证
   - 支持一键「全部执行」和有选择的「单条执行」
+  - 自动生成DML备份语句
  
 * 进度展示
   - 前台实时显示DML、DDL、数据导出的进度（websocket）
