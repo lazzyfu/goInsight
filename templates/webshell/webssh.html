@@ -140,18 +140,18 @@
             };
 
             // 追踪触发按键
-            term.attachCustomKeyEventHandler(function (e) {
-                if (e.ctrlKey && e.keyCode === 68) {
-                    displayPNotify(2, '不支持ctr + d操作');
-                    sock.send(JSON.stringify({'initial_cmd': initial_cmd}));
-                    return false
-                }
-
-                if (e.ctrlKey && e.keyCode === 67) {
-                    displayPNotify(2, '不支持ctr + c操作');
-                    return false
-                }
-            });
+            {#term.attachCustomKeyEventHandler(function (e) {#}
+            {#    if (e.ctrlKey && e.keyCode === 68) {#}
+            {#        displayPNotify(2, '不支持ctr + d操作');#}
+            {#        sock.send(JSON.stringify({'initial_cmd': initial_cmd}));#}
+            {#        return false#}
+            {#    }#}
+            {##}
+            {#    if (e.ctrlKey && e.keyCode === 67) {#}
+            {#        displayPNotify(2, '不支持ctr + c操作');#}
+            {#        return false#}
+            {#    }#}
+            {# });#}
         }
 
         CreateWebShell();
