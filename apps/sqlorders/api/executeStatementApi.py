@@ -77,7 +77,8 @@ class ExecuteSql(object):
         cnx = pymysql.connect(host=self.host, port=self.port,
                               user=self.user, password=self.password,
                               charset=self.charset, database=self.database,
-                              cursorclass=pymysql.cursors.DictCursor
+                              cursorclass=pymysql.cursors.DictCursor,
+                              sql_mode="ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES"
                               )
         return cnx
 
@@ -115,7 +116,8 @@ class ExecuteSql(object):
         """
         check_cmd = ["show variables like 'log_bin'",
                      "show variables like 'binlog_format'",
-                     "show variables like 'gtid_mode'"
+                     "show variables like 'gtid_mode'",
+                     "show variables like 'server_id'"
                      ]
         rr = []
         with cnx.cursor() as cursor:
@@ -123,13 +125,16 @@ class ExecuteSql(object):
                 cursor.execute(i)
                 data = cursor.fetchone()
                 if data['Variable_name'] == 'log_bin' and data['Value'] == 'OFF':
-                    rr.append('mysql binlog not enable')
+                    rr.append('Binlog没有启用')
 
                 if data['Variable_name'] == 'binlog_format' and data['Value'] != 'ROW':
-                    rr.append('mysql binlog format not eq row mode')
+                    rr.append('Binlog格式不为ROW')
 
                 if data['Variable_name'] == 'gtid_mode' and data['Value'] == 'OFF':
-                    rr.append('mysql gtid mode not enable')
+                    rr.append('GTID未启用')
+
+                if data['Value'] == '0':
+                    rr.append('Server id没有配置')
         self._close(cnx)
         return rr
 
@@ -149,6 +154,14 @@ class ExecuteSql(object):
         t_cnx = CnxStatusCheckThread(self.username, self._connect(), watch_thread_id)
         t_cnx.setDaemon(True)
         t_cnx.start()
+
+    def _pull_msg(self, status, data):
+        """实时推送消息"""
+        pull_msg = {'status': status, 'data': data}
+        async_to_sync(channel_layer.group_send)(
+            self.username, {"type": "user.message",
+                            'text': json.dumps(pull_msg)
+                            })
 
     def _execute_sql(self, cnx):
         """执行SQL语句"""
@@ -203,9 +216,7 @@ class ExecuteSql(object):
                 data = p.stdout.readline().decode('utf8')
                 if data:
                     exec_log += data
-                    pull_msg = {'status': 2, 'data': data}
-                    async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
-                                                                            'text': json.dumps(pull_msg)})
+                    self._pull_msg(2, data)
 
             end_time = time.time()
             runtime = str(round(float(end_time - start_time), 3)) + 's'
@@ -216,11 +227,8 @@ class ExecuteSql(object):
             else:
                 result = {'status': 'fail', 'exec_log': str(exec_log)}
         else:
-            pull_msg = {'status': 2, 'data': f'未成功匹配到SQL：{self.sql}，请检查语法是否存在问题'}
-            async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
-                                                                    'text': json.dumps(pull_msg)})
+            self._pull_msg(2, f'未成功匹配到SQL：{self.sql}，请检查语法是否存在问题')
             result = {'status': 'fail', 'exec_log': f'未成功匹配到SQL：{self.sql}，请检查语法是否存在问题'}
-
         return result
 
     def _extract_tables(self):
@@ -308,11 +316,7 @@ class ExecuteSql(object):
                     matchcompile = re.compile('^(UPDATE|DELETE|INSERT)([\s\S]*)', re.I)
                     match = matchcompile.match(self.sql)
                     sql_type = match.group(1).upper()
-
-                    pull_msg = {'status': 3, 'data': '正在执行当前SQL的备份，这可能需要花费些时间...'}
-                    async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
-                                                                            'text': json.dumps(pull_msg)})
-
+                    self._pull_msg(3, '正在执行当前SQL的备份，这可能需要花费些时间...')
                     # 备份时，传入schema和tables的列表
                     # 只读取指定schema和tables的binlog
                     rrb_schemas = [self.database]
@@ -337,14 +341,11 @@ class ExecuteSql(object):
                             ['\n'.join([i['gtid'], '\n\n'.join(i['rbsql'])]) for i in r_data['data']])
                         result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
                                   'runtime': runtime, 'exec_log': exec_log}
-                        pull_msg = {'status': 3, 'data': '备份成功，请点击结果按钮查看回滚SQL语句...'}
-                        async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
-                                                                                'text': json.dumps(pull_msg)})
+                        self._pull_msg(3, '备份成功，请点击结果按钮查看回滚SQL语句...')
+
                     elif r_data['status'] == 'fail':
                         result = {'status': 'fail', 'exec_log': exec_log}
-                        pull_msg = {'status': 3, 'data': f'备份失败, 失败原因：{exec_log}'}
-                        async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
-                                                                                'text': json.dumps(pull_msg)})
+                        self._pull_msg(3, f'备份失败, 失败原因：{exec_log}\n')
                 else:
                     check_result = ', '.join(check_result)
                     exec_log = f"状态: 执行成功，备份失败\n" \
@@ -390,9 +391,7 @@ class ExecuteSql(object):
                                f"错误信息：非DML和DDL语句，执行失败\n"
                     result = {'status': 'warn', 'exec_log': exec_log}
         except Exception as err:
-            pull_msg = {'status': 3, 'data': str(err)}
-            async_to_sync(channel_layer.group_send)(self.username, {"type": "user.message",
-                                                                    'text': json.dumps(pull_msg)})
+            self._pull_msg(3, str(err))
             result = {'status': 'fail', 'exec_log': err}
         return result
 
