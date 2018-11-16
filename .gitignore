@@ -14,3 +14,4 @@ apps/project_manager/tests.py
 *.jpg
 *.sql
 README.md
+upgrade.txt
