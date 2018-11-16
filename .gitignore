@@ -13,3 +13,4 @@ AuditSQL/media/files
 apps/project_manager/tests.py
 *.jpg
 *.sql
+README.md
