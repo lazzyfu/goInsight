@@ -1,0 +1,32 @@
+迭代周期：2018-11-08
+改进：
+1. 去掉级联环境关系，提供更自由的环境定义
+2. 优化钩子功能，当前环境的工单可勾到任意目标环境
+3. 增加运维工单支持，不提供执行功能，仅提供流程支持
+4. 查询模块，可定义指定的库读写或读权限
+
+优化及bug修复：
+1. 优化工单详情页面，自动对shell或sql脚本实现高亮
+2. 修复SQL格式化格式化SQL时注释不符合可能丢失SQL的BUG
+3. 优化执行任务页面
+
+本次更新方法：
+> git pull
+> pip install -r requirements.txt
+> python manage.py makemigrations --merge
+> python manage.py migrate
+> python manage.py migrate --fake
+> python manage.py collectstatic
+> alter table sqlaudit_mysql_schemas change is_master is_type smallint(6) NOT NULL;
+> alter table sqlaudit_mysql_config change is_master is_type smallint(6) NOT NULL;
+
+
+迭代周期：2018-11-10
+新增功能：
+1. 增加导出功能支持，支持导出美化后的xlsx格式
+
+迭代周期：2018-11-15
+优化及bug修复：
+1. 优化数据导出时，占用内存过大的问题
+2. 修复数据导出时，增加检测alias命名重复的功能
+3. 部分样式美化
