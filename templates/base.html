@@ -32,7 +32,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
     <!-- bootstrap-table -->
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.css' %}">
+          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
     <link rel="stylesheet"
           href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.css' %}">
     <link rel="stylesheet"
@@ -102,6 +102,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Header Navbar -->
         <nav class="navbar navbar-static-top" role="navigation">
             <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
