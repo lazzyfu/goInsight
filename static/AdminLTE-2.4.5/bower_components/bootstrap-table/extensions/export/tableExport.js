@@ -1,7 +1,7 @@
 /**
  * @preserve tableExport.jquery.plugin
  *
- * Version 1.9.12
+ * Version 1.10.2
  *
  * Copyright (c) 2015-2018 hhurz, https://github.com/hhurz
  *
@@ -41,14 +41,15 @@
             textColor:     50,          // Color value or 'inherit' to use css color from html table
             fontStyle:     'normal',    // normal, bold, italic, bolditalic or 'inherit' to use css font-weight and fonst-style from html table
             overflow:      'ellipsize', // visible, hidden, ellipsize or linebreak
-            halign:        'left',      // left, center, right
+            halign:        'inherit',   // left, center, right or 'inherit' to use css horizontal cell alignment from html table
             valign:        'middle'     // top, middle, bottom
           },
           headerStyles: {
             fillColor:     [52, 73, 94],
             textColor:     255,
             fontStyle:     'bold',
-            halign:        'center'
+            halign:        'inherit',   // left, center, right or 'inherit' to use css horizontal header cell alignment from html table
+            valign:        'middle'     // top, middle, bottom
           },
           alternateRowStyles: {
             fillColor:     245
@@ -63,7 +64,6 @@
           }
         }
       },
-      maxNestedTables: 1,               // Max number of nested tables that will be exported. 0 = export all. Default = 1
       mso: {                            // MS Excel and MS Word related options
         fileFormat:        'xlshtml',   // xlshtml = Excel 2000 html format
                                         // xmlss = XML Spreadsheet 2003 file format (XMLSS)
@@ -98,6 +98,10 @@
           }
         },
         fonts: {}
+      },
+      preserve: {
+        leadingWS:         false,       // preserve leading white spaces
+        trailingWS:        false        // preserve trailing white spaces
       },
       preventInjection:    true,
       tbodySelector:       'tr',
@@ -163,7 +167,6 @@
 
     // Check values of some options
     defaults.mso.pageOrientation = (defaults.mso.pageOrientation.substr(0, 1) === 'l') ? 'landscape' : 'portrait';
-    defaults.maxNestedTables = (defaults.maxNestedTables >= 0 ? defaults.maxNestedTables : 1);
 
     colNames = GetColumnNames(el);
 
@@ -231,8 +234,8 @@
       };
 
       rowlength += CollectCsvData($(el).find('thead').first().find(defaults.theadSelector), 'th,td', rowlength);
-      findTablePart($(el),'tbody').each(function () {
-        rowlength += CollectCsvData(findRows($(this), defaults.tbodySelector), 'td,th', rowlength);
+      findTableElements($(el),'tbody').each(function () {
+        rowlength += CollectCsvData(findTableElements($(this), defaults.tbodySelector), 'td,th', rowlength);
       });
       if ( defaults.tfootSelector.length )
         CollectCsvData($(el).find('tfoot').first().find(defaults.tfootSelector), 'td,th', rowlength);
@@ -267,8 +270,8 @@
       rowIndex = 0;
       ranges   = [];
       var tdData = "INSERT INTO `" + defaults.tableName + "` (";
-      $hrows     = $(el).find('thead').first().find(defaults.theadSelector);
-      $hrows.each(function () {
+      $hrows     = collectHeadRows ($(el));
+      $($hrows).each(function () {
         ForEachVisibleCell(this, 'th,td', rowIndex, $hrows.length,
                            function (cell, row, col) {
                              tdData += "'" + parseString(cell, row, col) + "',";
@@ -317,8 +320,8 @@
     } else if ( defaults.type === 'json' ) {
       var jsonHeaderArray = [];
       ranges = [];
-      $hrows = $(el).find('thead').first().find(defaults.theadSelector);
-      $hrows.each(function () {
+      $hrows = collectHeadRows ($(el));
+      $($hrows).each(function () {
         var jsonArrayTd = [];
 
         ForEachVisibleCell(this, 'th,td', rowIndex, $hrows.length,
@@ -383,8 +386,8 @@
       xml += '<tabledata><fields>';
 
       // Header
-      $hrows = $(el).find('thead').first().find(defaults.theadSelector);
-      $hrows.each(function () {
+      $hrows = collectHeadRows ($(el));
+      $($hrows).each(function () {
 
         ForEachVisibleCell(this, 'th,td', rowIndex, $hrows.length,
                            function (cell, row, col) {
@@ -546,8 +549,7 @@
           return $rows.length;
         }
 
-        var rowLength = 0;
-        rowLength += CollectXmlssData ($table.find('thead').first().find(defaults.theadSelector), 'th,td', rowLength);
+        var rowLength = CollectXmlssData (collectHeadRows ($table), 'th,td', rowLength);
         CollectXmlssData (collectRows ($table), 'td,th', rowLength);
 
         docData += '</Table>\r';
@@ -647,7 +649,7 @@
       var spans = [];
       rowIndex  = 0;
 
-      $rows = $(el).find('thead').first().find(defaults.theadSelector).toArray();
+      $rows = collectHeadRows ($(el));
       $rows.push.apply($rows, collectRows ($(el)));
 
       $($rows).each(function () {
@@ -752,8 +754,8 @@
 
         // Header
         docData += '<table><thead>';
-        $hrows = $table.find('thead').first().find(defaults.theadSelector);
-        $hrows.each(function () {
+        $hrows = collectHeadRows ($table);
+        $($hrows).each(function () {
           trData = "";
           ForEachVisibleCell(this, 'th,td', rowIndex, $hrows.length,
                              function (cell, row, col) {
@@ -998,7 +1000,7 @@
           return rlength;
         };
 
-        $hrows = $(this).find('thead').first().find(defaults.theadSelector);
+        $hrows = collectHeadRows ($(this));
 
         var colcount = CollectPdfmakeData($hrows, 'th,td', $hrows.length);
 
@@ -1040,9 +1042,7 @@
             saveAs(blob, defaults.fileName + '.pdf');
           }
           catch (e) {
-            downloadFile(defaults.fileName + '.pdf',
-              'data:application/pdf;base64,',
-              buffer);
+            downloadFile(defaults.fileName + '.pdf', 'application/pdf', buffer);
           }
         });
 
@@ -1114,6 +1114,8 @@
           teOptions.doc = new jsPDF(defaults.jspdf.orientation,
                                     defaults.jspdf.unit,
                                     defaults.jspdf.format);
+          teOptions.wScaleFactor = 1;
+          teOptions.hScaleFactor = 1;
 
           if ( typeof defaults.jspdf.onDocCreated === 'function' )
             defaults.jspdf.onDocCreated(teOptions.doc);
@@ -1134,17 +1136,13 @@
               checkCellVisibilty = $hiddenTableElements.length > 0;
             }
 
-            $hrows = $(this).find('thead').find(defaults.theadSelector);
+            $hrows = collectHeadRows ($(this));
             $rows = collectRows ($(this));
 
             $($rows).each(function () {
               ForEachVisibleCell(this, 'td,th', $hrows.length + rowCount, $hrows.length + $rows.length,
                                  function (cell) {
-                                   if ( typeof cell !== 'undefined' && cell !== null ) {
-                                     var kids = $(cell).children();
-                                     if ( typeof kids !== 'undefined' && kids.length > 0 )
-                                       collectImages(cell, kids, teOptions);
-                                   }
+                                   collectImages(cell, $(cell).children(), teOptions);
                                  });
               rowCount++;
             });
@@ -1169,9 +1167,9 @@
 
             colNames = GetColumnNames(this);
 
-            teOptions.columns    = [];
-            teOptions.rows       = [];
-            teOptions.rowoptions = {};
+            teOptions.columns = [];
+            teOptions.rows    = [];
+            teOptions.teCells = {};
 
             // onTable: optional callback function for every matching table that can be used
             // to modify the tableExport options or to skip the output of a particular table
@@ -1234,8 +1232,12 @@
                       cell.styles.rowHeight = rh;
                   }
 
+                  cell.styles.halign = (atOptions.headerStyles.halign === 'inherit') ? 'center' : atOptions.headerStyles.halign;
+                  cell.styles.valign = atOptions.headerStyles.valign;
+
                   if ( typeof col.style !== 'undefined' && col.style.hidden !== true ) {
-                    cell.styles.halign = col.style.align;
+                    if ( atOptions.headerStyles.halign === 'inherit' )
+                      cell.styles.halign = col.style.align;
                     if ( atOptions.styles.fillColor === 'inherit' )
                       cell.styles.fillColor = col.style.bcolor;
                     if ( atOptions.styles.textColor === 'inherit' )
@@ -1250,18 +1252,20 @@
             if ( typeof atOptions.createdCell !== 'function' ) {
               // apply some original css styles to pdf table cells
               atOptions.createdCell = function (cell, data) {
-                var rowopt = teOptions.rowoptions [data.row.index + ":" + data.column.dataKey];
+                var tecell = teOptions.teCells [data.row.index + ":" + data.column.dataKey];
 
-                if ( typeof rowopt !== 'undefined' &&
-                  typeof rowopt.style !== 'undefined' &&
-                  rowopt.style.hidden !== true ) {
-                  cell.styles.halign = rowopt.style.align;
+                cell.styles.halign = (atOptions.styles.halign === 'inherit') ? 'center' : atOptions.styles.halign;
+                cell.styles.valign = atOptions.styles.valign;
+
+                if ( typeof tecell !== 'undefined' && typeof tecell.style !== 'undefined' && tecell.style.hidden !== true ) {
+                  if ( atOptions.styles.halign === 'inherit' )
+                    cell.styles.halign = tecell.style.align;
                   if ( atOptions.styles.fillColor === 'inherit' )
-                    cell.styles.fillColor = rowopt.style.bcolor;
+                    cell.styles.fillColor = tecell.style.bcolor;
                   if ( atOptions.styles.textColor === 'inherit' )
-                    cell.styles.textColor = rowopt.style.color;
+                    cell.styles.textColor = tecell.style.color;
                   if ( atOptions.styles.fontStyle === 'inherit' )
-                    cell.styles.fontStyle = rowopt.style.fstyle;
+                    cell.styles.fontStyle = tecell.style.fstyle;
                 }
               };
             }
@@ -1280,25 +1284,42 @@
 
             if ( typeof atOptions.drawCell !== 'function' ) {
               atOptions.drawCell = function (cell, data) {
-                var rowopt = teOptions.rowoptions [data.row.index + ":" + data.column.dataKey];
-                if ( prepareAutoTableText(cell, data, rowopt) ) {
+                var tecell = teOptions.teCells [data.row.index + ":" + data.column.dataKey];
+                var draw2canvas = (typeof tecell !== 'undefined' && tecell.isCanvas);
 
-                  teOptions.doc.rect(cell.x, cell.y, cell.width, cell.height, cell.styles.fillStyle);
+                if ( draw2canvas !== true ) {
+                  if ( prepareAutoTableText(cell, data, tecell) ) {
 
-                  if ( typeof rowopt !== 'undefined' && typeof rowopt.kids !== 'undefined' && rowopt.kids.length > 0 ) {
+                    teOptions.doc.rect(cell.x, cell.y, cell.width, cell.height, cell.styles.fillStyle);
 
-                    var dh = cell.height / rowopt.rect.height;
-                    if ( dh > teOptions.dh || typeof teOptions.dh === 'undefined' )
-                      teOptions.dh = dh;
-                    teOptions.dw = cell.width / rowopt.rect.width;
+                    if ( typeof tecell !== 'undefined' &&
+                         typeof tecell.elements !== 'undefined' && tecell.elements.length ) {
 
-                    var y = cell.textPos.y;
-                    drawAutotableElements(cell, rowopt.kids, teOptions);
-                    cell.textPos.y = y;
-                    drawAutotableText(cell, rowopt.kids, teOptions);
+                      var hScale = cell.height / tecell.rect.height;
+                      if ( hScale > teOptions.hScaleFactor )
+                        teOptions.hScaleFactor = hScale;
+                      teOptions.wScaleFactor = cell.width / tecell.rect.width;
+
+                      var ySave = cell.textPos.y;
+                      drawAutotableElements(cell, tecell.elements, teOptions);
+                      cell.textPos.y = ySave;
+
+                      drawAutotableText(cell, tecell.elements, teOptions);
+                    }
+                    else
+                      drawAutotableText(cell, {}, teOptions);
                   }
-                  else
-                    drawAutotableText(cell, {}, teOptions);
+                }
+                else {
+                  var container = tecell.elements[0];
+                  var imgId  = $(container).attr("data-tableexport-canvas");
+                  var r = container.getBoundingClientRect();
+
+                  cell.width = r.width * teOptions.wScaleFactor;
+                  cell.height = r.height * teOptions.hScaleFactor;
+                  data.row.height = cell.height;
+
+                  jsPdfDrawImage (cell, container, imgId, teOptions);
                 }
                 return false;
               };
@@ -1306,8 +1327,8 @@
 
             // collect header and data rows
             teOptions.headerrows = [];
-            $hrows = $(this).find('thead').find(defaults.theadSelector);
-            $hrows.each(function () {
+            $hrows = collectHeadRows ($(this));
+            $($hrows).each(function () {
               colKey = 0;
               teOptions.headerrows[rowIndex] = [];
 
@@ -1365,13 +1386,14 @@
                                    }
                                    if ( typeof cell !== 'undefined' && cell !== null ) {
                                      obj = getCellStyles(cell);
-                                     obj.kids = $(cell).children();
-                                     teOptions.rowoptions [rowCount + ":" + colKey++] = obj;
+                                     obj.isCanvas = cell.hasAttribute("data-tableexport-canvas");
+                                     obj.elements = obj.isCanvas ? $(cell) : $(cell).children();
+                                     teOptions.teCells [rowCount + ":" + colKey++] = obj;
                                    }
                                    else {
-                                     obj = $.extend(true, {}, teOptions.rowoptions [rowCount + ":" + (colKey - 1)]);
+                                     obj = $.extend(true, {}, teOptions.teCells [rowCount + ":" + (colKey - 1)]);
                                      obj.colspan = -1;
-                                     teOptions.rowoptions [rowCount + ":" + colKey++] = obj;
+                                     teOptions.teCells [rowCount + ":" + colKey++] = obj;
                                    }
 
                                    rowData.push(parseString(cell, row, col));
@@ -1414,43 +1436,32 @@
       }
     }
 
-    /*
-    function FindColObject (objects, colIndex, rowIndex) {
-      var result = null;
-      $.each(objects, function () {
-        if ( this.rowIndex == rowIndex && this.key == colIndex ) {
-          result = this;
-          return false;
-        }
+    function collectHeadRows ($table) {
+      var result = [];
+      findTableElements($table,'thead').each(function () {
+        result.push.apply(result, findTableElements($(this), defaults.theadSelector).toArray());
       });
       return result;
     }
-    */
+
     function collectRows ($table) {
       var result = [];
-      findTablePart($table,'tbody').each(function () {
-        result.push.apply(result, findRows($(this), defaults.tbodySelector).toArray());
+      findTableElements($table,'tbody').each(function () {
+        result.push.apply(result, findTableElements($(this), defaults.tbodySelector).toArray());
       });
       if ( defaults.tfootSelector.length ) {
-        findTablePart($table,'tfoot').each(function () {
-          result.push.apply(result, findRows($(this), defaults.tfootSelector).toArray());
+        findTableElements($table,'tfoot').each(function () {
+          result.push.apply(result, findTableElements($(this), defaults.tfootSelector).toArray());
         });
       }
       return result;
     }
 
-    function findTablePart ($table, type) {
-      var tl = $table.parents('table').length;
-      return $table.find(type).filter (function () {
-        return $(this).closest('table').parents('table').length === tl;
-      });
-    }
-
-    function findRows ($tpart, rowSelector) {
-      return $tpart.find(rowSelector).filter (function () {
-        return (defaults.maxNestedTables === 0 ||
-          ($(this).find('table').length < defaults.maxNestedTables &&
-            $(this).parents('table').length <= defaults.maxNestedTables));
+    function findTableElements ($parent, selector) {
+      var parentSelector = $parent[0].tagName;
+      var parentLevel = $parent.parents(parentSelector).length;
+      return $parent.find(selector).filter (function () {
+        return parentLevel === $(this).closest(parentSelector).parents(parentSelector).length;
       });
     }
 
@@ -1535,7 +1546,7 @@
           $.inArray(rowIndex - rowCount, defaults.ignoreRow) === -1 &&
           isVisible($(tableRow))) {
 
-          var $cells = $(tableRow).find(selector);
+          var $cells = findTableElements($(tableRow), selector);
           var cellCount = 0;
 
           $cells.each(function (colIndex) {
@@ -1582,6 +1593,45 @@
                 cellcallback(null, rowIndex, cellCount++);
             }
           });
+        }
+      }
+    }
+
+    function jsPdfDrawImage (cell, container, imgId, teOptions) {
+      if ( typeof teOptions.images !== 'undefined' ) {
+        var image = teOptions.images[imgId];
+
+        if ( typeof image !== 'undefined' ) {
+          var r          = container.getBoundingClientRect();
+          var arCell     = cell.width / cell.height;
+          var arImg      = r.width / r.height;
+          var imgWidth   = cell.width;
+          var imgHeight  = cell.height;
+          var px2pt      = 0.264583 * 72 / 25.4;
+          var uy         = 0;
+
+          if ( arImg <= arCell ) {
+            imgHeight = Math.min(cell.height, r.height);
+            imgWidth  = r.width * imgHeight / r.height;
+          }
+          else if ( arImg > arCell ) {
+            imgWidth  = Math.min(cell.width, r.width);
+            imgHeight = r.height * imgWidth / r.width;
+          }
+
+          imgWidth *= px2pt;
+          imgHeight *= px2pt;
+
+          if ( imgHeight < cell.height )
+            uy = (cell.height - imgHeight) / 2;
+
+          try {
+            teOptions.doc.addImage(image.src, cell.textPos.x, cell.y + uy, imgWidth, imgHeight);
+          }
+          catch (e) {
+            // TODO: IE -> convert png to jpeg
+          }
+          cell.textPos.x += imgWidth;
         }
       }
     }
@@ -1653,89 +1703,106 @@
     }
 
     function collectImages (cell, elements, teOptions) {
-      if ( typeof teOptions.images !== 'undefined' ) {
-        elements.each(function () {
-          var kids = $(this).children();
+      if ( typeof cell !== 'undefined' && cell !== null ) {
 
-          if ( $(this).is("img") ) {
-            var hash = strHashCode(this.src);
+        if ( cell.hasAttribute("data-tableexport-canvas") ) {
+          var imgId = new Date().getTime();
+          $(cell).attr("data-tableexport-canvas", imgId);
 
-            teOptions.images[hash] = {
-              url: this.src,
-              src: this.src
-            };
-          }
-
-          if ( typeof kids !== 'undefined' && kids.length > 0 )
-            collectImages(cell, kids, teOptions);
-        });
+          teOptions.images[imgId] = {
+            url: '[data-tableexport-canvas="'+imgId+'"]',
+            src: null
+          };
+        }
+        else if (elements !== 'undefined' && elements != null) {
+          elements.each(function () {
+            if ($(this).is("img")) {
+              var imgId = strHashCode(this.src);
+              teOptions.images[imgId] = {
+                url: this.src,
+                src: this.src
+              };
+            }
+            collectImages(cell, $(this).children(), teOptions);
+          });
+        }
       }
     }
 
     function loadImages (teOptions, callback) {
-      var i;
       var imageCount = 0;
-      var x          = 0;
+      var pendingCount = 0;
 
       function done () {
         callback(imageCount);
       }
 
       function loadImage (image) {
-        if ( !image.url )
-          return;
-        var img         = new Image();
-        imageCount      = ++x;
-        img.crossOrigin = 'Anonymous';
-        img.onerror     = img.onload = function () {
-          if ( img.complete ) {
+        if (image.url) {
+          if (!image.src) {
+            var $imgContainer = $(image.url);
+            if ($imgContainer.length) {
+              imageCount = ++pendingCount;
 
-            if ( img.src.indexOf('data:image/') === 0 ) {
-              img.width  = image.width || img.width || 0;
-              img.height = image.height || img.height || 0;
-            }
-
-            if ( img.width + img.height ) {
-              var canvas = document.createElement("canvas");
-              var ctx    = canvas.getContext("2d");
-
-              canvas.width  = img.width;
-              canvas.height = img.height;
-              ctx.drawImage(img, 0, 0);
-
-              image.src = canvas.toDataURL("image/jpeg");
+              html2canvas($imgContainer[0]).then(function(canvas) {
+                image.src = canvas.toDataURL("image/png");
+                if ( !--pendingCount )
+                  done();
+              });
             }
           }
-          if ( !--x )
-            done();
-        };
-        img.src = image.url;
+          else {
+            var img = new Image();
+            imageCount = ++pendingCount;
+            img.crossOrigin = 'Anonymous';
+            img.onerror = img.onload = function () {
+              if ( img.complete ) {
+
+                if ( img.src.indexOf('data:image/') === 0 ) {
+                  img.width = image.width || img.width || 0;
+                  img.height = image.height || img.height || 0;
+                }
+
+                if ( img.width + img.height ) {
+                  var canvas = document.createElement("canvas");
+                  var ctx = canvas.getContext("2d");
+
+                  canvas.width = img.width;
+                  canvas.height = img.height;
+                  ctx.drawImage(img, 0, 0);
+
+                  image.src = canvas.toDataURL("image/png");
+                }
+              }
+              if ( !--pendingCount )
+                done();
+            };
+            img.src = image.url;
+          }
+        }
       }
 
       if ( typeof teOptions.images !== 'undefined' ) {
-        for ( i in teOptions.images )
+        for ( var i in teOptions.images )
           if ( teOptions.images.hasOwnProperty(i) )
             loadImage(teOptions.images[i]);
       }
 
-      return x || done();
+      return pendingCount || done();
     }
 
     function drawAutotableElements (cell, elements, teOptions) {
       elements.each(function () {
-        var kids = $(this).children();
-        var uy   = 0;
-
         if ( $(this).is("div") ) {
           var bcolor = rgb2array(getStyle(this, 'background-color'), [255, 255, 255]);
           var lcolor = rgb2array(getStyle(this, 'border-top-color'), [0, 0, 0]);
           var lwidth = getPropertyUnitValue(this, 'border-top-width', defaults.jspdf.unit);
 
           var r  = this.getBoundingClientRect();
-          var ux = this.offsetLeft * teOptions.dw;
-          uy = this.offsetTop * teOptions.dh;
-          var uw = r.width * teOptions.dw;
-          var uh = r.height * teOptions.dh;
+          var ux = this.offsetLeft * teOptions.wScaleFactor;
+          var uy = this.offsetTop * teOptions.hScaleFactor;
+          var uw = r.width * teOptions.wScaleFactor;
+          var uh = r.height * teOptions.hScaleFactor;
 
           teOptions.doc.setDrawColor.apply(undefined, lcolor);
           teOptions.doc.setFillColor.apply(undefined, bcolor);
@@ -1743,46 +1810,11 @@
           teOptions.doc.rect(cell.x + ux, cell.y + uy, uw, uh, lwidth ? "FD" : "F");
         }
         else if ( $(this).is("img") ) {
-          if ( typeof teOptions.images !== 'undefined' ) {
-            var hash  = strHashCode(this.src);
-            var image = teOptions.images[hash];
-
-            if ( typeof image !== 'undefined' ) {
-
-              var arCell    = cell.width / cell.height;
-              var arImg     = this.width / this.height;
-              var imgWidth  = cell.width;
-              var imgHeight = cell.height;
-              var px2pt     = 0.264583 * 72 / 25.4;
-
-              if ( arImg <= arCell ) {
-                imgHeight = Math.min(cell.height, this.height);
-                imgWidth  = this.width * imgHeight / this.height;
-              }
-              else if ( arImg > arCell ) {
-                imgWidth  = Math.min(cell.width, this.width);
-                imgHeight = this.height * imgWidth / this.width;
-              }
-
-              imgWidth *= px2pt;
-              imgHeight *= px2pt;
-
-              if ( imgHeight < cell.height )
-                uy = (cell.height - imgHeight) / 2;
-
-              try {
-                teOptions.doc.addImage(image.src, cell.textPos.x, cell.y + uy, imgWidth, imgHeight);
-              }
-              catch (e) {
-                // TODO: IE -> convert png to jpeg
-              }
-              cell.textPos.x += imgWidth;
-            }
-          }
+          var imgId  = strHashCode(this.src);
+          jsPdfDrawImage (cell, this, imgId, teOptions);
         }
 
-        if ( typeof kids !== 'undefined' && kids.length > 0 )
-          drawAutotableElements(cell, kids, teOptions);
+        drawAutotableElements(cell, $(this).children(), teOptions);
       });
     }
 
@@ -1804,10 +1836,13 @@
 
           while ( tag ) {
             var txt = tag.innerText || tag.textContent || "";
+            var leadingspace = (txt.length && txt[0] === " ") ? " " : "";
+            var trailingspace = (txt.length > 1 && txt[txt.length - 1] === " ") ? " " : "";
 
-            txt = ((txt.length && txt[0] === " ") ? " " : "") +
-              $.trim(txt) +
-              ((txt.length > 1 && txt[txt.length - 1] === " ") ? " " : "");
+            if (defaults.preserve.leadingWS !== true)
+              txt = leadingspace + trimLeft(txt);
+            if (defaults.preserve.trailingWS !== true)
+              txt = trimRight(txt) + trailingspace;
 
             if ( $(tag).is("br") ) {
               x = cell.textPos.x;
@@ -1873,11 +1908,19 @@
     }
 
     function escapeRegExp (string) {
-      return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+      return string == null ? "" : string.toString().replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
     }
 
     function replaceAll (string, find, replace) {
-      return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+      return string == null ? "" : string.toString().replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    }
+
+    function trimLeft (string) {
+      return string == null ? "" : string.toString().replace(/^\s+/, "");
+    }
+
+    function trimRight (string) {
+      return string == null ? "" : string.toString().replace(/\s+$/, "");
     }
 
     function parseNumber (value) {
@@ -1906,9 +1949,12 @@
         var $cell = $(cell);
         var htmlData;
 
-        if ( $cell[0].hasAttribute("data-tableexport-value") ) {
+        if ( $cell[0].hasAttribute("data-tableexport-canvas") ) {
+          htmlData = '';
+        }
+        else if ( $cell[0].hasAttribute("data-tableexport-value") ) {
           htmlData = $cell.data("tableexport-value");
-          htmlData = htmlData ? htmlData + '' : ''
+          htmlData = htmlData ? htmlData + '' : '';
         }
         else {
           htmlData = $cell.html();
@@ -1926,6 +1972,8 @@
                 htmlData += $cell.find('input').eq(inputidx++).val();
               else if ( $(this).is("select") )
                 htmlData += $cell.find('select option:selected').eq(selectidx++).text();
+              else if ( $(this).is("br") )
+                htmlData += "<br>";
               else {
                 if ( typeof $(this).html() === 'undefined' )
                   htmlData += $(this).text();
@@ -1945,21 +1993,32 @@
           var cellFormat = $(cell).data("tableexport-cellformat");
 
           if ( cellFormat !== '' ) {
-            var text   = htmlData.replace(/\n/g, '\u2028').replace(/<br\s*[\/]?>/gi, '\u2060');
+            var text   = htmlData.replace(/\n/g, '\u2028').replace(/(<\s*br([^>]*)>)/gi, '\u2060');
             var obj    = $('<div/>').html(text).contents();
             var number = false;
             text       = '';
+
             $.each(obj.text().split("\u2028"), function (i, v) {
               if ( i > 0 )
                 text += " ";
-              text += $.trim(v);
+
+              if (defaults.preserve.leadingWS !== true)
+                v = trimLeft(v);
+              text += (defaults.preserve.trailingWS !== true) ? trimRight(v) : v;
             });
 
             $.each(text.split("\u2060"), function (i, v) {
               if ( i > 0 )
                 result += "\n";
-              result += $.trim(v).replace(/\u00AD/g, ""); // remove soft hyphens
+
+              if (defaults.preserve.leadingWS !== true)
+                v = trimLeft(v);
+              if (defaults.preserve.trailingWS !== true)
+                v = trimRight(v);
+              result += v.replace(/\u00AD/g, ""); // remove soft hyphens
             });
+
+            result = result.replace(/\u00A0/g, " "); // replace nbsp's with spaces
 
             if ( defaults.type === 'json' ||
               (defaults.type === 'excel' && defaults.mso.fileFormat === 'xmlss') ||
@@ -2002,13 +2061,13 @@
       return result;
     }
 
-    function preventInjection (s) {
-      if ( defaults.preventInjection === true ) {
+    function preventInjection (string) {
+      if ( string.length > 0 && defaults.preventInjection === true ) {
         var chars = "=+-@";
-        if ( chars.indexOf(s.charAt(0)) >= 0 )
-          return ( "'" + s );
+        if ( chars.indexOf(string.charAt(0)) >= 0 )
+          return ( "'" + string );
       }
-      return s;
+      return string;
     }
 
     //noinspection JSUnusedLocalSymbols
@@ -2229,7 +2288,9 @@
 
           if ( typeof data === 'object' ) {
             window.URL = window.URL || window.webkitURL;
-            blobUrl = window.URL.createObjectURL(data);
+            var binaryData = [];
+            binaryData.push(data);
+            blobUrl = window.URL.createObjectURL(new Blob(binaryData, {type: header}));
             DownloadLink.href = blobUrl;
           }
           else if ( header.toLowerCase().indexOf("base64,") >= 0 )
