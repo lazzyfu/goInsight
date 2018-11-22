@@ -55,9 +55,13 @@
 
 {% block link_javascripts %}
     <script>
+        let protocol = 'ws://';
+        if (window.location.protocol === 'https:') {
+            protocol = 'wss://';
+        }
         let cmd = '',
             status = '',
-            sock = new WebSocket('ws://' + window.location.host + '/ssh/'),
+            sock = new WebSocket(protocol + window.location.host + '/ssh/'),
             term = new Terminal({
                 tabStopWidth: 4,
                 scrollback: 3000,
