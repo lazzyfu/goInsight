@@ -152,14 +152,10 @@
                     },
                     {
                         field: 'title',
-                        title: '标题',
+                        title: '标题/时间',
                         formatter: function (value, row) {
-                            if (value.length >= 16) {
-                                return '<a href="/sqlorders/sql_orders_details/' + row.id + '" title=\"' + value + '\">' + value.slice(0, 16) + '</a>'
-                            }
-                            else {
-                                return '<a href="/sqlorders/sql_orders_details/' + row.id + '" title=\"' + value + '\">' + value + '</a>'
-                            }
+                            return '<a href="/sqlorders/sql_orders_details/' + row.id + '" title=\"' + value + '\">' + value.slice(0, 12) + '</a>' +
+                                '<br>At: ' + moment(row.created_at).format('YYYY-MM-DD HH:mm:ss') + ''
                         }
                     },
                     {
@@ -204,13 +200,6 @@
                     {
                         field: 'auditor',
                         title: '审批人'
-                    },
-                    {
-                        field: 'created_at',
-                        title: '提交时间',
-                        formatter: function (value) {
-                            return moment(value).format('YYYY-MM-DD HH:mm:ss');
-                        }
                     },
                     {
                         field: 'approve',
