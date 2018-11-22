@@ -62,3 +62,9 @@ https://github.com/lazzyfu/AuditSQL/wiki
 
 ## 联系方式：
 QQ群号：710797678
+
+欢迎大家贡献代码，感谢大家的支持，谢谢
+
+## 感谢
+@HaroldZhen 贡献代码
+
