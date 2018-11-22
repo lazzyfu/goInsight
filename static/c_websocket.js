@@ -10,7 +10,11 @@
  * 3：备份进度输出
  */
 function CreateWebSocket() {
-    let socket = new WebSocket('ws://' + window.location.host + '/ws/');
+    let protocol = 'ws://';
+    if (window.location.protocol === 'https:') {
+        protocol = 'wss://';
+    }
+    let socket = new WebSocket(protocol + window.location.host + '/ws/');
     socket.onmessage = function (message) {
         document.getElementById('typediv1').style.visibility = "visible";
         let result = JSON.parse(message.data);
