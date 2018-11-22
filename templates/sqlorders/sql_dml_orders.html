@@ -54,6 +54,7 @@
                                         <label class="control-label col-sm-3">备注 <span class="text-red">*</span></label>
                                         <div class="col-sm-9">
                                             <select id="s_remark" style="width: 100%" name="remark" required
+                                                    onchange="change_deploy()"
                                                     class="selectpicker form-control" title="请选择...">
                                                 <option data-icon="glyphicon-paperclip" selected value="例行上线">例行上线
                                                 </option>
@@ -356,6 +357,20 @@
                 }
             })
         });
+
+        /**
+         * 根据用户选择不同的上线类型，进行隐藏或显示部署步骤
+         */
+        function change_deploy() {
+            let type = $('#s_remark').val();
+            if (type === '例行上线') {
+                document.getElementById("is_show_deploy").style.display = "";
+                $('#s_task').prop('required', true);
+            } else if (type === '紧急上线') {
+                document.getElementById("is_show_deploy").style.display = "none";
+                $('#s_task').prop('required', false);
+            }
+        }
 
         // 获取用户设置的环境
         $(function () {

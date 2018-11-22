@@ -33,7 +33,7 @@
         <div id="s_sql_type" style="display:none;">{{ contents.sql_type }}</div>
         <div class="col-md-4" style="padding-right: 2px">
             <!-- Profile Image -->
-            <div class="box box-primary">
+            <div class="box box-default">
                 <div class="box-body box-profile">
                     <img class="profile-user-img img-responsive img-circle"
                          src="/media/{{ contents.proposer_avatar_file }}"
@@ -81,9 +81,9 @@
 
             <!-- About Me Box -->
             {% if contents.close_user %}
-                <div class="box box-primary">
+                <div class="box box-solid">
                     <div class="box-header with-border">
-                        <h4 class="box-title">详情</h4>
+                        <h5 class="box-title">详情</h5>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
@@ -111,7 +111,7 @@
         </div>
         <!-- /.col -->
         <div class="col-md-8">
-            <div class="box box-primary">
+            <div class="box box-default">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ contents.title }}</h3>
                     <!-- 隐藏id，下面ajax调用 -->
@@ -166,7 +166,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><i class="fa fa-table"></i> SQL执行详情</h4>
+                    <h5 class="modal-title"><i class="fa fa-table"></i> SQL执行详情</h5>
                 </div>
                 <div class="modal-body">
                     <div>
