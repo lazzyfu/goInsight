@@ -40,7 +40,7 @@ class SqlOrdersAuditForm(forms.Form):
     task_version = forms.CharField(max_length=256, required=False, label=u'上线版本号')
     auditor = forms.CharField(required=True, label=u'工单审核人')
     email_cc = forms.CharField(required=False, label=u'抄送联系人')
-    database = forms.CharField(required=False, max_length=64, label=u'数据库')
+    database = forms.CharField(required=False, max_length=1024, label=u'数据库')
     remark = forms.CharField(required=True, max_length=256, min_length=1, label=u'工单备注')
     sql_type = forms.ChoiceField(choices=sql_type_choice, label=u'操作类型，是DDL、DML还是OPS')
     contents = forms.CharField(widget=forms.Textarea, label=u'审核内容')
