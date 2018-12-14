@@ -123,8 +123,9 @@ class BeautifySQLView(View):
         if form.is_valid():
             context = form.beautify()
         else:
-            error = form.errors.as_text()
-            context = {'status': 2, 'msg': error}
+            error = form.errors.as_json()
+            error_msg = [value[0].get('message') for key, value in json.loads(error).items()][0]
+            context = {'status': 2, 'msg': str(error_msg)}
         return HttpResponse(json.dumps(context))
 
 
@@ -133,6 +134,7 @@ class SqlOrdersAuditView(View):
 
     @permission_required('can_commit_sql')
     def post(self, request):
+        print(request.POST)
         form = SqlOrdersAuditForm(request.POST)
         if form.is_valid():
             context = form.save(request)

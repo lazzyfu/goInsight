@@ -6,7 +6,6 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 450px;
-            font-size: 13px;
         }
 
         .tab .nav-tabs {
@@ -14,18 +13,11 @@
         }
 
         .tab .nav-tabs li a {
-            padding: 10px 20px;
-            margin-right: 10px;
+            padding: 5px 10px;
+            margin-right: 5px;
             position: relative;
         }
 
-        .jstree-leaf {
-            font-size: 12px;
-        }
-
-        .jstree-default .jstree-anchor {
-            font-size: 12px;
-        }
     </style>
 {% endblock %}
 
@@ -35,20 +27,16 @@
             <div class="box box-info">
                 <div class="box-header box-border">
                     <div class="mailbox-read-info">
-                        <h3 class="box-title"><i class="fa fa-cog"></i> {{ envi_name }}-SQL查询
-                            <small>默认返回 limit 100条记录，最大支持limit 1000, 最大查询时间600s</small>
-                        </h3>
+                        <h3 class="box-title"><i class="fa fa-cog"></i> MySQL查询</h3>
                     </div>
-                    <div id="s_envi_id" style="display:none;">{{ envi_id }}</div>
                 </div>
                 <div class="row">
                     <div class="box-body box-border">
-                        <div class="col-md-3" style="padding-right: 5px">
-                            <div style="height: 610px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 3px">
+                        <div class="col-md-3" style="padding-right: 2px">
+                            <div style="height: 610px;overflow: scroll;border:2px solid #eee;border-left-width: 0; border-right-width: 4px">
                                 <div id="container"></div>
                             </div>
                         </div>
-
                         <div class="col-md-9" style="padding-left: 2px">
                             <div style="margin: 3px">
                                 <button type="button" onclick="beautifySQL()" class="btn bg-info btn-sm"><i
@@ -129,19 +117,64 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><i class="fa fa-table"></i> 表结构和索引</h4>
+                    <h4 class="modal-title"><i class="fa fa-table"></i> 表结构信息</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="box">
-                        <div class="box-body">
-                            <div>
-                                <h5><i class="fa fa-tag text-blue"> 表结构</i></h5>
-                                <pre><code class="sql" id="table_stru"></code></pre>
-                            </div>
-                            <div>
-                                <h5><i class="fa fa-italic text-blue"> 索引</i></h5>
-                                <table id="table_index"></table>
-                            </div>
+                    <div class="box-body">
+                        <div>
+                            <pre><code class="sql" id="table_stru"></code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 表基本信息模态框 -->
+    <div class="modal fade modal-wide" id="modal_table_base">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-table"></i> 表基本信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="box-body">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>属性名</th>
+                                <th>属性值</th>
+                            </tr>
+                            </thead>
+                            <tbody id="table_base"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 表索引模态框 -->
+    <div class="modal fade modal-wide" id="modal_table_index">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-table"></i> 表索引信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="box-body">
+                        <div>
+                            <table class="table table-hover" id="table_index"></table>
                         </div>
                     </div>
                 </div>
@@ -156,7 +189,6 @@
 
 {% block link_javascripts %}
     <script>
-        let envi_id = $('#s_envi_id').text();
         let myTextarea = document.getElementById('s_sql');
         let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
             lineNumbers: true,
@@ -196,48 +228,80 @@
         });
 
         /**
-         * 获取生产环境的schemas和tables信息，左侧jstree展示使用
+         * 获取授权的库表字段信息
          */
-        $(function () {
-            let csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_get_schemas_grant' %}',
-                type: 'POST',
-                data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
-                dataType: 'json',
-                timeout: 10000,
-                cache: false,
-                success: function (data) {
-                    if (data.length > 0) {
-                        // jstree
-                        $('#container').jstree({
-                            'core': {
-                                "animation": 0,
-                                {#"multiple": false,#}
-                                "themes": {
-                                    "responsive": false
-                                },
-                                'data': data
-                            },
-                            {#"checkbox": {#}
-                            {#    "three_state": false#}
-                            {# },#}
-                            "types": {
-                                "default": {
-                                    "icon": "fa fa-database text-green"
-                                }
-                            },
-                            "plugins": ["types", 'wholerow', "sort", "themes", 'state', 'search', 'contextmenu']
-                        });
-                        jstree_click();
-                    }
-                    else {
-                        $('#container').append('没有授权的库，请联系管理员');
+        $('#container').jstree({
+            'core': {
+                "animation": 0,
+                "themes": {
+                    "responsive": true,
+                },
+                'data': {
+                    'dataType': 'json',
+                    'async': true,
+                    'cache': true,
+                    'timeout': 20000,
+                    'method': 'GET',
+                    'url': '{% url 'p_get_grant_schema' %}',
+                    'data': function (node) {
+                        return {'id': node.id, 'text': node.text}
+                    },
+                },
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-database text-green"
+                },
+            },
+            "contextmenu": {
+                select_node: true,
+                show_at_node: true,
+                items: {
+                    "show_struc": {
+                        "label": "查看表结构",
+                        "action": function (data) {
+                            let inst = $.jstree.reference(data.reference);
+                            let node = inst.get_node(data.reference, false);
+                            let d = node.id;
+                            if (d.split('__')[2].split('.').length > 1) {
+                                showTableStrucModal(d);
+                            } else {
+                                displayPNotify(2, '请选择表进行查看')
+                            }
+                        }
+                    },
+                    "show_index": {
+                        "label": "查看表索引",
+                        "action": function (data) {
+                            let inst = $.jstree.reference(data.reference);
+                            let node = inst.get_node(data.reference, false);
+                            let d = node.id;
+                            if (d.split('__')[2].split('.').length > 1) {
+                                showTableIndexModal(d);
+                            } else {
+                                displayPNotify(2, '请选择表进行查看')
+                            }
+                        }
+                    },
+                    "show_baseinfo": {
+                        "label": "查看表基本信息",
+                        "action": function (data) {
+                            let inst = $.jstree.reference(data.reference);
+                            let node = inst.get_node(data.reference, false);
+                            let d = node.id;
+                            if (d.split('__')[2].split('.').length > 1) {
+                                showTableBaseModal(d);
+                            } else {
+                                displayPNotify(2, '请选择表进行查看')
+                            }
+                        }
                     }
                 }
-            });
+            },
+            "plugins": ["types", "sort", "themes", "state", "contextmenu"]
         });
 
+        jstree_click();
 
         let query_schema = '';
         let tab_schema = '';
@@ -254,46 +318,92 @@
                 // tab补全
                 // 172.17.101.40-3306-test
                 tab_schema = data.node.id.split('___').join(',');
-                if (tab_schema) {
-                    get_table_info(tab_schema);
+                if (data.node.id.split('___')[2].split('.').length === 1) {
+                    if (tab_schema) {
+                        get_table_info(tab_schema);
+                    }
                 }
             });
-            // 双击jstree时触发
-            $container.on("dblclick.jstree", function (event) {
-                $('#table_stru').empty();
-                let tree = $(this).jstree();
-                let node = tree.get_node(event.target);
-                console.log(node.id);
-                $.ajax({
-                    url: "{% url 'p_get_stru_info' %}",
-                    type: 'GET',
-                    dataType: 'json',
-                    data: {'schema': node.id},
-                    timeout: 30000,
-                    cache: true,
-                    success: function (result) {
-                        if (result.status === 0) {
-                            let data = result.data;
-                            $('#modal_table_stru').modal('show');
-                            $('#table_stru').append(data.stru);
-                            highlightSQL();
-                            $table_index.bootstrapTable('destroy').bootstrapTable({
-                                columns: data.index.columnDefinition,
-                                data: data.index.data,
-                                pageNumber: 1,
-                                pageSize: 20,
-                                locale: 'zh-CN',
-                                sidePagination: "client",
-                                pagination: true,
-                                singleSelect: true,
-                                minimumCountColumns: 2,
-                                matchBrackets: true,
-                                lineWrapping: true,
-                                classes: 'table table-hover'
-                            });
-                        }
+        }
+
+        <!-- 查看表结构 -->
+        function showTableStrucModal(data) {
+            $('#table_stru').empty();
+            $.ajax({
+                url: "{% url 'p_get_table_stru' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'schema': data},
+                timeout: 30000,
+                cache: true,
+                success: function (result) {
+                    if (result.status === 0) {
+                        let data = result.data;
+                        $('#modal_table_stru').modal('show');
+                        $('#table_stru').append(data.stru);
+                        highlightSQL()
                     }
-                });
+                }
+            });
+        }
+
+        <!-- 查看表索引 -->
+        function showTableIndexModal(data) {
+            $.ajax({
+                url: "{% url 'p_get_table_index' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'schema': data},
+                timeout: 30000,
+                cache: true,
+                success: function (result) {
+                    if (result.status === 0) {
+                        let data = result.data;
+                        $('#modal_table_index').modal('show');
+                        $table_index.bootstrapTable('destroy').bootstrapTable({
+                            columns: data.index.columnDefinition,
+                            data: data.index.data,
+                            pageNumber: 1,
+                            pageSize: 20,
+                            pageList: [20, 50],
+                            locale: 'zh-CN',
+                            sidePagination: "client",
+                            pagination: true,
+                            singleSelect: true,
+                            minimumCountColumns: 2,
+                            matchBrackets: true,
+                            lineWrapping: true,
+                            classes: 'table table-hover',
+                            iconSize: 'sm',
+                            rowStyle: function rowStyle(row, index) {
+                                return {
+                                    classes: 'text-nowrap another-class',
+                                    css: {"font-size": "12px"}
+                                };
+                            },
+                        });
+                    }
+                }
+            });
+        }
+
+        <!-- 查看表基本信息 -->
+        function showTableBaseModal(data) {
+            $('#table_base').empty();
+            $.ajax({
+                url: "{% url 'p_get_table_base' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'schema': data},
+                timeout: 30000,
+                cache: true,
+                success: function (result) {
+                    if (result.status === 0) {
+                        let data = result.data;
+                        $('#modal_table_base').modal('show');
+                        $('#table_base').append(data)
+                    }
+                }
             });
         }
 
@@ -364,7 +474,6 @@
                 data: {
                     'contents': contents,
                     'schema': query_schema,
-                    'envi_id': envi_id,
                     'csrfmiddlewaretoken': csrftoken
                 },
                 dataType: 'json',
@@ -454,28 +563,28 @@
 
         $(function () {
             // 保存用户输入
-            let user_input = localStorage.getItem("{{ envi_id }}");
+            let user_input = localStorage.getItem("user_input_history");
             let $textarea = $("textarea");
             if (user_input) {
                 myCodeMirror.setValue(user_input);
             }
             $textarea.bind('input propertychange', function () {
                 let contents = myCodeMirror.getValue();
-                localStorage.setItem("{{ envi_id }}", contents);
+                localStorage.setItem("user_input_history", contents);
             });
             $textarea.on('paste', function () {
                 let contents = myCodeMirror.getValue();
-                localStorage.setItem("{{ envi_id }}", contents);
+                localStorage.setItem("user_input_history", contents);
             });
             $textarea.on('keyup', function (event) {
                 if (8 <= event.keyCode <= 46) {
                     let contents = myCodeMirror.getValue();
-                    localStorage.setItem("{{ envi_id }}", contents);
+                    localStorage.setItem("user_input_history", contents);
                 }
             });
             $("button").on('click', function () {
                 let contents = myCodeMirror.getValue();
-                localStorage.setItem("{{ envi_id }}", contents);
+                localStorage.setItem("user_input_history", contents);
             });
         });
 
@@ -526,7 +635,6 @@
             $.ajax({
                 url: '{% url 'p_get_history_sql' %}',
                 type: 'GET',
-                data: {'envi_id': envi_id},
                 dataType: 'json',
                 timeout: 10000,
                 cache: false,
@@ -545,7 +653,7 @@
             $.ajax({
                 url: '{% url 'p_get_history_sql' %}',
                 type: 'POST',
-                data: {'envi_id': envi_id, 'contents': contents, 'csrfmiddlewaretoken': csrftoken},
+                data: {'contents': contents, 'csrfmiddlewaretoken': csrftoken},
                 dataType: 'json',
                 timeout: 10000,
                 cache: false,

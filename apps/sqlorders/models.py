@@ -13,25 +13,23 @@ logger = logging.getLogger('django')
 
 
 class SqlOrdersEnvironment(models.Model):
-    id = models.AutoField(primary_key=True, verbose_name=u'主键id')
-    envi_id = models.IntegerField(null=False, default=1, verbose_name=u'ID，起始值：1')
+    envi_id = models.AutoField(primary_key=True, null=False, verbose_name=u'环境ID')
     envi_name = models.CharField(max_length=30, default='', null=False, verbose_name=u'环境')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
+    def __str__(self):
+        return self.envi_name
+
     class Meta:
-        verbose_name = u'环境配置'
+        verbose_name = u'工单环境'
         verbose_name_plural = verbose_name
 
-        db_table = 'sqlaudit_sql_order_environment'
-
-        # 建立唯一索引
-        unique_together = (('envi_id',),)
+        db_table = 'sqlaudit_sqlorder_environment'
 
 
-envi_choice = [(x, y) for x, y in list(SqlOrdersEnvironment.objects.all().values_list('envi_id', 'envi_name'))]
-# envi_choice = ((0, '1'), (1, '1'))
 type_choice = ((0, '查询_只读'), (1, 'SQL审核'), (2, '查询_读写'))
+character_choice = (('utf8', 'utf8'), ('utf8mb4', 'utf8mb4'))
 
 
 class MysqlConfig(models.Model):
@@ -40,17 +38,20 @@ class MysqlConfig(models.Model):
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
     user = models.CharField(max_length=32, default='', null=False, verbose_name=u'用户名')
     password = models.CharField(max_length=64, default='', null=False, verbose_name=u'密码')
-    envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
+    character = models.CharField(max_length=32, null=False, choices=character_choice, default='utf8',
+                                 verbose_name=u'库表字符集')
+    envi = models.ForeignKey(SqlOrdersEnvironment, default=None, to_field='envi_id', on_delete=models.CASCADE,
+                             verbose_name=u'环境')
     is_type = models.SmallIntegerField(choices=type_choice, default=0, verbose_name=u'用途')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'主机描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
     def __str__(self):
-        return self.host
+        return self.comment
 
     class Meta:
-        verbose_name = u'数据库主机配置'
+        verbose_name = u'MySQL配置'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -60,27 +61,18 @@ class MysqlConfig(models.Model):
 
 class MysqlSchemas(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
+    cid = models.ForeignKey(MysqlConfig, default=None, to_field='id', on_delete=models.CASCADE, verbose_name=u'主机')
     user = models.CharField(max_length=30, null=False, verbose_name=u'用户名')
     password = models.CharField(max_length=30, null=False, verbose_name=u'密码')
     host = models.CharField(max_length=128, null=False, verbose_name=u'地址')
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
     schema = models.CharField(null=False, max_length=64, default='', verbose_name=u'schema信息')
-    envi_id = models.IntegerField(null=False, verbose_name=u'环境')
+    character = models.CharField(max_length=32, null=False, default='utf8', verbose_name=u'库表字符集')
+    envi = models.ForeignKey(SqlOrdersEnvironment, default=None, to_field='envi_id', on_delete=models.CASCADE)
     is_type = models.SmallIntegerField(choices=type_choice, default=0, verbose_name=u'用途')
-    schema_join = models.CharField(null=False, max_length=128,
-                                   verbose_name=u'host、port、schema的组合')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'主机描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
-
-    def __str__(self):
-        try:
-            envi_name = SqlOrdersEnvironment.objects.get(envi_id=self.envi_id).envi_name
-            return '_'.join((envi_name, self.comment, self.schema))
-        except Exception as err:
-            logger.error(err)
-            logger.error('请先配置环境')
-            return ''
 
     class Meta:
         verbose_name = u'MySQL集群汇总库'
@@ -88,7 +80,7 @@ class MysqlSchemas(models.Model):
 
         default_permissions = ()
         db_table = 'sqlaudit_mysql_schemas'
-        unique_together = (('host', 'port', 'schema'), ('schema_join',))
+        unique_together = (('host', 'port', 'schema'),)
 
 
 # 审核进度选择
@@ -103,6 +95,7 @@ progress_choices = (
 )
 
 # 操作类型选择
+# OPS为运维工单
 sql_type_choice = (
     ('DDL', u'DDL'),
     ('DML', u'DML'),
@@ -115,11 +108,11 @@ class SqlOrdersContents(models.Model):
     title = models.CharField(max_length=100, verbose_name=u'标题')
     description = models.CharField(max_length=2048, default='', null=False, verbose_name=u'需求')
     sql_type = models.CharField(max_length=5, default='DML', choices=sql_type_choice,
-                                verbose_name=u'类型: DDL 、DML or OPS')
-    envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
+                                verbose_name=u'工单类型')
+    envi = models.ForeignKey(SqlOrdersEnvironment, default=None, to_field='envi_id', on_delete=models.CASCADE)
     proposer = models.CharField(max_length=30, default='', verbose_name=u'申请人')
     auditor = models.CharField(max_length=30, default='', verbose_name=u'审核人')
-    operate_time = models.DateTimeField(auto_now_add=True, verbose_name=u'审核时间')
+    audit_time = models.DateTimeField(auto_now_add=True, verbose_name=u'审核时间')
     email_cc = models.CharField(max_length=4096, default='', verbose_name=u'抄送人')
     host = models.CharField(null=False, default='', max_length=128, verbose_name=u'主机')
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
@@ -131,6 +124,8 @@ class SqlOrdersContents(models.Model):
     close_reason = models.CharField(max_length=1024, default='', verbose_name=u'关闭原因')
     close_time = models.DateTimeField(auto_now_add=True, verbose_name=u'关闭时间')
     contents = models.TextField(default='', verbose_name=u'提交的内容')
+    export_file_format = models.CharField(max_length=30, choices=(('xlsx', 'xlsx'), ('csv', 'csv'), ('txt', 'txt')),
+                                          default='xlsx', verbose_name=u'导出的文件格式')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 
@@ -144,14 +139,15 @@ class SqlOrdersContents(models.Model):
         verbose_name = u'工单记录'
         verbose_name_plural = verbose_name
 
-        db_table = 'sqlaudit_sql_orders_contents'
+        db_table = 'sqlaudit_sqlorders_contents'
 
 
 exec_progress = (
     ('0', u'未执行'),
     ('1', u'已完成'),
     ('2', u'处理中'),
-    ('5', u'失败'),
+    ('3', u'失败'),
+    ('4', u'异常')
 )
 
 
@@ -164,7 +160,7 @@ class SqlOrdersExecTasks(models.Model):
     runtime = models.CharField(max_length=1024, null=False, default='0.00', verbose_name=u'任务运行时间，单位s')
     taskid = models.CharField(null=False, max_length=128, verbose_name=u'任务号')
     related_id = models.IntegerField(null=False, default=0, verbose_name=u'关联SqlOrdersContents的主键id')
-    envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
+    envi = models.ForeignKey(SqlOrdersEnvironment, default=None, to_field='envi_id', on_delete=models.CASCADE)
     host = models.CharField(null=False, max_length=128, verbose_name=u'操作目标数据库主机')
     database = models.CharField(null=False, max_length=80, verbose_name=u'操作目标数据库')
     port = models.IntegerField(null=False, default=3306, verbose_name=u'端口')
@@ -177,6 +173,8 @@ class SqlOrdersExecTasks(models.Model):
     affected_row = models.IntegerField(null=False, default=0, verbose_name=u'影响行数')
     exec_log = models.TextField(verbose_name=u'执行的记录', default='')
     rollback_sql = models.TextField(verbose_name=u'回滚的SQL', default='')
+    export_file_format = models.CharField(max_length=30, choices=(('xlsx', 'xlsx'), ('csv', 'csv'), ('txt', 'txt')),
+                                          default='xlsx', verbose_name=u'导出的文件格式')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name=u'生成时间')
 
     class Meta:
@@ -256,7 +254,7 @@ class SqlExportFiles(models.Model):
             (str(round(self.file_size / 1024, 2)), 'KB'))
 
     class Meta:
-        verbose_name = u'sql导出excel表'
+        verbose_name = u'数据导出'
         verbose_name_plural = verbose_name
 
         default_permissions = ()

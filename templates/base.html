@@ -11,7 +11,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% load staticfiles %}
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="icon" href="/media/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{% static 'favicon/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/font-awesome/css/font-awesome.min.css' %}">
@@ -175,7 +175,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 class="fa fa-circle-o"></i>我的工单</a>
                             {% for i in order_environment %}
                                 <li><a href='/sqlorders/sql_orders_list/{{ i.envi_id }}/'><i
-                                    class="fa fa-circle-o"></i>审核_{{ i.envi_name }}</a>
+                                    class="fa fa-circle-o"></i>{{ i.envi_name }}</a>
                             {% endfor %}
                     </ul>
                 </li>
@@ -189,7 +189,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_render_get_sql_tasks_version' %}"><i class="fa fa-circle-o"></i>上线版本号</a>
+                        <li><a href="{% url 'p_render_get_sql_tasks_version' %}"><i class="fa fa-circle-o"></i>上线版本</a>
                         </li>
                         <li><a href="{% url 'p_render_sql_dml_orders' %}"><i
                                 class="fa fa-circle-o"></i>DML工单</a>
@@ -215,10 +215,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </span>
                     </a>
                     <ul class="treeview-menu">
-                        {% for i in order_environment %}
-                            <li><a href='/sqlquery/sql_query/{{ i.envi_id }}/'><i
-                                class="fa fa-circle-o"></i>查询_{{ i.envi_name }}</a>
-                        {% endfor %}
+                        <li><a href='/sqlquery/sql_query/'><i
+                                class="fa fa-circle-o"></i>SQL查询</a>
                     </ul>
                 </li>
 

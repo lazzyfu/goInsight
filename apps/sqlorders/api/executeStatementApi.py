@@ -55,9 +55,14 @@ class CnxStatusCheckThread(threading.Thread):
 
 
 class ExecuteSql(object):
-    def __init__(self, host=None, port=None,
-                 user=None, password=None, username=None,
-                 database=None, charset='utf8mb4'):
+    def __init__(self,
+                 host=None,
+                 port=None,
+                 user=None,
+                 password=None,
+                 username=None,
+                 database=None,
+                 charset=None):
         # 接收消息的用户
         self.username = username
 
@@ -74,9 +79,12 @@ class ExecuteSql(object):
 
     def _connect(self):
         """新建连接"""
-        cnx = pymysql.connect(host=self.host, port=self.port,
-                              user=self.user, password=self.password,
-                              charset=self.charset, database=self.database,
+        cnx = pymysql.connect(host=self.host,
+                              port=self.port,
+                              user=self.user,
+                              password=self.password,
+                              charset=self.charset,
+                              database=self.database,
                               cursorclass=pymysql.cursors.DictCursor,
                               sql_mode="ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES"
                               )
@@ -179,7 +187,8 @@ class ExecuteSql(object):
         return affected_rows, runtime, exec_log
 
     def _ghost_tool(self):
-        syntaxcompile = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)', re.I)
+        syntaxcompile = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP|CONVERT)([\s\S]*)',
+                                   re.I)
         syntaxmatch = syntaxcompile.match(self.sql)
 
         if syntaxmatch is not None:

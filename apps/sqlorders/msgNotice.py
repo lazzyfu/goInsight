@@ -58,9 +58,9 @@ class SqlOrdersMsgPull(object):
         if SysConfig.objects.get(key='dingding_push').is_enabled == '0':
             webhook = SysConfig.objects.get(key='dingding_push').value
             self.dingding_notice(webhook)
-
-        if SysConfig.objects.get(key='weixin_push').is_enabled == '0':
-            self.weixin_notice()
+        #
+        # if SysConfig.objects.get(key='weixin_push').is_enabled == '0':
+        #     self.weixin_notice()
 
 
 @shared_task

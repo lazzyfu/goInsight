@@ -38,7 +38,7 @@ class SqlOrdersContentsAdmin(admin.ModelAdmin):
 
 
 class MysqlConfigAdmin(admin.ModelAdmin):
-    list_display = ('host', 'port', 'user', 'envi_id', 'is_type', 'comment', 'updated_at')
+    list_display = ('host', 'port', 'user', 'envi', 'character', 'is_type', 'comment', 'updated_at')
     ordering = ('-created_at',)
     list_display_links = ('host',)
 
@@ -57,8 +57,9 @@ class SysConfigAdmin(admin.ModelAdmin):
 
 
 class SqlOrdersEnvironmentAdmin(admin.ModelAdmin):
-    list_display = ('envi_id', 'envi_name')
+    list_display = ('envi_name', )
     list_display_links = ('envi_name',)
+    fields = ('envi_name', )
 
 
 admin.site.unregister(TaskResult)
