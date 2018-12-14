@@ -51,9 +51,6 @@ AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成�
    - 支持自动检测已配置数据库实例的死锁检测功能，并提供推送
 
 
-## 设计流程
-![](https://github.com/lazzyfu/AuditSQL/blob/master/media/png/design.png)
-
 ## 效果展示
 https://github.com/lazzyfu/AuditSQL/wiki/show
 
