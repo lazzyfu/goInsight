@@ -6,15 +6,23 @@ import subprocess
 import psutil
 import sqlparse
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Case, When, Value, CharField, Q
 from django.shortcuts import get_object_or_404
 
 from sqlorders.inceptionApi import InceptionSqlApi
-from sqlorders.models import sql_type_choice, envi_choice, SqlOrdersTasksVersions, SqlOrderReply, \
-    SysConfig
+from sqlorders.models import sql_type_choice, SqlOrdersTasksVersions, SqlOrderReply, \
+    SysConfig, SqlOrdersEnvironment
 from sqlorders.utils import check_db_conn_status, GetTableInfo, sql_filter
 from users.models import RolePermission
 from .tasks import *
+
+
+def sqlorders_envi_valid(value):
+    value = value if isinstance(value, int) else int(value)
+    envi = [x for x in list(SqlOrdersEnvironment.objects.all().values_list('envi_id', flat=True))]
+    if value not in envi:
+        raise ValidationError('工单环境错误')
 
 
 class GetTablesForm(forms.Form):
@@ -44,7 +52,10 @@ class SqlOrdersAuditForm(forms.Form):
     remark = forms.CharField(required=True, max_length=256, min_length=1, label=u'工单备注')
     sql_type = forms.ChoiceField(choices=sql_type_choice, label=u'操作类型，是DDL、DML还是OPS')
     contents = forms.CharField(widget=forms.Textarea, label=u'审核内容')
-    envi_id = forms.ChoiceField(choices=envi_choice, required=False)
+    export_file_format = forms.ChoiceField(required=False, choices=(('xlsx', 'xlsx'), ('csv', 'csv'), ('txt', 'txt')),
+                                           label=u'导出的格式')
+
+    envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
 
     def save(self, request):
         cdata = self.cleaned_data
@@ -57,6 +68,7 @@ class SqlOrdersAuditForm(forms.Form):
         sql_type = cdata.get('sql_type')
         contents = cdata.get('contents')
         envi_id = cdata.get('envi_id')
+        export_file_format = cdata.get('export_file_format')
         host, port, database = cdata.get('database').split(',') if cdata.get('database') else [0, 0, '']
         context = {}
 
@@ -79,6 +91,7 @@ class SqlOrdersAuditForm(forms.Form):
                     proposer=request.user.username,
                     auditor=auditor,
                     email_cc=email_cc,
+                    export_file_format=export_file_format,
                     contents=contents
                 )
                 # 发送邮件
@@ -88,7 +101,6 @@ class SqlOrdersAuditForm(forms.Form):
                 context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
 
         if remark == u'数据导出':
-
             # 不检测语法
             obj = SqlOrdersContents.objects.create(
                 title=title,
@@ -144,7 +156,7 @@ class BeautifySQLForm(forms.Form):
     注释格式必须符合规范即可
     格式：# 这是注释 中间要有空格
     """
-    contents = forms.CharField(widget=forms.Textarea)
+    contents = forms.CharField(widget=forms.Textarea, error_messages={'required': '格式化的SQL不能为空'})
 
     def beautify(self):
         cdata = self.cleaned_data
@@ -178,7 +190,7 @@ class BeautifySQLForm(forms.Form):
 
 
 class SqlOrderListForm(forms.Form):
-    envi_id = forms.IntegerField(required=True, label=u'环境')
+    envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
     limit_size = forms.IntegerField(required=True, label=u'每页显示数量')
     offset_size = forms.IntegerField(required=True, label=u'分页偏移量')
     search_content = forms.CharField(max_length=128, required=False, label='搜索内容')
@@ -386,7 +398,7 @@ class SqlOrdersCloseForm(forms.Form):
 class HookSqlOrdersForm(forms.Form):
     id = forms.CharField(required=True, label=u'审核内容id')
     database = forms.CharField(required=False)
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境')
+    envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
 
     def save(self, request):
         cdata = self.cleaned_data
@@ -418,6 +430,7 @@ class HookSqlOrdersForm(forms.Form):
                     remark=data.remark,
                     proposer=data.proposer,
                     auditor=data.auditor,
+                    export_file_format=data.export_file_format,
                     contents=data.contents,
                     updated_at=timezone.now()
                 )
@@ -439,7 +452,7 @@ class HookSqlOrdersForm(forms.Form):
 
 class GeneratePerformTasksForm(forms.Form):
     id = forms.CharField(required=True, label=u'审核内容id')
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境')
+    envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
 
     def save(self, request):
         cdata = self.cleaned_data
@@ -479,6 +492,7 @@ class GeneratePerformTasksForm(forms.Form):
                                 sql=sql.strip(';'),
                                 sql_type=obj.sql_type,
                                 envi_id=envi_id,
+                                export_file_format=obj.export_file_format,
                                 related_id=id
                             )
                         if obj.remark == u'数据导出':

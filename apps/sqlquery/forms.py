@@ -2,99 +2,151 @@
 # edit by fuzongfei
 import datetime
 
+import pymysql
 from django import forms
-from django.core.exceptions import PermissionDenied
-from django.db.models import Min, F
+from pymysql.constants import CLIENT
 
-from sqlorders.models import envi_choice, SqlOrdersEnvironment, MysqlSchemas
-from sqlorders.utils import GetTableInfo
-from sqlquery.models import MysqlSchemasGrant, MySQLQueryLog
+from sqlorders.models import MysqlSchemas, MysqlConfig
+from sqlquery.models import MySQLQueryLog
 from sqlquery.sqlQueryApi import MySQLQuery
+from sqlquery.utils import GetGrantSchemaMeta
+from sqlaudit.settings import DATABASES
 
 
-class GetSchemasGrantForm(forms.Form):
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境id')
+class GetGrantSchemaForm(forms.Form):
+    id = forms.CharField(max_length=2048, required=False, label=u'jstree传入的node.id')
+    text = forms.CharField(max_length=2048, required=False, label=u'jstree传入的node.text')
+
+    def _local_cnx(self):
+        """本地连接"""
+        user = DATABASES.get('default').get('USER')
+        host = DATABASES.get('default').get('HOST')
+        password = DATABASES.get('default').get('PASSWORD')
+        port = DATABASES.get('default').get('PORT') if DATABASES.get('default').get('PORT') else 3306
+        cnx = pymysql.connect(host=host,
+                              user=user,
+                              password=password,
+                              port=port,
+                              max_allowed_packet=1024 * 1024 * 1024,
+                              charset='utf8',
+                              client_flag=CLIENT.MULTI_STATEMENTS,
+                              cursorclass=pymysql.cursors.DictCursor)
+        # 更改group_concat的默认长度(1024)，太短
+        with cnx.cursor() as cursor:
+            cursor.execute('set session group_concat_max_len=18446744073709551615;')
+        return cnx
 
     def query(self, request):
         cdata = self.cleaned_data
-        envi_id = cdata.get('envi_id')
-
-        query = f"select b.id, b.host, b.port, b.schema from sqlaudit_schemas_grant a " \
-                f"join sqlaudit_mysql_schemas b on a.schema_id = b.schema_join join sqlaudit_user_accounts c  " \
-                f"on c.uid = a.user_id where c.uid={request.user.uid} " \
-                f"and b.envi_id={envi_id} and b.is_type in (0, 2)"
-
+        id = cdata.get('id')
+        text = cdata.get('text')
         context = []
-        for row in MysqlSchemas.objects.raw(query):
-            data = GetTableInfo(row.host, row.port, row.schema).get_online_tables()
-            show_schema = '_'.join((row.comment, row.schema))
-            context.append({
-                'id': '___'.join((row.host, str(row.port), row.schema)),
-                'text': show_schema,
-                'children': data
-            })
+        if id == '#':
+            # 返回当前用户所有授权的库
+            query = f"select distinct `db` from mysql.tables_priv where `user`='{request.user.username}' and `db` like 'query_%'"
+            cnx = self._local_cnx()
+            with cnx.cursor() as cursor:
+                cursor.execute(query)
+                for row in cursor.fetchall():
+                    id = row['db'].split('_')[1]
+                    schema = '_'.join(row['db'].split('_')[2:])
+                    obj = MysqlConfig.objects.get(pk=id)
+                    show_schema = '_'.join((obj.comment, schema))
+                    context.append({
+                        'id': '___'.join((obj.host, str(obj.port), schema)),
+                        'text': show_schema,
+                        'children': True,
+                    })
+
+        if len(id.split('___')) == 3:
+            # 获取当前用户授权库的表
+            host = id.split('___')[0]
+            port = id.split('___')[1]
+            queryset = MysqlConfig.objects.get(host=host, port=port)
+            schema = id.split('___')[2]
+            data = GetGrantSchemaMeta(request.user.username, queryset.id, schema).get_table()
+            context = data
+
         return context
 
 
-class GetStruInfoForm(forms.Form):
+class GetTableStrucForm(forms.Form):
     schema = forms.CharField(max_length=1024, required=True)
 
     def query(self):
         cdata = self.cleaned_data
         host, port, schema = cdata.get('schema').split('___')
+        id = MysqlConfig.objects.get(host=host, port=port).id
         if len(schema.split('.')) == 2:
-            data = GetTableInfo(host, port, schema).get_stru_info()
-            context = {'status': 0, 'data': data}
-        else:
-            context = {'status': 2, 'msg': ''}
+            schema = schema
+        if len(schema.split('.')) == 3:
+            schema = '.'.join(schema.split('.')[:2])
+        data = GetGrantSchemaMeta(id=id, schema=schema).get_stru()
+        context = {'status': 0, 'data': data}
+        return context
+
+
+class GetTableIndexForm(forms.Form):
+    schema = forms.CharField(max_length=1024, required=True)
+
+    def query(self):
+        cdata = self.cleaned_data
+        host, port, schema = cdata.get('schema').split('___')
+        id = MysqlConfig.objects.get(host=host, port=port).id
+        if len(schema.split('.')) == 2:
+            schema = schema
+        if len(schema.split('.')) == 3:
+            schema = '.'.join(schema.split('.')[:2])
+        data = GetGrantSchemaMeta(id=id, schema=schema).get_index()
+        context = {'status': 0, 'data': data}
+        return context
+
+
+class GetTableBaseForm(forms.Form):
+    schema = forms.CharField(max_length=1024, required=True)
+
+    def query(self):
+        cdata = self.cleaned_data
+        host, port, schema = cdata.get('schema').split('___')
+        id = MysqlConfig.objects.get(host=host, port=port).id
+        if len(schema.split('.')) == 2:
+            schema = schema
+        if len(schema.split('.')) == 3:
+            schema = '.'.join(schema.split('.')[:2])
+        data = GetGrantSchemaMeta(id=id, schema=schema).get_base()
+        context = {'status': 0, 'data': data}
         return context
 
 
 class ExecSqlQueryForm(forms.Form):
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境id')
     schema = forms.CharField(max_length=1024)
     contents = forms.CharField(widget=forms.Textarea, label=u'sql')
 
     def execute(self, request):
         cdata = self.cleaned_data
-        envi_id = cdata.get('envi_id')
         schema = cdata.get('schema')
         contents = cdata.get('contents')
 
         host, port, schema = schema.split('___')
-        if len(schema.split('.')) == 2:
+        if len(schema.split('.')) in [2, 3]:
             schema = schema.split('.')[0]
 
-        # 判断主机所属的envi_id是否和接收的envi_id相等
-        if int(envi_id) == MysqlSchemas.objects.filter(host=host).first().envi_id:
-            # 验证传入的host是否属于该用户的授权主机
-            schemas = MysqlSchemasGrant.objects.filter(user__uid=request.user.uid).annotate(
-                schemas=F('schema__schema')).values_list('schemas', flat=True)
-            if schema in schemas:
-                # 判断是否是只读
-                is_type = MysqlSchemas.objects.get(host=host, port=port, schema=schema).is_type
-                is_rw = None
-                if is_type == 0:
-                    is_rw = 'r'
-                if is_type == 2:
-                    is_rw = 'rw'
-                mysql_query = MySQLQuery(querys=contents, host=host, port=port, schema=schema, rw=is_rw,
-                                         envi=envi_id)
-                result = mysql_query.query(request)
-            else:
-                raise PermissionDenied
-        else:
-            raise PermissionDenied
+        # 判断是否是只读
+        is_type = MysqlConfig.objects.get(host=host, port=port).is_type
+        is_rw = None
+        if is_type == 0:
+            is_rw = 'r'
+        if is_type == 2:
+            is_rw = 'rw'
+        mysql_query = MySQLQuery(user=request.user.username, querys=contents, host=host, port=port,
+                                 schema=schema, rw=is_rw)
+        result = mysql_query.query()
         return result
 
 
 class GetHistorySqlForm(forms.Form):
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境id')
-
     def query(self, request):
-        cdata = self.cleaned_data
-        envi_id = cdata.get('envi_id')
-        queryset = MySQLQueryLog.objects.filter(envi=envi_id, user=request.user.username, query_status=u'成功').order_by(
+        queryset = MySQLQueryLog.objects.filter(user=request.user.username, query_status=u'成功').order_by(
             '-created_at').values('created_at', 'query_sql')[:1000]
         data = []
         for row in queryset:
@@ -106,20 +158,18 @@ class GetHistorySqlForm(forms.Form):
 
 
 class GetFilterHistorySqlForm(forms.Form):
-    envi_id = forms.ChoiceField(required=True, choices=envi_choice, label=u'环境id')
     contents = forms.CharField(required=False, max_length=128, label=u'搜索的内容')
 
     def query(self, request):
         cdata = self.cleaned_data
-        envi_id = cdata.get('envi_id')
         contents = cdata.get('contents')
 
         if contents:
-            queryset = MySQLQueryLog.objects.filter(envi=envi_id, user=request.user.username, query_status=u'成功',
+            queryset = MySQLQueryLog.objects.filter(user=request.user.username, query_status=u'成功',
                                                     query_sql__icontains=contents).order_by(
                 '-created_at').values('created_at', 'query_sql')
         else:
-            queryset = MySQLQueryLog.objects.filter(envi=envi_id, user=request.user.username,
+            queryset = MySQLQueryLog.objects.filter(user=request.user.username,
                                                     query_status=u'成功').order_by(
                 '-created_at').values('created_at', 'query_sql')[:1000]
         data = []
@@ -132,3 +182,12 @@ class GetFilterHistorySqlForm(forms.Form):
             data.append('未找到SQL记录')
         context = {'status': 0, 'data': data}
         return context
+
+
+# class MysqlRulesChainForm(forms.ModelForm):
+#     schema = forms.ChoiceField(choices=[(x[1], '_'.join(x))
+#                                         for x in
+#                                         MysqlSchemas.objects.filter(is_type__in=(0, 2)).exclude(
+#                                             host=DATABASES.get('default')).values_list('comment',
+#                                                                                        'schema')],
+#                                label=u'库名')

@@ -8,7 +8,6 @@ from django.contrib.auth.models import Group
 from django.db.models import Min, Q
 
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas
-from sqlquery.models import MysqlSchemasGrant
 from users.models import UserAccounts, UserRoles, RolePermission
 from webshell.models import WebShellGrant
 
@@ -38,27 +37,9 @@ class WebShellGrantInline(admin.TabularInline):
     verbose_name_plural = u'WebShell授权'
 
 
-class MysqlSchemasGrantInline(admin.TabularInline):
-    model = MysqlSchemasGrant
-    extra = 1
-
-    verbose_name = u'授权库'
-    verbose_name_plural = u'授权库'
-
-    # 此处过滤指定的数据
-    # 将生产环境的主库过滤掉
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        try:
-            kwargs['queryset'] = MysqlSchemas.objects.filter(is_type__in=(0, 2))
-        except Exception as err:
-            pass
-        finally:
-            return super(MysqlSchemasGrantInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-
 class UserAccountsAdmin(admin.ModelAdmin):
     list_display = (
-        'username', 'displayname', 'email', 'mobile', 'is_active', 'user_role', 'user_schema',
+        'username', 'displayname', 'email', 'mobile', 'is_active', 'user_role',
         'date_joined')
     list_display_links = ('username',)
     search_fields = ('username', 'email', 'displayname')
@@ -66,7 +47,7 @@ class UserAccountsAdmin(admin.ModelAdmin):
         ('个人信息',
          {'fields': ['username', 'displayname', 'email', 'mobile', 'password', 'is_active', 'avatar_file']}),
     )
-    inlines = [UserRolesInline, MysqlSchemasGrantInline, WebShellGrantInline]
+    inlines = [UserRolesInline, WebShellGrantInline]
 
     exclude = ('users',)
     actions = ['reset_password']

@@ -14,5 +14,9 @@ def get_order_enviroment(request):
 
 def get_mail_status(request):
     """是否启用邮件功能"""
-    is_enable_mail = SysConfig.objects.get(key='email_push').is_enabled
-    return locals()
+    is_enable_mail = 0
+    try:
+        is_enable_mail = SysConfig.objects.get(key='email_push').is_enabled
+    except SysConfig.DoesNotExist as err:
+        pass
+    return {'is_enable_mail': is_enable_mail}

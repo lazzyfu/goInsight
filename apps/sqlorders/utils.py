@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
+import csv
 import datetime
 import json
 import logging
@@ -193,7 +194,7 @@ def check_incep_alive(fun):
     return wapper
 
 
-class ExportToExcel(object):
+class ExportToFiles(object):
     """
     传入参数：user, sql, host, port, id
     """
@@ -217,9 +218,10 @@ class ExportToExcel(object):
         self.affected_row = 0
 
         # 文件名
+        export_file_format = SqlOrdersExecTasks.objects.get(id=self.id).export_file_format
         num = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         self.title = f'result_{num}'
-        self.file = self.title + '.xlsx'
+        self.file = self.title + f'.{export_file_format}'
         self.zip_file = self.file + '.zip'
 
     def pull_msg(self, msg):
@@ -282,6 +284,65 @@ class ExportToExcel(object):
         os.remove(self.file) if os.path.exists(self.file) else None
         os.remove(self.zip_file) if os.path.exists(self.zip_file) else None
 
+    def export_csv(self):
+        # 导出成csv格式
+        # 获取列名作为标题
+        self.conn.cursorclass = pymysql.cursors.DictCursor
+        with self.conn.cursor() as cursor:
+            cursor.execute(self.sql)
+            title = []
+            for column_name in cursor.fetchone():
+                title.append(column_name)
+
+        with open(r'%s' % self.file, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = title
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            # 获取数据，并写入到表格
+            if self.affected_row <= 100000:
+                # 当导出数据量小于10W时，使用fetchall直接读取到内存中
+                self.conn.cursorclass = pymysql.cursors.DictCursor
+                with self.conn.cursor() as cursor:
+                    msg = f'正在导出SQL：{self.sql}'
+                    self.pull_msg(msg)
+                    self.execute_log.append(msg)
+
+                    cursor.execute(self.sql)
+                    rows = cursor.fetchall()
+
+                    msg = f'正在处理数据...\n编码为：UTF-8'
+                    self.pull_msg(msg)
+                    self.execute_log.append(msg)
+
+                    for row in rows:
+                        # 过滤掉特殊字符
+                        for k, v in row.items():
+                            filter_illegal_characters_value = ILLEGAL_CHARACTERS_RE.sub(r'', v) if isinstance(v,
+                                                                                                              str) else v
+                            row[k] = filter_illegal_characters_value
+                        writer.writerow(row)
+            else:
+                # 当导出数据量大于10W时，使用SSCursor进行迭代读取
+                self.conn.cursorclass = pymysql.cursors.SSDictCursor
+                with self.conn.cursor() as cursor:
+                    msg = f'正在导出SQL：{self.sql}'
+                    self.pull_msg(msg)
+                    self.execute_log.append(msg)
+
+                    cursor.execute(self.sql)
+                    while True:
+                        row = cursor.fetchone()
+                        if row:
+                            # 过滤掉特殊字符
+                            for k, v in row.items():
+                                filter_illegal_characters_value = ILLEGAL_CHARACTERS_RE.sub(r'', v) if isinstance(v,
+                                                                                                                  str) else v
+                                row[k] = filter_illegal_characters_value
+                            writer.writerow(row)
+                        else:
+                            break
+
     def export_xlsx(self):
         # 导出成xlsx格式
         # num：保存文件的结尾_num标识，为str类型
@@ -326,7 +387,7 @@ class ExportToExcel(object):
                     ws.append(filter_illegal_characters_row)
             wb.save(self.file)
         else:
-            # 当导出数据量大于10W时，使用SSCursor进行迭代读取，避免内存使用过大
+            # 当导出数据量大于10W时，使用SSCursor进行迭代读取
             self.conn.cursorclass = pymysql.cursors.SSCursor
             with self.conn.cursor() as cursor:
                 msg = f'正在导出SQL：{self.sql}'
@@ -347,7 +408,6 @@ class ExportToExcel(object):
                     else:
                         break
             wb.save(self.file)
-        self.compress_file()
 
     def run(self):
         queryset = SqlOrdersExecTasks.objects.get(id=self.id)
@@ -355,7 +415,11 @@ class ExportToExcel(object):
         if status:
             start_time = time.time()
             self.set_session_timeout()
-            self.export_xlsx()
+            if queryset.export_file_format == 'xlsx':
+                self.export_xlsx()
+            if queryset.export_file_format == 'csv':
+                self.export_csv()
+            self.compress_file()
             end_time = time.time()
             consume_time = ''.join((str(round(end_time - start_time, 2)), 's'))
             msg = f'执行耗时：{consume_time}'

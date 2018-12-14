@@ -10,6 +10,7 @@ from django.db.models import F
 
 
 class UserAccounts(AbstractUser):
+    """用户表"""
     uid = models.BigAutoField(primary_key=True, verbose_name=u'用户uid')
     is_active = models.BooleanField(default=True, verbose_name=u'激活')
     displayname = models.CharField(max_length=128, default='', verbose_name=u'别名')
@@ -30,18 +31,8 @@ class UserAccounts(AbstractUser):
 
     user_role.short_description = '用户角色'
 
-    def user_schema(self):
-        # 返回用户授权的schema
-        from sqlquery.models import MysqlSchemasGrant
-        result = MysqlSchemasGrant.objects.annotate(schemas=F('schema__schema'), host=F('schema__host'),
-                                                    port=F('schema__port')).filter(
-            user__uid=self.uid).values_list('schema__comment', 'schemas')
-        return ','.join(['_'.join(map(str, i)) for i in list(result)])
-
-    user_schema.short_description = '授权库'
-
     class Meta:
-        verbose_name = u'用户'
+        verbose_name = u'用户账户'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -65,7 +56,7 @@ class UserRoles(models.Model):
         return ', '.join(permission_desc)
 
     class Meta:
-        verbose_name = u'角色'
+        verbose_name = u'用户角色'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
@@ -85,8 +76,8 @@ class RolePermission(models.Model):
         return self.permission_desc
 
     class Meta:
-        verbose_name = u'权限'
+        verbose_name = u'角色权限'
         verbose_name_plural = verbose_name
 
         default_permissions = ()
-        db_table = 'sqlaudit_permissions'
+        db_table = 'sqlaudit_role_permissions'

@@ -3,7 +3,7 @@
 from django.db import models
 
 # Create your models here.
-from sqlorders.models import envi_choice
+from sqlorders.models import SqlOrdersEnvironment
 from users.models import UserAccounts
 
 
@@ -11,7 +11,7 @@ class WebShellInfo(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键id')
     command = models.CharField(max_length=1024, null=False, default='', verbose_name=u'命令')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'描述')
-    envi_id = models.IntegerField(choices=envi_choice, verbose_name=u'环境')
+    envi = models.ForeignKey(SqlOrdersEnvironment, default=None, to_field='envi_id', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')
 

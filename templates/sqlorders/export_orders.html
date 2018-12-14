@@ -23,7 +23,7 @@
                 <div class="box-body box-border">
                     <form class="form-horizontal" id="sqlExportForm" action="{% url 'p_sql_orders_audit' %}"
                           method="post" data-toggle="validator">
-                        <div class="col-md-4" id="left_input_height">
+                        <div class="col-md-4" id="left_input_height" style="padding-right: 2px">
                             <div class="box box-gray">
                                 <div class="box-body no-padding">
                                     <div class="mailbox-read-info">
@@ -94,6 +94,18 @@
                                     </div>
 
                                     <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">格式 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_schema" name="export_file_format" style="width: 100%" required
+                                                    class="form-control selectpicker" title="选择导出格式...">
+                                                <option data-icon="glyphicon-pushpin" selected value="xlsx">xlsx
+                                                </option>
+                                                <option data-icon="glyphicon-pushpin" value="csv">csv</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
                                         <label class="control-label col-sm-3">审核人 <span
                                                 class="text-red">*</span></label>
                                         <div class="col-sm-9">
@@ -125,7 +137,7 @@
                                                     class="btn bg-info btn-sm">格式化SQL
                                             </button>
 
-                                                <button type="submit" class="btn bg-info btn-sm">生成工单</button>
+                                            <button type="submit" class="btn bg-info btn-sm">生成工单</button>
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +149,8 @@
                                 <div class="box-body no-padding">
                                     <div class="mailbox-read-info">
                                         <h5>填写SELECT语句
-                                            <small class="text-muted"><cite>每条SQL必须以 <span class="text-danger"> 分号(;) </span>结尾</cite></small>
+                                            <small class="text-muted"><cite>每条SQL必须以 <span
+                                                    class="text-danger"> 分号(;) </span>结尾</cite></small>
                                         </h5>
                                     </div>
                                 </div>
@@ -215,7 +228,7 @@
                 url: '{% url 'p_get_target_schemas' %}',
                 type: 'POST',
                 dataType: 'json',
-                data: {'envi_id': envi_id, 'purpose':'export', 'csrfmiddlewaretoken': csrftoken},
+                data: {'envi_id': envi_id, 'purpose': 'export', 'csrfmiddlewaretoken': csrftoken},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {

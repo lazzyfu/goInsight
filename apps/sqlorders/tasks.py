@@ -13,18 +13,75 @@ import os
 import time
 from datetime import datetime
 
+import pymysql
 from celery import shared_task
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.utils import timezone
 
 from sqlorders.api.executeStatementApi import ExecuteSql
-from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlSchemas
+from sqlorders.models import SqlOrdersExecTasks, SqlOrdersContents, MysqlSchemas, MysqlConfig
 from sqlorders.msgNotice import SqlOrdersMsgPull
-from sqlorders.utils import ExportToExcel
+from sqlorders.utils import ExportToFiles
 
 channel_layer = get_channel_layer()
 logger = logging.getLogger('django')
+
+
+@shared_task
+def sync_schemas():
+    """
+    定时任务
+    同步sqlaudit_mysql_config表中配置数据库实例的元数据信息到表sqlaudit_mysql_schemas
+    """
+    ignored_params = ('information_schema', 'mysql', 'percona', 'performance_schema', 'sys', 'test')
+    schema_filter_query = f"select schema_name from information_schema.schemata " \
+                          f"where schema_name not in {ignored_params}"
+
+    collect_from_host = []
+    for row in MysqlConfig.objects.all():
+        collect_from_host.append({
+            'id': row.id,
+            'user': row.user,
+            'password': row.password,
+            'db_host': row.host,
+            'db_port': row.port,
+            'character': row.character,
+            'envi_id': row.envi_id,
+            'is_type': row.is_type,
+            'comment': row.comment
+        })
+
+    for row in collect_from_host:
+        try:
+            cnx = pymysql.connect(user=row['user'],
+                                  password=row['password'],
+                                  host=row['db_host'],
+                                  port=row['db_port'],
+                                  charset='utf8mb4',
+                                  cursorclass=pymysql.cursors.DictCursor)
+
+            try:
+                with cnx.cursor() as cursor:
+                    cursor.execute(schema_filter_query)
+                    for i in cursor.fetchall():
+                        MysqlSchemas.objects.update_or_create(
+                            cid_id=row['id'], host=row['db_host'], port=row['db_port'], schema=i['schema_name'],
+                            defaults={'user': row['user'],
+                                      'password': row['password'],
+                                      'host': row['db_host'],
+                                      'port': row['db_port'],
+                                      'schema': i['schema_name'],
+                                      'character': row['character'],
+                                      'envi_id': row['envi_id'],
+                                      'is_type': row['is_type'],
+                                      'comment': row['comment']}
+                        )
+            finally:
+                cnx.close()
+        except Exception as err:
+            logger.error(err.args[1])
+            continue
 
 
 def save_rbsql_as_file(rollbacksql):
@@ -98,16 +155,15 @@ def update_audit_content_progress(username, taskid):
 @shared_task
 def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, database=None, exec_status=None):
     """执行SQL"""
-    dst_server = MysqlSchemas.objects.get(host=host, port=port, schema=database)
-    dst_host = dst_server.host
-    dst_user = dst_server.user
-    dst_password = dst_server.password
-    dst_port = dst_server.port
-    dst_database = database
+    queryset = MysqlSchemas.objects.get(host=host, port=port, schema=database)
 
-    execute_sql = ExecuteSql(host=dst_host, port=dst_port,
-                             user=dst_user, password=dst_password,
-                             database=dst_database, username=username)
+    execute_sql = ExecuteSql(host=host,
+                             port=port,
+                             user=queryset.user,
+                             password=queryset.password,
+                             charset=queryset.character,
+                             database=database,
+                             username=username)
     result = execute_sql.run_by_sql(sql)
 
     # 更新任务进度
@@ -155,5 +211,5 @@ def async_execute_multi_sql(username, query, key):
 
 @shared_task
 def async_export_tasks(user=None, id=None, sql=None, host=None, port=None, database=None):
-    export_to_excel = ExportToExcel(id, user, sql, host, port, database)
+    export_to_excel = ExportToFiles(id, user, sql, host, port, database)
     export_to_excel.run()

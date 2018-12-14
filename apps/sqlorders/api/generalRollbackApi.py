@@ -2,6 +2,7 @@
 # edit by fuzongfei
 import datetime
 import json
+import logging
 
 import simplejson
 from pymysqlreplication import BinLogStreamReader
@@ -9,6 +10,8 @@ from pymysqlreplication.event import GtidEvent
 from pymysqlreplication.row_event import DeleteRowsEvent, UpdateRowsEvent, WriteRowsEvent
 
 GTID_LOG_EVENT = 0x21
+
+logger = logging.getLogger('django')
 
 
 class ReadRemoteBinlog(object):
@@ -169,7 +172,7 @@ class ReadRemoteBinlog(object):
             for binlogevent in stream:
                 log_pos = stream.log_pos
                 if log_pos >= self.end_pos:
-                    print('binlog syncer exit...')
+                    logger.info('binlog syncer exit...')
                     stream.close()
                     break
                 else:
