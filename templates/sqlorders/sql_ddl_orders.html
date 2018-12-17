@@ -99,6 +99,7 @@
                                         <div class="col-sm-9">
                                             <select id="s_schema" name="database" style="width: 100%" required
                                                     class="form-control selectpicker" title="选择库名..."
+                                                    data-size='8'
                                                     data-live-search="true" onchange="get_table_info()">
                                             </select>
                                         </div>
@@ -109,7 +110,7 @@
                                                 class="text-red">*</span></label>
                                         <div class="col-sm-9">
                                             <select title="选择工单审核人..." id="s_operator" name="auditor"
-                                                    style="width: 100%" required
+                                                    style="width: 100%" required data-size='8'
                                                     class="selectpicker form-control">
                                             </select>
                                         </div>
@@ -121,7 +122,7 @@
                                             <div class="col-md-9">
                                                 <select id="s_email_cc" name="email_cc" data-live-search="true"
                                                         title="选择需要抄送的联系人..."
-                                                        data-actions-box="true"
+                                                        data-actions-box="true" data-size='8'
                                                         style="width: 100%" class="selectpicker form-control dropup"
                                                         multiple>
                                                 </select>
