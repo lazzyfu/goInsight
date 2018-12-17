@@ -533,7 +533,7 @@ class GetVersionOrdersList(View):
         # 此处的环境为动态环境
         query = f"select " + dynamic_columns_join + \
                 "id,title,proposer,task_version " \
-                f"from sqlaudit_sql_orders_contents where task_version='{tasks}' group by title order by id desc"
+                f"from sqlaudit_sqlorders_contents where task_version='{tasks}' group by title order by id desc"
         result = []
 
         data = SqlOrdersContents.objects.raw(query)
