@@ -49,7 +49,7 @@ class InceptionSqlApi(object):
                 conn.close()
                 return incep_data
         except pymysql.Error as err:
-            raise EnvironmentError(err)
+            logger.error(err.args[1])
 
     def run_check(self):
         """对SQL进行审核"""

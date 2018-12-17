@@ -183,6 +183,7 @@ def check_incep_alive(fun):
         inception_port = getattr(settings, 'INCEPTION_PORT')
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
         result = sock.connect_ex((inception_host, inception_port))
 
         if 0 == result:

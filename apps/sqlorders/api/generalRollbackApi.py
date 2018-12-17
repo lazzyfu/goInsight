@@ -149,6 +149,7 @@ class ReadRemoteBinlog(object):
                 result.append({'gtid': gtid, 'gtid_len': gtid_len, 'value': value})
                 i += 1
             except IndexError as err:
+                logger.error(err.args[1])
                 break
         for j in result:
             if j['gtid_len'] == self.affected_rows:

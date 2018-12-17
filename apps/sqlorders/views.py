@@ -21,6 +21,7 @@ from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm,
     PerformTasksOpForm, CommitOrderReplyForm, MyOrdersForm, ExecuteExportTasksForm
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
     SqlOrdersTasksVersions, SqlOrderReply, SqlExportFiles
+from sqlorders.utils import check_incep_alive
 from users.models import RolePermission, UserRoles
 from users.permissionsVerify import permission_required
 
@@ -101,6 +102,7 @@ class GetTablesView(View):
 class SyntaxCheckView(View):
     """SQL语法检查"""
 
+    @check_incep_alive
     def post(self, request):
         form = SyntaxCheckForm(request.POST)
         if form.is_valid():
