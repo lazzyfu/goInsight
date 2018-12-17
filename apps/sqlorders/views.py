@@ -78,7 +78,7 @@ class GetAuditUserView(View):
 class GetTargetSchemasView(View):
     """获取dml和ddl工单指定环境的schema列表"""
 
-    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
+    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql', 'can_commit_ops', 'can_audit_ops')
     def post(self, request):
         envi_id = request.POST.get('envi_id')
 
@@ -134,7 +134,7 @@ class BeautifySQLView(View):
 class SqlOrdersAuditView(View):
     """DDL、DML工单提交、处理"""
 
-    @permission_required('can_commit_sql')
+    @permission_required('can_commit_sql', 'can_commit_ops')
     def post(self, request):
         print(request.POST)
         form = SqlOrdersAuditForm(request.POST)
@@ -232,7 +232,7 @@ class SqlOrdersCloseView(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super(SqlOrdersCloseView, self).dispatch(request, *args, **kwargs)
 
-    @permission_required('can_commit_sql', 'can_execute_sql', 'can_audit_sql')
+    @permission_required('can_commit_sql', 'can_execute_sql', 'can_audit_sql', 'can_commit_ops', 'can_audit_ops')
     @transaction.atomic
     def form_valid(self, form):
         context = form.save(self.request)
@@ -278,7 +278,7 @@ class GetOrderReplyView(View):
 class HookSqlOrdersView(View):
     """工单扭转, 处理钩子数据"""
 
-    @permission_required('can_commit_sql', 'can_execute_sql', 'can_audit_sql')
+    @permission_required('can_commit_sql', 'can_execute_sql', 'can_audit_sql', 'can_commit_ops', 'can_audit_ops')
     def post(self, request):
         form = HookSqlOrdersForm(request.POST)
         if form.is_valid():
@@ -490,7 +490,7 @@ class SqlOrdersTasksVersionView(View):
         return JsonResponse(list(data), safe=False)
 
     # 有can_commit权限的可以创建
-    @permission_required('can_commit_sql')
+    @permission_required('can_commit_sql', 'can_commit_ops')
     def post(self, request):
         form = SqlOrdersTasksVersionForm(request.POST)
         if form.is_valid():
@@ -570,7 +570,7 @@ class GetVersionOrdersList(View):
 class RenderMyOrdersView(View):
     """渲染工单列表页面"""
 
-    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
+    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql', 'can_commit_ops', 'can_audit_ops')
     def get(self, request):
         return render(request, 'sqlorders/my_orders.html')
 
@@ -578,7 +578,7 @@ class RenderMyOrdersView(View):
 class MyOrdersView(View):
     """获取工单列表页面的工单数据"""
 
-    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql')
+    @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql', 'can_commit_ops', 'can_audit_ops')
     def get(self, request):
         form = MyOrdersForm(request.GET)
         context = {}
