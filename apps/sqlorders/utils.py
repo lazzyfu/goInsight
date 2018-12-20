@@ -323,7 +323,7 @@ class ExportToFiles(object):
                                                                                                               str) else v
                             row[k] = filter_illegal_characters_value
                         writer.writerow(row)
-            else:
+            elif self.affected_row > 100000:
                 # 当导出数据量大于10W时，使用SSCursor进行迭代读取
                 self.conn.cursorclass = pymysql.cursors.SSDictCursor
                 with self.conn.cursor() as cursor:
@@ -387,7 +387,7 @@ class ExportToFiles(object):
                     )
                     ws.append(filter_illegal_characters_row)
             wb.save(self.file)
-        else:
+        elif self.affected_row > 100000:
             # 当导出数据量大于10W时，使用SSCursor进行迭代读取
             self.conn.cursorclass = pymysql.cursors.SSCursor
             with self.conn.cursor() as cursor:
@@ -414,20 +414,24 @@ class ExportToFiles(object):
         queryset = SqlOrdersExecTasks.objects.get(id=self.id)
         status = self.get_count()
         if status:
-            start_time = time.time()
-            self.set_session_timeout()
-            if queryset.export_file_format == 'xlsx':
-                self.export_xlsx()
-            if queryset.export_file_format == 'csv':
-                self.export_csv()
-            self.compress_file()
-            end_time = time.time()
-            consume_time = ''.join((str(round(end_time - start_time, 2)), 's'))
-            msg = f'执行耗时：{consume_time}'
-            self.execute_log.append(msg)
-            self.pull_msg(msg)
-            queryset.runtime = consume_time
-            queryset.exec_status = '1'
+            if self.affected_row == 0:
+                queryset.exec_status = '1'
+                queryset.save()
+            else:
+                start_time = time.time()
+                self.set_session_timeout()
+                if queryset.export_file_format == 'xlsx':
+                    self.export_xlsx()
+                if queryset.export_file_format == 'csv':
+                    self.export_csv()
+                self.compress_file()
+                end_time = time.time()
+                consume_time = ''.join((str(round(end_time - start_time, 2)), 's'))
+                msg = f'执行耗时：{consume_time}'
+                self.execute_log.append(msg)
+                self.pull_msg(msg)
+                queryset.runtime = consume_time
+                queryset.exec_status = '1'
         else:
             queryset.exec_status = '5'
         queryset.exec_log = '\n'.join(self.execute_log)
