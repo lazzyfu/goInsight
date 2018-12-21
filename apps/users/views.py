@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+# edit by fuzongfei
+
 import io
 import json
 
@@ -29,8 +32,11 @@ class LoginView(FormView):
             return render(self.request, self.template_name, {'msg': result['msg']})
 
     def form_invalid(self, form):
-        error = form.errors.as_text()
-        return render(self.request, self.template_name, {'msg': error})
+        msg = []
+        for field, errors in form.errors.items():
+            for error in errors:
+                msg.append(''.join([form.fields[field].label, error]))
+        return render(self.request, self.template_name, {'msg': '\n'.join(msg)})
 
 
 class LogoutView(RedirectView):

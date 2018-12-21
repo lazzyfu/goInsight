@@ -10,9 +10,9 @@ from users.utils import check_ldap_connection
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True, max_length=30)
-    password = forms.CharField(required=True, max_length=30, min_length=7)
-    verifycode = forms.CharField(error_messages={'required': '验证码不能为空'})
+    username = forms.CharField(required=True, max_length=30, min_length=1, strip=True, label='用户名')
+    password = forms.CharField(required=True, max_length=30, min_length=7, strip=True, label='密码')
+    verifycode = forms.CharField(strip=True, label='验证码', error_messages={'required': '不能为空'})
 
     def authentication(self, request):
         cdata = self.cleaned_data
@@ -20,6 +20,7 @@ class LoginForm(forms.Form):
         password = cdata.get('password')
 
         status, msg = check_ldap_connection()
+        result = None
         if status:
             try:
                 user = authenticate(username=username, password=password)

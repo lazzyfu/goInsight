@@ -28,9 +28,13 @@
 </head>
 
 <style>
-.form-control{
-    border-radius: 10px;
-}
+    .form-control {
+        border-radius: 5px;
+    }
+
+    .login-box-body {
+        border-radius: 5px;
+    }
 </style>
 
 <body class="hold-transition login-page">
@@ -40,10 +44,8 @@
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-
-
         <form action="{% url 'p_login' %}" method="post">
-        <p class="login-box-msg">请使用账号登陆</p>
+            <p class="login-box-msg">请使用账号登陆</p>
             <div class="form-group has-feedback">
                 <input type="text" name="username" class="form-control" placeholder="用户名">
                 <i class="glyphicon glyphicon-user form-control-feedback"></i>
@@ -62,7 +64,7 @@
             </div>
             <div class="form-group has-feedback">
                 {% if msg %}
-                    <p class="text-danger">{{ msg }}</p>
+                    <p class="text-danger">{{ msg|linebreaksbr }}</p>
                 {% endif %}
             </div>
             <div class="row">
@@ -86,7 +88,7 @@
 <!-- iCheck -->
 <script src="{% static 'AdminLTE-2.4.5/plugins/iCheck/icheck.min.js' %}"></script>
 <script>
-    function ChangeCode(ths){
+    function ChangeCode(ths) {
         ths.src = ths.src + '?';  //点击一下，局部重新get一次，重新生成验证
     }
 </script>
