@@ -207,8 +207,11 @@ class ExecuteSql(object):
 
             ghost_cmd = f"gh-ost {user_args} " \
                         f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
-                        f"--assume-master-host={self.host} " \
+                        f"--assume-master-host={self.host}:{self.port} " \
                         f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
+
+            # 记录执行的命令
+            logger.info('执行gh-ost命令: ', ghost_cmd)
 
             # 删除sock，如果存在的话
             sock = os.path.join('/tmp', f'gh-ost.{self.database}.{table}.sock')
