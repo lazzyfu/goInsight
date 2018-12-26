@@ -52,10 +52,10 @@ class MySQLQuery(object):
         for i in [re.sub('^\s+', '', i, re.S, re.I) for i in self.querys.strip().split(';') if
                   re.sub('^\s+', '', i, re.S, re.I) != '']:
             # 多行匹配\n、\t、空格并替换为' '
-            j = re.sub('\s+', ' ', i, re.S, re.I)
+            # j = re.sub('\s+', ' ', i, re.S, re.I)
             # 匹配不以#开头的，此类为注释，不执行
-            if re.search('^(?!#)', j, re.I):
-                result.append(j)
+            if re.search('^(?!#)', i, re.I):
+                result.append(i)
 
         return result
 
