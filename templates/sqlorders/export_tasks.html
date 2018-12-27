@@ -147,6 +147,9 @@
                 uniqueId: "id",
                 fixedColumns: true,
                 fixedNumber: +1,
+                autoRefresh: true,
+                autoRefreshInterval: 5,
+                autoRefreshSilent: true,
                 classes: 'table table-hover table-no-bordered',
 
                 columns: [
@@ -216,18 +219,6 @@
                     }
                 ]
             })
-        });
-
-        /**
-         * 每3s刷新一次表格
-         */
-
-        $(function () {
-            function refreshTable() {
-                $('#demo-table').bootstrapTable('refresh', {silent: true});
-            }
-
-            setInterval(refreshTable, 3000);
         });
 
         <!-- 获取回滚语句和执行结果日志 -->

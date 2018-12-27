@@ -136,6 +136,9 @@
                 locale: 'zh-CN',
                 pageList: [10, 20],
                 uniqueId: "id",
+                autoRefresh: true,
+                autoRefreshInterval: 5,
+                autoRefreshSilent: true,
                 rowStyle: render_row_style,
                 classes: 'table table-hover table-no-bordered',
 
@@ -252,18 +255,6 @@
                     }
                 }
             })
-        });
-
-        /**
-         * 每3s刷新一次表格
-         */
-
-        $(function () {
-            function refreshTable() {
-                $('#demo-table').bootstrapTable('refresh', {silent: true});
-            }
-
-            setInterval(refreshTable, 3000);
         });
 
         // 获取用户设置的环境
