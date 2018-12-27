@@ -59,6 +59,7 @@ class MysqlQueryRemoteMetaOp(object):
                                   password=config['password'],
                                   host=config['host'],
                                   port=config['port'],
+                                  charset='utf8',
                                   cursorclass=pymysql.cursors.DictCursor)
             return cnx
         except Exception as err:
@@ -85,7 +86,6 @@ class MysqlQueryRemoteMetaOp(object):
                     logger.info(f'新建本地表结构：USE `{schema_name}`; {table_stru}')
             except Exception as err:
                 logger.error(err)
-                continue
         cnx.close()
 
     def drop_lst(self, data):
@@ -103,7 +103,6 @@ class MysqlQueryRemoteMetaOp(object):
                 except cnx.InternalError as err:
                     logger.error('执行删除表...')
                     logger.error(err)
-                    continue
         cnx.close()
 
     def update_mysql_rule_chains(self, data, type):
