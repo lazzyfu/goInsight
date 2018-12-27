@@ -10,17 +10,6 @@
 2. 修复SQL格式化格式化SQL时注释不符合可能丢失SQL的BUG
 3. 优化执行任务页面
 
-本次更新方法：
-> git pull
-> pip install -r requirements.txt
-> python manage.py makemigrations --merge
-> python manage.py migrate
-> python manage.py migrate --fake
-> python manage.py collectstatic
-> alter table sqlaudit_mysql_schemas change is_master is_type smallint(6) NOT NULL;
-> alter table sqlaudit_mysql_config change is_master is_type smallint(6) NOT NULL;
-
-
 迭代周期：2018-11-10
 新增功能：
 1. 增加导出功能支持，支持导出美化后的xlsx格式
@@ -30,3 +19,10 @@
 1. 优化数据导出时，占用内存过大的问题
 2. 修复数据导出时，增加检测alias命名重复的功能
 3. 部分样式美化
+
+迭代周期：2018-12-27
+优化及bug修复：
+1. 优化登陆页面样式
+2. 修复查询显示前端将多个空格处理成一个空格的bug
+3. 修复执行SQL备份时，多个列组成主键导致备份失败的bug
+4. 查询功能支持表级别的权限
