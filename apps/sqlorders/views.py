@@ -136,7 +136,6 @@ class SqlOrdersAuditView(View):
 
     @permission_required('can_commit_sql', 'can_commit_ops')
     def post(self, request):
-        print(request.POST)
         form = SqlOrdersAuditForm(request.POST)
         if form.is_valid():
             context = form.save(request)

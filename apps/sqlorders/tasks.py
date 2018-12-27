@@ -117,7 +117,6 @@ def upd_current_task_status(id=None, exec_result=None, exec_status=None):
                 data.rollback_sql = rbsql
                 data.save()
             except Exception as err:
-                print(err)
                 filename = save_rbsql_as_file(rbsql)
                 data.rollback_sql = '\n'.join([
                     '数据超出max_allowed_packet，写入到数据库失败',
