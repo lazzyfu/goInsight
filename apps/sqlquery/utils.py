@@ -525,16 +525,16 @@ class MySQLQueryRulesOperate(object):
         if type == 'add':
             statements.append(
                 ';'.join(
-                    [f"grant select on table {st} to '{user}'@'%'" for user in users]))
+                    [f"grant select,update,delete,insert on table {st} to '{user}'@'%'" for user in users]))
         else:
             statements.append(
                 ';'.join(
-                    [f"grant select on {st} to '{user}'@'%'" for user in users]))
+                    [f"grant select,update,delete,insert on {st} to '{user}'@'%'" for user in users]))
         # 移除操作
         # 当type = remove时，allow --> revoke
         if type == 'remove':
             statements.append(
-                ';'.join([f"revoke select on table {st} from '{user}'@'%'" for user in users]))
+                ';'.join([f"revoke select,update,delete,insert on table {st} from '{user}'@'%'" for user in users]))
 
         statements.append('flush privileges;')
         self.execute_statements(statements)
