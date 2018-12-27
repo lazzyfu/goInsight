@@ -106,14 +106,16 @@ class ReadRemoteBinlog(object):
             type = format_row['type']
             database = format_row['database']
             table = format_row['table']
-            primary_key = list(format_row.get('primary_key'))
-            print('主键:', primary_key, '类型:', type(primary_key))
-            logger.error('主键:', primary_key, '类型:', type(primary_key))
+            # 主键可能由一个字段或多个字段组成
+            primary_key = ([format_row.get('primary_key')] if isinstance(format_row.get('primary_key'), str) else list(
+                format_row.get('primary_key'))) if format_row.get('primary_key') else []
             sql = ''
 
             if type == 'INSERT':
-                where = ' AND '.join(['='.join((primary, str(row['values'].get(primary)))) for primary in primary_key])
-                if not primary_key:
+                if primary_key:
+                    where = ' AND '.join(
+                        ['='.join((primary, str(row['values'].get(primary)))) for primary in primary_key])
+                else:
                     where = ' AND '.join(map(self._val_join, row['values'].items()))
                 sql = f"DELETE FROM `{database}`.`{table}` WHERE {where} LIMIT 1;"
 
@@ -124,8 +126,10 @@ class ReadRemoteBinlog(object):
 
             elif type == 'UPDATE':
                 before_values = ', '.join(map(self._upd_join, row['before'].items()))
-                where = ' AND '.join(['='.join((primary, str(row['after'].get(primary)))) for primary in primary_key])
-                if not primary_key:
+                if primary_key:
+                    where = ' AND '.join(
+                        ['='.join((primary, str(row['after'].get(primary)))) for primary in primary_key])
+                else:
                     where = ' AND '.join(map(self._val_join, row['after'].items()))
                 sql = f"UPDATE `{database}`.`{table}` SET {before_values} WHERE {where};"
 
