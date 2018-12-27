@@ -67,7 +67,7 @@ class MysqlRulesGroupAdmin(admin.ModelAdmin):
                                               after_rule_id,
                                               before_users,
                                               after_users),
-                                             countdown=2)
+                                             countdown=1)
         messages.add_message(request, messages.SUCCESS, f'任务已提交到后台处理，请稍后几分钟检测权限是否变更')
         return super().save_model(request, obj, form, change)
 

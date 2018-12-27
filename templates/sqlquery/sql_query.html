@@ -18,6 +18,10 @@
             position: relative;
         }
 
+        /* 修复bootstrap-table中显示数据时，若原数据包含了多个空格显示为一个空格的bug */
+        .bootstrap-table .table:not(.table-condensed) > tbody > tr > td {
+            white-space: pre !important;
+        }
     </style>
 {% endblock %}
 
@@ -512,15 +516,6 @@
                                 showExport: true,
                                 showToggle: true,
                                 showColumns: true,
-                                icons: {
-                                    paginationSwitchDown: 'glyphicon-collapse-down icon-chevron-down',
-                                    paginationSwitchUp: 'glyphicon-collapse-up icon-chevron-up',
-                                    refresh: 'glyphicon-refresh icon-refresh',
-                                    toggle: 'glyphicon-list-alt icon-list-alt',
-                                    columns: 'glyphicon-th icon-th',
-                                    detailOpen: 'glyphicon-plus icon-plus',
-                                    detailClose: 'glyphicon-minus icon-minus'
-                                },
                                 minimumCountColumns: 2,
                                 exportDataType: 'all',
                                 exportTypes: ['csv', 'txt', 'excel', 'sql'],
