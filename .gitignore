@@ -4,6 +4,6 @@ logs/
 *.pyc
 *.zip
 *.jpg
-*.sql
 test/
 README.md
+media/rbsql/
