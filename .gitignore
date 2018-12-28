@@ -1,9 +1,9 @@
 settings.py
-logs/*
+logs/
 *pycache__
 *.pyc
 *.zip
 *.jpg
 *.sql
-test/*
+test/
 README.md
