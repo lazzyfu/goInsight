@@ -207,7 +207,6 @@ class ExecuteSql(object):
 
             ghost_cmd = f"gh-ost {user_args} " \
                         f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
-                        f"--assume-master-host={self.host}:{self.port} " \
                         f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
 
             # 记录执行的命令
