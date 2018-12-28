@@ -8,4 +8,3 @@ from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 from sqlparse.tokens import Keyword
 
 from sqlorders.api.extractTable import extract_tables
-

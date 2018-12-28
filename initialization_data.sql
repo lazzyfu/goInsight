@@ -1,0 +1,5 @@
+# 如果自己部署，请初始化如下数据
+
+INSERT INTO `sqlaudit_sys_config` VALUES (1,'启用gh-ost','is_ghost','--allow-on-master --assume-rbr --aliyun-rds --initially-drop-ghost-table --initially-drop-old-table  --hooks-path=/tmp/hook --exact-rowcount','0','2018-12-13 12:05:37.000000'),(2,'查询limit限制','query_limit','default=100,max=100','0','2018-12-13 12:06:04.000000'),(3,'域名提示','domain_name_tips','http://sqlaudit.example.com','0','2018-12-13 12:33:40.000000'),(4,'邮件推送','email_push',NULL,'0','2018-12-13 12:34:19.000000'),(5,'钉钉推送','dingding_push','https://oapi.dingtalk.com/robot/send?access_token=57e...','1','2018-12-13 12:35:09.000000');
+
+INSERT INTO `sqlaudit_role_permissions` VALUES (1,'can_commit_sql','SQL工单提交权限','2018-12-13 11:54:50.000000','2018-12-13 11:54:52.000000'),(2,'can_execute_sql','SQL工单执行权限','2018-12-13 11:55:11.000000','2018-12-13 11:55:13.000000'),(3,'can_audit_sql','SQL工单审核权限','2018-12-13 11:55:29.000000','2018-12-13 11:55:31.000000'),(4,'can_commit_ops','运维工单提交权限','2018-12-13 11:56:01.000000','2018-12-13 11:56:04.000000'),(5,'can_audit_ops','运维工单审核权限','2018-12-13 11:56:28.000000','2018-12-13 11:56:32.000000');
