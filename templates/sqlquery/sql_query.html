@@ -226,6 +226,8 @@
             if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
                 event.keyCode !== 13 && /*delete不提示*/
                 event.keyCode !== 186 && /*分号；不提示*/
+                event.keyCode !== 32 && /*按空格不提示*/
+                event.keyCode !== 9 &&  /*按tab不提示*/
                 event.keyCode !== 8) {        /*Enter - do not open autocomplete list just after item has been selected in it*/
                 CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
             }

@@ -211,7 +211,7 @@ class ExecuteSql(object):
                         f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
 
             # 记录执行的命令
-            logger.info('执行gh-ost命令: ', ghost_cmd)
+            logger.info(ghost_cmd)
 
             # 删除sock，如果存在的话
             sock = os.path.join('/tmp', f'gh-ost.{self.database}.{table}.sock')
