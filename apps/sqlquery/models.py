@@ -28,7 +28,7 @@ class MysqlRulesChain(models.Model):
         default_permissions = ()
         db_table = 'sqlaudit_mysql_rules_chain'
 
-        unique_together = (('schema', 'table'),)
+        unique_together = (('comment', 'schema', 'table'),)
 
 
 class MysqlRulesGroup(models.Model):
