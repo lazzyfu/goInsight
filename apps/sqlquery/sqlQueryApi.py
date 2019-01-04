@@ -61,8 +61,8 @@ class MySQLQuery(object):
 
     def filter_rulers(self, querys):
         """
-            对查询进行规则检测
-            """
+        对查询进行规则检测
+        """
         default_rows = 100
         max_rows = 200
         if SysConfig.objects.get(key='query_limit').is_enabled == '0':
@@ -71,27 +71,27 @@ class MySQLQuery(object):
             default_rows = int(a.split('=')[1])
             max_rows = int(b.split('=')[1])
         for i in querys:
-            limit = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*) LIMIT (\d+)$', re.I)
-            limit_offset = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*) LIMIT (\d+) OFFSET (\d+)$', re.I)
-            no_limit = re.compile('^SELECT([\s\S]*) FROM ([\s\S]*)', re.I)
+            limit = re.compile('^SELECT([\s\S]*)LIMIT([\s]*)(\d+)$', re.I)
+            limit_offset = re.compile('^SELECT([\s\S]*)LIMIT([\s]*)(\d+)([\s]*)OFFSET([\s]*)(\d+)$', re.I)
+            no_limit = re.compile('^SELECT([\s\S]*)', re.I)
             # select语句
             if re.match('^select', i, re.I):
                 # 禁止limit N offset N语法
                 if limit_offset.match(i) is None:
                     if limit.match(i) is None:
                         # 当未匹配到select ... limit ...语句，重写查询
-                        querys[querys.index(i)] = no_limit.sub(r"SELECT \1 FROM \2 LIMIT {}".format(default_rows), i)
+                        querys[querys.index(i)] = no_limit.sub(r"SELECT \1 LIMIT {}".format(default_rows), i)
                     else:
                         limit_num = limit.match(i)
                         if int(limit_num.group(3).replace(';', '')) > max_rows:
-                            querys[querys.index(i)] = limit.sub(r"SELECT \1 FROM \2 LIMIT {}".format(max_rows), i)
+                            querys[querys.index(i)] = limit.sub(r"SELECT \1 LIMIT {}".format(max_rows), i)
                 else:
                     # 重写limit N offset N 为limit N语法
                     limit_offset_match = limit_offset.match(i)
                     if int(limit_offset_match.group(3).replace(';', '')) > max_rows:
-                        querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT {}'.format(max_rows), i)
+                        querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 LIMIT {}'.format(max_rows), i)
                     else:
-                        querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 FROM \2 LIMIT \3', i)
+                        querys[querys.index(i)] = limit_offset.sub(r'SELECT \1 LIMIT \3', i)
         return querys
 
     def is_rw(self, querys, rw='r'):
