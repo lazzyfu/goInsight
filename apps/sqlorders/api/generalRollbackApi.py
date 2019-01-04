@@ -9,8 +9,6 @@ from pymysqlreplication import BinLogStreamReader
 from pymysqlreplication.event import GtidEvent
 from pymysqlreplication.row_event import DeleteRowsEvent, UpdateRowsEvent, WriteRowsEvent
 
-GTID_LOG_EVENT = 0x21
-
 logger = logging.getLogger('django')
 
 
@@ -169,20 +167,19 @@ class ReadRemoteBinlog(object):
                                         only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, GtidEvent],
                                         resume_stream=True,
                                         blocking=False,
-                                        log_file=self.binlog_file,
+                                        log_file=f'{self.binlog_file}',
                                         log_pos=self.start_pos,
-                                        only_schemas=self.only_schemas,
-                                        only_tables=self.only_tables
+                                        only_schemas=f'{self.only_schemas}',
+                                        only_tables=f'{self.only_tables}'
                                         )
             rows = []
             for binlogevent in stream:
                 log_pos = stream.log_pos
                 if log_pos >= self.end_pos:
-                    logger.info('binlog syncer exit...')
                     stream.close()
                     break
                 else:
-                    if binlogevent.event_type == GTID_LOG_EVENT:
+                    if isinstance(binlogevent, GtidEvent):
                         # 此处获取每个事务的GTID
                         # 不做处理
                         gtid = binlogevent.gtid
