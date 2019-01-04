@@ -114,7 +114,7 @@ class MysqlQueryRemoteMetaOp(object):
             comment = MysqlConfig.objects.get(pk=cid).comment
             if type == 'add':
                 # 为该表增加一条规则
-                if not MysqlRulesChain.objects.filter(schema=schema_name, table=table_name).exists():
+                if not MysqlRulesChain.objects.filter(schema=schema_name, table=table_name, comment=comment).exists():
                     MysqlRulesChain.objects.create(cid_id=cid,
                                                    action='allow',
                                                    schema=schema_name,
