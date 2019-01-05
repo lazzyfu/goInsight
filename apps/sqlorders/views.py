@@ -22,7 +22,7 @@ from sqlorders.forms import GetTablesForm, SqlOrdersAuditForm, SqlOrderListForm,
 from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas, SqlOrdersContents, SqlOrdersExecTasks, \
     SqlOrdersTasksVersions, SqlOrderReply, SqlExportFiles
 from sqlorders.utils import check_incep_alive
-from users.models import RolePermission, UserRoles
+from users.models import RolePermission, UserRoles, UserAccounts
 from users.permissionsVerify import permission_required
 
 logger = logging.getLogger('django')
@@ -611,4 +611,63 @@ class ExecuteExportTasksView(View):
         else:
             error = form.errors.as_text()
             context = {'status': 2, 'msg': error}
+        return HttpResponse(json.dumps(context))
+
+
+class GetOrderChartView(View):
+    def get(self, request):
+        my_order_queryset = SqlOrdersContents.objects.filter(proposer=request.user.username)
+        my_order_count = my_order_queryset.count()
+        my_order_dml_count = my_order_queryset.filter(sql_type='DML').count()
+        my_order_ddl_count = my_order_queryset.filter(sql_type='DDL').count()
+        my_order_ops_count = my_order_queryset.filter(sql_type='OPS').count()
+
+        myorder = [
+            {
+                'value': my_order_dml_count,
+                'color': '#f56954',
+                'highlight': '#f56954',
+                'label': 'DML工单'
+            },
+            {
+                'value': my_order_ddl_count,
+                'color': '#00a65a',
+                'highlight': '#00a65a',
+                'label': 'DDL工单'
+            },
+            {
+                'value': my_order_ops_count,
+                'color': '#00c0ef',
+                'highlight': '#00c0ef',
+                'label': '运维工单'
+            }]
+
+        platform_order_count = SqlOrdersContents.objects.count()
+        platform_order_dml_count = SqlOrdersContents.objects.filter(sql_type='DML').count()
+        platform_order_ddl_count = SqlOrdersContents.objects.filter(sql_type='ddl').count()
+        platform_order_ops_count = SqlOrdersContents.objects.filter(sql_type='ops').count()
+        user_count = UserAccounts.objects.count()
+        platformorder = [
+            {
+                'value': platform_order_dml_count,
+                'color': '#f56954',
+                'highlight': '#f56954',
+                'label': 'DML工单'
+            },
+            {
+                'value': platform_order_ddl_count,
+                'color': '#00a65a',
+                'highlight': '#00a65a',
+                'label': 'DDL工单'
+            },
+            {
+                'value': platform_order_ops_count,
+                'color': '#00c0ef',
+                'highlight': '#00c0ef',
+                'label': '运维工单'
+            }]
+
+        context = {'my_order_count': my_order_count, 'platform_order_count': platform_order_count,
+                   'user_count': user_count, 'myorder': myorder, 'platformorder': platformorder}
+
         return HttpResponse(json.dumps(context))
