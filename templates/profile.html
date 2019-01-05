@@ -4,7 +4,8 @@
 
 {% block link_css %}
     <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/cropper/dist/cropper.min.css' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/cropper/examples/crop-avatar/css/main.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.5/bower_components/cropper/examples/crop-avatar/css/main.css' %}">
 {% endblock %}
 
 {% block right_content %}
@@ -16,10 +17,12 @@
                     <div class="avatar-view image" title="点击更改头像">
                         <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="Avatar">
                     </div>
-                    <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+                    <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label"
+                         role="dialog" tabindex="-1">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
-                                <form class="avatar-form" id="xxaa" action="{% url 'p_change_picture' %}" enctype="multipart/form-data" method="post">
+                                <form class="avatar-form" id="xxaa" action="{% url 'p_change_picture' %}"
+                                      enctype="multipart/form-data" method="post">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                                         <h5 class="modal-title" id="avatar-modal-label">支持格式：JPEG|PNG</h5>
@@ -32,7 +35,8 @@
                                                 <input type="hidden" class="avatar-src" name="avatar_src">
                                                 <input type="hidden" class="avatar-data" name="avatar_data">
                                                 <label for="avatarInput">本地图片</label>
-                                                <input type="file" class="avatar-input" id="avatarInput" name="avatar_file">
+                                                <input type="file" class="avatar-input" id="avatarInput"
+                                                       name="avatar_file">
                                             </div>
 
                                             <!-- Crop and preview -->
@@ -49,7 +53,9 @@
 
                                             <div class="row avatar-btns">
                                                 <div class="col-md-3 col-md-offset-9">
-                                                    <button type="submit" class="btn btn-primary btn-block avatar-save">完成</button>
+                                                    <button type="submit" class="btn btn-primary btn-block avatar-save">
+                                                        完成
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -89,11 +95,97 @@
         <div class="col-md-9">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#settings" data-toggle="tab">修改手机号</a></li>
+                    <li class="active"><a href="#user_dashboard" data-toggle="tab">仪表盘</a></li>
+                    <li><a href="#settings" data-toggle="tab">修改手机号</a></li>
                     <li><a href="#change_password" data-toggle="tab">修改密码</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="settings">
+                    <div class="tab-pane active" id="user_dashboard">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-aqua"><i class="fa fa-pencil-square-o"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">我的工单</span>
+                                        <span class="info-box-number" id="myOrderCount"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-red"><i class="fa fa-pencil-square"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">平台工单</span>
+                                        <span class="info-box-number" id="platformtOrderCount"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-yellow"><i
+                                            class="ion ion-ios-people-outline"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">平台用户</span>
+                                        <span class="info-box-number" id="userCount"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <div class="box">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">我的工单</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="chart-responsive">
+                                                    <canvas id="myOrderChart" height="150"></canvas>
+                                                </div>
+                                                <!-- ./chart-responsive -->
+                                            </div>
+                                            <div class="col-md-4">
+                                                <ul class="chart-legend clearfix">
+                                                    <li><i class="fa fa-circle-o text-red"></i> DML工单</li>
+                                                    <li><i class="fa fa-circle-o text-green"></i> DDL工单</li>
+                                                    <li><i class="fa fa-circle-o text-aqua"></i> 运维工单</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <div class="box">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">平台工单</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="chart-responsive">
+                                                    <canvas id="platformOrderChart" height="150"></canvas>
+                                                </div>
+                                                <!-- ./chart-responsive -->
+                                            </div>
+                                            <div class="col-md-4">
+                                                <ul class="chart-legend clearfix">
+                                                    <li><i class="fa fa-circle-o text-red"></i> DML工单</li>
+                                                    <li><i class="fa fa-circle-o text-green"></i> DDL工单</li>
+                                                    <li><i class="fa fa-circle-o text-aqua"></i> 运维工单</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="settings">
                         <form class="form-horizontal" id="userChangeMobile"
                               action="{% url 'p_change_mobile' %}" method="post">
                             <div class="form-group">
@@ -163,6 +255,7 @@
 {% block link_javascripts %}
     <script src="{% static 'AdminLTE-2.4.5/bower_components/cropper/dist/cropper.min.js' %}"></script>
     <script src="{% static 'AdminLTE-2.4.5/bower_components/cropper/examples/crop-avatar/js/main.js' %}"></script>
+    <script src="{% static 'AdminLTE-2.4.5/bower_components/chart.js/Chart.js' %}"></script>
     <script>
         // 修改手机号
         $(function () {
@@ -198,6 +291,34 @@
                 return false;
             });
         });
+
+        // 获取工单图表数据
+        $(function () {
+            $.ajax({
+                url: '{% url "p_get_order_chart" %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $('#myOrderCount').append(data.my_order_count);
+                    $('#platformtOrderCount').append(data.platform_order_count);
+                    $('#userCount').append(data.user_count);
+                    myOrderChart.Doughnut(data.myorder, {});
+                    platformOrderChart.Doughnut(data.platformorder, {});
+                }
+            })
+        });
+
+        // 我的工单
+        let myOrderChartCanvas = $('#myOrderChart').get(0).getContext('2d');
+        let myOrderChart = new Chart(myOrderChartCanvas);
+
+
+        // 平台工单
+        let platformOrderChartCanvas = $('#platformOrderChart').get(0).getContext('2d');
+        let platformOrderChart = new Chart(platformOrderChartCanvas);
+
 
     </script>
 {% endblock %}
