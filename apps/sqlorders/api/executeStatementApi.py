@@ -124,7 +124,6 @@ class ExecuteSql(object):
         """
         check_cmd = ["show variables like 'log_bin'",
                      "show variables like 'binlog_format'",
-                     "show variables like 'gtid_mode'",
                      "show variables like 'server_id'"
                      ]
         rr = []
@@ -138,11 +137,8 @@ class ExecuteSql(object):
                 if data['Variable_name'] == 'binlog_format' and data['Value'] != 'ROW':
                     rr.append('Binlog格式不为ROW')
 
-                if data['Variable_name'] == 'gtid_mode' and data['Value'] == 'OFF':
-                    rr.append('GTID未启用')
-
                 if data['Value'] == '0':
-                    rr.append('Server id没有配置')
+                    rr.append('server_id没有配置')
         self._close(cnx)
         return rr
 
@@ -177,6 +173,7 @@ class ExecuteSql(object):
         with cnx.cursor() as cursor:
             cursor.execute(self.sql)
             affected_rows = cursor.rowcount
+            thread_id = cnx.thread_id()
         cnx.commit()
 
         end_time = time.time()
@@ -184,7 +181,7 @@ class ExecuteSql(object):
         exec_log = f"状态: 执行成功\n" \
                    f"影响行数：{affected_rows}\n" \
                    f"执行耗时：{runtime}\n"
-        return affected_rows, runtime, exec_log
+        return affected_rows, runtime, exec_log, thread_id
 
     def _ghost_tool(self):
         syntaxcompile = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP|CONVERT)([\s\S]*)',
@@ -262,7 +259,7 @@ class ExecuteSql(object):
 
             try:
                 # 执行SQL
-                affected_rows, runtime, exec_log = self._execute_sql(cnx)
+                affected_rows, runtime, exec_log, _ = self._execute_sql(cnx)
                 self._close(cnx)
                 result = {'status': 'success', 'rollbacksql': '', 'runtime': runtime,
                           'affected_rows': f'{affected_rows}',
@@ -283,7 +280,7 @@ class ExecuteSql(object):
             else:
                 try:
                     # 直接执行ALTER语句
-                    affected_rows, runtime, exec_log = self._execute_sql(cnx)
+                    affected_rows, runtime, exec_log, _ = self._execute_sql(cnx)
                     self._close(cnx)
                     result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                               'runtime': runtime,
@@ -314,7 +311,7 @@ class ExecuteSql(object):
         # 每条DML语句为作为一个事务执行
         try:
             # 执行SQL
-            affected_rows, runtime, exec_log = self._execute_sql(cnx)
+            affected_rows, runtime, exec_log, thread_id = self._execute_sql(cnx)
 
             # 事务执行完成后，获取end position
             if len(check_result) == 0:
@@ -322,17 +319,15 @@ class ExecuteSql(object):
             self._close(cnx)
 
             # 判断影响行数
-            if affected_rows > 0:
+            # 大于0小于100W时进行备份
+            if 0 < affected_rows < 1000000:
                 # 获取回滚的SQL
                 if len(check_result) == 0:
-                    matchcompile = re.compile('^(UPDATE|DELETE|INSERT)([\s\S]*)', re.I)
-                    match = matchcompile.match(self.sql)
-                    sql_type = match.group(1).upper()
                     self._pull_msg(3, '正在执行当前SQL的备份，这可能需要花费些时间...')
                     # 备份时，传入schema和tables的列表
                     # 只读取指定schema和tables的binlog
-                    rrb_schemas = [self.database]
-                    rrb_tables = self._extract_tables()
+                    rb_schemas = [self.database]
+                    rb_tables = self._extract_tables()
 
                     data = ReadRemoteBinlog(binlog_file=binlog_file,
                                             start_pos=start_pos,
@@ -341,16 +336,14 @@ class ExecuteSql(object):
                                             port=self.port,
                                             user=self.user,
                                             password=self.password,
-                                            sql_type=sql_type,
-                                            only_schema=rrb_schemas,
-                                            only_tables=rrb_tables,
-                                            affected_rows=affected_rows)
+                                            thread_id=thread_id,
+                                            only_schema=rb_schemas,
+                                            only_tables=rb_tables)
 
                     # 接收数据格式
                     r_data = data.run_by_rows()
                     if r_data['status'] == 'success':
-                        rollbacksql = '\n\n'.join(
-                            ['\n'.join([i['gtid'], '\n\n'.join(i['rbsql'])]) for i in r_data['data']])
+                        rollbacksql = '\n\n'.join(r_data['data'])
                         result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
                                   'runtime': runtime, 'exec_log': exec_log}
                         self._pull_msg(3, '备份成功，请点击结果按钮查看回滚SQL语句...')
@@ -364,7 +357,10 @@ class ExecuteSql(object):
                                f"错误信息：{check_result}"
                     result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                               'runtime': runtime, 'exec_log': exec_log}
-            else:
+            elif affected_rows > 1000000:
+                result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
+                          'runtime': runtime, 'exec_log': ''.join([exec_log, '更新超过100W行，不进行备份'])}
+            elif affected_rows == 0:
                 result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                           'runtime': runtime, 'exec_log': exec_log}
         except Exception as err:
