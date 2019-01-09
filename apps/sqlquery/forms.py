@@ -50,13 +50,14 @@ class GetGrantSchemaForm(forms.Form):
                 for row in cursor.fetchall():
                     id = row['db'].split('_')[1]
                     schema = '_'.join(row['db'].split('_')[2:])
-                    obj = MysqlConfig.objects.get(pk=id)
-                    show_schema = '_'.join((obj.comment, schema))
-                    context.append({
-                        'id': '___'.join((obj.host, str(obj.port), schema)),
-                        'text': show_schema,
-                        'children': True,
-                    })
+                    if MysqlConfig.objects.filter(pk=id).exists():
+                        obj = MysqlConfig.objects.get(pk=id)
+                        show_schema = '_'.join((obj.comment, schema))
+                        context.append({
+                            'id': '___'.join((obj.host, str(obj.port), schema)),
+                            'text': show_schema,
+                            'children': True,
+                        })
 
         if len(id.split('___')) == 3:
             # 获取当前用户授权库的表
