@@ -4,9 +4,7 @@
 {% block link_css %}
     <style>
         .terminal {
-            float: none;
-            border: #000 solid 5px;
-            font-size: 12px;
+            padding: 5px;
             width: auto;
             opacity: 0.8;
             box-shadow: rgba(0, 0, 0, 0.8) 5px 5px 20px;
@@ -61,19 +59,32 @@
         }
         let cmd = '',
             status = '',
-            sock = new WebSocket(protocol + window.location.host + '/ssh/'),
-            term = new Terminal({
-                tabStopWidth: 4,
-                scrollback: 3000,
-                cursorBlink: true,
-                screenKeys: true
-            });
+            sock = new WebSocket(protocol + window.location.host + '/ssh/');
+        let term = new Terminal({
+            tabStopWidth: 4,
+            scrollback: 3000,
+            cursorBlink: true,
+            screenKeys: true
+        });
 
+        const container = document.getElementById('terminal-container');
+        $(document).ready(function () {
+            // 必须在term.open之前执行
+            term.setOption('fontWeight', 'Normal');
+            term.setOption('fontSize', 14);
+            term.setOption('letterSpacing', 0);
+            term.setOption('cursorStyle', 'block');
+            // websocket打开
+            sock.onopen = function () {
+                term.open(container);
+                resize_xterm_window();
+                term.write('\r\n欢迎，请选择授权的实例，若没有权限，请联系管理员...\r\n');
+            };
+        });
 
         // 自动计算并设置窗口尺寸大小，自适应
         function resize_xterm_window() {
-            let text = $('#terminal-container');
-            let containerWidth = parseFloat(text.width());
+            let containerWidth = parseFloat(container.clientWidth);
             let containerHeight = $(window).height() - 300;
 
             let charWidth = 8.6;
@@ -88,28 +99,12 @@
             sock.send(JSON.stringify({'resize': [cols, rows]}));
         }
 
-        function CreateWebShell() {
-            // 必须在term.open之前执行
-            term.setOption('fontWeight', 'Normal');
-            term.setOption('fontSize', 14);
-            term.setOption('letterSpacing', 0);
-            term.setOption('cursorStyle', 'block');
-            // websocket打开
-            sock.onopen = function () {
-                term.open(null, true);
-                $('.terminal').detach().appendTo('#terminal-container');
-                resize_xterm_window();
-                term.write('\r\n欢迎，请选择授权的实例，若没有权限，请联系管理员...\r\n');
-            };
-        }
-
         function clear_xterm() {
             sock.send(JSON.stringify({'data': 'clear\r\n'}));
         }
 
         function StartWebShell() {
             status = 'open';
-            let start = null, end = null;
 
             // 发送数据
             term.on('data', function (data) {
@@ -121,13 +116,13 @@
                 // status = 0 表示正常执行返回的数据
                 // status = 1 表示后台黑名单返回的错误提示
                 let data = JSON.parse(msg.data);
-                if (data.data.indexOf(initial_cmd)<0){
+                if (data.data.indexOf(initial_cmd) < 0) {
                     if (data.status === 0) {
-                    term.write(data.data);
-                } else if (data.status === 1) {
-                    sock.send(JSON.stringify({'initial_cmd': initial_cmd}));
-                    term.write(data.data)
-                }
+                        term.write(data.data);
+                    } else if (data.status === 1) {
+                        sock.send(JSON.stringify({'initial_cmd': initial_cmd}));
+                        term.write(data.data)
+                    }
                 }
 
             };
@@ -144,21 +139,19 @@
             };
 
             // 追踪触发按键
-            {#term.attachCustomKeyEventHandler(function (e) {#}
-            {#    if (e.ctrlKey && e.keyCode === 68) {#}
-            {#        displayPNotify(2, '不支持ctr + d操作');#}
-            {#        sock.send(JSON.stringify({'initial_cmd': initial_cmd}));#}
-            {#        return false#}
-            {#    }#}
-            {##}
-            {#    if (e.ctrlKey && e.keyCode === 67) {#}
-            {#        displayPNotify(2, '不支持ctr + c操作');#}
-            {#        return false#}
-            {#    }#}
-            {# });#}
-        }
+            term.attachCustomKeyEventHandler(function (e) {
+                if (e.ctrlKey && e.keyCode === 68) {
+                    displayPNotify(2, '不支持ctr + d操作');
+                    sock.send(JSON.stringify({'initial_cmd': initial_cmd}));
+                    return false
+                }
 
-        CreateWebShell();
+                if (e.ctrlKey && e.keyCode === 67) {
+                    displayPNotify(2, '不支持ctr + c操作');
+                    return false
+                }
+            });
+        }
 
         /**
          * 获取执行命令
