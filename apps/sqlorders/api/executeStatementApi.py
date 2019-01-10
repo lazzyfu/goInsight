@@ -184,7 +184,7 @@ class ExecuteSql(object):
         return affected_rows, runtime, exec_log, thread_id
 
     def _ghost_tool(self):
-        syntaxcompile = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP|CONVERT)([\s\S]*)',
+        syntaxcompile = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|CONVERT)([\s\S]*)',
                                    re.I)
         syntaxmatch = syntaxcompile.match(self.sql)
 
