@@ -303,11 +303,17 @@
         });
 
         /**
-         * 提交DML或DML工单
+         * 提交DML工单
          */
 
         $('#SqlOrdersCommitForm').validator().on('submit', function (e) {
             let contents = myCodeMirror.getValue();
+
+            if (contents.split(';').length > 1000) {
+                displayPNotify(2, 'DML语句不能超过1000条，请分批提交，每次不超过1000条');
+                return false
+            }
+
             if (contents.length < 10) {
                 displayPNotify(2, '审核内容不能为空或小于10个字符');
                 return false;
