@@ -194,6 +194,7 @@ function general_perform_tasks(id, envi_id) {
         type: 'post',
         url: "/sqlorders/generate_perform_tasks/",
         dataType: 'json',
+        beforeSubmit: showLoadingScreen($('body'), '数据处理中，请稍后...'),
         data: {
             'id': id,
             'envi_id': envi_id,
