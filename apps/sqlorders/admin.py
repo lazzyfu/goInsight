@@ -9,15 +9,15 @@ from sqlorders.models import SqlOrdersExecTasks
 
 
 class SqlOrdersExecTasksAdmin(admin.ModelAdmin):
-    list_display = ('user', 'taskid', 'envi_id', 'host', 'sql')
+    list_display = ('user', 'taskid', 'envi', 'host', 'sql')
     ordering = ('-created_time',)
     list_display_links = ('taskid', 'user')
     search_fields = ('taskid', 'user', 'host')
     fieldsets = (
         ('任务详情',
-         {'fields': ['user', 'taskid', 'envi_id', 'host', 'port', 'database', 'exec_status', 'sql_type', 'sql']}),
+         {'fields': ['user', 'taskid', 'envi', 'host', 'port', 'database', 'exec_status', 'sql_type', 'sql']}),
     )
-    readonly_fields = ('user', 'taskid', 'envi_id', 'host', 'port', 'sql_type')
+    readonly_fields = ('user', 'taskid', 'envi', 'host', 'port', 'sql_type')
 
 
 class SqlOrdersContentsAdmin(admin.ModelAdmin):

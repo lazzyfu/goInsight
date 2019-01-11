@@ -14,12 +14,16 @@ import pymysql
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core.files import File
+from django.core.mail import EmailMessage
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 from openpyxl import Workbook
 from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 
 from sqlaudit import settings
-from sqlorders.models import MysqlSchemas, MysqlConfig, SqlExportFiles, SqlOrdersExecTasks
+from sqlaudit.settings import EMAIL_FROM
+from sqlorders.models import MysqlSchemas, MysqlConfig, SqlExportFiles, SqlOrdersExecTasks, SqlOrdersContents
+from users.models import UserAccounts
 
 logger = logging.getLogger('django')
 channel_layer = get_channel_layer()
@@ -82,7 +86,7 @@ class GetTableInfo(object):
         try:
             with self.conn.cursor() as cursor:
                 tables_query = f"select TABLE_NAME,group_concat(COLUMN_NAME) from information_schema.COLUMNS " \
-                               f"where table_schema not in {self.IGNORED_PARAMS} group by TABLE_NAME"
+                    f"where table_schema not in {self.IGNORED_PARAMS} group by TABLE_NAME"
                 cursor.execute(tables_query)
                 tables = {}
                 for table_name, column_name in cursor.fetchall():
@@ -107,8 +111,8 @@ class GetTableInfo(object):
         try:
             with self.conn.cursor() as cursor:
                 query = f"select TABLE_NAME, concat_ws('.',TABLE_SCHEMA,TABLE_NAME) " \
-                        f"from information_schema.COLUMNS where table_schema='{self.schema}' " \
-                        f"group by TABLE_SCHEMA,TABLE_NAME"
+                    f"from information_schema.COLUMNS where table_schema='{self.schema}' " \
+                    f"group by TABLE_SCHEMA,TABLE_NAME"
                 cursor.execute(query)
                 for text, id in cursor.fetchall():
                     id = '___'.join((self.host, str(self.port), id))
@@ -259,6 +263,39 @@ class ExportToFiles(object):
             self.pull_msg(msg)
             return status
 
+    def send_attachments(self, fid):
+        """发送导出的文件到用户的邮箱"""
+        queryset = SqlOrdersExecTasks.objects.get(id=self.id)
+        if UserAccounts.objects.filter(uid=queryset.uid).exists():
+            try:
+                user_email = [UserAccounts.objects.get(uid=queryset.uid).email]
+                self.pull_msg(f'发送附件到用户的邮箱：{user_email[0]}')
+
+                # 向mail_template.html渲染data数据
+                email_html_body = render_to_string('mailnotice/_export_file_mail.html', {})
+
+                # 发送邮件
+                title = SqlOrdersContents.objects.get(id=queryset.related_id).title
+                headers = {'Reply: ': user_email}
+                title = 'Re: ' + title
+                msg = EmailMessage(subject=title,
+                                   body=email_html_body,
+                                   from_email=EMAIL_FROM,
+                                   to=user_email,
+                                   headers=headers
+                                   )
+                msg.content_subtype = "html"
+                attachments = SqlExportFiles.objects.filter(pk=fid)
+                for i in attachments:
+                    msg.attach_file(r'media/{}'.format(i.files))
+                msg.send()
+            except Exception as err:
+                self.pull_msg(str(err))
+        else:
+            msg = f'用户邮箱错误，发送失败，请手动下载发送'
+            self.pull_msg(msg)
+            self.execute_log.append(msg)
+
     def compress_file(self):
         # 压缩文件
         msg = f'正在压缩文件：{self.file} ---> {self.zip_file}'
@@ -270,13 +307,14 @@ class ExportToFiles(object):
         # 存储文件
         with open(self.zip_file, 'rb') as f:
             myfile = File(f)
-            SqlExportFiles.objects.create(
+            obj = SqlExportFiles.objects.create(
                 task_id=self.id,
                 file_name=self.zip_file,
                 file_size=os.path.getsize(self.zip_file),
                 files=myfile,
                 content_type='xlsx'
             )
+            obj.save()
 
         # 删除临时文件`
         msg = f'删除源文件：{self.file}'
@@ -284,6 +322,9 @@ class ExportToFiles(object):
         self.execute_log.append(msg)
         os.remove(self.file) if os.path.exists(self.file) else None
         os.remove(self.zip_file) if os.path.exists(self.zip_file) else None
+
+        # 发送邮件附件
+        self.send_attachments(fid=obj.id)
 
     def export_csv(self):
         # 导出成csv格式
@@ -312,7 +353,7 @@ class ExportToFiles(object):
                     cursor.execute(self.sql)
                     rows = cursor.fetchall()
 
-                    msg = f'正在处理数据...\n编码为：UTF-8'
+                    msg = f'正在处理数据\n编码为：UTF-8'
                     self.pull_msg(msg)
                     self.execute_log.append(msg)
 
@@ -374,7 +415,7 @@ class ExportToFiles(object):
                 cursor.execute(self.sql)
                 rows = cursor.fetchall()
 
-                msg = f'正在处理数据...'
+                msg = f'正在处理数据'
                 self.pull_msg(msg)
                 self.execute_log.append(msg)
 

@@ -552,7 +552,7 @@ class SinglePerformTasksForm(forms.Form):
         else:
             status = ''
             query = f"select id,group_concat(exec_status) as exec_status from sqlaudit_sql_orders_execute_tasks " \
-                    f"where taskid={obj.taskid} group by taskid"
+                f"where taskid={obj.taskid} group by taskid"
             for row in SqlOrdersExecTasks.objects.raw(query):
                 status = row.exec_status.split(',')
 
@@ -780,7 +780,7 @@ class ExecuteExportTasksForm(forms.Form):
 
         status = ''
         query = f"select id,group_concat(exec_status) as exec_status from sqlaudit_sql_orders_execute_tasks " \
-                f"where taskid={obj.taskid} group by taskid"
+            f"where taskid={obj.taskid} group by taskid"
         for row in SqlOrdersExecTasks.objects.raw(query):
             status = row.exec_status.split(',')
 
