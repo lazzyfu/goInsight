@@ -291,10 +291,9 @@ class ExportToFiles(object):
                 msg.send()
             except Exception as err:
                 self.pull_msg(str(err))
+                self.pull_msg(f'发送附件失败，请手动下载发送')
         else:
-            msg = f'用户邮箱错误，发送失败，请手动下载发送'
-            self.pull_msg(msg)
-            self.execute_log.append(msg)
+            self.pull_msg(f'用户邮箱错误，发送失败，请手动下载发送')
 
     def compress_file(self):
         # 压缩文件

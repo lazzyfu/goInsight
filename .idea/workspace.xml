@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/mailnotice/_export_file_mail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/sqlorders/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -59,8 +54,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="839">
-              <caret line="300" column="56" lean-forward="true" selection-start-line="300" selection-start-column="56" selection-end-line="300" selection-end-column="56" />
+            <state relative-caret-position="500">
+              <caret line="294" column="13" lean-forward="true" selection-start-line="294" selection-start-column="13" selection-end-line="294" selection-end-column="13" />
               <folding>
                 <element signature="e#43#53#0" expanded="true" />
               </folding>
@@ -131,10 +126,10 @@
       <find>StartWebShell</find>
       <find>fit</find>
       <find>status</find>
-      <find>print</find>
       <find>autoRefreshInterval: 5</find>
       <find>run_by_rows</find>
       <find>正在处理</find>
+      <find>print</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -464,12 +459,12 @@
       <workItem from="1547021492869" duration="6473000" />
       <workItem from="1547095435381" duration="839000" />
       <workItem from="1547100838684" duration="143000" />
-      <workItem from="1547101801740" duration="11156000" />
+      <workItem from="1547101801740" duration="11254000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21673000" />
+    <option name="totallyTimeSpent" value="21771000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -900,8 +895,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="839">
-          <caret line="300" column="56" lean-forward="true" selection-start-line="300" selection-start-column="56" selection-end-line="300" selection-end-column="56" />
+        <state relative-caret-position="500">
+          <caret line="294" column="13" lean-forward="true" selection-start-line="294" selection-start-column="13" selection-end-line="294" selection-end-column="13" />
           <folding>
             <element signature="e#43#53#0" expanded="true" />
           </folding>
