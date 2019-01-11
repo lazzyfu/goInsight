@@ -8,10 +8,11 @@ from . import models
 
 
 class MySQLQueryLogAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'user', 'host', 'database', 'envi', 'query_sql', 'query_time', 'affect_rows')
+    list_display = ('user', 'host', 'database', 'query_sql', 'query_time', 'affect_rows', 'created_at')
     list_display_links = ('query_sql',)
     readonly_fields = ('user', 'host', 'query_sql', 'query_time', 'database', 'affect_rows')
     search_fields = ('query_sql', 'user', 'database')
+    list_filter = ('user', 'created_at')
 
 
 class MysqlRulesChainAdmin(admin.ModelAdmin):
