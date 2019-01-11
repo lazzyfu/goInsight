@@ -21,12 +21,12 @@ class SqlOrdersExecTasksAdmin(admin.ModelAdmin):
 
 
 class SqlOrdersContentsAdmin(admin.ModelAdmin):
-    list_display = ('title', 'sql_type', 'envi_id', 'proposer', 'progress', 'created_at')
+    list_display = ('title', 'sql_type', 'envi', 'proposer', 'progress', 'created_at')
     list_display_links = ('title',)
     search_fields = ('title', 'proposer')
     fieldsets = (
         ('详情',
-         {'fields': ['title', 'description', 'envi_id', 'progress', 'remark', 'task_version', 'proposer', 'auditor',
+         {'fields': ['title', 'description', 'envi', 'progress', 'remark', 'task_version', 'proposer', 'auditor',
                      'email_cc', 'sql_type', 'host', 'port',
                      'database']}
          ),
@@ -34,7 +34,7 @@ class SqlOrdersContentsAdmin(admin.ModelAdmin):
          {'fields': ['contents']}
          )
     )
-    readonly_fields = ('host', 'port', 'database', 'proposer', 'auditor', 'sql_type', 'email_cc')
+    readonly_fields = ('host', 'port', 'database', 'proposer', 'auditor', 'sql_type', 'task_version', 'email_cc')
 
 
 class MysqlConfigAdmin(admin.ModelAdmin):
