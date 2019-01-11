@@ -179,8 +179,8 @@ class ExecuteSql(object):
         end_time = time.time()
         runtime = str(round(float(end_time - start_time), 3)) + 's'
         exec_log = f"状态: 执行成功\n" \
-                   f"影响行数：{affected_rows}\n" \
-                   f"执行耗时：{runtime}\n"
+            f"影响行数：{affected_rows}\n" \
+            f"执行耗时：{runtime}\n"
         return affected_rows, runtime, exec_log, thread_id
 
     def _ghost_tool(self):
@@ -203,9 +203,9 @@ class ExecuteSql(object):
             user_args = SysConfig.objects.get(key='is_ghost').value
 
             ghost_cmd = f"gh-ost {user_args} " \
-                        f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
-                        f"--assume-master-host={self.host}:{self.port} " \
-                        f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
+                f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
+                f"--assume-master-host={self.host}:{self.port} " \
+                f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
 
             # 记录执行的命令
             logger.info(ghost_cmd)
@@ -266,7 +266,7 @@ class ExecuteSql(object):
                           'exec_log': exec_log}
             except Exception as err:
                 exec_log = f"状态: 执行失败\n" \
-                           f"错误信息：{str(err)}\n"
+                    f"错误信息：{str(err)}\n"
                 result = {'status': 'fail', 'exec_log': exec_log}
 
         # 匹配ALTER语句
@@ -287,7 +287,7 @@ class ExecuteSql(object):
                               'exec_log': exec_log}
                 except Exception as err:
                     exec_log = f"状态: 执行失败\n" \
-                               f"错误信息：{str(err)}\n"
+                        f"错误信息：{str(err)}\n"
                     result = {'status': 'fail', 'exec_log': exec_log}
         return result
 
@@ -329,6 +329,7 @@ class ExecuteSql(object):
                     rb_schemas = [self.database]
                     rb_tables = self._extract_tables()
 
+                    s_time = time.time()
                     data = ReadRemoteBinlog(binlog_file=binlog_file,
                                             start_pos=start_pos,
                                             end_pos=end_pos,
@@ -342,6 +343,8 @@ class ExecuteSql(object):
 
                     # 接收数据格式
                     r_data = data.run_by_rows()
+                    e_time = time.time()
+                    print('备份耗时:', e_time - s_time)
                     if r_data['status'] == 'success':
                         rollbacksql = '\n\n'.join(r_data['data'])
                         result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
@@ -354,7 +357,7 @@ class ExecuteSql(object):
                 else:
                     check_result = ', '.join(check_result)
                     exec_log = f"状态: 执行成功，备份失败\n" \
-                               f"错误信息：{check_result}"
+                        f"错误信息：{check_result}"
                     result = {'status': 'success', 'rollbacksql': '', 'affected_rows': f'{affected_rows}',
                               'runtime': runtime, 'exec_log': exec_log}
             elif affected_rows > 1000000:
@@ -365,7 +368,7 @@ class ExecuteSql(object):
                           'runtime': runtime, 'exec_log': exec_log}
         except Exception as err:
             exec_log = f"状态: 执行失败\n" \
-                       f"错误信息：{str(err)}\n"
+                f"错误信息：{str(err)}\n"
             result = {'status': 'fail', 'exec_log': exec_log}
         return result
 
@@ -396,7 +399,7 @@ class ExecuteSql(object):
                 else:
                     # 其他语法的SQL，不执行，直接返回警告
                     exec_log = f"状态: 警告\n" \
-                               f"错误信息：非DML和DDL语句，执行失败\n"
+                        f"错误信息：非DML和DDL语句，执行失败\n"
                     result = {'status': 'warn', 'exec_log': exec_log}
         except Exception as err:
             self._pull_msg(3, str(err))
