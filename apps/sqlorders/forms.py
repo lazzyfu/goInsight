@@ -630,30 +630,26 @@ class PerformTasksOpForm(forms.Form):
                     table = table.split('.')[1]
                 sock = os.path.join('/tmp', f"gh-ost.{obj.database}.{table}.sock")
                 # 判断程序是否允许
-                if psutil.pid_exists(obj.ghost_pid):
-                    if os.path.exists(sock):
-                        if action == 'pause_ghost':
-                            pause_cmd = f"echo throttle | nc -U {sock}"
-                            p = subprocess.Popen(pause_cmd, shell=True)
-                            p.wait()
-                            context = {'status': 1, 'msg': '暂停动作已执行，请查看输出'}
+                if os.path.exists(sock):
+                    if action == 'pause_ghost':
+                        pause_cmd = f"echo throttle | nc -U {sock}"
+                        p = subprocess.Popen(pause_cmd, shell=True)
+                        p.wait()
+                        context = {'status': 1, 'msg': '暂停动作已执行，请查看输出'}
 
-                        if action == 'recovery_ghost':
-                            recovery_cmd = f"echo no-throttle | nc -U {sock}"
-                            p = subprocess.Popen(recovery_cmd, shell=True)
-                            p.wait()
-                            context = {'status': 1, 'msg': '恢复动作已执行，请查看输出'}
+                    if action == 'recovery_ghost':
+                        recovery_cmd = f"echo no-throttle | nc -U {sock}"
+                        p = subprocess.Popen(recovery_cmd, shell=True)
+                        p.wait()
+                        context = {'status': 1, 'msg': '恢复动作已执行，请查看输出'}
 
-                        if action == 'stop_ghost':
-                            stop_cmd = f"echo panic | nc -U {sock}"
-                            p = subprocess.Popen(stop_cmd, shell=True)
-                            p.wait()
-                            context = {'status': 1, 'msg': '终止动作已执行，请查看输出'}
-                    else:
-                        context = {'status': 2, 'msg': f'不能找到文件{sock}, 操作失败'}
+                    if action == 'stop_ghost':
+                        stop_cmd = f"echo panic | nc -U {sock}"
+                        p = subprocess.Popen(stop_cmd, shell=True)
+                        p.wait()
+                        context = {'status': 1, 'msg': '终止动作已执行，请查看输出'}
                 else:
-                    os.remove(sock) if os.path.exists(sock) else None
-                    context = {'status': 2, 'msg': '进程不存在，操作失败'}
+                    context = {'status': 2, 'msg': f'不能找到文件{sock}, 操作失败'}
         return context
 
 

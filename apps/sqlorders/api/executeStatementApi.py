@@ -344,7 +344,6 @@ class ExecuteSql(object):
                     # 接收数据格式
                     r_data = data.run_by_rows()
                     e_time = time.time()
-                    print('备份耗时:', e_time - s_time)
                     if r_data['status'] == 'success':
                         rollbacksql = '\n\n'.join(r_data['data'])
                         result = {'status': 'success', 'rollbacksql': rollbacksql, 'affected_rows': affected_rows,
