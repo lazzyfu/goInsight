@@ -38,7 +38,7 @@ class SqlOrdersContentsAdmin(admin.ModelAdmin):
 
 
 class MysqlConfigAdmin(admin.ModelAdmin):
-    list_display = ('host', 'port', 'user', 'envi', 'character', 'is_type', 'comment', 'updated_at')
+    list_display = ('host', 'port', 'user', 'envi', 'character', 'is_type', 'database_type', 'comment', 'updated_at')
     ordering = ('-created_at',)
     list_display_links = ('host',)
 
