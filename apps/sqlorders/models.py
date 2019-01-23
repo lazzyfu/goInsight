@@ -30,6 +30,7 @@ class SqlOrdersEnvironment(models.Model):
 
 type_choice = ((0, '查询_只读'), (1, 'SQL审核'), (2, '查询_读写'))
 character_choice = (('utf8', 'utf8'), ('utf8mb4', 'utf8mb4'))
+database_type = ((0, '非阿里云RDS'), (1, '阿里云RDS'))
 
 
 class MysqlConfig(models.Model):
@@ -43,6 +44,7 @@ class MysqlConfig(models.Model):
     envi = models.ForeignKey(SqlOrdersEnvironment, default=None, to_field='envi_id', on_delete=models.CASCADE,
                              verbose_name=u'环境')
     is_type = models.SmallIntegerField(choices=type_choice, default=0, verbose_name=u'用途')
+    database_type = models.SmallIntegerField(choices=database_type, default=0, verbose_name=u'数据库的类型')
     comment = models.CharField(max_length=128, null=True, verbose_name=u'主机描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'更新时间')

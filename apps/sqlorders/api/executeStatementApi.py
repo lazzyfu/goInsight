@@ -62,6 +62,7 @@ class ExecuteSql(object):
                  password=None,
                  username=None,
                  database=None,
+                 database_type=None,
                  charset=None):
         # 接收消息的用户
         self.username = username
@@ -76,6 +77,10 @@ class ExecuteSql(object):
         self.password = password
         self.database = database
         self.charset = charset
+
+        # 判断数据库的类型，用于gh-ost
+        # 分为阿里rds和非阿里的数据库
+        self.database_type = database_type
 
     def _connect(self):
         """新建连接"""
@@ -201,11 +206,20 @@ class ExecuteSql(object):
 
             # 获取用户配置的gh-ost参数
             user_args = SysConfig.objects.get(key='is_ghost').value
+            ghost_cmd = None
 
-            ghost_cmd = f"gh-ost {user_args} " \
-                f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
-                f"--assume-master-host={self.host}:{self.port} " \
-                f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
+            if self.database_type == 0:
+                # 非阿里云rds
+                ghost_cmd = f"gh-ost {user_args} " \
+                    f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
+                    f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
+
+            if self.database_type == 1:
+                # 阿里云rds
+                ghost_cmd = f"gh-ost {user_args} " \
+                    f"--user={self.user} --password=\"{self.password}\" --host={self.host} --port={self.port} " \
+                    f"--assume-master-host={self.host}:{self.port} --aliyun-rds " \
+                    f"--database=\"{self.database}\" --table=\"{table}\" --alter=\"{value}\" --execute"
 
             # 记录执行的命令
             logger.info(ghost_cmd)

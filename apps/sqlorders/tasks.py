@@ -155,6 +155,7 @@ def update_audit_content_progress(username, taskid):
 def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, database=None, exec_status=None):
     """执行SQL"""
     queryset = MysqlSchemas.objects.get(host=host, port=port, schema=database)
+    database_type = MysqlConfig.objects.get(host=host, port=port).database_type
 
     execute_sql = ExecuteSql(host=host,
                              port=port,
@@ -162,6 +163,7 @@ def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, da
                              password=queryset.password,
                              charset=queryset.character,
                              database=database,
+                             database_type=database_type,
                              username=username)
     result = execute_sql.run_by_sql(sql)
 
