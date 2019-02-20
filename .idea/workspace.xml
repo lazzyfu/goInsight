@@ -1,25 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/sqlquery/mysql_dict.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/AuditSQL.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AuditSQL.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGE.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlorders/export_tasks.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/export_tasks.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlorders/my_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/my_orders.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" afterDir="false" />
-    </list>
+    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,8 +44,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="484">
-              <caret line="140" column="31" lean-forward="true" selection-start-line="140" selection-start-column="31" selection-end-line="140" selection-end-column="31" />
+            <state relative-caret-position="631">
+              <caret line="147" column="26" lean-forward="true" selection-start-line="147" selection-start-column="26" selection-end-line="147" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -475,12 +457,12 @@
       <workItem from="1548232854317" duration="1727000" />
       <workItem from="1548312249385" duration="294000" />
       <workItem from="1550545171123" duration="779000" />
-      <workItem from="1550628525871" duration="3041000" />
+      <workItem from="1550628525871" duration="3394000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32424000" />
+    <option name="totallyTimeSpent" value="32777000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -495,7 +477,7 @@
     <frame x="-116" y="-1080" width="1920" height="1080" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.498004" visible="true" weight="0.17199148" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.498004" visible="true" weight="0.17199148" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50153375" side_tool="true" weight="0.2087327" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -514,7 +496,7 @@
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.32655138" />
       <window_info anchor="bottom" id="Python Console" order="11" weight="0.31536925" />
       <window_info anchor="bottom" id="SonarLint" order="12" weight="0.32952183" />
-      <window_info anchor="bottom" id="Terminal" order="13" visible="true" weight="0.2964072" />
+      <window_info anchor="bottom" id="Terminal" order="13" weight="0.2964072" />
       <window_info active="true" anchor="bottom" id="manage.py@AuditSQL" order="14" visible="true" weight="0.18312757" />
       <window_info anchor="bottom" id="Console" order="15" />
       <window_info anchor="bottom" id="DB Execution Console" order="16" />
@@ -926,8 +908,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="484">
-          <caret line="140" column="31" lean-forward="true" selection-start-line="140" selection-start-column="31" selection-end-line="140" selection-end-column="31" />
+        <state relative-caret-position="631">
+          <caret line="147" column="26" lean-forward="true" selection-start-line="147" selection-start-column="26" selection-end-line="147" selection-end-column="26" />
         </state>
       </provider>
     </entry>
