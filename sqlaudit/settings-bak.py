@@ -27,9 +27,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '4bu!%e83a94zn-8)s4sk*a4fd4l!t9^opi21+a1&j(0m5-8eg2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Define apps path
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -83,7 +83,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'context_processors.global_values.get_order_enviroment',
-                'context_processors.global_values.get_mail_status',
+                'context_processors.global_values.get_mail_status'
             ],
         },
     },
@@ -100,10 +100,10 @@ DATABASES = {
         'NAME': 'sqlaudit',
         'USER': 'root',
         'HOST': 'localhost',
-        'PASSWORD': 'fuzongfei168',
+        'PASSWORD': '123.com',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4'
+            'charset': 'utf8mb4',
         }
     }
 }
@@ -187,15 +187,16 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = "sqlaudit.routing.application"
 
 # Inception配置
-INCEPTION_HOST = '127.0.0.1'
+# 用于语法检测
+INCEPTION_HOST = '10.10.1.202'
 INCEPTION_PORT = 6033
 
 # 邮箱设置
-EMAIL_HOST = 'smtp.exmail.qq.com'
+EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'xxx@qq.com'
-EMAIL_HOST_PASSWORD = 'xxx@2017'
-EMAIL_FROM = "xxx@qq.com"
+EMAIL_HOST_USER = 'xxx@163.com'
+EMAIL_HOST_PASSWORD = '123.com'
+EMAIL_FROM = "xxx@163.com"
 EMAIL_USE_SSL = True
 
 # Enable ldap backend support
@@ -220,43 +221,43 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=people,dc=tt,dc=com", ldap.SCOPE_SUBTREE,
 AUTH_LDAP_USER_ATTR_MAP = {"username": "username", 'email': 'mail', "displayname": 'givenName', 'mobile': 'mobile'}
 
 # 日志
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {  # 日志格式
-#         'standard': {
-#             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] '
-#                       '[%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-#     },
-#     'handlers': {  # 处理器
-#         'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'filename': 'logs/all.log',  # 日志输出文件
-#             'maxBytes': 1024 * 1024 * 5,  # 文件大小
-#             'backupCount': 5,  # 备份份数
-#             'formatter': 'standard',  # 使用哪种formatters日志格式
-#         },
-#         'console': {  # 输出到控制台
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'standard',
-#         },
-#     },
-#     'loggers': {  # logging管理器
-#         'django': {
-#             'handlers': ['file', 'console'],
-#             'level': 'INFO',
-#             'propagate': False
-#         },
-#         'django.request': {
-#             'handlers': ['file'],
-#             'level': 'INFO',
-#             'propagate': True,
-#         },
-#         'django_auth_ldap': {
-#             'level': 'DEBUG',
-#             'handlers': ['file', 'console'],
-#         },
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {  # 日志格式
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] '
+                      '[%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
+    },
+    'handlers': {  # 处理器
+        'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/all.log',  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'standard',  # 使用哪种formatters日志格式
+        },
+        'console': {  # 输出到控制台
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {  # logging管理器
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False
+        },
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django_auth_ldap': {
+            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+        },
+    }
+}
