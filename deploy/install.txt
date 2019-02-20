@@ -210,3 +210,23 @@ ps -ef |grep uwsgi
 ps -ef |grep daphne
 # 启动命令为：nohup daphne -b 0.0.0.0 -p 8001 -v2 sqlaudit.asgi:application &
 
+
+FAQ：
+1. 解决pymysql不兼容inception的问题
+vim /venv_py36/lib/python3.6/site-packages/pymysql/connections.py
+```
+self.server_version = '5.7.18-16-log'  # 增加此行
+if int(self.server_version.split('.', 1)[0]) >= 5:
+    self.client_flag |= CLIENT.MULTI_RESULTS
+```
+
+vim /venv_py36/lib/python3.6/site-packages/pymysql/cursors.py
+```
+if not self._defer_warnings:
+    #self._show_warnings()
+    pass
+```
+
+2. 什么时候需要重启uwsgi服务
+git pull或者修改了python代码，需要重启uwsgi服务
+

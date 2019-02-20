@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/deploy/default_celeryd.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deploy/init.d_celeryd.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deploy/install.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initialization_data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/initialization_data.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy/install.txt" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/install.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,20 +43,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/deploy/install.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="180" column="6" lean-forward="true" selection-start-line="180" selection-start-column="6" selection-end-line="180" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/deploy/default_celeryd.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="882">
-              <caret line="42" column="20" lean-forward="true" selection-start-line="42" selection-start-column="20" selection-end-line="42" selection-end-column="20" />
+            <state relative-caret-position="840">
+              <caret line="231" lean-forward="true" selection-start-line="231" selection-end-line="231" />
             </state>
           </provider>
         </entry>
@@ -189,9 +176,9 @@
         <option value="$PROJECT_DIR$/templates/sqlorders/my_orders.html" />
         <option value="$PROJECT_DIR$/sqlaudit/settings-bak.py" />
         <option value="$PROJECT_DIR$/initialization_data.sql" />
-        <option value="$PROJECT_DIR$/deploy/install.txt" />
         <option value="$PROJECT_DIR$/deploy/init.d_celeryd.txt" />
         <option value="$PROJECT_DIR$/deploy/default_celeryd.txt" />
+        <option value="$PROJECT_DIR$/deploy/install.txt" />
       </list>
     </option>
   </component>
@@ -454,12 +441,12 @@
       <workItem from="1548232854317" duration="1727000" />
       <workItem from="1548312249385" duration="294000" />
       <workItem from="1550545171123" duration="779000" />
-      <workItem from="1550628525871" duration="6689000" />
+      <workItem from="1550628525871" duration="7071000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="36072000" />
+    <option name="totallyTimeSpent" value="36454000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -902,17 +889,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deploy/install.txt">
+    <entry file="file://$PROJECT_DIR$/deploy/default_celeryd.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="180" column="6" lean-forward="true" selection-start-line="180" selection-start-column="6" selection-end-line="180" selection-end-column="25" />
+        <state relative-caret-position="735">
+          <caret line="35" column="60" lean-forward="true" selection-start-line="35" selection-start-column="60" selection-end-line="35" selection-end-column="60" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deploy/default_celeryd.txt">
+    <entry file="file://$PROJECT_DIR$/deploy/install.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="42" column="20" lean-forward="true" selection-start-line="42" selection-start-column="20" selection-end-line="42" selection-end-column="20" />
+        <state relative-caret-position="840">
+          <caret line="231" lean-forward="true" selection-start-line="231" selection-end-line="231" />
         </state>
       </provider>
     </entry>
