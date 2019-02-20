@@ -4,19 +4,20 @@ import datetime
 
 import pymysql
 from django import forms
+from django.core.exceptions import ValidationError
 from pymysql.constants import CLIENT
 
-from sqlorders.models import MysqlSchemas, MysqlConfig
+from sqlorders.models import MysqlSchemas, MysqlConfig, SqlOrdersEnvironment
 from sqlquery.models import MySQLQueryLog
 from sqlquery.sqlQueryApi import MySQLQuery
-from sqlquery.utils import GetGrantSchemaMeta
+from sqlquery.utils import GetGrantSchemaMeta, DbDictQueryApi
 from sqlaudit.settings import DATABASES
 
 
 class GetGrantSchemaForm(forms.Form):
     id = forms.CharField(max_length=2048, required=False, label=u'jstree传入的node.id')
     text = forms.CharField(max_length=2048, required=False, label=u'jstree传入的node.text')
-
+    
     def _local_cnx(self):
         """本地连接"""
         user = DATABASES.get('default').get('USER')
@@ -35,7 +36,7 @@ class GetGrantSchemaForm(forms.Form):
         with cnx.cursor() as cursor:
             cursor.execute('set session group_concat_max_len=18446744073709551615;')
         return cnx
-
+    
     def query(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
@@ -58,7 +59,7 @@ class GetGrantSchemaForm(forms.Form):
                             'text': show_schema,
                             'children': True,
                         })
-
+        
         if len(id.split('___')) == 3:
             # 获取当前用户授权库的表
             host = id.split('___')[0]
@@ -67,13 +68,13 @@ class GetGrantSchemaForm(forms.Form):
             schema = id.split('___')[2]
             data = GetGrantSchemaMeta(request.user.username, queryset.id, schema).get_table()
             context = data
-
+        
         return context
 
 
 class GetTableStrucForm(forms.Form):
     schema = forms.CharField(max_length=1024, required=True)
-
+    
     def query(self):
         cdata = self.cleaned_data
         host, port, schema = cdata.get('schema').split('___')
@@ -89,7 +90,7 @@ class GetTableStrucForm(forms.Form):
 
 class GetTableIndexForm(forms.Form):
     schema = forms.CharField(max_length=1024, required=True)
-
+    
     def query(self):
         cdata = self.cleaned_data
         host, port, schema = cdata.get('schema').split('___')
@@ -105,7 +106,7 @@ class GetTableIndexForm(forms.Form):
 
 class GetTableBaseForm(forms.Form):
     schema = forms.CharField(max_length=1024, required=True)
-
+    
     def query(self):
         cdata = self.cleaned_data
         host, port, schema = cdata.get('schema').split('___')
@@ -122,16 +123,16 @@ class GetTableBaseForm(forms.Form):
 class ExecSqlQueryForm(forms.Form):
     schema = forms.CharField(max_length=1024)
     contents = forms.CharField(widget=forms.Textarea, label=u'sql')
-
+    
     def execute(self, request):
         cdata = self.cleaned_data
         schema = cdata.get('schema')
         contents = cdata.get('contents')
-
+        
         host, port, schema = schema.split('___')
         if len(schema.split('.')) in [2, 3]:
             schema = schema.split('.')[0]
-
+        
         # 判断是否是只读
         is_type = MysqlConfig.objects.get(host=host, port=port).is_type
         is_rw = None
@@ -160,11 +161,11 @@ class GetHistorySqlForm(forms.Form):
 
 class GetFilterHistorySqlForm(forms.Form):
     contents = forms.CharField(required=False, max_length=128, label=u'搜索的内容')
-
+    
     def query(self, request):
         cdata = self.cleaned_data
         contents = cdata.get('contents')
-
+        
         if contents:
             queryset = MySQLQueryLog.objects.filter(user=request.user.username, query_status=u'成功',
                                                     query_sql__icontains=contents).order_by(
@@ -178,7 +179,7 @@ class GetFilterHistorySqlForm(forms.Form):
             created_at = '时间：' + (row['created_at'] + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
             query_sql = 'SQL语句：' + row['query_sql']
             data.append('\n'.join((created_at, query_sql)))
-
+        
         if len(data) == 0:
             data.append('未找到SQL记录')
         context = {'status': 0, 'data': data}
@@ -192,3 +193,20 @@ class GetFilterHistorySqlForm(forms.Form):
 #                                             host=DATABASES.get('default')).values_list('comment',
 #                                                                                        'schema')],
 #                                label=u'库名')
+
+def envi_validator(value):
+    value = value if isinstance(value, int) else int(value)
+    envi = [x for x in list(SqlOrdersEnvironment.objects.all().values_list('envi_id', flat=True))]
+    if value not in envi:
+        raise ValidationError('请选择正确的工单环境')
+
+
+class DbDictForm(forms.Form):
+    envi_id = forms.CharField(required=True, validators=[envi_validator], label=u'环境')
+    database = forms.CharField(required=True, max_length=256, label=u'库名')
+    
+    def query(self):
+        cdata = self.cleaned_data
+        host, port, schema = cdata.get('database').split(',')
+        dbquery = DbDictQueryApi(host, port, schema)
+        return dbquery.query()

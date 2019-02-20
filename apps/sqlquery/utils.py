@@ -20,19 +20,19 @@ class MysqlQueryRemoteMetaOp(object):
     本地存储的库名：query_id_`schema_name`
     MysqlConfig的id
     """
-
+    
     def __init__(self, conn_config):
         self.conn_config = conn_config
         self.IGNORE_SCHEMA = ('INFORMATION_SCHEMA', 'PERFORMANCE_SCHEMA', 'MYSQL', 'SYS')
         self.SCHEMAS = {'remote': [], 'local': []}
         self.TABLE_META = {'remote': [], 'local': []}
-
+    
     def md5_sum(self, data):
         """校验字符串，生成MD5"""
         hash_md5 = hashlib.md5()
         hash_md5.update(data.encode('utf-8'))
         return hash_md5.hexdigest()
-
+    
     def _local_cnx(self):
         """本地连接"""
         user = DATABASES.get('default').get('USER')
@@ -51,7 +51,7 @@ class MysqlQueryRemoteMetaOp(object):
             return cnx
         except Exception as err:
             logger.error(err.args[1])
-
+    
     def _remote_cnx(self, config):
         """远程连接"""
         try:
@@ -64,15 +64,15 @@ class MysqlQueryRemoteMetaOp(object):
             return cnx
         except Exception as err:
             logger.error(err.args[1])
-
+    
     def check_schema_exist(self, cursor, schema_name):
         """检查本地库名是否存在"""
         check_schema_exist = f"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA " \
-                             f"WHERE SCHEMA_NAME='{schema_name}'"
+            f"WHERE SCHEMA_NAME='{schema_name}'"
         cursor.execute(check_schema_exist)
         if not cursor.fetchone():
             cursor.execute(f'CREATE DATABASE `{schema_name}`')
-
+    
     def create_lst(self, data):
         """创建本地表结构"""
         cnx = self._local_cnx()
@@ -87,7 +87,7 @@ class MysqlQueryRemoteMetaOp(object):
             except Exception as err:
                 logger.error(err)
         cnx.close()
-
+    
     def drop_lst(self, data):
         """
         删除本地的表结构
@@ -104,7 +104,7 @@ class MysqlQueryRemoteMetaOp(object):
                     logger.error('执行删除表...')
                     logger.error(err)
         cnx.close()
-
+    
     def update_mysql_rule_chains(self, data, type):
         # 更新规则链表的记录
         for row in data:
@@ -122,13 +122,13 @@ class MysqlQueryRemoteMetaOp(object):
                                                    comment=f'{comment}-{schema_name}-{table_name}'
                                                    )
                     logger.info(f'新增表规则，表名：{schema_name}.{table_name}')
-
+            
             if type == 'delete':
                 # 删除规则
                 if MysqlRulesChain.objects.filter(schema=schema_name, table=table_name).exists():
                     MysqlRulesChain.objects.get(schema=schema_name, table=table_name).delete()
                     logger.info(f'删除表规则，表名：{schema_name}.{table_name}')
-
+    
     def check_diff_schema(self):
         """比对远端和本地数据库有哪些库不同，远程的库删除，本地的也删除"""
         diff_schemas = list(set(self.SCHEMAS['local']).difference(set(self.SCHEMAS['remote'])))
@@ -141,11 +141,11 @@ class MysqlQueryRemoteMetaOp(object):
                     logger.error('执行删除本地库...')
                     logger.error(err)
         cnx.close()
-
+    
     def check_diff_table(self):
         rst_md5 = [x['schema_table_md5'] for x in self.TABLE_META['remote']]
         lst_md5 = [x['schema_table_md5'] for x in self.TABLE_META['local']]
-
+        
         # 远程存在，本地不存在
         # 本地新建
         add_values = list(set(rst_md5).difference(lst_md5))
@@ -154,7 +154,7 @@ class MysqlQueryRemoteMetaOp(object):
             add_table_meta = [x for x in self.TABLE_META['remote'] if x['schema_table_md5'] in add_values]
             self.create_lst(add_table_meta)
             self.update_mysql_rule_chains(add_table_meta, type='add')
-
+        
         # 远程删除
         # 本地需要删除这些表
         delete_values = list(set(lst_md5).difference(rst_md5))
@@ -162,7 +162,7 @@ class MysqlQueryRemoteMetaOp(object):
             delete_table_meta = [x for x in self.TABLE_META['local'] if x['schema_table_md5'] in delete_values]
             self.drop_lst(delete_table_meta)
             self.update_mysql_rule_chains(delete_table_meta, type='delete')
-
+        
         # 远程和本地都存在的表，检测表结构是否相同
         equal_values = list(set(rst_md5).intersection(lst_md5))
         if equal_values:
@@ -173,7 +173,7 @@ class MysqlQueryRemoteMetaOp(object):
             change_table_meta = [x for x in self.TABLE_META['remote'] if x['schema_table_md5'] in data]
             self.drop_lst(change_table_meta)
             self.create_lst(change_table_meta)
-
+    
     def get_schema_meta(self, cnx, schema_query, id=None, type=None):
         with cnx.cursor() as cursor:
             cursor.execute(schema_query)
@@ -182,7 +182,7 @@ class MysqlQueryRemoteMetaOp(object):
                 schema_name = '_'.join(('query', str(id), i['schema_name'])) if id else i['schema_name']
                 self.SCHEMAS[type].append(schema_name)
                 table_query = f"select table_name from information_schema.tables " \
-                              f"where table_schema='{i['schema_name']}' and table_type in ('BASE TABLE')"
+                    f"where table_schema='{i['schema_name']}' and table_type in ('BASE TABLE')"
                 cursor.execute(table_query)
                 for s in cursor.fetchall():
                     table_name = s['table_name']
@@ -200,35 +200,35 @@ class MysqlQueryRemoteMetaOp(object):
                             'table_stru_md5': table_stru_md5,
                             'schema_table_md5': schema_table_md5
                         })
-
+    
     def get_remote(self, row):
         """获取远程库表元数据"""
         cnx = self._remote_cnx(row)
         try:
             id = row['id']
             schema_query = f"select schema_name from information_schema.schemata " \
-                           f"where schema_name not in {self.IGNORE_SCHEMA}"
+                f"where schema_name not in {self.IGNORE_SCHEMA}"
             self.get_schema_meta(cnx, schema_query, id=id, type='remote')
         except Exception as err:
             msg = f"任务：sync_remote_tablemeta 连接到数据库({row.get('host')})失败, {err.args[1]}"
             logger.error(msg)
         finally:
             cnx.close()
-
+    
     def get_local(self, row):
         """获取本地库表元数据"""
         cnx = self._local_cnx()
         try:
             id = row['id']
             schema_query = f"select schema_name from information_schema.schemata " \
-                           f"where schema_name like 'query_{id}\_%'"
+                f"where schema_name like 'query_{id}\_%'"
             self.get_schema_meta(cnx, schema_query, type='local')
         except Exception as err:
             msg = f"任务：sync_remote_tablemeta 连接到数据库({row.get('host')})失败, {err.args[1]}"
             logger.error(msg)
         finally:
             cnx.close()
-
+    
     def remove_not_exist_host_db(self):
         # 移除后台不存在的主机配置的本地Schema
         cnx = self._local_cnx()
@@ -246,7 +246,7 @@ class MysqlQueryRemoteMetaOp(object):
                     logger.error(err.args[1])
                     continue
         cnx.close()
-
+    
     def run(self):
         for row in self.conn_config:
             self.get_remote(row)
@@ -263,16 +263,16 @@ class CreateLocalMysqlUser(object):
         # 传入的普通用户列表
         self.users = users
         self.password = 'LNjLJ6MeMJiZznL6'
-
+        
         # settings.py中配置的超级用户
         # 该用户应该拥有all privileges
         self.super_user = DATABASES.get('default').get('USER')
         self.super_password = DATABASES.get('default').get('PASSWORD')
         self.host = DATABASES.get('default').get('HOST')
         self.port = DATABASES.get('default').get('PORT') if DATABASES.get('default').get('PORT') else 3306
-
+        
         self.DIFF_USERS = []
-
+    
     def _super_conn(self):
         """
         以超级用户连接本地数据库
@@ -287,14 +287,14 @@ class CreateLocalMysqlUser(object):
                               client_flag=CLIENT.MULTI_STATEMENTS,
                               cursorclass=pymysql.cursors.DictCursor)
         return cnx
-
+    
     def create_local_user(self):
         cnx = self._super_conn()
         with cnx.cursor() as cursor:
             for user in self.DIFF_USERS:
                 query_create_user = f"create user '{user}'@'%' identified by '{self.password}'"
                 cursor.execute(query_create_user)
-
+    
     def check_user_exist(self):
         cnx = self._super_conn()
         query_user = "select user from mysql.user"
@@ -306,14 +306,14 @@ class CreateLocalMysqlUser(object):
         self.DIFF_USERS = list(set(self.users).difference(local_users))
         if self.DIFF_USERS:
             self.create_local_user()
-
+    
     def run(self):
         self.check_user_exist()
 
 
 class GetGrantSchemaMeta(object):
     """获取当前用户授权的表信息"""
-
+    
     def __init__(self, user=None, id=None, schema=''):
         # MysqlConfig的主键
         self.id = id
@@ -324,7 +324,7 @@ class GetGrantSchemaMeta(object):
         self.local_password = 'LNjLJ6MeMJiZznL6'
         self.local_host = DATABASES.get('default').get('HOST')
         self.local_port = DATABASES.get('default').get('PORT') if DATABASES.get('default').get('PORT') else 3306
-
+    
     def _local_conn(self):
         """本地数据库连接"""
         cnx = pymysql.connect(host=self.local_host,
@@ -336,7 +336,7 @@ class GetGrantSchemaMeta(object):
         with cnx.cursor() as cursor:
             cursor.execute('set session group_concat_max_len=18446744073709551615;')
         return cnx
-
+    
     def _remote_conn(self):
         """远程数据库连接"""
         queryset = MysqlConfig.objects.get(id=self.id)
@@ -346,7 +346,7 @@ class GetGrantSchemaMeta(object):
                               port=queryset.port,
                               charset="utf8")
         return cnx
-
+    
     def get_tab_completion(self):
         """
         获取表和对应的列，tab补全使用
@@ -356,17 +356,17 @@ class GetGrantSchemaMeta(object):
         try:
             with cnx.cursor() as cursor:
                 tables_query = f"select table_name,group_concat(column_name) from information_schema.COLUMNS " \
-                               f"where table_schema='{self.schema}' group by table_name"
+                    f"where table_schema='{self.schema}' group by table_name"
                 cursor.execute(tables_query)
                 tables = {}
                 for table_name, column_name in cursor.fetchall():
                     tables[table_name] = list(column_name.split(','))
-
+                
                 result['tables'] = tables
         finally:
             cnx.close()
         return result
-
+    
     def get_table(self):
         """
         返回格式：
@@ -381,8 +381,8 @@ class GetGrantSchemaMeta(object):
         try:
             with cnx.cursor() as cursor:
                 query = f"select table_name, group_concat('<b>', column_name, '</b>', ' ', column_type) as column_name " \
-                        f"from information_schema.columns where table_schema='{self.local_schema}' " \
-                        f"group by table_schema, table_name"
+                    f"from information_schema.columns where table_schema='{self.local_schema}' " \
+                    f"group by table_schema, table_name"
                 cursor.execute(query)
                 for table, columns in cursor.fetchall():
                     queryset = MysqlConfig.objects.get(id=self.id)
@@ -403,12 +403,12 @@ class GetGrantSchemaMeta(object):
         finally:
             cnx.close()
         return result
-
+    
     def get_stru(self):
         """
         返回表结构信息
         """
-
+        
         result = {}
         cnx = self._remote_conn()
         try:
@@ -419,12 +419,12 @@ class GetGrantSchemaMeta(object):
         finally:
             cnx.close()
         return result
-
+    
     def get_index(self):
         """
         返回表索引信息
         """
-
+        
         result = {}
         cnx = self._remote_conn()
         try:
@@ -436,24 +436,24 @@ class GetGrantSchemaMeta(object):
                     cursor.execute(index_query)
                     keys = cursor.fetchone().keys()
                     field = [{'field': j, 'title': j} for j in keys]
-
+                    
                     index_data = []
                     cursor.execute(index_query)
                     for i in cursor.fetchall():
                         index_data.append(i)
-
+                    
                     result['index'] = {'columnDefinition': field, 'data': index_data}
                 except AttributeError as err:
                     result['index'] = {'columnDefinition': False, 'data': False}
         finally:
             cnx.close()
         return result
-
+    
     def get_base(self):
         """
         返回表基本信息
         """
-
+        
         cnx = self._remote_conn()
         base_data = []
         try:
@@ -461,12 +461,12 @@ class GetGrantSchemaMeta(object):
             with cnx.cursor() as cursor:
                 schema, table = self.schema.split('.')
                 base_query = f"select TABLE_NAME as '表名', TABLE_TYPE as '表类型', ENGINE as '引擎', " \
-                             f"ROW_FORMAT as '行格式', TABLE_ROWS as '表行数(估算值)', " \
-                             f"round(DATA_LENGTH/1024, 2) as '数据大小(KB)', " \
-                             f"round(INDEX_LENGTH/1024, 2) as '索引大小(KB)', " \
-                             f"TABLE_COLLATION as '字符集校验规则', TABLE_COMMENT as '备注', " \
-                             f"CREATE_TIME as '创建时间'  from information_schema.tables where " \
-                             f"table_schema='{schema}' and table_name='{table}'"
+                    f"ROW_FORMAT as '行格式', TABLE_ROWS as '表行数(估算值)', " \
+                    f"round(DATA_LENGTH/1024, 2) as '数据大小(KB)', " \
+                    f"round(INDEX_LENGTH/1024, 2) as '索引大小(KB)', " \
+                    f"TABLE_COLLATION as '字符集校验规则', TABLE_COMMENT as '备注', " \
+                    f"CREATE_TIME as '创建时间'  from information_schema.tables where " \
+                    f"table_schema='{schema}' and table_name='{table}'"
                 # 获取字段
                 cursor.execute(base_query)
                 for i in cursor.fetchall():
@@ -484,7 +484,7 @@ class MySQLQueryRulesOperate(object):
         self.after_rule_id = after_rule_id
         self.before_users = before_users
         self.after_users = after_users
-
+    
     def _local_cnx(self):
         """本地连接"""
         user = DATABASES.get('default').get('USER')
@@ -503,7 +503,7 @@ class MySQLQueryRulesOperate(object):
         with cnx.cursor() as cursor:
             cursor.execute('set session group_concat_max_len=18446744073709551615;')
         return cnx
-
+    
     def execute_statements(self, data):
         cnx = self._local_cnx()
         with cnx.cursor() as cursor:
@@ -514,12 +514,12 @@ class MySQLQueryRulesOperate(object):
                 except Exception as err:
                     logger.warning(err)
                     continue
-
+    
     def generate_table_statements(self, users=None, type=None, schema=None, table=None):
         # 表级授权，字段级授权移除了，主要是MySQL执行字段级授权太慢，不好控制
         statements = []
         st = '.'.join([f"`{schema}`", table])
-
+        
         # 授权操作
         # 当type = add时，allow --> grant
         if type == 'add':
@@ -535,10 +535,10 @@ class MySQLQueryRulesOperate(object):
         if type == 'remove':
             statements.append(
                 ';'.join([f"revoke select,update,delete,insert on table {st} from '{user}'@'%'" for user in users]))
-
+        
         statements.append('flush privileges;')
         self.execute_statements(statements)
-
+    
     def analyze_priv(self, users=None, type=None, privs_id=None):
         queryset = MysqlRulesChain.objects.filter(id__in=privs_id).annotate(
             c_id=F('cid__id')
@@ -546,30 +546,69 @@ class MySQLQueryRulesOperate(object):
         for row in queryset:
             schema = '_'.join(['query', str(row.c_id), row.schema])
             table = row.table
-
+            
             self.generate_table_statements(users, type, schema, table)
-
+    
     def run(self):
         # 处理新增加的用户
         # 给新增的用户增加after_rule_id的权限
         add_users = list(set(self.after_users).difference(set(self.before_users)))
         if add_users:
             self.analyze_priv(users=add_users, type='add', privs_id=self.after_rule_id)
-
+        
         # 处理移除的用户
         # 给移除的用户移除before_rule_id的权限
         remove_users = list(set(self.before_users).difference(set(self.after_users)))
         if remove_users:
             self.analyze_priv(users=remove_users, type='remove', privs_id=self.after_rule_id)
-
+        
         # 检查是否增加权限
         # 给before_users用户增加新增的权限
         add_privs_id = list(set(self.after_rule_id).difference(set(self.before_rule_id)))
         if add_privs_id:
             self.analyze_priv(users=self.before_users, type='add', privs_id=add_privs_id)
-
+        
         # 检查是否移除权限
         # 给before_users用户删除移除的权限
         remove_privs_id = list(set(self.before_rule_id).difference(set(self.after_rule_id)))
         if remove_privs_id:
             self.analyze_priv(users=self.before_users, type='remove', privs_id=remove_privs_id)
+
+
+class DbDictQueryApi(object):
+    def __init__(self, host, port, schema):
+        self.host = host
+        self.port = port if isinstance(port, int) else int(port)
+        self.schema = schema
+        obj = MysqlConfig.objects.get(host=self.host, port=self.port)
+        self.user = obj.user
+        self.password = obj.password
+        self.character = obj.character
+    
+    def connect(self):
+        cnx = pymysql.connect(host=self.host,
+                              user=self.user,
+                              password=self.password,
+                              port=self.port,
+                              database='information_schema',
+                              max_allowed_packet=1024 * 1024 * 1024,
+                              charset=self.character)
+        with cnx.cursor() as cursor:
+            cursor.execute('set session group_concat_max_len=18446744073709551615;')
+        return cnx
+    
+    def query(self):
+        cnx = self.connect()
+        query = f"select t.TABLE_NAME,if(t.TABLE_COMMENT!='',t.TABLE_COMMENT,'None'),t.CREATE_TIME," \
+            f"group_concat(distinct concat_ws('<b>', c.COLUMN_NAME,c.COLUMN_TYPE,if(c.IS_NULLABLE='NO','NOT NULL','NULL')," \
+            f"ifnull(c.COLUMN_DEFAULT, ''),ifnull(c.CHARACTER_SET_NAME,''), ifnull(c.COLLATION_NAME,'')," \
+            f"ifnull(c.COLUMN_COMMENT, '')) separator '<a>') as COLUMNS_INFO," \
+            f"group_concat(distinct concat_ws('<b>', s.INDEX_NAME,if(s.NON_UNIQUE=0,'唯一','不唯一'),s.Cardinality," \
+            f"s.INDEX_TYPE,s.COLUMN_NAME) separator '<a>') as INDEX_INFO " \
+            f"from COLUMNS c join TABLES t on c.TABLE_SCHEMA = t.TABLE_SCHEMA and c.TABLE_NAME = t.TABLE_NAME " \
+            f"join STATISTICS s on c.TABLE_SCHEMA = s.TABLE_SCHEMA and c.TABLE_NAME = s.TABLE_NAME " \
+            f"where t.TABLE_SCHEMA='{self.schema}' " \
+            f"group by t.TABLE_NAME,t.TABLE_COMMENT,t.CREATE_TIME"
+        with cnx.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()

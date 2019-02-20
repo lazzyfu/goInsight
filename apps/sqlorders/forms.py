@@ -27,12 +27,12 @@ def sqlorders_envi_valid(value):
 
 class GetTablesForm(forms.Form):
     schema = forms.CharField()
-
+    
     def query(self):
         cdata = self.cleaned_data
         schema = cdata['schema']
         host, port, schema = schema.split(',')
-
+        
         status, msg = check_db_conn_status(host, port)
         if status:
             table_list = GetTableInfo(host, port, schema).get_column_info()
@@ -54,9 +54,9 @@ class SqlOrdersAuditForm(forms.Form):
     contents = forms.CharField(widget=forms.Textarea, label=u'审核内容')
     export_file_format = forms.ChoiceField(required=False, choices=(('xlsx', 'xlsx'), ('csv', 'csv'), ('txt', 'txt')),
                                            label=u'导出的格式')
-
+    
     envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         title = cdata.get('title') + '_[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']'
@@ -71,13 +71,9 @@ class SqlOrdersAuditForm(forms.Form):
         export_file_format = cdata.get('export_file_format')
         host, port, database = cdata.get('database').split(',') if cdata.get('database') else [0, 0, '']
         context = {}
-
+        
         if remark != u'数据导出':
-            # 此时检测语法规则
-            result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
-            if result.get('status') == 2:
-                context = result
-            else:
+            if sql_type == 'OPS':
                 obj = SqlOrdersContents.objects.create(
                     title=title,
                     description=description,
@@ -99,7 +95,34 @@ class SqlOrdersAuditForm(forms.Form):
                 msg_pull.run()
                 # 跳转到工单记录页面
                 context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
-
+            if sql_type in ('DML', 'DDL'):
+                # 此时检测语法规则
+                result = InceptionSqlApi(host, port, database, contents, request.user.username).is_check_pass()
+                if result.get('status') == 2:
+                    context = result
+                else:
+                    obj = SqlOrdersContents.objects.create(
+                        title=title,
+                        description=description,
+                        task_version=task_version,
+                        sql_type=sql_type,
+                        host=host,
+                        database=database,
+                        port=port,
+                        envi_id=envi_id,
+                        remark=remark,
+                        proposer=request.user.username,
+                        auditor=auditor,
+                        email_cc=email_cc,
+                        export_file_format=export_file_format,
+                        contents=contents
+                    )
+                    # 发送邮件
+                    msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='commit')
+                    msg_pull.run()
+                    # 跳转到工单记录页面
+                    context = {'status': 0, 'jump_url': f'/sqlorders/sql_orders_list/{envi_id}'}
+        
         if remark == u'数据导出':
             # 不检测语法
             obj = SqlOrdersContents.objects.create(
@@ -117,7 +140,7 @@ class SqlOrdersAuditForm(forms.Form):
                 email_cc=email_cc,
                 contents=contents
             )
-
+            
             # 发送邮件
             msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='commit')
             msg_pull.run()
@@ -130,19 +153,19 @@ class SyntaxCheckForm(forms.Form):
     host = forms.CharField(required=True, max_length=64)
     sql_type = forms.ChoiceField(choices=sql_type_choice, label=u'操作类型，是DDL还是DML')
     contents = forms.CharField(widget=forms.Textarea)
-
+    
     def query(self, request):
         cdata = self.cleaned_data
         host, port, database = cdata.get('host').split(',')
         sql_type = cdata.get('sql_type')
         contents = cdata.get('contents')
-
+        
         # 对检测的SQL类型进行区分
         filter_result = sql_filter(contents, sql_type)
-
+        
         # 实例化
         of_audit = InceptionSqlApi(host, port, database, contents, request.user.username)
-
+        
         if filter_result['status'] == 2:
             context = filter_result
         else:
@@ -157,11 +180,11 @@ class BeautifySQLForm(forms.Form):
     格式：# 这是注释 中间要有空格
     """
     contents = forms.CharField(widget=forms.Textarea, error_messages={'required': '格式化的SQL不能为空'})
-
+    
     def beautify(self):
         cdata = self.cleaned_data
         contents = cdata.get('contents')
-
+        
         split_sqls = []
         for stmt in sqlparse.split(contents):
             sql = sqlparse.parse(stmt)[0]
@@ -170,7 +193,7 @@ class BeautifySQLForm(forms.Form):
                 split_sqls.append({'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')})
             else:
                 split_sqls.append({'comment': '', 'sql': sql.value})
-
+        
         beautify_sqls = []
         for row in split_sqls:
             comment = row['comment']
@@ -194,21 +217,21 @@ class SqlOrderListForm(forms.Form):
     limit_size = forms.IntegerField(required=True, label=u'每页显示数量')
     offset_size = forms.IntegerField(required=True, label=u'分页偏移量')
     search_content = forms.CharField(max_length=128, required=False, label='搜索内容')
-
+    
     def query(self, request):
         cdata = self.cleaned_data
         envi_id = cdata.get('envi_id')
         limit_size = cdata.get('limit_size')
         offset_size = cdata.get('offset_size')
         search_content = cdata.get('search_content')
-
+        
         # 获取用户的权限，用于前端表格的列的显示
         role_name = request.user.user_role()
         perm_list = list(
             RolePermission.objects.filter(role__role_name=role_name).values_list('permission_name', flat=True))
-
+        
         permissions = {'permissions': perm_list}
-
+        
         query = SqlOrdersContents.objects.filter(envi_id=envi_id).annotate(
             progress_value=Case(
                 When(progress='0', then=Value('待批准')),
@@ -237,9 +260,9 @@ class SqlOrderListForm(forms.Form):
                 database__icontains=search_content) | Q(contents__icontains=search_content))
         else:
             obj = query
-
+        
         ol_total = obj.count()
-
+        
         ol_records = obj.values('progress_color', 'task_version', 'host', 'port', 'sql_type',
                                 'database', 'progress_value', 'id', 'envi_id',
                                 'title', 'proposer', 'auditor',
@@ -257,15 +280,15 @@ class SqlOrdersApproveForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         status = cdata.get('status')
         addition_info = cdata.get('addition_info')
-
+        
         data = SqlOrdersContents.objects.get(pk=id)
-
+        
         context = {}
         # 当记录关闭时
         if data.progress == '5':
@@ -283,7 +306,7 @@ class SqlOrdersApproveForm(forms.Form):
                                                 addition_info=addition_info)
                     msg_pull.run()
                     context = {'status': 0, 'msg': '操作成功、审核通过'}
-
+                
                 # 当用户点击的是不通过, 状态变为：未批准
                 elif status == u'不通过':
                     data.progress = '1'
@@ -304,15 +327,15 @@ class SqlOrdersFeedbackForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         status = cdata.get('status')
         addition_info = cdata.get('addition_info')
-
+        
         data = SqlOrdersContents.objects.get(pk=id)
-
+        
         context = {}
         # 当记录关闭时
         if data.progress == '5':
@@ -331,7 +354,7 @@ class SqlOrdersFeedbackForm(forms.Form):
                                                 addition_info=addition_info)
                     msg_pull.run()
                     context = {'status': 0, 'msg': '操作成功、正在处理中'}
-
+                
                 # 当用户点击的是已完成, 状态变为：已完成
                 elif status == u'已完成':
                     data.progress = '4'
@@ -342,7 +365,7 @@ class SqlOrdersFeedbackForm(forms.Form):
                                                 addition_info=addition_info)
                     msg_pull.run()
                     context = {'status': 0, 'msg': '操作成功、处理完成'}
-
+            
             # 未批准
             elif data.progress == '1' or data.progress == '0':
                 context = {'status': 2, 'msg': '操作失败、审核未通过'}
@@ -356,15 +379,15 @@ class SqlOrdersCloseForm(forms.Form):
     id = forms.IntegerField(required=True)
     status = forms.CharField(max_length=10, required=True)
     addition_info = forms.CharField(required=False)
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         status = cdata.get('status')
         addition_info = cdata.get('addition_info')
-
+        
         data = SqlOrdersContents.objects.get(pk=id)
-
+        
         context = {}
         # 当记录关闭时
         if data.progress == '5':
@@ -387,7 +410,7 @@ class SqlOrdersCloseForm(forms.Form):
                                                     addition_info=addition_info)
                         msg_pull.run()
                         context = {'status': 0, 'msg': '操作成功、记录关闭成功'}
-
+                
                 elif status == u'结束':
                     context = {'status': 2, 'msg': '操作失败、关闭窗口'}
             else:
@@ -399,13 +422,13 @@ class HookSqlOrdersForm(forms.Form):
     id = forms.CharField(required=True, label=u'审核内容id')
     database = forms.CharField(required=False)
     envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         envi_id = cdata.get('envi_id')
         jump_url = f'/sqlorders/sql_orders_list/{envi_id}'
-
+        
         data = SqlOrdersContents.objects.get(pk=id)
         if data.progress == '6':
             context = {'status': 2, 'msg': '当前工单已被勾住，操作失败'}
@@ -414,7 +437,7 @@ class HookSqlOrdersForm(forms.Form):
             host, port, database = [0, 0, '']
             if data.sql_type in ['DML', 'DDL']:
                 host, port, database = cdata['database'].split(',')
-
+            
             # 工单状态必须为已完成
             if data.progress in ['4']:
                 obj = SqlOrdersContents.objects.create(
@@ -434,31 +457,31 @@ class HookSqlOrdersForm(forms.Form):
                     contents=data.contents,
                     updated_at=timezone.now()
                 )
-
+                
                 # 更新状态为：已勾住
                 SqlOrdersContents.objects.filter(pk=id).update(progress='6')
-
+                
                 # 发送邮件
                 msg_pull = SqlOrdersMsgPull(id=obj.id, user=request.user.username, type='hook')
                 msg_pull.run()
-
+                
                 # 跳转到工单记录页面
                 context = {'status': 0, 'jump_url': jump_url}
             else:
                 context = {'status': 2, 'msg': '当前工单进度：未完成，无法勾住'}
-
+        
         return context
 
 
 class GeneratePerformTasksForm(forms.Form):
     id = forms.CharField(required=True, label=u'审核内容id')
     envi_id = forms.CharField(required=False, validators=[sqlorders_envi_valid])
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         envi_id = cdata.get('envi_id')
-
+        
         obj = get_object_or_404(SqlOrdersContents, pk=id)
         context = {}
         if obj.sql_type in ['DDL', 'DML']:
@@ -479,7 +502,7 @@ class GeneratePerformTasksForm(forms.Form):
                         # 移除sql头尾的分号;
                         split_sqls = [sql.strip(';') for sql in sqlparse.split(obj.contents, encoding='utf8')]
                         taskid = datetime.now().strftime("%Y%m%d%H%M%S%f")
-
+                        
                         # 生成执行任务记录
                         for sql in split_sqls:
                             SqlOrdersExecTasks.objects.create(
@@ -507,19 +530,19 @@ class GeneratePerformTasksForm(forms.Form):
                 context = {'status': 2, 'msg': f'无法连接到数据库，请联系系统管理员\n主机: {obj.host}\n端口: {obj.port}'}
         elif obj.sql_type in ['OPS']:
             context = {'status': 2, 'msg': '运维工单无法生成执行任务，请手动执行'}
-
+        
         return context
 
 
 class FullPerformTasksForm(forms.Form):
     taskid = forms.CharField()
-
+    
     def exec(self, request):
         cdata = self.cleaned_data
         taskid = cdata.get('taskid')
-
+        
         query = f"select * from sqlaudit_sql_orders_execute_tasks where taskid={taskid} order by id asc"
-
+        
         key = ast.literal_eval(taskid)
         if 'run' == cache.get(key):
             context = {'status': 1, 'msg': '当前任务正在运行，请不要重复执行'}
@@ -529,23 +552,23 @@ class FullPerformTasksForm(forms.Form):
                                           query=query,
                                           key=key)
             context = {'status': 1, 'msg': '任务已提交，请查看输出'}
-
+        
         return context
 
 
 class SinglePerformTasksForm(forms.Form):
     id = forms.IntegerField()
-
+    
     def exec(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
-
+        
         obj = SqlOrdersExecTasks.objects.get(id=id)
         host = obj.host
         port = obj.port
         database = obj.database
         sql = obj.sql + ';'
-
+        
         key = ast.literal_eval(obj.taskid)
         if 'run' == cache.get(key):
             context = {'status': 1, 'msg': '正在自动化操作，请不要手动执行'}
@@ -555,7 +578,7 @@ class SinglePerformTasksForm(forms.Form):
                 f"where taskid={obj.taskid} group by taskid"
             for row in SqlOrdersExecTasks.objects.raw(query):
                 status = row.exec_status.split(',')
-
+            
             # 每次只能执行一条任务，不可同时执行，避免数据库压力
             if '2' in status or '3' in status:
                 context = {'status': 2, 'msg': '请等待当前任务执行完成'}
@@ -569,7 +592,7 @@ class SinglePerformTasksForm(forms.Form):
                     obj.execition_time = timezone.now()
                     obj.exec_status = '2'
                     obj.save()
-
+                    
                     async_execute_sql.delay(
                         username=request.user.username,
                         id=id,
@@ -594,12 +617,12 @@ class PerformTasksOpForm(forms.Form):
             ('stop_ptosc', 'stop_ptosc')
         ), error_messages={'required': '传入的值错误, 不接受非法的值'}
     )
-
+    
     def op(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
         action = cdata.get('action')
-
+        
         obj = SqlOrdersExecTasks.objects.get(id=id)
         context = {}
         if obj.exec_status in ('0', '1', '4'):
@@ -617,7 +640,7 @@ class PerformTasksOpForm(forms.Form):
                         sql_split = {'comment': sql_comment.value, 'sql': sql.value.replace(sql_comment.value, '')}
                     else:
                         sql_split = {'comment': '', 'sql': sql.value}
-
+                
                 # 获取不包含注释的SQL语句
                 sql = sql_split['sql']
                 formatsql = re.compile('^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|REMAME|MODIFY|DROP)([\s\S]*)',
@@ -636,13 +659,13 @@ class PerformTasksOpForm(forms.Form):
                         p = subprocess.Popen(pause_cmd, shell=True)
                         p.wait()
                         context = {'status': 1, 'msg': '暂停动作已执行，请查看输出'}
-
+                    
                     if action == 'recovery_ghost':
                         recovery_cmd = f"echo no-throttle | nc -U {sock}"
                         p = subprocess.Popen(recovery_cmd, shell=True)
                         p.wait()
                         context = {'status': 1, 'msg': '恢复动作已执行，请查看输出'}
-
+                    
                     if action == 'stop_ghost':
                         stop_cmd = f"echo panic | nc -U {sock}"
                         p = subprocess.Popen(stop_cmd, shell=True)
@@ -658,11 +681,11 @@ class SqlOrdersTasksVersionForm(forms.Form):
     tasks_version = forms.CharField(required=False)
     expire_time = forms.CharField(required=False)
     action = forms.ChoiceField(choices=(('new', 'new'), ('delete', 'delete')))
-
+    
     def save(self, request):
         cdata = self.cleaned_data
         action = cdata.get('action')
-
+        
         if action == 'new':
             tasks_version = cdata.get('tasks_version')
             expire_time = cdata.get('expire_time')
@@ -684,7 +707,7 @@ class CommitOrderReplyForm(forms.Form):
     reply_id = forms.IntegerField(required=True)
     reply_contents = forms.CharField(widget=forms.Textarea, min_length=2,
                                      error_messages={'required': '回复内容不能为空', 'min_length': '回复至少输入2个字符'})
-
+    
     def is_save(self, request):
         cdata = self.cleaned_data
         reply_id = cdata.get('reply_id')
@@ -705,20 +728,20 @@ class MyOrdersForm(forms.Form):
     limit_size = forms.IntegerField(required=True, label=u'每页显示数量')
     offset_size = forms.IntegerField(required=True, label=u'分页偏移量')
     search_content = forms.CharField(max_length=128, required=False, label='搜索内容')
-
+    
     def query(self, request):
         cdata = self.cleaned_data
         limit_size = cdata.get('limit_size')
         offset_size = cdata.get('offset_size')
         search_content = cdata.get('search_content')
-
+        
         # 获取用户的权限，用于前端表格的列的显示
         role_name = request.user.user_role()
         perm_list = list(
             RolePermission.objects.filter(role__role_name=role_name).values_list('permission_name', flat=True))
-
+        
         permissions = {'permissions': perm_list}
-
+        
         query = SqlOrdersContents.objects.filter(
             Q(proposer=request.user.username) | Q(auditor=request.user.username)).annotate(
             progress_value=Case(
@@ -748,9 +771,9 @@ class MyOrdersForm(forms.Form):
                 database__icontains=search_content) | Q(contents__icontains=search_content))
         else:
             obj = query
-
+        
         ol_total = obj.count()
-
+        
         ol_records = obj.values('progress_color', 'task_version', 'host', 'port', 'sql_type',
                                 'database', 'progress_value', 'id', 'envi_id',
                                 'title', 'proposer', 'auditor',
@@ -766,20 +789,20 @@ class MyOrdersForm(forms.Form):
 
 class ExecuteExportTasksForm(forms.Form):
     id = forms.IntegerField()
-
+    
     def exec(self, request):
         cdata = self.cleaned_data
         id = cdata.get('id')
-
+        
         obj = SqlOrdersExecTasks.objects.get(id=id)
         sql = obj.sql.strip(';') if obj.sql.endswith(';') else obj.sql
-
+        
         status = ''
         query = f"select id,group_concat(exec_status) as exec_status from sqlaudit_sql_orders_execute_tasks " \
             f"where taskid={obj.taskid} group by taskid"
         for row in SqlOrdersExecTasks.objects.raw(query):
             status = row.exec_status.split(',')
-
+        
         # 每次只能执行一条任务，不可同时执行，避免数据库压力
         if '2' in status or '3' in status:
             context = {'status': 2, 'msg': '请等待当前任务执行完成'}
@@ -795,7 +818,7 @@ class ExecuteExportTasksForm(forms.Form):
                 obj.is_ghost = 1
                 obj.exec_status = '2'
                 obj.save()
-
+                
                 async_export_tasks.delay(user=request.user.username,
                                          id=id,
                                          sql=sql,

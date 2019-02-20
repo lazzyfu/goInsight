@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path, re_path
 
 from sqlquery.views import GetTableStrucView, \
-    RenderSqlQueryView, GetGrantSchemaView, ExecSqlQueryView, GetHistorySqlView, GetTableIndexView, GetTableBaseView
+    RenderSqlQueryView, GetGrantSchemaView, ExecSqlQueryView, GetHistorySqlView, GetTableIndexView, GetTableBaseView, \
+    RenderDictView, GenerateHtmlView
 
 urlpatterns = [
     # mysql query api
@@ -21,4 +22,7 @@ urlpatterns = [
     path(r'exec_query/', login_required(ExecSqlQueryView.as_view()), name='p_exec_sql_query'),
     # 获取当前用户执行的sql历史
     path(r'history_sql/', login_required(GetHistorySqlView.as_view()), name='p_get_history_sql'),
+    # 数据字典
+    path(r'render/', login_required(RenderDictView.as_view()), name='p_dbdict'),
+    path(r'pdf/', login_required(GenerateHtmlView.as_view()), name='p_generate_html'),
 ]
