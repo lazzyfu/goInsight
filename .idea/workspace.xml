@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlorders/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/soar/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/soar/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/soar/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/soar/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/soar/soarApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/soar/soarApi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/soar/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/soar/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/sqlquery/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlquery/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/soar/soar.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/soar/soar.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/sqlorders/my_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/my_orders.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/sqlorders/sql_dml_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sqlorders/sql_dml_orders.html" afterDir="false" />
@@ -68,19 +58,19 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="499">
-              <caret line="226" column="37" lean-forward="true" selection-start-line="226" selection-start-column="37" selection-end-line="226" selection-end-column="37" />
+            <state relative-caret-position="386">
+              <caret line="222" column="98" selection-start-line="222" selection-start-column="98" selection-end-line="222" selection-end-column="98" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/soar/soar.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="-185">
               <folding>
                 <element signature="e#3171#3192#0#HTML" expanded="true" />
                 <element signature="e#3514#3533#0#HTML" expanded="true" />
@@ -89,6 +79,15 @@
                 <element signature="e#5577#5597#0#HTML" expanded="true" />
                 <element signature="e#7878#7904#0#HTML" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="499">
+              <caret line="252" column="17" lean-forward="true" selection-start-line="252" selection-start-column="17" selection-end-line="252" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -108,20 +107,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
-              <caret line="93" column="21" lean-forward="true" selection-start-line="93" selection-start-column="21" selection-end-line="93" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/sqlquery/soar/soarApi.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-929">
-              <caret column="16" selection-start-column="16" selection-end-column="16" />
-              <folding>
-                <element signature="e#60#69#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="358">
+              <caret line="82" column="47" lean-forward="true" selection-start-line="82" selection-start-column="47" selection-end-line="82" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -164,7 +151,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>refreshTable</find>
       <find>update_mysql_rule_chains</find>
       <find>args</find>
       <find>logger</find>
@@ -194,6 +180,7 @@
       <find>envi_validator</find>
       <find>purpose</find>
       <find>autoRefreshInterval: 10,</find>
+      <find>p_get_target_schemas</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -209,7 +196,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/templates/sqlquery/sql_query.html" />
         <option value="$PROJECT_DIR$/apps/sqlquery/models.py" />
         <option value="$PROJECT_DIR$/apps/sqlquery/sqlQueryApi.py" />
@@ -220,7 +206,6 @@
         <option value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/xterm/js/fit.min.js" />
         <option value="$PROJECT_DIR$/templates/webshell/webssh.html" />
         <option value="$PROJECT_DIR$/sqlaudit/consumers.py" />
-        <option value="$PROJECT_DIR$/templates/sqlorders/sql_dml_orders.html" />
         <option value="$PROJECT_DIR$/test/test11.py" />
         <option value="$PROJECT_DIR$/test/tt.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py" />
@@ -242,8 +227,6 @@
         <option value="$PROJECT_DIR$/apps/sqlorders/forms.py" />
         <option value="$PROJECT_DIR$/templates/sqlorders/perform_tasks.html" />
         <option value="$PROJECT_DIR$/templates/sqlorders/export_tasks.html" />
-        <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" />
-        <option value="$PROJECT_DIR$/templates/sqlorders/my_orders.html" />
         <option value="$PROJECT_DIR$/initialization_data.sql" />
         <option value="$PROJECT_DIR$/deploy/init.d_celeryd.txt" />
         <option value="$PROJECT_DIR$/deploy/default_celeryd.txt" />
@@ -258,8 +241,12 @@
         <option value="$PROJECT_DIR$/apps/sqlquery/soar/views.py" />
         <option value="$PROJECT_DIR$/apps/sqlquery/urls.py" />
         <option value="$PROJECT_DIR$/static/public.js" />
-        <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/soar/soar.html" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_dml_orders.html" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_orders_list.html" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html" />
+        <option value="$PROJECT_DIR$/templates/sqlorders/my_orders.html" />
+        <option value="$PROJECT_DIR$/templates/base.html" />
       </list>
     </option>
   </component>
@@ -329,6 +316,12 @@
               <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
               <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AuditSQL" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AuditSQL" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="sqlorders" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -557,7 +550,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37581000" />
+    <option name="totallyTimeSpent" value="37912000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -572,7 +565,7 @@
     <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.498004" visible="true" weight="0.19009584" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.498004" visible="true" weight="0.19009584" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50153375" side_tool="true" weight="0.2087327" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -588,7 +581,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5005325" side_tool="true" weight="0.27873856" />
-      <window_info anchor="bottom" id="Version Control" order="10" weight="0.44810864" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="10" visible="true" weight="0.44810864" />
       <window_info anchor="bottom" id="Python Console" order="11" weight="0.31536925" />
       <window_info anchor="bottom" id="SonarLint" order="12" weight="0.32952183" />
       <window_info anchor="bottom" id="Terminal" order="13" weight="0.2964072" />
@@ -670,16 +663,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/msgNotice.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="849">
-          <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
-          <folding>
-            <element signature="e#44#74#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/mailnotice/_export_file_mail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="294">
@@ -986,13 +969,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="93" column="21" lean-forward="true" selection-start-line="93" selection-start-column="21" selection-end-line="93" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="877">
@@ -1015,16 +991,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="499">
-          <caret line="226" column="37" lean-forward="true" selection-start-line="226" selection-start-column="37" selection-end-line="226" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/soar/soar.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="-185">
           <folding>
             <element signature="e#3171#3192#0#HTML" expanded="true" />
             <element signature="e#3514#3533#0#HTML" expanded="true" />
@@ -1033,6 +1002,27 @@
             <element signature="e#5577#5597#0#HTML" expanded="true" />
             <element signature="e#7878#7904#0#HTML" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/sqlorders/sql_ddl_orders.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="499">
+          <caret line="252" column="17" lean-forward="true" selection-start-line="252" selection-start-column="17" selection-end-line="252" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/sqlorders/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="358">
+          <caret line="82" column="47" lean-forward="true" selection-start-line="82" selection-start-column="47" selection-end-line="82" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="386">
+          <caret line="222" column="98" selection-start-line="222" selection-start-column="98" selection-end-line="222" selection-end-column="98" />
         </state>
       </provider>
     </entry>

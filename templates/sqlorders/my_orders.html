@@ -288,7 +288,7 @@
                 url: '{% url 'p_get_target_schemas' %}',
                 type: 'POST',
                 dataType: 'json',
-                data: {'envi_id': envi_id, 'csrfmiddlewaretoken': csrftoken},
+                data: {'envi_id': envi_id, 'purpose': 'dml', 'csrfmiddlewaretoken': csrftoken},
                 timeout: 5000,
                 cache: false,
                 success: function (data) {
