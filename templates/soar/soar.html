@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block link_css %}
+    <style>
+        pre {
+            border-radius: 0;
+        }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: 450px;
+        }
+
+        .show-content {
+            height: 100%;
+            border: 1px solid #ddd;
+        }
+
+        /*markdown 样式*/
+        .show-markdown h1, .show-markdown h2, .show-markdown h3 {
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+        }
+
+        .show-markdown h2 {
+            font-size: 16px !important;
+        {#margin: 24px 0px 16px 0px !important;#} padding-bottom: 5px;
+            border-bottom: 1px solid #919699;
+        }
+
+        .show-markdown h1 {
+            font-size: 20px !important;
+            margin: 10px 0px !important;
+        }
+
+        .show-markdown h3 {
+            font-size: 15px !important;
+            margin: 16px 0px !important;
+        }
+
+        .show-markdown h4 {
+            font-size: 14px !important;
+        }
+
+        .show-markdown p {
+            margin-bottom: 10px !important;
+        }
+
+        .show-markdown h1, .show-markdown h2, .show-markdown h3, .show-markdown h4, .show-markdown h5, .show-markdown h6 {
+            font-family: "Myriad Pro", "Lucida Grande", Lucida, Verdana, sans-serif;
+        }
+
+        .show-markdown {
+            overflow-x: auto;
+        }
+
+        .show-markdown table td, .show-markdown table th {
+            font-size: 12px;
+            border-bottom: 1px solid #919699;
+            border-right: 1px solid #919699;
+        }
+
+        .show-markdown table {
+            width: 100%;
+            overflow: auto;
+            border-top: 1px solid #919699;
+            border-left: 1px solid #919699;
+            border-spacing: 0;
+        }
+
+        .show-markdown table th {
+            padding: 4px 8px;
+            background: #E2E2E2;
+        }
+
+        .show-markdown table td {
+            padding: 8px;
+            vertical-align: top;
+        }
+    </style>
+{% endblock %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header box-border">
+                    <div class="mailbox-read-info" id="right_width">
+                        <h3 class="box-title"><i class="fa fa-code"></i> SQL优化建议
+                            <small><cite>支持ALTER/INSERTG/UPDATE/DELETE/SELECT语句的分析</cite></small>
+                        </h3>
+                    </div>
+                </div>
+                <div class="box-body with-border">
+                    <form class="form-horizontal">
+                        <div class="col-md-3">
+                            <div class="box box-gray">
+                                <div class="box-body no-padding">
+                                    <div class="mailbox-read-info">
+                                        <h5>选择环境</h5>
+                                    </div>
+                                </div>
+                                <div class="box-body box-profile">
+                                    <div class="form-group has-feedback" style="display: none">
+                                        <label class="control-label col-sm-3">操作 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select name="sql_type" id="s_sql_type"
+                                                    style="width: 100%" required
+                                                    class="selectpicker form-control" title="请选择...">
+                                                <option data-icon="glyphicon-pushpin" selected value="DML">DML
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">环境 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_envi" name="envi_id" style="width: 100%" required
+                                                    class="form-control selectpicker" title="选择环境..."
+                                                    onchange="getTargetSchema()">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group has-feedback">
+                                        <label class="control-label col-sm-3">库名 <span class="text-red">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select id="s_schema" name="database" style="width: 100%" required
+                                                    class="form-control selectpicker" title="选择库名..." data-size='8'
+                                                    data-live-search="true" onchange="get_table_info()">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                                <div class="box-footer">
+                                    <div style="padding: 2px">
+                                        <b>简介：</b>
+                                        <p>基于小米的开源工具SOAR实现</p>
+                                        <br>
+                                        <b>SOAR结构：</b>
+                                        <p>采用的是<span class="text-blue">生产环境</span>和 <span class="text-blue">测试环境</span>的结构体系
+                                        </p>
+                                        <br>
+                                        <b>注意事项：</b>
+                                        <p>1. 请选择正确的环境和库名，否则降级给出建议</p>
+                                        <p>2. 后台配置测试环境的数据库时，<span
+                                                class="text-danger">务必确保测试环境的MySQL版本大于生产环境MySQL的版本</span>，否则SOAR不会进行采样，只会降级给出基本的建议(不会给出explain等)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="box box-gray">
+                                <div class="box-body">
+                                    <button type="button" onclick="sqlAnalyze('advisor')" class="btn bg-olive btn-sm">
+                                        <i class="fa fa-magic"></i> 分析
+                                    </button>
+                                    <button type="button" onclick="beautifySQL()" class="btn bg-olive btn-sm"><i
+                                            class="fa fa-magic"></i> 格式化SQL
+                                    </button>
+                                </div>
+                                <div class="box-body no-padding">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <textarea autofocus class="form-control" id="s_sql" title=""></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- /.col -->
+                </div>
+                <div class="box-footer with-border" id="typediv1" style="visibility: hidden">
+                    <div class="tab">
+                        <ul class="nav nav-tabs" id="li_append"></ul>
+                        <div class="tab-content" id="soar_content_append"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block link_javascripts %}
+    <script>
+        // 初始化markdown转换
+        let converter = new showdown.Converter();
+        converter.setOption('tables', true);
+
+        let myTextarea = document.getElementById('s_sql');
+        let myCodeMirror = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            mode: "text/x-mysql",
+            autoRefresh: true,
+            smartIndent: true,
+            indentWithTabs: true,
+            styleActiveLine: true,
+            autofocus: true,
+            keyMap: "sublime",
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            showCursorWhenSelecting: true,
+            extraKeys: {"Tab": "autocomplete"},
+            hint: CodeMirror.hint.sql
+        });
+
+        // 获取用户设置的环境
+        $(function () {
+            $.ajax({
+                url: '{% url 'p_get_sql_orders_envi' %}',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 10000,
+                cache: false,
+                success: function (data) {
+                    $("#s_envi").empty();
+                    $.each(data, function (index, row) {
+                        $("#s_envi").append(
+                            "<option data-icon='glyphicon-record' value=" + row.envi_id + ">" + row.envi_name + "</option>"
+                        );
+                    });
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            });
+        });
+
+        /**
+         * 获取指定环境的schema
+         */
+        function getTargetSchema() {
+            let s_schema = $('#s_schema');
+            let envi_id = $('#s_envi').val();
+            let csrftoken = $.cookie('csrftoken');
+            $.ajax({
+                url: '{% url 'p_get_target_schemas' %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {'envi_id': envi_id, 'purpose': 'soar', 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    s_schema.empty();
+                    let html = '';
+                    $.each(data, function (index, row) {
+                        let result = [row.host, row.port, row.schema].join(',');
+                        let show_result = [row.comment, row.port, row.schema].join('_');
+                        html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
+                    });
+                    s_schema.append(html);
+                    $('.selectpicker').selectpicker('refresh')
+                }
+            })
+        }
+
+        function sqlAnalyze(type) {
+            // 清空输出的结果
+            let csrftoken = $.cookie('csrftoken');
+            // 获取选中的内容，否则为全部内容
+            let contents = '';
+            let database = $('#s_schema').val();
+            if (myCodeMirror.somethingSelected()) {
+                contents = myCodeMirror.getSelection()
+            } else {
+                contents = myCodeMirror.getValue();
+            }
+            // 判断输入的内容是否为空
+            if (contents.length < 1) {
+                displayPNotify(2, '内容不能为空');
+                return false;
+            }
+            // 提交
+            $.ajax({
+                data: {
+                    'contents': contents,
+                    'type': type,
+                    'database': database,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                dataType: 'json',
+                url: '{% url 'p_soar_analyze' %}',
+                method: 'POST',
+                timeout: 100000, // 100秒
+                beforeSubmit: showLoadingScreen($('body'), '数据查询中，请稍后...'),
+                success: function (result) {
+                    hideLoadingScreen($('body'));
+                    if (result.status === 0) {
+                        let li_append = $('#li_append');
+                        let soar_content_append = $('#soar_content_append');
+                        li_append.empty();
+                        soar_content_append.empty();
+                        let data = result.data;
+                        document.getElementById('typediv1').style.visibility = "visible";
+                        let li_html = '';
+                        let soar_html = '';
+                        for (let j in data) {
+                            li_html += "<li><a href=\"#tab_" + j + "\" data-toggle=\"tab\">" + "结果集_" + j + "</a></li>";
+                            soar_html += "<div class=\"tab-pane\" id=\"tab_" + j + "\">\n" +
+                                "<div class=\"show-content show-markdown\">\n" +
+                                "            <pre><code id='soarResult" + j + "'></code></pre>\n" +
+                                "          </div>" +
+                                "</div>"
+                        }
+
+                        li_append.append(li_html);
+                        soar_content_append.append(soar_html);
+                        $('.nav-tabs>li>a').first().trigger('click');
+                        for (let j in data) {
+                            let soarContent = $('#soarResult' + j);
+                            let convert_data = converter.makeHtml(data[j]);
+                            soarContent.append(convert_data)
+                        }
+                        renderSql()
+                    } else {
+                        displayPNotify(result.status, result.msg)
+                    }
+                },
+                error: function (jqXHR) {
+                    hideLoadingScreen($('body'));
+                    if (jqXHR.status === 403) {
+                        displayPNotify(jqXHR.status);
+                        hideLoadingScreen();
+                    }
+                }
+            })
+        }
+
+        function renderSql() {
+            $('pre code').each(function (i, block) {
+                hljs.highlightBlock(block);
+            });
+        }
+
+        $(function () {
+            // 保存用户输入
+            let user_input = localStorage.getItem("user_input_history");
+            let $textarea = $("textarea");
+            if (user_input) {
+                myCodeMirror.setValue(user_input);
+            }
+            $textarea.bind('input propertychange', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("user_input_history", contents);
+            });
+            $textarea.on('paste', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("user_input_history", contents);
+            });
+            $textarea.on('keyup', function (event) {
+                if (8 <= event.keyCode <= 46) {
+                    let contents = myCodeMirror.getValue();
+                    localStorage.setItem("user_input_history", contents);
+                }
+            });
+            $("button").on('click', function () {
+                let contents = myCodeMirror.getValue();
+                localStorage.setItem("user_input_history", contents);
+            });
+        });
+    </script>
+{% endblock %}

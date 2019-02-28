@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 from django.contrib.auth.decorators import login_required
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 
 from sqlquery.views import GetTableStrucView, \
     RenderSqlQueryView, GetGrantSchemaView, ExecSqlQueryView, GetHistorySqlView, GetTableIndexView, GetTableBaseView, \
@@ -25,4 +25,7 @@ urlpatterns = [
     # 数据字典
     path(r'render/', login_required(RenderDictView.as_view()), name='p_dbdict'),
     path(r'pdf/', login_required(GenerateHtmlView.as_view()), name='p_generate_html'),
+    # xiao soar
+    path('soar/', include('sqlquery.soar.urls')),
+
 ]

@@ -212,7 +212,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li class="treeview">
                     <a>
                         <i class="fa fa-history"></i>
-                        <span>数据查询</span>
+                        <span>DMS</span>
                         <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
@@ -220,7 +220,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <ul class="treeview-menu">
                         <li><a href='/sqlquery/sql_query/'><i class="fa fa-circle-o"></i>SQL查询</a></li>
                         <li><a href="{% url 'p_dbdict' %}"><span class="fa fa-circle-o"></span>数据字典</a></li>
-
+                        <li><a href="{% url 'p_soar' %}"><span class="fa fa-circle-o"></span>SQL分析</a></li>
                     </ul>
                 </li>
 
@@ -358,6 +358,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.js' %}"></script>
 <!-- xterm -->
 <script src="{% static 'AdminLTE-2.4.5/bower_components/xterm/js/xterm.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.5/bower_components/showdownjs/showdown.min.js' %}"></script>
 <!-- public js file -->
 <script src="{% static 'public.js' %}"></script>
 

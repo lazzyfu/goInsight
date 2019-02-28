@@ -52,7 +52,7 @@ function displayPNotify(status, msg) {
         case 403:
             opts.title = "403";
             opts.type = "error";
-            opts.text = "权限拒绝";
+            opts.text = "权限拒绝" + msg;
             break;
     }
     new PNotify(opts);

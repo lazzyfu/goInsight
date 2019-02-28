@@ -261,3 +261,30 @@ LOGGING = {
         },
     }
 }
+
+# SOAR测试数据库
+SOAR_CONFIG = {
+    # testenv需要指定
+    # 该用户作为测试环境，需要all privileges权限
+    # 请确保配置的测试环境数据库的版本大于生产环境的数据库版本
+    "testenv": {
+        "SOAR_HOST": "127.0.0.1",
+        "SOAR_PORT": 3306,
+        "SOAR_USER": "sqlaudit",
+        "SOAR_PASSWORD": "123.com"
+    },
+    "arguments": [
+        # 额外的SOAR参数在下面逐行添加即可
+        "-allow-online-as-test=false",  # 此参数不要修改，使用的是SOAR推荐的生产环境和测试环境的架构
+        "-report-type=markdown",  # 此参数不要修改，前台对markdown格式进行了转码
+        "-drop-test-temporary",
+        "-max-join-table-count=5",
+        "-max-group-by-cols-count=5",
+        "-max-distinct-count=5",
+        "-max-index-cols-count=5",
+        "-only-syntax-check=false",
+        "-allow-drop-index=false",
+        "-explain=true",
+        "-log-output=/tmp/soar.log"
+    ]
+}

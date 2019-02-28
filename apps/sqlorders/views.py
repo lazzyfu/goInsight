@@ -80,11 +80,27 @@ class GetTargetSchemasView(View):
 
     @permission_required('can_commit_sql', 'can_audit_sql', 'can_execute_sql', 'can_commit_ops', 'can_audit_ops')
     def post(self, request):
-        envi_id = request.POST.get('envi_id')
+        # envi_id = request.POST.get('envi_id')
+        #
+        # queryset = MysqlSchemas.objects.filter(
+        #     envi_id=envi_id, is_type=1
+        # ).values('host', 'port', 'schema', 'comment')
+        # serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
+        # return HttpResponse(serialize_data)
 
-        queryset = MysqlSchemas.objects.filter(
-            envi_id=envi_id, is_type=1
-        ).values('host', 'port', 'schema', 'comment')
+        envi_id = request.POST.get('envi_id')
+        purpose = request.POST.get('purpose')
+
+        queryset = []
+        if purpose in ('export', 'dbdict', 'soar'):
+            # 数据导出或查询数据字典，选择只读库
+            queryset = MysqlSchemas.objects.filter(envi_id=envi_id, is_type__in=(0, 2)).values('host', 'port',
+                                                                                               'schema',
+                                                                                               'comment')
+        elif purpose in ('dml', 'ddl'):
+            # DML和DDL工单选择SQL审核
+            queryset = MysqlSchemas.objects.filter(envi_id=envi_id, is_type=1).values('host', 'port', 'schema',
+                                                                                      'comment')
         serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
         return HttpResponse(serialize_data)
 
@@ -508,8 +524,8 @@ class SqlOrdersTasksVersionListView(View):
         """
         before_14_days = (datetime.datetime.now() - datetime.timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")
         query = f"select id,tasks_version,if(now()>expire_time,1,0) as is_disable from " \
-                f"sqlaudit_sql_orders_tasks_versions " \
-                f"where created_at >= '{before_14_days}' order by created_at desc"
+            f"sqlaudit_sql_orders_tasks_versions " \
+            f"where created_at >= '{before_14_days}' order by created_at desc"
         data = []
         for row in SqlOrdersTasksVersions.objects.raw(query):
             data.append({'tasks_version': row.tasks_version, 'is_disable': row.is_disable})
@@ -532,7 +548,7 @@ class GetVersionOrdersList(View):
         # 此处的环境为动态环境
         query = f"select " + dynamic_columns_join + \
                 "id,title,proposer,task_version " \
-                f"from sqlaudit_sqlorders_contents where task_version='{tasks}' group by title order by id desc"
+                    f"from sqlaudit_sqlorders_contents where task_version='{tasks}' group by title order by id desc"
         result = []
 
         data = SqlOrdersContents.objects.raw(query)
