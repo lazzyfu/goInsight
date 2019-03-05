@@ -5,6 +5,7 @@ import json
 import logging
 
 import simplejson
+from pymysql import escape_string
 from pymysqlreplication import BinLogStreamReader
 from pymysqlreplication.event import QueryEvent
 from pymysqlreplication.row_event import DeleteRowsEvent, UpdateRowsEvent, WriteRowsEvent
@@ -75,6 +76,9 @@ class ReadRemoteBinlog(object):
             return 'NULL'
         elif isinstance(v, int):
             return f'{v}'
+        elif isinstance(v, str):
+            escape_v = escape_string(v)
+            return f"\"{escape_v}\""
         else:
             return f"\"{v}\""
 

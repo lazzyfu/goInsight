@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deploy/initialization_data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/initialization_data.sql" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -31,8 +29,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="83" column="35" lean-forward="true" selection-start-line="83" selection-start-column="35" selection-end-line="83" selection-end-column="35" />
+            <state relative-caret-position="460">
+              <caret line="83" lean-forward="true" selection-start-line="83" selection-end-line="83" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -456,12 +454,12 @@
       <workItem from="1550628525871" duration="7071000" />
       <workItem from="1551415170128" duration="108000" />
       <workItem from="1551755315466" duration="1476000" />
-      <workItem from="1551766594704" duration="3574000" />
+      <workItem from="1551766594704" duration="3992000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="44791000" />
+    <option name="totallyTimeSpent" value="45209000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -921,8 +919,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="83" column="35" lean-forward="true" selection-start-line="83" selection-start-column="35" selection-end-line="83" selection-end-column="35" />
+        <state relative-caret-position="460">
+          <caret line="83" lean-forward="true" selection-start-line="83" selection-end-line="83" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
