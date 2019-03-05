@@ -29,8 +29,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="79" column="44" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+            <state relative-caret-position="174">
+              <caret line="100" column="17" lean-forward="true" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -454,12 +454,12 @@
       <workItem from="1550628525871" duration="7071000" />
       <workItem from="1551415170128" duration="108000" />
       <workItem from="1551755315466" duration="1476000" />
-      <workItem from="1551766594704" duration="4133000" />
+      <workItem from="1551766594704" duration="4669000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="45350000" />
+    <option name="totallyTimeSpent" value="45886000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -472,7 +472,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.19595315" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
@@ -919,8 +918,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="79" column="44" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+        <state relative-caret-position="174">
+          <caret line="100" column="17" lean-forward="true" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>

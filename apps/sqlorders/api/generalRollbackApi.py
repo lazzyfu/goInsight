@@ -94,6 +94,10 @@ class ReadRemoteBinlog(object):
         else:
             if isinstance(v, int):
                 return f"`{k}`={v}"
+            elif isinstance(v, str):
+                # 使用pymysql.escape_string对数据中的引号进行转义
+                escape_v = escape_string(v)
+                return f"`{k}`=\"{escape_v}\""
             else:
                 return f"`{k}`=\"{v}\""
 
