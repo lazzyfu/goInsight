@@ -76,7 +76,7 @@ class ReadRemoteBinlog(object):
         elif isinstance(v, int):
             return f'{v}'
         else:
-            return f"'{v}'"
+            return f"\"{v}\""
 
     def _upd_join(self, items):
         """
