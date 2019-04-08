@@ -5,4 +5,5 @@ test/
 config/config.py
 *.pyc
 venv/
-readme.txt
+media/files/
+media/tmp/
