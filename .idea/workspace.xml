@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="忽略配置文件">
+    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="增加ldap配置">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,28 +29,40 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/documents/readme.txt">
+        <entry file="file://$PROJECT_DIR$/opsql/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="24" column="5" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/config/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="35" column="25" lean-forward="true" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="25" />
+            <state relative-caret-position="432">
+              <caret line="25" column="38" lean-forward="true" selection-start-line="25" selection-start-column="38" selection-end-line="25" selection-end-column="38" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/orders/tasks.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config/config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="184">
+              <caret line="50" column="29" lean-forward="true" selection-start-line="50" selection-start-column="29" selection-end-line="50" selection-end-column="29" />
+              <folding>
+                <element signature="e#162#173#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="96">
+              <caret line="4" column="5" lean-forward="true" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -68,9 +81,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>logger</find>
-      <find>ghost_async_tasks</find>
-      <find>ExecuteExportTasksView</find>
       <find>PerformTasksDetailsView</find>
       <find>SyntaxCheckForm</find>
       <find>charact</find>
@@ -98,12 +108,16 @@
       <find>p_get_target_schemas</find>
       <find>create_lst</find>
       <find>sqlaudit</find>
+      <find>AUTHENTICATION_BACKENDS</find>
+      <find>ss</find>
+      <find>fuzongfei58</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
       <replace>h5</replace>
       <replace />
       <replace>sqlaudit</replace>
+      <replace>123</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -113,8 +127,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/xterm/css/xterm.min.css" />
-        <option value="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/xterm/js/fit.min.js" />
         <option value="$PROJECT_DIR$/templates/webshell/webssh.html" />
         <option value="$PROJECT_DIR$/sqlaudit/consumers.py" />
         <option value="$PROJECT_DIR$/test/test11.py" />
@@ -162,8 +174,10 @@
         <option value="$PROJECT_DIR$/readme.txt" />
         <option value="$PROJECT_DIR$/documents/readme.txt" />
         <option value="$PROJECT_DIR$/logs/readme.txt" />
-        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/apps/orders/utils/task.py" />
+        <option value="$PROJECT_DIR$/opsql/settings.py" />
         <option value="$PROJECT_DIR$/config/config.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -209,24 +223,29 @@
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="orders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="config" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="png" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
-              <item name="tmp" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="mail" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -454,7 +473,7 @@
       <workItem from="1551755315466" duration="1476000" />
       <workItem from="1551766594704" duration="4669000" />
       <workItem from="1554709362350" duration="1395000" />
-      <workItem from="1554711236721" duration="1051000" />
+      <workItem from="1554711236721" duration="3266000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -505,11 +524,25 @@
       <option name="project" value="LOCAL" />
       <updated>1554712641499</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="201904081639">
+      <created>1554712803013</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1554712803013</updated>
+    </task>
+    <task id="LOCAL-00009" summary="增加ldap配置">
+      <created>1554714875963</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1554714875963</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48332000" />
+    <option name="totallyTimeSpent" value="50547000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -524,7 +557,7 @@
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.20021299" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.20021299" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -631,7 +664,9 @@
     <MESSAGE value="201904081559" />
     <MESSAGE value="增加展示图片" />
     <MESSAGE value="忽略配置文件" />
-    <option name="LAST_COMMIT_MESSAGE" value="忽略配置文件" />
+    <MESSAGE value="201904081639" />
+    <MESSAGE value="增加ldap配置" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加ldap配置" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -645,10 +680,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py" />
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/extractTable.py" />
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/utils.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/threadDump3.txt" />
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/threadDump2.txt" />
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/threadDump1.txt" />
     <entry file="file://$PROJECT_DIR$/README.md" />
@@ -706,13 +737,6 @@
     <entry file="file://$PROJECT_DIR$/readme.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitattributes">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="3" column="27" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logs/readme.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -722,29 +746,70 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="634">
-          <caret line="30" column="14" lean-forward="true" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+        <state relative-caret-position="556">
+          <caret line="46" column="14" lean-forward="true" selection-start-line="46" selection-start-column="14" selection-end-line="46" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/documents/readme.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="24" column="5" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="5" />
+        <state relative-caret-position="720">
+          <caret line="30" column="1" lean-forward="true" selection-start-line="30" selection-start-column="1" selection-end-line="30" selection-end-column="1" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/apps/orders/utils/tools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+        <state relative-caret-position="600">
+          <caret line="25" column="55" lean-forward="true" selection-start-line="25" selection-start-column="55" selection-end-line="25" selection-end-column="55" />
+          <folding>
+            <element signature="e#43#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/utils/task.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="717">
+          <caret line="293" column="33" lean-forward="true" selection-start-line="293" selection-start-column="33" selection-end-line="293" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitattributes">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="3" column="31" lean-forward="true" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/opsql/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="25" column="38" lean-forward="true" selection-start-line="25" selection-start-column="38" selection-end-line="25" selection-end-column="38" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/config/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="35" column="25" lean-forward="true" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="25" />
+        <state relative-caret-position="184">
+          <caret line="50" column="29" lean-forward="true" selection-start-line="50" selection-start-column="29" selection-end-line="50" selection-end-column="29" />
+          <folding>
+            <element signature="e#162#173#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="4" column="5" lean-forward="true" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
         </state>
       </provider>
     </entry>
