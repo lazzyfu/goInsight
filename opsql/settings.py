@@ -35,9 +35,9 @@ LOGIN_URL = '/users/login/'
 SECRET_KEY = 'nt5blt61$+k+!=oud@_dfq1+b3r290g5#d@t+#ik809tbt)53k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -201,44 +201,58 @@ EMAIL_HOST_PASSWORD = EMAIL['email_host_password']
 EMAIL_FROM = EMAIL['email_host_user']
 EMAIL_USE_SSL = EMAIL['email_use_ssl']
 
+# 启用LDAP支持
+if LDAP_SUPPORT['enable'] is True:
+    AUTHENTICATION_BACKENDS = [
+        'django_auth_ldap.backend.LDAPBackend',
+        'django.contrib.auth.backends.ModelBackend',
+    ]
+
+    AUTH_LDAP_SERVER_URI = LDAP_SUPPORT['config']['AUTH_LDAP_SERVER_URI']
+    AUTH_LDAP_ALWAYS_UPDATE_USER = LDAP_SUPPORT['config']['AUTH_LDAP_ALWAYS_UPDATE_USER']
+    AUTH_LDAP_BIND_DN = LDAP_SUPPORT['config']['AUTH_LDAP_BIND_DN']
+    AUTH_LDAP_BIND_PASSWORD = LDAP_SUPPORT['config']['AUTH_LDAP_BIND_PASSWORD']
+    AUTH_LDAP_USER_SEARCH = LDAP_SUPPORT['config']['AUTH_LDAP_USER_SEARCH']
+    AUTH_LDAP_USER_ATTR_MAP = LDAP_SUPPORT['config']['AUTH_LDAP_USER_ATTR_MAP']
+
 # 日志
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {  # 日志格式
-#         'standard': {
-#             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] '
-#                       '[%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
-#     },
-#     'handlers': {  # 处理器
-#         'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'filename': 'logs/all.log',  # 日志输出文件
-#             'maxBytes': 1024 * 1024 * 5,  # 文件大小
-#             'backupCount': 5,  # 备份份数
-#             'formatter': 'standard',  # 使用哪种formatters日志格式
-#         },
-#         'console': {  # 输出到控制台
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'standard',
-#         },
-#     },
-#     'loggers': {  # logging管理器
-#         'django': {
-#             'handlers': ['file', 'console'],
-#             'level': 'INFO',
-#             'propagate': False
-#         },
-#         'django.request': {
-#             'handlers': ['file'],
-#             'level': 'INFO',
-#             'propagate': True,
-#         },
-#         'django_auth_ldap': {
-#             'level': 'DEBUG',
-#             'handlers': ['file', 'console'],
-#         },
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {  # 日志格式
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] '
+                      '[%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'}
+    },
+    'handlers': {  # 处理器
+        'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/all.log',  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'standard',  # 使用哪种formatters日志格式
+        },
+        'console': {  # 输出到控制台
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {  # logging管理器
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False
+        },
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django_auth_ldap': {
+            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+        },
+    }
+}
