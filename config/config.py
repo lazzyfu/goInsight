@@ -41,7 +41,7 @@ EMAIL = {
 DINGDING = {
     'enable': True,
     'webhook': "https://oapi.dingtalk.com/robot/send?access_token=74fc2cb89dea792"
-               "ad276b336dec5e9fed0ee7484791abba93c65f68fd689dc7b"
+               "ad276b336dec5e9fed0ee7484xxxxx"
 }
 
 # ALTER操作
