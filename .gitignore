@@ -1,7 +1,8 @@
 logs/*.log
-media/files/
-media/tmp/
+media/files/*
+media/tmp/*
 test/
 config/config.py
 *.pyc
 venv/
+readme.txt
