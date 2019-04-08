@@ -2,7 +2,6 @@
 media/files/*
 media/tmp/
 test/
-config/config.py
 *.pyc
 venv/
 media/files/
