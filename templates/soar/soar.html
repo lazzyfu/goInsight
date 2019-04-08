@@ -115,24 +115,26 @@
                                     </div>
 
                                     <div class="form-group has-feedback">
-                                        <label class="control-label col-sm-3">环境 <span class="text-red">*</span></label>
+                                        <label class="control-label col-sm-3">环境 <span class="text-black">*</span></label>
                                         <div class="col-sm-9">
                                             <select id="s_envi" name="envi_id" style="width: 100%" required
                                                     class="form-control selectpicker" title="选择环境..."
-                                                    onchange="getTargetSchema()">
+                                                    onchange="getSchema()">
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="form-group has-feedback">
-                                        <label class="control-label col-sm-3">库名 <span class="text-red">*</span></label>
-                                        <div class="col-sm-9">
-                                            <select id="s_schema" name="database" style="width: 100%" required
-                                                    class="form-control selectpicker" title="选择库名..." data-size='8'
-                                                    data-live-search="true" onchange="get_table_info()">
-                                            </select>
+                                            <label class="control-label col-sm-3">库 <span
+                                                    class="text-black">*</span></label>
+                                            <div class="col-sm-9">
+                                                <select id="s_schema" name="schema" style="width: 100%" required
+                                                        class="form-control selectpicker" title="选择库名..."
+                                                        data-size='8'
+                                                        data-live-search="true">
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer">
@@ -208,53 +210,8 @@
             hint: CodeMirror.hint.sql
         });
 
-        // 获取用户设置的环境
-        $(function () {
-            $.ajax({
-                url: '{% url 'p_get_sql_orders_envi' %}',
-                type: 'GET',
-                dataType: 'json',
-                timeout: 10000,
-                cache: false,
-                success: function (data) {
-                    $("#s_envi").empty();
-                    $.each(data, function (index, row) {
-                        $("#s_envi").append(
-                            "<option data-icon='glyphicon-record' value=" + row.envi_id + ">" + row.envi_name + "</option>"
-                        );
-                    });
-                    $('.selectpicker').selectpicker('refresh')
-                }
-            });
-        });
-
-        /**
-         * 获取指定环境的schema
-         */
-        function getTargetSchema() {
-            let s_schema = $('#s_schema');
-            let envi_id = $('#s_envi').val();
-            let csrftoken = $.cookie('csrftoken');
-            $.ajax({
-                url: '{% url 'p_get_target_schemas' %}',
-                type: 'POST',
-                dataType: 'json',
-                data: {'envi_id': envi_id, 'purpose': 'soar', 'csrfmiddlewaretoken': csrftoken},
-                timeout: 5000,
-                cache: false,
-                success: function (data) {
-                    s_schema.empty();
-                    let html = '';
-                    $.each(data, function (index, row) {
-                        let result = [row.host, row.port, row.schema].join(',');
-                        let show_result = [row.comment, row.port, row.schema].join('_');
-                        html += "<option data-icon='fa fa-database' value=" + result + ">" + show_result + "</option>"
-                    });
-                    s_schema.append(html);
-                    $('.selectpicker').selectpicker('refresh')
-                }
-            })
-        }
+       // 获取系统环境
+        getSysEnvironment();
 
         function sqlAnalyze(type) {
             // 清空输出的结果

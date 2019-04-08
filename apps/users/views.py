@@ -1,46 +1,54 @@
-# -*- coding:utf-8 -*-
-# edit by fuzongfei
-
+# Create your views here.
 import io
-import json
 
 from PIL import Image
 from django.contrib.auth import logout
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
-from django.views.generic import FormView, RedirectView
+from django.views.generic import RedirectView
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.reverse import reverse_lazy
+from rest_framework.views import APIView
 
-from users import verifyCode
-from users.forms import LoginForm, ChangePasswordForm, ChangeMobileForm
 from users.models import UserAccounts
+from users.serializers import LoginSerializer, ChangePasswordSerializer, ChangeMobileSerializer, GetAuditorSerializer
+from users.utils import verifyCode
 
 
-class LoginView(FormView):
-    """用户登录， success_url登陆成功后跳转的页面"""
+class LoginView(APIView):
+    """用户登录"""
+
+    renderer_classes = [TemplateHTMLRenderer]
     template_name = 'login.html'
-    form_class = LoginForm
-    success_url = reverse_lazy('p_user_profile')
+    # 此处解析url使用rest_framework.reverse.reverse_lazy方法
+    success_url = reverse_lazy('p_profile')
 
-    def form_valid(self, form):
-        result = form.authentication(self.request)
-        if result['status'] is True:
-            return super(LoginView, self).form_valid(form)
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+
+        if serializer.is_valid():
+            s, msg = serializer.authentication(request)
+            if s:
+                # 重定向到用户详情页面
+                return HttpResponseRedirect(self.success_url)
+            else:
+                data = {'code': 2, 'data': msg}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return render(self.request, self.template_name, {'msg': result['msg']})
-
-    def form_invalid(self, form):
-        msg = []
-        for field, errors in form.errors.items():
-            for error in errors:
-                msg.append(''.join([form.fields[field].label, error]))
-        return render(self.request, self.template_name, {'msg': '\n'.join(msg)})
+            errors = [str(v[0]) for k, v in serializer.errors.items()]
+            data = {'code': 2, 'data': '\n'.join(errors)}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(RedirectView):
     """用户登出"""
+
     permanent = False
     url = reverse_lazy('p_login')
 
@@ -49,11 +57,10 @@ class LogoutView(RedirectView):
         return super(LogoutView, self).get(request, *args, **kwargs)
 
 
-class VerifyView(View):
+class VerifyCodeView(View):
+    """验证码"""
+
     def get(self, request):
-        """
-        生成随机验证码
-        """
         stream = io.BytesIO()
         img, code = verifyCode.create_validate_code()
         img.save(stream, 'png')
@@ -61,54 +68,54 @@ class VerifyView(View):
         return HttpResponse(stream.getvalue())
 
 
-class IndexView(View):
-    """访问首页，重定向的页面"""
-
-    def get(self, request):
-        return HttpResponseRedirect(reverse('p_user_profile'))
-
-
-class UserProfileView(View):
+class UserProfileView(APIView):
     """用户profile"""
 
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile.html'
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
-        return render(request, 'profile.html')
+        return Response()
 
 
-class ChangePasswordView(View):
-    """用户修改密码"""
-
-    def post(self, request):
-        form = ChangePasswordForm(request.POST)
-        if form.is_valid():
-            context = form.change_pass(request)
-        else:
-            error = form.errors.as_text()
-            context = {'status': 2, 'msg': error}
-        return HttpResponse(json.dumps(context))
-
-
-class ChangeMobileView(View):
-    """用户修改手机号"""
+class ChangePasswordView(APIView):
+    """修改密码"""
 
     def post(self, request):
-        form = ChangeMobileForm(request.POST)
-        if form.is_valid():
-            context = form.change_mobile(request)
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            s, msg = serializer.change(request)
+            code = 0 if s else 2
+            data = {'code': code, 'data': msg}
+            return Response(data=data, status=status.HTTP_200_OK)
         else:
-            error = form.errors.as_text()
-            context = {'status': 2, 'msg': error}
-        return HttpResponse(json.dumps(context))
+            errors = [str(v[0]) for k, v in serializer.errors.items()]
+            data = {'code': 2, 'data': '\n'.join(errors)}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ChangePicView(View):
+class ChangeMobileView(APIView):
+    """修改手机号"""
+
+    def post(self, request):
+        serializer = ChangeMobileSerializer(data=request.data)
+        if serializer.is_valid():
+            s, msg = serializer.change(request)
+            if s:
+                data = {'code': 0, 'data': msg}
+                return Response(data=data, status=status.HTTP_200_OK)
+        else:
+            errors = [str(v[0]) for k, v in serializer.errors.items()]
+            data = {'code': 2, 'data': '\n'.join(errors)}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePicView(APIView):
     """用户头像修改"""
 
-    def get(self, request):
-        return render(request, 'userpicture.html')
-
     def post(self, request):
-        avatar_data = eval(request.POST.get('avatar_data'))
+        avatar_data = eval(request.data.get('avatar_data'))
 
         # 保存图片到upload_to位置，并将路径写入到字段avatar_file
         photo = request.FILES.get('avatar_file')
@@ -133,13 +140,26 @@ class ChangePicView(View):
         # 将裁剪后的图片替换掉原始图片，生成新的图片
         resized_image.save(photo_instance.avatar_file.path, 'PNG')
 
-        result = {'state': 200}
-
-        return HttpResponse(json.dumps(result))
+        return Response(data={'state': 200}, status=status.HTTP_200_OK)
 
 
-class GetUserMailView(View):
+class GetEmailCcView(APIView):
+    """获取抄送的用户和邮箱"""
+
     def get(self, request):
         queryset = UserAccounts.objects.all().values('username', 'email')
-        serialize_data = json.dumps(list(queryset), cls=DjangoJSONEncoder)
-        return HttpResponse(serialize_data)
+        return Response(queryset)
+
+
+class GetAuditorView(APIView):
+    """获取有审核权限的用户"""
+
+    def post(self, request):
+        serializer = GetAuditorSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.query()
+            return Response(data=data)
+        else:
+            errors = [str(v[0]) for k, v in serializer.errors.items()]
+            data = {'code': 2, 'data': '\n'.join(errors)}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

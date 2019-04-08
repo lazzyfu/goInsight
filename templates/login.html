@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <meta charset="utf-8">
     {% load staticfiles %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" href="/media/img/favicon.ico">
-    <title>数据库审核系统</title>
+    <link rel="icon" href="/static/favicon/favicon.ico">
+    <title>数据库审核平台</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/font-awesome/css/font-awesome.min.css' %}">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/Ionicons/css/ionicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/Ionicons/css/ionicons.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/AdminLTE.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/dist/css/AdminLTE.min.css' %}">
     <!-- iCheck -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/plugins/iCheck/square/blue.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/plugins/iCheck/square/blue.css' %}">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -37,39 +37,45 @@
     }
 </style>
 
-<body class="hold-transition login-page">
+<body class="hold-transition login-page" style="height:auto;">
 <div class="login-box">
     <div class="login-logo">
-        <a href="#"><b>数据库审核系统</b></a>
+        <a href="#"><b>数据库审核平台</b></a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
+
+
         <form action="{% url 'p_login' %}" method="post">
-            <p class="login-box-msg">请使用账号登陆</p>
+            <p class="login-box-msg">使用账户登录</p>
             <div class="form-group has-feedback">
-                <input type="text" name="username" class="form-control" placeholder="用户名">
+                <input type="text" name="username" class="form-control" placeholder="请输入登录名: san.zhang">
                 <i class="glyphicon glyphicon-user form-control-feedback"></i>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" name="password" class="form-control" placeholder="密码">
+                <input type="password" name="password" class="form-control" placeholder="请输入密码">
                 <i class="glyphicon glyphicon-lock form-control-feedback"></i>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" placeholder="请输入右侧验证码" name="verifycode" id="verifycode">
+                    <input type="text" class="form-control" placeholder="请输入验证码" name="verifycode" id="verifycode">
                 </div>
                 <div class="col-sm-5">
-                    <img class="check-code" src="{% url 'p_verify' %}" alt="验证码" onclick="ChangeCode(this);">
+                    <img class="check-code" src="{% url 'p_verifycode' %}" alt="验证码" onclick="ChangeCode(this);">
                 </div>
             </div>
             <div class="form-group has-feedback">
+                {% for i in data %}
+                    {{ i.string }}
+            {% endfor %}
                 {% if msg %}
                     <p class="text-danger">{{ msg|linebreaksbr }}</p>
                 {% endif %}
+            {{ data }}
             </div>
             <div class="row">
                 <!-- /.col -->
-                <div class="col-xs-4 col-xs-offset-8">
+                <div class="col-xs-6 col-xs-offset-3">
                     <button type="submit" class="btn btn-primary btn-block btn-flat">登陆</button>
                 </div>
                 <!-- /.col -->
@@ -82,14 +88,16 @@
 <!-- /.login-box -->
 
 <!-- jQuery 3 -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js' %}"></script>
+
+<script src="{% static 'AdminLTE-2.4.10/bower_components/jquery/dist/jquery.min.js' %}"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
 <!-- iCheck -->
-<script src="{% static 'AdminLTE-2.4.5/plugins/iCheck/icheck.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/plugins/iCheck/icheck.min.js' %}"></script>
 <script>
     function ChangeCode(ths) {
-        ths.src = ths.src + '?';  //点击一下，局部重新get一次，重新生成验证
+        //点击一下，局部重新get一次，重新生成验证
+        ths.src = ths.src + '?';
     }
 </script>
 </body>

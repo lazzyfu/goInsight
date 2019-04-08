@@ -1,18 +1,10 @@
-# -*- coding:utf-8 -*-
-# edit by fuzongfei
-
 from django.contrib import admin
+
 # Register your models here.
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
-from django.db.models import Min, Q
 
-from sqlorders.models import SqlOrdersEnvironment, MysqlSchemas
-from users.models import UserAccounts, UserRoles, RolePermission
-from webshell.models import WebShellGrant
-
-admin.site.site_title = '后台'
-admin.site.site_header = '数据库审核系统'
+from users.models import UserAccounts, UserRoles, RolePermissions
 
 
 class UserRolesInline(admin.TabularInline):
@@ -23,36 +15,30 @@ class UserRolesInline(admin.TabularInline):
 
 
 class RolePermissionInline(admin.TabularInline):
-    model = RolePermission.role.through
+    model = RolePermissions.role.through
     verbose_name = u'用户权限'
     verbose_name_plural = u'用户权限'
     extra = 1
 
 
-class WebShellGrantInline(admin.TabularInline):
-    model = WebShellGrant
-    extra = 1
-
-    verbose_name = u'WebShell授权'
-    verbose_name_plural = u'WebShell授权'
-
-
 class UserAccountsAdmin(admin.ModelAdmin):
     list_display = (
-        'username', 'displayname', 'email', 'mobile', 'is_active', 'user_role',
-        'date_joined')
+        'username', 'user_role', 'displayname', 'email', 'mobile', 'is_active', 'date_joined'
+    )
     list_display_links = ('username',)
     search_fields = ('username', 'email', 'displayname')
     fieldsets = (
         ('个人信息',
-         {'fields': ['username', 'displayname', 'email', 'mobile', 'password', 'is_active', 'avatar_file']}),
+         {'fields': [
+             'username', 'displayname', 'email', 'mobile', 'password', 'is_active', 'avatar_file', 'is_superuser'
+         ]}
+         ),
     )
-    inlines = [UserRolesInline, WebShellGrantInline]
-
+    inlines = [UserRolesInline, ]
     exclude = ('users',)
-    actions = ['reset_password']
 
     # 支持密码修改
+    # 直接在密码输入框输入明文保存即可
     def save_model(self, request, obj, form, change):
         obj.user = request.user
         data = form.clean()
@@ -81,18 +67,12 @@ class RolePermissionAdmin(admin.ModelAdmin):
         ('权限信息',
          {'fields': ['permission_name', 'permission_desc']}),
     )
-    readonly_fields = ('permission_name', 'permission_desc')
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
-
-    def has_add_permission(self, request):
-        return False
+    list_display_links = ('permission_desc',)
 
     def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
         return False
 
     def has_change_permission(self, request, obj=None):
@@ -101,5 +81,5 @@ class RolePermissionAdmin(admin.ModelAdmin):
 
 admin.site.register(UserAccounts, UserAccountsAdmin)
 admin.site.register(UserRoles, UserRolesAdmin)
-admin.site.register(RolePermission, RolePermissionAdmin)
+admin.site.register(RolePermissions, RolePermissionAdmin)
 admin.site.unregister(Group)

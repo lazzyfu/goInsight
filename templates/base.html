@@ -3,78 +3,68 @@
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
-<html>
+<html lang="zh">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>数据库审核系统</title>
+    <title>数据库审核平台</title>
     {% load staticfiles %}
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="icon" type="image/png" href="{% static 'favicon/favicon.ico' %}">
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/font-awesome/css/font-awesome.min.css' %}">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/Ionicons/css/ionicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/Ionicons/css/ionicons.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/AdminLTE.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/dist/css/AdminLTE.min.css' %}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
           page. However, you can choose any other skin. Make sure you
           apply the skin class to the body tag so the changes take effect. -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/dist/css/skins/skin-blue.min.css' %}">
-    <!-- animate -->
-    <link rel="stylesheet" href="{% static 'animate.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/dist/css/skins/skin-blue.min.css' %}">
     <!-- pnotify -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/pnotify/pnotify.custom.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/pnotify/pnotify.custom.min.css' %}">
+    <!-- animate -->
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
     <!-- bootstrap-select -->
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
     <!-- bootstrap-table -->
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/bootstrap-table.min.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap3-editable/css/bootstrap-editable.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/auto-refresh/bootstrap-table-auto-refresh.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/extensions/auto-refresh/bootstrap-table-auto-refresh.css' %}">
     <!-- CodeMirror -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/lib/codemirror.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/lib/codemirror.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/hint/show-hint.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/hint/show-hint.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/fold/foldgutter.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/fold/foldgutter.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/dialog/dialog.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/dialog/dialog.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/material.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/theme/material.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/dracula.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/theme/darcula.css' %}">
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/theme/monokai.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/theme/monokai.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/search/matchesonscrollbar.css' %}">
     <!-- jstree -->
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/jstree/dist/themes/default/style.min.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/jstree/dist/themes/default/style.min.css' %}">
     <!-- highlight -->
     <link rel="stylesheet"
-          href="{% static 'AdminLTE-2.4.5/bower_components/highlight/github.min.css' %}">
+          href="{% static 'AdminLTE-2.4.10/bower_components/highlight/github.min.css' %}">
+    <!-- sweetalert -->
+
     <!-- jquery loading -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.css' %}">
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/jquery-loading/jquery.loading.min.css' %}">
     <!-- xterm -->
-    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.5/bower_components/xterm/css/xterm.min.css' %}">
-
-
-    <style>
-        .table > tbody > tr > td {
-            vertical-align: middle !important;
-        }
-
-        .CodeMirror pre.CodeMirror-placeholder {
-            color: #999;
-        }
-    </style>
-
+    <link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/xterm/css/xterm.min.css' %}">
+    <!-- 自定义css -->
+    <link rel="stylesheet" href="{% static 'css/public.css' %}">
     <!-- 定义 css block -->
     {% block link_css %}
     {% endblock %}
@@ -99,7 +89,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><b>A</b>LT</span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg">数据库审核系统</span>
+            <span class="logo-lg">数据库审核平台</span>
         </a>
 
         <!-- Header Navbar -->
@@ -124,7 +114,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <!-- The user image in the menu -->
                             <li class="user-header" style="background-color: #e1e6e4">
                                 <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="User Image">
-                                <p>
+                                <p style="color: #0088cc">
                                     {{ request.user.displayname }}
                                     <small>{{ request.user.user_role }}</small>
                                 </p>
@@ -132,7 +122,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="{% url 'p_user_profile' %}" class="btn btn-default btn-flat">个人信息</a>
+                                    <a href="{% url 'p_profile' %}" class="btn btn-default btn-flat">个人信息</a>
                                 </div>
                                 <div class="pull-right">
                                     <a href="{% url 'p_logout' %}" class="btn btn-default btn-flat">退出</a>
@@ -156,33 +146,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <img src="/media/{{ request.user.avatar_file }}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>{{ request.user.username }}</p>
-                    <a href="#">{% if request.user.user_role %}{{ request.user.user_role }}{% endif %}</a>
+                    <p>{{ request.user.displayname }}</p>
+                    <span class="fa fa-circle text-success"></span><a href="#"> {{ request.user.user_role }}</a>
                 </div>
             </div>
 
             <!-- Sidebar Menu -->
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">导航栏</li>
-                <!-- Optionally, you can add icons to the links -->
                 <li class="treeview">
                     <a>
-                        <i class="fa fa-history"></i>
-                        <span>历史工单</span>
+                        <span class="fa fa-tachometer"></span>
+                        <span>仪表盘</span>
                         <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
+                            <span class="fa fa-angle-left pull-right"></span>
+                        </span>
                     </a>
+
                     <ul class="treeview-menu">
-                        <li><a href='{% url 'p_render_my_orders' %}'><i
-                                class="fa fa-circle-o"></i>我的工单</a>
-                            {% for i in order_environment %}
-                                <li><a href='/sqlorders/sql_orders_list/{{ i.envi_id }}/'><i
-                                    class="fa fa-circle-o"></i>{{ i.envi_name }}</a>
-                            {% endfor %}
+                        <li>
+                            <a href="/dash/chart/">
+                                <span class="fa fa-circle-o"></span>工单图表
+                            </a>
+                        </li>
+{#                        <li>#}
+{#                            <a href="{% url 'p_render_orders_report' %}">#}
+{#                                <span class="fa fa-circle-o"></span>工单报表#}
+{#                            </a>#}
+{#                        </li>#}
                     </ul>
                 </li>
-
                 <li class="treeview">
                     <a>
                         <i class="fa fa-edit"></i>
@@ -192,48 +185,75 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'p_render_get_sql_tasks_version' %}"><i class="fa fa-circle-o"></i>上线版本</a>
+                        <li>
+                            <a href="{% url 'p_online_version' %}">
+                                <i class="fa fa-circle-o"></i>上线版本
+                            </a>
                         </li>
-                        <li><a href="{% url 'p_render_sql_dml_orders' %}"><i
-                                class="fa fa-circle-o"></i>DML工单</a>
+                        <li>
+                            <a href="{% url 'p_dml' %}">
+                                <i class="fa fa-circle-o"></i>SQL工单
+                            </a>
                         </li>
-                        <li><a href="{% url 'p_render_sql_ddl_orders' %}"><i
-                                class="fa fa-circle-o"></i>DDL工单</a>
+                        <li>
+                            <a href="{% url 'p_sql_export' %}">
+                                <i class="fa fa-circle-o"></i>导出工单
+                            </a>
                         </li>
-                        <li><a href="{% url 'p_render_sql_export' %}"><i
-                                class="fa fa-circle-o"></i>数据导出</a>
-                        </li>
-                        <li><a href="{% url 'p_render_ops_orders' %}"><i
-                                class="fa fa-circle-o"></i>运维工单</a>
+                        <li>
+                            <a href="{% url 'p_ops' %}">
+                                <i class="fa fa-circle-o"></i>运维工单
+                            </a>
                         </li>
                     </ul>
                 </li>
-
                 <li class="treeview">
                     <a>
                         <i class="fa fa-history"></i>
+                        <span>历史工单</span>
+                        <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href='{% url 'p_my_orders' %}'>
+                                <i class="fa fa-circle-o"></i>我的工单
+                            </a>
+                        </li>
+                        {% for i in sys_environment %}
+                            <li>
+                                <a href='/orders/envi/{{ i.envi_id }}/'>
+                                    <i class="fa fa-circle-o"></i>{{ i.envi_name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a>
+                        <span class="fa fa-search-minus"></span>
                         <span>DMS</span>
                         <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
+                                        <span class="fa fa-angle-left pull-right"></span>
+                                    </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href='/sqlquery/sql_query/'><i class="fa fa-circle-o"></i>SQL查询</a></li>
-                        <li><a href="{% url 'p_dbdict' %}"><span class="fa fa-circle-o"></span>数据字典</a></li>
-                        <li><a href="{% url 'p_soar' %}"><span class="fa fa-circle-o"></span>SQL优化</a></li>
-                    </ul>
-                </li>
-
-                <li class="treeview">
-                    <a>
-                        <i class="fa fa-history"></i>
-                        <span>Xterm</span>
-                        <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="{% url 'p_web_ssh' %}"><i class="fa fa-circle-o"></i>webshell</a></li>
+                        <li>
+                            <a href="{% url 'p_sqlquery' %}">
+                                <span class="fa fa-circle-o"></span>SQL查询
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'p_dbdict' %}">
+                                <span class="fa fa-circle-o"></span>数据字典
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'p_soar' %}">
+                                <span class="fa fa-circle-o"></span>SQL优化
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -253,16 +273,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </div>
     <!-- /.content-wrapper -->
 
-    <!-- Main Footer -->
-    <footer class="main-footer">
-        <!-- To the right -->
-        <div class="pull-right hidden-xs">
-            Anything you want
-        </div>
-        <!-- Default to the left -->
-        <strong>Copyright &copy; 2016 <a href="#">Company</a>.</strong> All rights reserved.
-    </footer>
-
     <!-- Add the sidebar's background. This div must be placed
     immediately after the control sidebar -->
     <div class="control-sidebar-bg"></div>
@@ -272,8 +282,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- REQUIRED JS SCRIPTS -->
 
 <!-- jQuery 3 -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/jquery-ui/jquery-ui.min.js' %}"></script>
 <script>
     $.widget.bridge('uibutton', $.ui.button);
 
@@ -281,7 +291,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     let url = window.location;
 
     // for sidebar menu entirely but not cover treeview
-    $('ul.sidebar-menu a').filter(function () {
+    $('ul.sidebar-menu.li a').filter(function () {
         return this.href == url;
     }).parent().addClass('active');
 
@@ -291,76 +301,74 @@ scratch. This page gets rid of all links and provides the needed markup only.
     }).parentsUntil(".sidebar-menu > .treeview-menu").addClass('active');
 </script>
 <!-- Bootstrap 3.3.7 -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
 <!-- AdminLTE App -->
-<script src="{% static 'AdminLTE-2.4.5/dist/js/adminlte.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/dist/js/adminlte.min.js' %}"></script>
 <!-- Slimscroll -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
 <!-- FastClick -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/fastclick/lib/fastclick.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/fastclick/lib/fastclick.js' %}"></script>
 <!-- jquery-form -->
-<script src="{% static 'jquery.form.min.js' %}"></script>
+<script src="{% static 'js/jquery.form.min.js' %}"></script>
 <!-- jquery-cookie -->
-<script src="{% static 'jquery.cookie.js' %}"></script>
+<script src="{% static 'js/jquery.cookie.js' %}"></script>
 <!-- CodeMirror -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/lib/codemirror.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/mode/clike/clike.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/mode/sql/sql.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/mode/shell/shell.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/display/placeholder.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/display/autorefresh.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/hint/show-hint.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/hint/anyword-hint.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/hint/sql-hint.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/selection/active-line.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/search/searchcursor.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/search/search.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/dialog/dialog.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/edit/matchbrackets.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/edit/closebrackets.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/comment/comment.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/wrap/hardwrap.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/fold/foldcode.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/fold/brace-fold.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/keymap/sublime.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/scroll/annotatescrollbar.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/search/matchesonscrollbar.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/search/match-highlighter.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/codemirror-5.37.0/addon/mode/overlay.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/lib/codemirror.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/mode/clike/clike.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/mode/sql/sql.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/display/placeholder.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/display/autorefresh.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/hint/show-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/hint/anyword-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/hint/sql-hint.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/selection/active-line.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/search/searchcursor.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/search/search.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/dialog/dialog.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/edit/matchbrackets.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/edit/closebrackets.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/comment/comment.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/wrap/hardwrap.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/fold/foldcode.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/fold/brace-fold.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/keymap/sublime.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/scroll/annotatescrollbar.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/search/matchesonscrollbar.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/search/match-highlighter.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/codemirror-5.40.2/addon/mode/overlay.js' %}"></script>
 <!-- pnotify -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/pnotify/pnotify.custom.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/pnotify/pnotify.custom.min.js' %}"></script>
 <!-- bootstrap-select -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
 <!-- bootstrap-table -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-fixed-columns.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap3-editable/js/bootstrap-editable.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/export/bootstrap-table-export.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/export/tableExport.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js' %}"></script>
-<script src="{% static  'AdminLTE-2.4.5/bower_components/bootstrap-table/extensions/auto-refresh/bootstrap-table-auto-refresh.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/bootstrap-table.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/bootstrap-table-editable.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/bootstrap-table-zh-CN.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/extensions/export/tableExport.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-table/extensions/editable/bootstrap-table-editable.min.js' %}"></script>
+<script src="{% static  'AdminLTE-2.4.10/bower_components/bootstrap-table/extensions/auto-refresh/bootstrap-table-auto-refresh.js' %}"></script>
 <!-- moment -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/moment/moment.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/moment/locale/zh-cn.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/moment/moment.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/moment/locale/zh-cn.js' %}"></script>
 <!-- bootstrap-validation -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/bootstrap-validation/validator.min.js' %}"></script>
-<!-- layer -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/layer/layui.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/bootstrap-validation/validator.min.js' %}"></script>
 <!-- jstree -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jstree/dist/jstree.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/jstree/dist/jstree.min.js' %}"></script>
 <!-- highlight -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/highlight/highlight.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/highlight/sql.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/highlight/highlight.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/highlight/sql.min.js' %}"></script>
 <!-- jquery loading -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/jquery-loading/jquery.loading.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/jquery-loading/jquery.loading.min.js' %}"></script>
 <!-- xterm -->
-<script src="{% static 'AdminLTE-2.4.5/bower_components/xterm/js/xterm.min.js' %}"></script>
-<script src="{% static 'AdminLTE-2.4.5/bower_components/showdownjs/showdown.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/xterm/js/xterm.min.js' %}"></script>
+<!-- showdown -->
+<script src="{% static 'AdminLTE-2.4.10/bower_components/showdownjs/showdown.min.js' %}"></script>
+<!-- sweetalert -->
+<script src="{% static 'js/sweetalert.min.js' %}"></script>
 <!-- public js file -->
-<script src="{% static 'public.js' %}"></script>
+<script src="/static/js/public.js?v20190326"></script>
 
 <!-- 定义 javascript block -->
 {% block link_javascripts %}

@@ -1,9 +1,7 @@
-settings.py
-logs/
-*pycache__
-*.pyc
-*.zip
-*.jpg
+logs/*.log
+media/files/
+media/tmp/
 test/
-README.md
-media/rbsql/
+config/config.py
+*.pyc
+venv/

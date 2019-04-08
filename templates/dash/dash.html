@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block right_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Profile Image -->
+            <div class="box box-info">
+                <div class="box-header box-border">
+                    <div class="mailbox-read-info">
+                        <h3 class="box-title"><i class="fa fa-area-chart"></i> 工单图表
+                        </h3>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-md-6 col-sm-6 col-xs-12" style="border: 2px solid #f4f4f4;padding: 10px">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <span style="font-size: 18px;">我的工单：</span>
+                                    <span style="font-size: 18px;color: red;" id="myOrderCount"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="chart-responsive">
+                                        <canvas id="myOrderChart" height="120"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <ul class="chart-legend clearfix">
+                                        <li><i class="fa fa-circle-o text-red"></i> DML</li>
+                                        <li><i class="fa fa-circle-o text-green"></i> DDL</li>
+                                        <li><i class="fa fa-circle-o text-yellow"></i> 导出工单</li>
+                                        <li><i class="fa fa-circle-o text-light-blue"></i> 运维工单</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer no-padding">
+                            <ul class="nav nav-pills nav-stacked" id="renderMyOrderLabel">
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12" style="border: 2px solid #f4f4f4;padding: 10px">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <span style="font-size: 18px;">平台工单：</span>
+                                    <span style="font-size: 18px;color: red;" id="platformtOrderCount"></span>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="chart-responsive">
+                                        <canvas id="platformOrderChart" height="120"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <ul class="chart-legend clearfix">
+                                        <li><i class="fa fa-circle-o text-red"></i> DML</li>
+                                        <li><i class="fa fa-circle-o text-green"></i> DDL</li>
+                                        <li><i class="fa fa-circle-o text-yellow"></i> 导出工单</li>
+                                        <li><i class="fa fa-circle-o text-light-blue"></i> 运维工单</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer no-padding">
+                            <ul class="nav nav-pills nav-stacked" id="renderPlatfomOrderLabel">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">工单详情统计(默认显示最近30天)</h3>
+                        <div class="pull-right">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <label>开始时间</label>
+                                    <input placeholder="开始" type="date" id="starttime_2" class="form-control"
+                                           name="start_time">
+                                </div>
+
+                                <div class="form-group" style="margin-left: 10px">
+                                    <label>结束时间</label>
+                                    <input placeholder="开始" type="date" id="endtime_2" class="form-control"
+                                           name="end_time">
+                                </div>
+                                <div class="form-group" style="margin-left: 10px">
+                                    <button type="button" onclick="loadSqlCount()" class="btn btn-default form-control">
+                                        查询
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead id="sqlcount_title">
+                                </thead>
+                                <tbody id="sqlcount_content">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block link_javascripts %}
+    <!-- charts -->
+    <script src="{% static 'AdminLTE-2.4.10/bower_components/chart.js/Chart.min.js' %}"></script>
+    <script>
+        // 获取工单图表数据
+        $(function () {
+            $.ajax({
+                url: '/dash/chart/orders/',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                cache: false,
+                success: function (data) {
+                    $('#myOrderCount').append(data.my_order_count);
+                    $('#platformtOrderCount').append(data.platform_order_count);
+                    myOrderChart.Doughnut(data.myordercharts, {});
+                    platformOrderChart.Doughnut(data.platformordercharts, {});
+                    // 渲染工单的数量
+                    renderOrdersLabel(data.myordercharts, 'renderMyOrderLabel');
+                    renderOrdersLabel(data.platformordercharts, 'renderPlatfomOrderLabel')
+                }
+            })
+        });
+
+        function renderOrdersLabel(data, label) {
+            let html = '';
+            let r = $('#' + label + '');
+            r.empty();
+            for (let index in data) {
+                let row = data[index];
+                html += "<li><a href=\"#\">" + row['label'] + "<span class=\"pull-right text-red\"> " + row['value'] + "</span></a></li>"
+            }
+            r.append(html)
+        }
+
+        // 我的工单
+        let myOrderChartCanvas = $('#myOrderChart').get(0).getContext('2d');
+        let myOrderChart = new Chart(myOrderChartCanvas);
+
+
+        // 平台工单
+        let platformOrderChartCanvas = $('#platformOrderChart').get(0).getContext('2d');
+        let platformOrderChart = new Chart(platformOrderChartCanvas);
+
+
+        function loadSqlCount() {
+            let csrftoken = $.cookie('csrftoken');
+            let starttime = $("#starttime_2").val();
+            if (starttime.length === 0) {
+                starttime = 'None'
+            }
+            let endtime = $("#endtime_2").val();
+            if (endtime.length === 0) {
+                endtime = 'None'
+            }
+            $.ajax({
+                url: '{% url "p_get_sqlcount" %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {'starttime': starttime, 'endtime': endtime, 'csrfmiddlewaretoken': csrftoken},
+                timeout: 5000,
+                cache: false,
+                success: function (result) {
+                    if (result.code === 0) {
+                        let sqlhtml = "";
+                        let sqlcount_title = $('#sqlcount_title');
+                        let sqlcount_content = $('#sqlcount_content');
+                        sqlcount_title.empty();
+                        sqlcount_content.empty();
+                        let data = result.data;
+
+                        sqlcount_title.append(
+                            "<tr>" +
+                            "<th>环境</th>" +
+                            "<th>库名</th>" +
+                            "<th>类型</th>" +
+                            "<th>数量</th>" +
+                            "</tr>"
+                        );
+
+                        data.forEach(function (row) {
+                            sqlhtml += "<tr>" +
+                                "<td>" + row.enviname + "</td>" +
+                                "<td>" + row.db + "</td>" +
+                                "<td>" + row.sqltype + "</td>" +
+                                "<td>" + row.num + "</td>" +
+                                "</tr>"
+                        });
+                        sqlcount_content.append(sqlhtml);
+                    } else {
+                        displayPNotify(result.code, result.data)
+                    }
+                }
+            })
+        }
+
+        // 打开页面自动加载
+        loadSqlCount()
+    </script>
+{% endblock %}

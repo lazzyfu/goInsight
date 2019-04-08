@@ -1,0 +1,43 @@
+.table > tbody > tr > td {
+    vertical-align: middle !important;
+}
+
+.CodeMirror pre.CodeMirror-placeholder {
+    color: #999;
+}
+
+.msg-error {
+    color: red;
+}
+
+td {
+    word-break: break-all;
+}
+
+.box-gray {
+    border-top-width: 1px;
+}
+
+.box-info {
+    border-top-width: 1px;
+}
+
+.swal-footer {
+    background-color: rgb(245, 248, 250);
+    margin-top: 32px;
+    border-top: 1px solid #E9EEF1;
+    overflow: hidden;
+}
+
+.swal-overlay {
+    background-color: rgba(43, 165, 137, 0.45);
+}
+
+.swal-button {
+    padding: 7px 19px;
+    border-radius: 2px;
+    background-color: #4962B3;
+    font-size: 12px;
+    border: 1px solid #3e549a;
+    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
+}
