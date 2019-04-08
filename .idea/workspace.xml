@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="重构初始化提交">
-      <change afterPath="$PROJECT_DIR$/documents/readme.txt" afterDir="false" />
+    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904081556">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.txt" beforeDir="false" afterPath="$PROJECT_DIR$/readme.txt" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,7 +31,7 @@
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="168">
-              <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
+              <caret line="7" column="10" lean-forward="true" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -197,16 +195,6 @@
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="documents" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="media" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -434,7 +422,7 @@
       <workItem from="1551415170128" duration="108000" />
       <workItem from="1551755315466" duration="1476000" />
       <workItem from="1551766594704" duration="4669000" />
-      <workItem from="1554709362350" duration="791000" />
+      <workItem from="1554709362350" duration="883000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -443,11 +431,18 @@
       <option name="project" value="LOCAL" />
       <updated>1554709928043</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="201904081556">
+      <created>1554710176559</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1554710176559</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="46677000" />
+    <option name="totallyTimeSpent" value="46769000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -564,7 +559,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="重构初始化提交" />
-    <option name="LAST_COMMIT_MESSAGE" value="重构初始化提交" />
+    <MESSAGE value="201904081556" />
+    <option name="LAST_COMMIT_MESSAGE" value="201904081556" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -659,7 +655,7 @@
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="168">
-          <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
+          <caret line="7" column="10" lean-forward="true" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
         </state>
       </provider>
     </entry>
