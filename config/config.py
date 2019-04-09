@@ -8,7 +8,7 @@ import ldap
 from django_auth_ldap.config import LDAPSearch
 
 DB = {
-    'database': 'opsql',
+    'database': 'auditsql',
     'user': 'root',
     'host': '127.0.0.1',
     'port': 3306,
