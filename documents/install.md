@@ -3,6 +3,12 @@
 - 推荐配置：4核心/8GB内存
 - 防火墙：关闭selinux 和 firewalld
 
+## 配置文件
+/data/web/opsql/config/config.py
+
+只需要修改此文件即可，不需要再修改settings.py文件
+
+## 安装部署
 **安装系统依赖包**
 ```bash
 yum -y install epel-release
