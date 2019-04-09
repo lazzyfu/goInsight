@@ -257,6 +257,13 @@ inception的安装包位于: documents/inception-master.zip
 
 
 **解决pymysql不兼容inception的问题**
+
+若不解决，logs/all.log会输出下面错误
+```
+ValueError: invalid literal for int() with base 10: 'Inception2'
+```
+
+修改：
 ```bash
 vim /venv_py36/lib/python3.6/site-packages/pymysql/connections.py
 ### 内容如下 ###
