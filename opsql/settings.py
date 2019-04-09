@@ -35,9 +35,9 @@ LOGIN_URL = '/users/login/'
 SECRET_KEY = 'nt5blt61$+k+!=oud@_dfq1+b3r290g5#d@t+#ik809tbt)53k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 

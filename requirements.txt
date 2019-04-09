@@ -54,6 +54,7 @@ python-ldap==3.2.0
 pytz==2018.9
 redis==3.2.0
 requests==2.21.0
+simplejson==3.16.0
 six==1.12.0
 sqlparse==0.3.0
 Twisted==18.9.0
