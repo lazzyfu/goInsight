@@ -249,6 +249,11 @@ systemctl restart nginx.service
 rpm -ivh https://github.com/github/gh-ost/releases/download/v1.0.48/gh-ost-1.0.48-1.x86_64.rpm
 ```
 
+**安装inception**
+
+请自行安装，配置规则，然后修改config/config.py文件中的inception配置，重启uwsgi服务即可
+
+
 **解决pymysql不兼容inception的问题**
 ```bash
 vim /venv_py36/lib/python3.6/site-packages/pymysql/connections.py
@@ -265,4 +270,4 @@ if not self._defer_warnings:
     pass
 ```
 
-**最后访问nginx里面配置的域名即可**
+**最后访问nginx里面配置的域名即可(http://opsql.example.com:8000)**
