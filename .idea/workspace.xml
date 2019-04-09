@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
-      <change afterPath="$PROJECT_DIR$/documents/inception-master.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documents/initial.sql" beforeDir="false" afterPath="$PROJECT_DIR$/documents/initial.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documents/install.md" beforeDir="false" afterPath="$PROJECT_DIR$/documents/install.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
     </list>
@@ -69,14 +69,20 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_periodictask">
+          <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+            <state>
+              <filtering enabled="true" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/documents/install.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="421">
-                <caret line="257" lean-forward="true" selection-start-line="257" selection-end-line="257" />
-              </first_editor>
-              <second_editor />
+        <entry file="file://$PROJECT_DIR$/documents/initial.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="20" column="40" lean-forward="true" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
             </state>
           </provider>
         </entry>
@@ -95,8 +101,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>sqla</find>
-      <find>text</find>
       <find>resize_xterm_window</find>
       <find>CreateWebShell</find>
       <find>StartWebShell</find>
@@ -125,6 +129,8 @@
       <find>auditsql_web</find>
       <find>web_shell</find>
       <find>simple</find>
+      <find>favicon.ico</find>
+      <find>with</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -189,9 +195,9 @@
         <option value="$PROJECT_DIR$/apps/orders/utils/task.py" />
         <option value="$PROJECT_DIR$/config/config.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/documents/initial.sql" />
         <option value="$PROJECT_DIR$/opsql/settings.py" />
         <option value="$PROJECT_DIR$/documents/install.md" />
+        <option value="$PROJECT_DIR$/documents/initial.sql" />
       </list>
     </option>
   </component>
@@ -243,11 +249,6 @@
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="documents" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -478,7 +479,7 @@
       <workItem from="1551766594704" duration="4669000" />
       <workItem from="1554709362350" duration="1395000" />
       <workItem from="1554711236721" duration="5257000" />
-      <workItem from="1554774459757" duration="5272000" />
+      <workItem from="1554774459757" duration="6962000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -613,11 +614,25 @@
       <option name="project" value="LOCAL" />
       <updated>1554787392035</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="201904091200">
+      <created>1554787602927</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1554787602927</updated>
+    </task>
+    <task id="LOCAL-00021" summary="201904091338">
+      <created>1554788313927</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1554788313927</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="57810000" />
+    <option name="totallyTimeSpent" value="59500000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -632,7 +647,7 @@
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.20234291" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.20234291" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -746,12 +761,13 @@
     <MESSAGE value="201904081725" />
     <MESSAGE value="201904091048" />
     <MESSAGE value="201904081726" />
-    <MESSAGE value="201904091200" />
     <MESSAGE value="201904091259" />
     <MESSAGE value="201904091300" />
     <MESSAGE value="201904091202" />
     <MESSAGE value="201904091323" />
-    <option name="LAST_COMMIT_MESSAGE" value="201904091323" />
+    <MESSAGE value="201904091200" />
+    <MESSAGE value="201904091338" />
+    <option name="LAST_COMMIT_MESSAGE" value="201904091338" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -944,20 +960,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/auditsql_useraccounts">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/documents/initial.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_results_taskresult">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -973,13 +975,6 @@
       </provider>
     </entry>
     <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_periodictasks">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_periodictask">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
@@ -1024,13 +1019,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_periodictask">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/documents/install.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="421">
-            <caret line="257" lean-forward="true" selection-start-line="257" selection-end-line="257" />
+          <first_editor relative-caret-position="352">
+            <caret line="96" selection-start-line="96" selection-end-line="96" selection-end-column="17" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/auditsql_useraccounts">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/documents/initial.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="20" column="40" lean-forward="true" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
         </state>
       </provider>
     </entry>

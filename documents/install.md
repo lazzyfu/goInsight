@@ -88,10 +88,16 @@ chown -R nginx. /data/web
 需要修改配置文件(**/data/web/opsql/config/config.py**)中的数据库配置
 
 ```bash
-create database opsql character set utf8;
 cd /data/web/opsql
 python manage.py migrate
-mysql -uroot -p'123.com' opsql < documents/initial.sql
+# 数据库创建库和用户，该用户必须要有with grant option权限
+create database opsql character set utf8;
+create user 'opsql'@'%' identified by '123.com';
+grant all on *.* to 'opsql'@'10.10.1.201' with grant option;
+flush privileges;
+
+# 导入数据
+mysql -uopsql -p123.com opsql < documents/initial.sql
 ```
 
 **处理静态文件**
