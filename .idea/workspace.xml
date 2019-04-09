@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
+      <change afterPath="$PROJECT_DIR$/documents/inception-master.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documents/install.md" beforeDir="false" afterPath="$PROJECT_DIR$/documents/install.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
@@ -63,7 +64,7 @@
         <entry file="file://$PROJECT_DIR$/opsql/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="682">
-              <caret line="41" column="24" lean-forward="true" selection-start-line="41" selection-start-column="24" selection-end-line="41" selection-end-column="24" />
+              <caret line="41" column="24" selection-start-line="41" selection-start-column="24" selection-end-line="41" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -72,8 +73,8 @@
         <entry file="file://$PROJECT_DIR$/documents/install.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="479">
-                <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+              <first_editor relative-caret-position="421">
+                <caret line="257" lean-forward="true" selection-start-line="257" selection-end-line="257" />
               </first_editor>
               <second_editor />
             </state>
@@ -274,11 +275,11 @@
       <recent name="$PROJECT_DIR$/media/png/admin" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/documents" />
       <recent name="$PROJECT_DIR$/static" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components" />
       <recent name="$PROJECT_DIR$/test/mysqlms/files" />
       <recent name="$PROJECT_DIR$/media/png" />
-      <recent name="$PROJECT_DIR$/media/png/admin" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -477,7 +478,7 @@
       <workItem from="1551766594704" duration="4669000" />
       <workItem from="1554709362350" duration="1395000" />
       <workItem from="1554711236721" duration="5257000" />
-      <workItem from="1554774459757" duration="4440000" />
+      <workItem from="1554774459757" duration="5272000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -598,11 +599,25 @@
       <option name="project" value="LOCAL" />
       <updated>1554786424288</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="201904091202">
+      <created>1554786581070</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1554786581070</updated>
+    </task>
+    <task id="LOCAL-00019" summary="201904091323">
+      <created>1554787392035</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1554787392035</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56978000" />
+    <option name="totallyTimeSpent" value="57810000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -734,7 +749,9 @@
     <MESSAGE value="201904091200" />
     <MESSAGE value="201904091259" />
     <MESSAGE value="201904091300" />
-    <option name="LAST_COMMIT_MESSAGE" value="201904091300" />
+    <MESSAGE value="201904091202" />
+    <MESSAGE value="201904091323" />
+    <option name="LAST_COMMIT_MESSAGE" value="201904091323" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1003,15 +1020,15 @@
     <entry file="file://$PROJECT_DIR$/opsql/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="682">
-          <caret line="41" column="24" lean-forward="true" selection-start-line="41" selection-start-column="24" selection-end-line="41" selection-end-column="24" />
+          <caret line="41" column="24" selection-start-line="41" selection-start-column="24" selection-end-line="41" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/documents/install.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="479">
-            <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+          <first_editor relative-caret-position="421">
+            <caret line="257" lean-forward="true" selection-start-line="257" selection-end-line="257" />
           </first_editor>
           <second_editor />
         </state>

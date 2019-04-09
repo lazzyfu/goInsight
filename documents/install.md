@@ -253,6 +253,8 @@ rpm -ivh https://github.com/github/gh-ost/releases/download/v1.0.48/gh-ost-1.0.4
 
 请自行安装，配置规则，然后修改config/config.py文件中的inception配置，重启uwsgi服务即可
 
+inception的安装包位于: documents/inception-master.zip
+
 
 **解决pymysql不兼容inception的问题**
 ```bash
