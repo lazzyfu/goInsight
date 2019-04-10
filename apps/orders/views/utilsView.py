@@ -39,7 +39,6 @@ class SyntaxCheckView(APIView):
         if serializer.is_valid():
             s, data = serializer.check(request)
             code = 0 if s else 2
-            print(code, data)
             return Response(data={'code': code, 'data': data}, status=status.HTTP_200_OK)
         else:
             errors = [str(v[0]) for k, v in serializer.errors.items()]

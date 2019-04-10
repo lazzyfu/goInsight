@@ -8,6 +8,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config.config import EMAIL
 from orders.models import SysEnvironment, Orders
 from orders.permissions import CanCommitPermission, anyof, CanExecutePermission, CanAuditPermission
 from orders.serializers.commitSerializers import OrdersCommitSerializer, OrderReplySerializer, HookOrdersSerializer
@@ -29,7 +30,8 @@ class SQLOrdersView(APIView):
     template_name = 'orders/sql_orders.html'
 
     def get(self, request):
-        return Response()
+        is_enable_mail = 0 if EMAIL['enable'] else 1
+        return Response(data={'is_enable_mail': is_enable_mail})
 
 
 class SQLExportView(APIView):

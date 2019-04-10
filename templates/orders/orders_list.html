@@ -268,7 +268,7 @@
             }
             if (progress === '已批准') {
                 // 执行
-                if (row.sql_type === 'DML' || row.sql_type === 'DDL') {
+                if (row.sql_type === 'DML' || row.sql_type === 'DDL' || row.sql_type === 'EXPORT') {
                     // 运维工单不提供自动执行功能
                     html += "<a href='#' class='btn btn-success btn-sm' style='margin: 2px' onclick='generate_subtasks(" + row.id + "," + row.envi_id + ")'><i class='fa fa-check-square-o fa-lg'></i> 执行</a>";
                 }

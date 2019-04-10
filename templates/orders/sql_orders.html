@@ -135,21 +135,20 @@
                                             </div>
                                         </div>
 
-                                        {#                                    {% ifequal is_enable_mail '0' %}#}
-                                        <div class="form-group has-feedback">
-                                            <label class="control-label col-md-4">抄送人 <span
-                                                    class="text-black">*</span></label>
-                                            <div class="col-md-8">
-                                                <select id="s_email_cc" name="email_cc" data-live-search="true"
-                                                        title="选择需要抄送的联系人..."
-                                                        data-actions-box="true" data-size='8'
-                                                        style="width: 100%" class="selectpicker form-control dropup"
-                                                        multiple required>
-                                                </select>
+                                        {% ifequal is_enable_mail 0 %}
+                                            <div class="form-group has-feedback">
+                                                <label class="control-label col-md-4">抄送人 </label>
+                                                <div class="col-md-8">
+                                                    <select id="s_email_cc" name="email_cc" data-live-search="true"
+                                                            title="选择需要抄送的联系人..."
+                                                            data-actions-box="true" data-size='8'
+                                                            style="width: 100%" class="selectpicker form-control dropup"
+                                                            multiple>
+                                                    </select>
+                                                </div>
+                                                <div class="help-block with-errors col-md-2"></div>
                                             </div>
-                                            <div class="help-block with-errors col-md-2"></div>
-                                        </div>
-                                        {#                                    {% endifequal %}#}
+                                        {% endifequal %}
 
                                         <div class="form-group">
                                             <label class="control-label col-sm-4"></label>

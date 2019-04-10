@@ -4,6 +4,7 @@ import csv
 import json
 import logging
 import os
+import smtplib
 import subprocess
 import time
 from datetime import datetime
@@ -161,38 +162,45 @@ class ExportToFiles(object):
 
     def send_attachments(self, file, encryption_key):
         """发送导出的文件到用户的邮箱"""
-        queryset = OrdersTasks.objects.get(id=self.id)
-        if UserAccounts.objects.filter(username=queryset.applicant).exists():
-            user_email = [UserAccounts.objects.get(username=queryset.applicant).email]
-            self.pull_msg(f'发送附件到用户的邮箱：{user_email[0]}')
-            self.execute_log.append(f'发送附件到用户的邮箱：{user_email[0]}')
+        try:
+            queryset = OrdersTasks.objects.get(id=self.id)
+            if UserAccounts.objects.filter(username=queryset.applicant).exists():
+                user_email = [UserAccounts.objects.get(username=queryset.applicant).email]
+                self.pull_msg(f'发送附件到用户的邮箱：{user_email[0]}')
+                self.execute_log.append(f'发送附件到用户的邮箱：{user_email[0]}')
 
-            # 发送通知里面的域名提示
-            domain_name_tips = DOMAIN_NAME['value']
+                # 发送通知里面的域名提示
+                domain_name_tips = DOMAIN_NAME['value']
 
-            # 向mail_template.html渲染data数据
-            email_html_body = render_to_string('mail/export_file_mail.html',
-                                               {'encryption_key': encryption_key,
-                                                'file': file,
-                                                'domain_name_tips': domain_name_tips
-                                                }
-                                               )
+                # 向mail_template.html渲染data数据
+                email_html_body = render_to_string('mail/export_file_mail.html',
+                                                   {'encryption_key': encryption_key,
+                                                    'file': file,
+                                                    'domain_name_tips': domain_name_tips
+                                                    }
+                                                   )
 
-            # 发送邮件
-            title = Orders.objects.get(id=queryset.order_id).title
-            headers = {'Reply: ': user_email}
-            title = 'Re: ' + title
-            msg = EmailMessage(subject=title,
-                               body=email_html_body,
-                               from_email=EMAIL_FROM,
-                               to=user_email,
-                               headers=headers
-                               )
-            msg.content_subtype = "html"
-            msg.send()
-        else:
-            self.pull_msg(f'用户邮箱错误，发送失败')
-            self.execute_log.append(f'用户邮箱错误，发送失败')
+                # 发送邮件
+                title = Orders.objects.get(id=queryset.order_id).title
+                headers = {'Reply: ': user_email}
+                title = 'Re: ' + title
+                msg = EmailMessage(subject=title,
+                                   body=email_html_body,
+                                   from_email=EMAIL_FROM,
+                                   to=user_email,
+                                   headers=headers
+                                   )
+                msg.content_subtype = "html"
+                msg.send()
+                return True
+            else:
+                self.pull_msg(f'用户邮箱错误，发送失败')
+                self.execute_log.append(f'用户邮箱错误，发送失败')
+                return False
+        except smtplib.SMTPAuthenticationError:
+            self.pull_msg('ERROR：Authentication error when sending Email')
+            self.execute_log.append('ERROR：Authentication error when sending Email')
+            return False
 
     def compress_file(self):
         # 压缩文件
@@ -232,7 +240,8 @@ class ExportToFiles(object):
         os.remove(self.zip_file) if os.path.exists(self.zip_file) else None
 
         # 发送邮件附件
-        self.send_attachments(file=obj.files, encryption_key=salt)
+        status = self.send_attachments(file=obj.files, encryption_key=salt)
+        return status
 
     def export_csv(self):
         # 导出成csv格式
@@ -373,14 +382,16 @@ class ExportToFiles(object):
                     self.export_xlsx()
                 if queryset.file_format == 'csv':
                     self.export_csv()
-                self.compress_file()
+                if self.compress_file() is True:
+                    queryset.task_progress = '1'
+                else:
+                    queryset.task_progress = '4'
                 end_time = time.time()
                 consume_time = ''.join((str(round(end_time - start_time, 2)), 's'))
                 msg = f'执行耗时：{consume_time}'
                 self.execute_log.append(msg)
                 self.pull_msg(msg)
                 queryset.consume_time = consume_time
-                queryset.task_progress = '1'
         else:
             queryset.task_progress = '3'
         queryset.task_execlog = '\n'.join(self.execute_log)

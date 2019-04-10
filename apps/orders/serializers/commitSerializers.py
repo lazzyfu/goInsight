@@ -66,7 +66,7 @@ class OrdersCommitSerializer(serializers.Serializer):
         host, port, database = sdata.get('schema').split(',') if sdata.get('schema') else [0, 0, '']
         sql_type = sdata.get('sql_type')
         contents = sdata.get('contents')
-        version_id = sdata.get('version') if sdata.get('version') else -1
+        version_id = sdata.get('version') if sdata.get('version') else None
         data = {
             'title': sdata.get('title') + '_[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']',
             'description': sdata.get('description'),
