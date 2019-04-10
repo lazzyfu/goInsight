@@ -12,10 +12,10 @@
 **安装系统依赖包**
 ```bash
 yum -y install epel-release
-yum -y install net-tools vim lsof lrzsz bzip2-devel wget 
-gcc gcc-c++ make automake unzip curl curl-devel perl perl-devel 
-expat expat-devel zlib zlib-devel asciidoc xmlto gettext-devel 
-openssl-devel openssl mlocate python-devel openldap-devel 
+yum -y install net-tools vim lsof lrzsz bzip2-devel wget \
+gcc gcc-c++ make automake unzip curl curl-devel perl perl-devel \
+expat expat-devel zlib zlib-devel asciidoc xmlto gettext-devel \
+openssl-devel openssl mlocate python-devel openldap-devel \
 readline-devel git mysql-devel
 ```
 
@@ -43,7 +43,8 @@ source /root/.bashrc
 mkdir /data/web -p
 cd /data/web
 # clone到本地，命名为opsql
-git clone https://github.com/lazzyfu/opsql.git opsql
+git clone https://github.com/lazzyfu/AuditSQL.git opsql
+
 ```
 
 **安装MySQL(可选)**
