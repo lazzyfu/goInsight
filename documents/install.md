@@ -90,13 +90,15 @@ chown -R nginx. /data/web
 
 ```bash
 cd /data/web/opsql
-python manage.py migrate
+
 # 数据库创建库和用户，该用户必须要有with grant option权限
 create database opsql character set utf8;
 create user 'opsql'@'%' identified by '123.com';
 grant all on *.* to 'opsql'@'10.10.1.201' with grant option;
 flush privileges;
 
+# 创建表结构
+python manage.py migrate
 # 导入数据
 mysql -uopsql -p123.com opsql < documents/initial.sql
 ```
