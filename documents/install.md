@@ -191,8 +191,6 @@ numprocs=1
 user=root
 startretries=3
 startsecs=10
-autostart=true
-autorestart=true
 stopsignal=QUIT
 stopasgroup=true
 killasgroup=true
@@ -201,7 +199,7 @@ stdout_logfile=/var/log/supervisord/uwsgi.log
 
 [program:daphne]
 directory=/data/web/opsql
-command=/venv_py36/bin/daphne -b 0.0.0.0 -p 8001 -v2 opsql.asgi:application
+command=/venv_py36/bin/daphne -b 0.0.0.0 -p 8001 --proxy-headers -v2 opsql.asgi:application
 numprocs=1
 user=root
 startsecs=10
@@ -211,9 +209,9 @@ redirect_stderr=true
 stdout_logfile=/var/log/supervisord/daphne.log
 
 [program:celery]
-command=/venv_py36/bin/celery worker -A opsql --loglevel=INFO --time-limit=7200 --concurrency=4
+command=/venv_py36/bin/celery worker -A opsql --loglevel=INFO --time-limit=7200 --concurrency=10 --uid=nginx
 directory=/data/web/opsql/
-user=nginx
+user=root
 numprocs=1
 stdout_logfile=/var/log/supervisord/celery_worker.log
 stderr_logfile=/var/log/supervisord/celery_worker.log
@@ -225,9 +223,9 @@ stopasgroup=true
 priority=1000
 
 [program:celerybeat]
-command=/venv_py36/bin/celery beat -A opsql --schedule /var/lib/celery/beat.db --loglevel=INFO
+command=/venv_py36/bin/celery beat -A opsql --schedule /var/lib/celery/beat.db --loglevel=INFO --uid=nginx
 directory=/data/web/opsql/
-user=nginx
+user=root
 numprocs=1
 stdout_logfile=/var/log/supervisord/beat.log
 stderr_logfile=/var/log/supervisord/beat.log
