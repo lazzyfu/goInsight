@@ -2,10 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/30px.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/32px.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/style.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/throbber.gif" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/install.md" beforeDir="false" afterPath="$PROJECT_DIR$/documents/install.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/query/sqlquery.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/query/sqlquery.html" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <ignored path=".idea/dataSources/b0174b19-1bfe-49e5-ad71-4c5b171d3055/storage_v2/_src_/schema/" />
@@ -60,98 +77,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/utils/task.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="828">
-              <caret line="58" column="32" selection-start-line="58" selection-start-column="32" selection-end-line="58" selection-end-column="32" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1035">
-              <caret line="46" column="62" selection-start-line="46" selection-start-column="62" selection-end-line="46" selection-end-column="62" />
-              <folding>
-                <element signature="e#162#173#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/documents/initial.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="19" selection-start-line="19" selection-end-line="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/documents/install.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="FIRST">
-              <first_editor relative-caret-position="517">
-                <caret line="199" column="16" lean-forward="true" selection-start-line="199" selection-start-column="16" selection-end-line="199" selection-end-column="16" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/models/orderModel.py">
+        <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2093">
-              <caret line="94" column="14" selection-start-line="94" selection-start-column="12" selection-end-line="94" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/orders/orders_list.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6877">
-              <caret line="299" column="23" selection-start-line="299" selection-start-column="23" selection-end-line="299" selection-end-column="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1955">
-              <caret line="96" column="72" selection-start-line="96" selection-start-column="72" selection-end-line="96" selection-end-column="72" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1104">
-              <caret line="58" column="54" selection-start-line="58" selection-start-column="54" selection-end-line="58" selection-end-column="54" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/views/tasksView.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1380">
-              <caret line="67" column="35" selection-start-line="67" selection-start-column="35" selection-end-line="67" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3979">
-              <caret line="190" column="33" selection-start-line="190" selection-start-column="33" selection-end-line="190" selection-end-column="33" />
+            <state relative-caret-position="446">
+              <caret line="249" column="37" lean-forward="true" selection-start-line="249" selection-start-column="37" selection-end-line="249" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -170,8 +100,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>StartWebShell</find>
-      <find>fit</find>
       <find>status</find>
       <find>autoRefreshInterval: 5</find>
       <find>run_by_rows</find>
@@ -200,6 +128,8 @@
       <find>send_attachments</find>
       <find>compress_file</find>
       <find>print</find>
+      <find>urllib3</find>
+      <find>ajax</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -216,7 +146,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/apps/sqlorders/api/executeStatementApi.py" />
         <option value="$PROJECT_DIR$/apps/sqlquery/admin.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/CHANGE.txt" />
@@ -267,14 +196,14 @@
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
         <option value="$PROJECT_DIR$/documents/initial.sql" />
         <option value="$PROJECT_DIR$/documents/install.md" />
+        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="45" />
-    <option name="y" value="23" />
+    <option name="x" value="-1920" />
     <option name="width" value="1920" />
-    <option name="height" value="1000" />
+    <option name="height" value="1080" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -345,6 +274,51 @@
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
+              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
+              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
+              <item name="jstree" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
+              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
+              <item name="jstree" type="462c0819:PsiDirectoryNode" />
+              <item name="dist" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
+              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
+              <item name="jstree" type="462c0819:PsiDirectoryNode" />
+              <item name="dist" type="462c0819:PsiDirectoryNode" />
+              <item name="themes" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -352,6 +326,12 @@
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="orders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="query" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -371,19 +351,19 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes" />
+      <recent name="$PROJECT_DIR$/documents" />
+      <recent name="$PROJECT_DIR$/static" />
+      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components" />
+      <recent name="$PROJECT_DIR$/test/mysqlms/files" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/media/png" />
       <recent name="$PROJECT_DIR$/deploy" />
       <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components/xterm/js" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/media/png/admin" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/documents" />
-      <recent name="$PROJECT_DIR$/static" />
-      <recent name="$PROJECT_DIR$/static/AdminLTE-2.4.5/bower_components" />
-      <recent name="$PROJECT_DIR$/test/mysqlms/files" />
-      <recent name="$PROJECT_DIR$/media/png" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -585,7 +565,8 @@
       <workItem from="1554774459757" duration="13679000" />
       <workItem from="1554865399361" duration="320000" />
       <workItem from="1555236494749" duration="111000" />
-      <workItem from="1556068421053" duration="565000" />
+      <workItem from="1556068421053" duration="1007000" />
+      <workItem from="1556154172916" duration="1341000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -769,11 +750,25 @@
       <option name="project" value="LOCAL" />
       <updated>1555236585364</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="更新安装文件的配置参数">
+      <created>1556069029578</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1556069029578</updated>
+    </task>
+    <task id="LOCAL-00028" summary="201904240926">
+      <created>1556069193009</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1556069193009</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="67213000" />
+    <option name="totallyTimeSpent" value="68996000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -785,10 +780,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
+    <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.2087327" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21086262" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -913,7 +908,9 @@
     <MESSAGE value="修复部分bug" />
     <MESSAGE value="201904101104" />
     <MESSAGE value="201904141809" />
-    <option name="LAST_COMMIT_MESSAGE" value="201904141809" />
+    <MESSAGE value="更新安装文件的配置参数" />
+    <MESSAGE value="201904240926" />
+    <option name="LAST_COMMIT_MESSAGE" value="201904240926" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -932,8 +929,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/models.py" />
-    <entry file="file://$PROJECT_DIR$/apps/sqlquery/utils.py" />
     <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py" />
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py" />
     <entry file="file://$PROJECT_DIR$/manage.py">
@@ -1041,13 +1036,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="38" column="14" lean-forward="true" selection-start-line="38" selection-start-column="14" selection-end-line="38" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/auditsql_useraccounts">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -1135,7 +1123,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/config/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1035">
+        <state relative-caret-position="1080">
           <caret line="46" column="62" selection-start-line="46" selection-start-column="62" selection-end-line="46" selection-end-column="62" />
           <folding>
             <element signature="e#162#173#0" expanded="true" />
@@ -1143,62 +1131,83 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/documents/initial.sql">
+    <entry file="file://$PROJECT_DIR$/templates/orders/my_orders.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        <state relative-caret-position="469">
+          <caret line="252" column="14" lean-forward="true" selection-start-line="252" selection-start-column="14" selection-end-line="252" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/models/orderModel.py">
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2093">
-          <caret line="94" column="14" selection-start-line="94" selection-start-column="12" selection-end-line="94" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/orders/orders_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6877">
-          <caret line="299" column="23" selection-start-line="299" selection-start-column="23" selection-end-line="299" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1955">
-          <caret line="96" column="72" selection-start-line="96" selection-start-column="72" selection-end-line="96" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1104">
-          <caret line="58" column="54" selection-start-line="58" selection-start-column="54" selection-end-line="58" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/views/tasksView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1380">
-          <caret line="67" column="35" selection-start-line="67" selection-start-column="35" selection-end-line="67" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3979">
-          <caret line="190" column="33" selection-start-line="190" selection-start-column="33" selection-end-line="190" selection-end-column="33" />
+        <state relative-caret-position="381">
+          <caret line="45" column="21" selection-start-line="45" selection-start-column="21" selection-end-line="45" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/documents/install.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="FIRST">
-          <first_editor relative-caret-position="517">
-            <caret line="199" column="16" lean-forward="true" selection-start-line="199" selection-start-column="16" selection-end-line="199" selection-end-column="16" />
+          <first_editor relative-caret-position="745">
+            <caret line="132" column="16" selection-start-line="132" selection-start-column="16" selection-end-line="132" selection-end-column="16" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/documents/initial.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/models/orderModel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="886">
+          <caret line="94" column="14" selection-start-line="94" selection-start-column="12" selection-end-line="94" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/orders/orders_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="872">
+          <caret line="299" column="23" selection-start-line="299" selection-start-column="23" selection-end-line="299" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="886">
+          <caret line="96" column="72" selection-start-line="96" selection-start-column="72" selection-end-line="96" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="886">
+          <caret line="58" column="54" selection-start-line="58" selection-start-column="54" selection-end-line="58" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/views/tasksView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="886">
+          <caret line="67" column="35" selection-start-line="67" selection-start-column="35" selection-end-line="67" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="886">
+          <caret line="190" column="33" selection-start-line="190" selection-start-column="33" selection-end-line="190" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="446">
+          <caret line="249" column="37" lean-forward="true" selection-start-line="249" selection-start-column="37" selection-end-line="249" selection-end-column="37" />
         </state>
       </provider>
     </entry>

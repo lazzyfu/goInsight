@@ -2,6 +2,7 @@
 {% load staticfiles %}
 
 {% block link_css %}
+    <link rel="stylesheet" href="/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/style.css">
     <style>
         .CodeMirror {
             border: 1px solid #eee;
@@ -21,6 +22,12 @@
         /* 修复bootstrap-table中显示数据时，若原数据包含了多个空格显示为一个空格的bug */
         .bootstrap-table .table:not(.table-condensed) > tbody > tr > td {
             white-space: pre !important;
+        }
+
+        /* 修改背景颜色 */
+        .jstree-proton .jstree-clicked {
+            background: #cacaca;
+            color: #498fe0;
         }
     </style>
 {% endblock %}
@@ -240,6 +247,7 @@
             'core': {
                 "animation": 0,
                 "themes": {
+                    'name': 'proton',
                     "responsive": true,
                 },
                 'data': {
