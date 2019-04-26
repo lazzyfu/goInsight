@@ -82,6 +82,7 @@ pip install uwsgi
 useradd nginx -s /bin/bash # 此处必须能登陆，celery服务需要使用
 yum -y install nginx
 chown -R nginx. /data/web
+chown -R nginx. /venv_py36 # 必须设置虚拟环境的用户为nginx
 ```
 
 **初始化数据**
@@ -167,6 +168,7 @@ module = opsql.wsgi
 home = /venv_py36
 socket = /data/web/opsql_uwsgi.sock
 processes = 8
+master = true
 max-requests = 6000
 chmod-socket = 664
 vacuum = true
@@ -190,8 +192,10 @@ command=/venv_py36/bin/uwsgi --ini /etc/nginx/conf.d/opsql_uwsgi.ini
 numprocs=1
 user=root
 startretries=3
-startsecs=10
-stopsignal=QUIT
+startsecs=5
+autostart=true
+autorestart=true
+stopsignal=INT
 stopasgroup=true
 killasgroup=true
 redirect_stderr=true

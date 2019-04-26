@@ -2,25 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/30px.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/32px.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-bold-webfont.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-extralight-webfont.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/fonts/titillium/titilliumweb-regular-webfont.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/style.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/style.min.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/AdminLTE-2.4.10/bower_components/jstree/dist/themes/proton/throbber.gif" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documents/install.md" beforeDir="false" afterPath="$PROJECT_DIR$/documents/install.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/query/sqlquery.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/query/sqlquery.html" afterDir="false" />
     </list>
@@ -77,11 +61,32 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="446">
-              <caret line="249" column="37" lean-forward="true" selection-start-line="249" selection-start-column="37" selection-end-line="249" selection-end-column="37" />
+            <state relative-caret-position="672">
+              <caret line="64" column="95" lean-forward="true" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/orders/subtasks.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="657">
+              <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/documents/install.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="FIRST">
+              <first_editor relative-caret-position="447">
+                <caret line="193" column="14" lean-forward="true" selection-start-line="193" selection-start-column="14" selection-end-line="193" selection-end-column="14" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -195,8 +200,8 @@
         <option value="$PROJECT_DIR$/apps/orders/utils/task.py" />
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
         <option value="$PROJECT_DIR$/documents/initial.sql" />
-        <option value="$PROJECT_DIR$/documents/install.md" />
         <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
+        <option value="$PROJECT_DIR$/documents/install.md" />
       </list>
     </option>
   </component>
@@ -225,7 +230,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -279,46 +283,6 @@
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
-              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
-              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
-              <item name="jstree" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
-              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
-              <item name="jstree" type="462c0819:PsiDirectoryNode" />
-              <item name="dist" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="AdminLTE-2.4.10" type="462c0819:PsiDirectoryNode" />
-              <item name="bower_components" type="462c0819:PsiDirectoryNode" />
-              <item name="jstree" type="462c0819:PsiDirectoryNode" />
-              <item name="dist" type="462c0819:PsiDirectoryNode" />
-              <item name="themes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
-              <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -337,6 +301,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -566,7 +531,8 @@
       <workItem from="1554865399361" duration="320000" />
       <workItem from="1555236494749" duration="111000" />
       <workItem from="1556068421053" duration="1007000" />
-      <workItem from="1556154172916" duration="1341000" />
+      <workItem from="1556154172916" duration="1394000" />
+      <workItem from="1556189263427" duration="656000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -764,11 +730,18 @@
       <option name="project" value="LOCAL" />
       <updated>1556069193009</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="增加jstree主题支持">
+      <created>1556185739800</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1556185739800</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="68996000" />
+    <option name="totallyTimeSpent" value="69705000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -783,7 +756,7 @@
     <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21086262" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21299255" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -885,7 +858,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="重构初始化提交" />
     <MESSAGE value="201904081556" />
     <MESSAGE value="201904081558" />
     <MESSAGE value="201904081559" />
@@ -910,7 +882,8 @@
     <MESSAGE value="201904141809" />
     <MESSAGE value="更新安装文件的配置参数" />
     <MESSAGE value="201904240926" />
-    <option name="LAST_COMMIT_MESSAGE" value="201904240926" />
+    <MESSAGE value="增加jstree主题支持" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加jstree主题支持" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -929,7 +902,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/sqlaudit/settings-bak.py" />
     <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py" />
     <entry file="file://$PROJECT_DIR$/manage.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1145,16 +1117,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/documents/install.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="FIRST">
-          <first_editor relative-caret-position="745">
-            <caret line="132" column="16" selection-start-line="132" selection-start-column="16" selection-end-line="132" selection-end-column="16" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/documents/initial.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="456">
@@ -1206,8 +1168,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="249" column="37" lean-forward="true" selection-start-line="249" selection-start-column="37" selection-end-line="249" selection-end-column="37" />
+        <state relative-caret-position="672">
+          <caret line="64" column="95" lean-forward="true" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/orders/subtasks.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="657">
+          <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/documents/install.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="447">
+            <caret line="193" column="14" lean-forward="true" selection-start-line="193" selection-start-column="14" selection-end-line="193" selection-end-column="14" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
