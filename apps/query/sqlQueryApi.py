@@ -109,22 +109,23 @@ class MySQLQueryApi(object):
 
         # 对limit进行处理
         for sql in sqls:
-            limit = re.compile('^SELECT(.*)LIMIT([\s]*)(.*)', re.I)
+            limit = re.compile('^SELECT(.*)LIMIT([\s]*)(.*)', re.I | re.S)
             no_limit = re.compile('^SELECT([\s\S]*)', re.I)
 
             if limit.match(sql) is None:
                 sqls[sqls.index(sql)] = no_limit.sub(r"SELECT \1 LIMIT {}".format(default_rows), sql)
             else:
-                limit_num = None
-                value = limit.match(sql).group(3).upper()
+                value = limit.match(sql).group(3).replace('\n', '').upper()
+                num = value
                 try:
-                    limit_num = int(value)
-                except ValueError as err:
                     if ',' in value:
-                        limit_num, o = value.split(',')
+                        num, o = value.split(',')
+                    elif 'OFFSET' in value:
+                        num, o = value.split('OFFSET')
+                    limit_num = int(num)
+                except ValueError as err:
+                    limit_num = default_rows
 
-                    if 'OFFSET' in value:
-                        limit_num, o = value.split('OFFSET')
                 sqls[sqls.index(sql)] = limit.sub(
                     r"SELECT \1 LIMIT {}".format(default_rows if int(limit_num) >= max_rows else int(limit_num)), sql)
         return sqls

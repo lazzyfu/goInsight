@@ -6,7 +6,6 @@
       <change beforePath="$PROJECT_DIR$/apps/query/sqlQueryApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/query/sqlQueryApi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/query/sqlquery.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/query/sqlquery.html" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <ignored path=".idea/dataSources/b0174b19-1bfe-49e5-ad71-4c5b171d3055/storage_v2/_src_/schema/" />
@@ -64,7 +63,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="727">
+            <state relative-caret-position="5376">
               <caret line="224" column="42" selection-start-line="224" selection-start-column="42" selection-end-line="224" selection-end-column="42" />
             </state>
           </provider>
@@ -73,8 +72,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
+            <state relative-caret-position="596">
+              <caret line="127" lean-forward="true" selection-start-line="127" selection-end-line="127" />
             </state>
           </provider>
         </entry>
@@ -528,7 +527,8 @@
       <workItem from="1556154172916" duration="1394000" />
       <workItem from="1556189263427" duration="758000" />
       <workItem from="1556249878027" duration="15000" />
-      <workItem from="1556261358620" duration="59000" />
+      <workItem from="1556261358620" duration="108000" />
+      <workItem from="1556263143647" duration="12000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -740,11 +740,18 @@
       <option name="project" value="LOCAL" />
       <updated>1556242155646</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="修复查询limit匹配的bug">
+      <created>1556261441904</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1556261441904</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69881000" />
+    <option name="totallyTimeSpent" value="69942000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -759,7 +766,7 @@
     <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.2172524" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21938232" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -861,7 +868,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="201904081558" />
     <MESSAGE value="201904081559" />
     <MESSAGE value="增加展示图片" />
     <MESSAGE value="忽略配置文件" />
@@ -886,7 +892,8 @@
     <MESSAGE value="201904240926" />
     <MESSAGE value="增加jstree主题支持" />
     <MESSAGE value="更新部署文档" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新部署文档" />
+    <MESSAGE value="修复查询limit匹配的bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复查询limit匹配的bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1187,15 +1194,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="727">
+        <state relative-caret-position="5376">
           <caret line="224" column="42" selection-start-line="224" selection-start-column="42" selection-end-line="224" selection-end-column="42" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
+        <state relative-caret-position="596">
+          <caret line="127" lean-forward="true" selection-start-line="127" selection-end-line="127" />
         </state>
       </provider>
     </entry>
