@@ -101,32 +101,32 @@ class MySQLQueryApi(object):
         """对查询进行规则检测"""
         default_rows = 100
         max_rows = 200
+
+        # 检查配置的值
         if QUERY_LIMIT['enable'] is True:
             default_rows = int(QUERY_LIMIT['default_limit'])
             max_rows = int(QUERY_LIMIT['max_limit'])
 
-        for i in sqls:
-            limit = re.compile('^SELECT([\s\S]*)LIMIT([\s]*)(\d+)$', re.I)
-            limit_offset = re.compile('^SELECT([\s\S]*)LIMIT([\s]*)(\d+)([\s]*)OFFSET([\s]*)(\d+)$', re.I)
+        # 对limit进行处理
+        for sql in sqls:
+            limit = re.compile('^SELECT(.*)LIMIT([\s]*)(.*)', re.I)
             no_limit = re.compile('^SELECT([\s\S]*)', re.I)
-            # select语句
-            if re.match('^select', i, re.I):
-                # 禁止limit N offset N语法
-                if limit_offset.match(i) is None:
-                    if limit.match(i) is None:
-                        # 当未匹配到select ... limit ...语句，重写查询
-                        sqls[sqls.index(i)] = no_limit.sub(r"SELECT \1 LIMIT {}".format(default_rows), i)
-                    else:
-                        limit_num = limit.match(i)
-                        if int(limit_num.group(3).replace(';', '')) > max_rows:
-                            sqls[sqls.index(i)] = limit.sub(r"SELECT \1 LIMIT {}".format(max_rows), i)
-                else:
-                    # 重写limit N offset N 为limit N语法
-                    limit_offset_match = limit_offset.match(i)
-                    if int(limit_offset_match.group(3).replace(';', '')) > max_rows:
-                        sqls[sqls.index(i)] = limit_offset.sub(r'SELECT \1 LIMIT {}'.format(max_rows), i)
-                    else:
-                        sqls[sqls.index(i)] = limit_offset.sub(r'SELECT \1 LIMIT \3', i)
+
+            if limit.match(sql) is None:
+                sqls[sqls.index(sql)] = no_limit.sub(r"SELECT \1 LIMIT {}".format(default_rows), sql)
+            else:
+                limit_num = None
+                value = limit.match(sql).group(3).upper()
+                try:
+                    limit_num = int(value)
+                except ValueError as err:
+                    if ',' in value:
+                        limit_num, o = value.split(',')
+
+                    if 'OFFSET' in value:
+                        limit_num, o = value.split('OFFSET')
+                sqls[sqls.index(sql)] = limit.sub(
+                    r"SELECT \1 LIMIT {}".format(default_rows if int(limit_num) >= max_rows else int(limit_num)), sql)
         return sqls
 
     def get_map_mysql_user(self, sql):

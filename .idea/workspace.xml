@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/query/sqlQueryApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/query/sqlQueryApi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/install.md" beforeDir="false" afterPath="$PROJECT_DIR$/documents/install.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/query/sqlquery.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/query/sqlquery.html" afterDir="false" />
     </list>
@@ -64,29 +64,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="672">
-              <caret line="64" column="95" lean-forward="true" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/orders/subtasks.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="657">
-              <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+            <state relative-caret-position="727">
+              <caret line="224" column="42" selection-start-line="224" selection-start-column="42" selection-end-line="224" selection-end-column="42" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/documents/install.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="FIRST">
-              <first_editor relative-caret-position="447">
-                <caret line="193" column="14" lean-forward="true" selection-start-line="193" selection-start-column="14" selection-end-line="193" selection-end-column="14" />
-              </first_editor>
-              <second_editor />
+        <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -151,7 +139,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/apps/sqlquery/admin.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/CHANGE.txt" />
         <option value="$PROJECT_DIR$/apps/sqlquery/tests.py" />
@@ -200,8 +187,9 @@
         <option value="$PROJECT_DIR$/apps/orders/utils/task.py" />
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
         <option value="$PROJECT_DIR$/documents/initial.sql" />
-        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
         <option value="$PROJECT_DIR$/documents/install.md" />
+        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
+        <option value="$PROJECT_DIR$/apps/query/sqlQueryApi.py" />
       </list>
     </option>
   </component>
@@ -254,6 +242,12 @@
               <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="orders" type="462c0819:PsiDirectoryNode" />
               <item name="serializers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="query" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
@@ -532,7 +526,9 @@
       <workItem from="1555236494749" duration="111000" />
       <workItem from="1556068421053" duration="1007000" />
       <workItem from="1556154172916" duration="1394000" />
-      <workItem from="1556189263427" duration="656000" />
+      <workItem from="1556189263427" duration="758000" />
+      <workItem from="1556249878027" duration="15000" />
+      <workItem from="1556261358620" duration="59000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -737,11 +733,18 @@
       <option name="project" value="LOCAL" />
       <updated>1556185739800</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="更新部署文档">
+      <created>1556242155646</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1556242155646</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69705000" />
+    <option name="totallyTimeSpent" value="69881000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -756,7 +759,7 @@
     <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21299255" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.2172524" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -858,7 +861,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="201904081556" />
     <MESSAGE value="201904081558" />
     <MESSAGE value="201904081559" />
     <MESSAGE value="增加展示图片" />
@@ -883,7 +885,8 @@
     <MESSAGE value="更新安装文件的配置参数" />
     <MESSAGE value="201904240926" />
     <MESSAGE value="增加jstree主题支持" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加jstree主题支持" />
+    <MESSAGE value="更新部署文档" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新部署文档" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -902,7 +905,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/sqlorders/api/generalRollbackApi.py" />
     <entry file="file://$PROJECT_DIR$/manage.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="336">
@@ -1166,27 +1168,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="64" column="95" lean-forward="true" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
+    <entry file="file://$PROJECT_DIR$/documents/install.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="591">
+            <caret line="199" column="16" lean-forward="true" selection-start-line="199" selection-start-column="16" selection-end-line="199" selection-end-column="16" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/orders/subtasks.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="657">
-          <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+          <caret line="52" column="14" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/documents/install.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="FIRST">
-          <first_editor relative-caret-position="447">
-            <caret line="193" column="14" lean-forward="true" selection-start-line="193" selection-start-column="14" selection-end-line="193" selection-end-column="14" />
-          </first_editor>
-          <second_editor />
+    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="727">
+          <caret line="224" column="42" selection-start-line="224" selection-start-column="42" selection-end-line="224" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
         </state>
       </provider>
     </entry>
