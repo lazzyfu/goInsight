@@ -35,6 +35,11 @@
             background: #cacaca;
             color: #498fe0;
         }
+
+        /* 修改表格thead颜色 */
+        .fixed-table-container thead th .th-inner {
+            background-color: #EAEAEA;
+        }
     </style>
 {% endblock %}
 
@@ -560,11 +565,10 @@
                                 iconSize: 'sm',
                                 rowStyle: function rowStyle(row, index) {
                                     return {
-                                        classes: 'text-nowrap another-class',
-                                        css: {"font-size": "12px"}
+                                        css: {"font-size": "13px",}
                                     };
                                 },
-                                classes: 'table table-hover'
+                                classes: 'table table-hover table-striped table-sm'
                             });
                         }
                     } else {

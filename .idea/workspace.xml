@@ -3,9 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/query/sqlQueryApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/query/sqlQueryApi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/query/sqlquery.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/query/sqlquery.html" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <ignored path=".idea/dataSources/b0174b19-1bfe-49e5-ad71-4c5b171d3055/storage_v2/_src_/schema/" />
@@ -60,20 +60,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5376">
-              <caret line="224" column="42" selection-start-line="224" selection-start-column="42" selection-end-line="224" selection-end-column="42" />
+            <state relative-caret-position="680">
+              <caret line="569" column="34" lean-forward="true" selection-start-line="569" selection-start-column="34" selection-end-line="569" selection-end-column="34" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="596">
-              <caret line="127" lean-forward="true" selection-start-line="127" selection-end-line="127" />
+              <caret line="127" selection-start-line="127" selection-end-line="127" />
             </state>
           </provider>
         </entry>
@@ -187,8 +187,8 @@
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
         <option value="$PROJECT_DIR$/documents/initial.sql" />
         <option value="$PROJECT_DIR$/documents/install.md" />
-        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
         <option value="$PROJECT_DIR$/apps/query/sqlQueryApi.py" />
+        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
       </list>
     </option>
   </component>
@@ -217,6 +217,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -294,7 +295,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -528,7 +528,8 @@
       <workItem from="1556189263427" duration="758000" />
       <workItem from="1556249878027" duration="15000" />
       <workItem from="1556261358620" duration="108000" />
-      <workItem from="1556263143647" duration="12000" />
+      <workItem from="1556263143647" duration="88000" />
+      <workItem from="1556271684209" duration="38000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -747,11 +748,18 @@
       <option name="project" value="LOCAL" />
       <updated>1556261441904</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="201904261519">
+      <created>1556263223290</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1556263223290</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69942000" />
+    <option name="totallyTimeSpent" value="70056000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -766,7 +774,7 @@
     <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21938232" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.22151224" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -868,7 +876,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="201904081559" />
     <MESSAGE value="增加展示图片" />
     <MESSAGE value="忽略配置文件" />
     <MESSAGE value="201904081639" />
@@ -893,7 +900,8 @@
     <MESSAGE value="增加jstree主题支持" />
     <MESSAGE value="更新部署文档" />
     <MESSAGE value="修复查询limit匹配的bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复查询limit匹配的bug" />
+    <MESSAGE value="201904261519" />
+    <option name="LAST_COMMIT_MESSAGE" value="201904261519" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1192,17 +1200,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5376">
-          <caret line="224" column="42" selection-start-line="224" selection-start-column="42" selection-end-line="224" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="596">
-          <caret line="127" lean-forward="true" selection-start-line="127" selection-end-line="127" />
+          <caret line="127" selection-start-line="127" selection-end-line="127" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="680">
+          <caret line="569" column="34" lean-forward="true" selection-start-line="569" selection-start-column="34" selection-end-line="569" selection-end-column="34" />
         </state>
       </provider>
     </entry>
