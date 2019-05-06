@@ -3,13 +3,14 @@
 import json
 
 from django.db.models import Case, When, Value, CharField
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from config.config import EMAIL
-from orders.models import SysEnvironment, Orders
+from orders.models import SysEnvironment, Orders, OrdersTasks
 from orders.permissions import CanCommitPermission, anyof, CanExecutePermission, CanAuditPermission
 from orders.serializers.commitSerializers import OrdersCommitSerializer, OrderReplySerializer, HookOrdersSerializer
 from orders.serializers.listSerializers import OrderListSerializer, GetOrderReplySerializer, MyOrderListSerializer
@@ -147,6 +148,49 @@ class OrdersDetailsView(APIView):
         if queryset.close_info:
             queryset.close_info = json.loads(queryset.close_info)
         return Response(data={'contents': queryset}, status=status.HTTP_200_OK)
+
+
+class OrderExecuteDetailsView(APIView):
+    def get(self, request):
+        id = request.GET.get('id')
+        queryset = OrdersTasks.objects.annotate(
+            status=Case(
+                When(task_progress='0', then=Value('未执行')),
+                When(task_progress='1', then=Value('已完成')),
+                When(task_progress='2', then=Value('处理中')),
+                When(task_progress='3', then=Value('失败')),
+                When(task_progress='4', then=Value('异常')),
+                output_field=CharField(),
+            )
+        ).filter(order__id=id).values('taskid', 'sql', 'status', 'affected_row', 'consume_time', 'executor',
+                                      'execition_time')
+
+        field = [{'field': 'sid', 'title': 'ID'},
+                 {'field': 'sql', 'title': 'SQL'},
+                 {'field': 'status', 'title': '状态'},
+                 {'field': 'rollback_sql', 'title': '回滚SQL'},
+                 {'field': 'consume_time', 'title': '耗时(s)'},
+                 {'field': 'executor', 'title': '执行人'},
+                 {'field': 'execition_time', 'title': '执行时间'},
+                 ]
+
+        i = 1
+        data = []
+        for row in queryset:
+            data.append({
+                'sid': i,
+                'sql': row['sql'][:50] + ' ...',
+                'status': row['status'],
+                'affected_row': row['affected_row'],
+                'rollback_sql': f"<a target='_bank' href='/orders/subtasks/list/{row['taskid']}'>查看</a>",
+                'consume_time': row['consume_time'],
+                'executor': row['executor'],
+                'execition_time': timezone.localtime(row['execition_time']).strftime('%Y-%m-%d %H:%M:%S')
+
+            })
+            i += 1
+        context = {'columns': field, 'data': data}
+        return Response(data=context, status=status.HTTP_200_OK)
 
 
 class OrderReplyView(APIView):

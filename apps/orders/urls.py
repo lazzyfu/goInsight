@@ -6,7 +6,7 @@ from django.urls import path, re_path
 
 from orders.views.View import SQLOrdersView, OrdersCommitView, RenderOrdersEnviView, OrdersListView, OrdersDetailsView, \
     OrderReplyView, GetOrderReplyView, HookOrdersView, SQLExportView, OpsOrdersView, OnlineVersionView, MyOrdersView, \
-    MyOrdersListView
+    MyOrdersListView, OrderExecuteDetailsView
 from orders.views.opView import OrderApproveView, OrderFeedbackView, OrderReviewView, OrderCloseView
 from orders.views.tasksView import GenerateSubtasksView, RenderSubtasksView, SubTasksDetailView, FullExecuteView, \
     SingleExecuteView, GetTasksLogView, StopExecuteView
@@ -46,6 +46,8 @@ urlpatterns = [
     path('op/close/', login_required(OrderCloseView.as_view())),
     # 工单详情
     re_path(r'detail/(?P<id>\d+)/', login_required(OrdersDetailsView.as_view())),
+    path(r'execute_detail/', login_required(OrderExecuteDetailsView.as_view()),
+         name='p_get_sql_exec_details'),
     # 工单回复
     path(r'reply/', login_required(OrderReplyView.as_view())),
     path(r'get_order_reply/', login_required(GetOrderReplyView.as_view())),

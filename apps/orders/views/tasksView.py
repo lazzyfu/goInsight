@@ -5,7 +5,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from orders.permissions import CanExecutePermission
+from orders.permissions import CanExecutePermission, anyof, CanCommitPermission, CanAuditPermission
 from orders.serializers.taskSerializers import GenerateSubtasksSerializer, SubtasksDetailSerializer, \
     FullExecuteSerializer, SingleExecuteSerializer, GetTasksLogSerializer, StopExecuteSerializer
 
@@ -30,7 +30,7 @@ class GenerateSubtasksView(APIView):
 
 class RenderSubtasksView(APIView):
     """有执行权限的用户可以访问"""
-    permission_classes = (CanExecutePermission,)
+    permission_classes = (anyof(CanCommitPermission, CanExecutePermission, CanAuditPermission),)
 
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'orders/subtasks.html'

@@ -348,34 +348,34 @@
 
 
         <!-- 获取sql执行的详情 -->
-        {#function viewSqlDetails() {#}
-        {#    let $table_sql = $('#table_sql');#}
-        {#    let id = $('#s_sql_details').text();#}
-        {#    $.ajax({#}
-        {#        url: "{% url 'p_get_sql_exec_details' %}",#}
-        {#        type: 'GET',#}
-        {#        dataType: 'json',#}
-        {#        data: {'id': id},#}
-        {#        timeout: 30000,#}
-        {#        cache: true#}
-        {#    }).done(function (result) {#}
-        {#        $('#modal_table_sql').modal('show');#}
-        {#        $table_sql.bootstrapTable('destroy').bootstrapTable({#}
-        {#            columns: result.columns,#}
-        {#            data: result.data,#}
-        {#            pageNumber: 1,#}
-        {#            pageSize: 20,#}
-        {#            locale: 'zh-CN',#}
-        {#            sidePagination: "client",#}
-        {#            pagination: true,#}
-        {#            singleSelect: true,#}
-        {#            minimumCountColumns: 2,#}
-        {#            matchBrackets: true,#}
-        {#            lineWrapping: true,#}
-        {#            classes: 'table table-hover table-no-bordered'#}
-        {#        });#}
-        {#    });#}
-        {# }#}
+        function viewSqlDetails() {
+            let $table_sql = $('#table_sql');
+            let id = $('#s_sql_details').text();
+            $.ajax({
+                url: "{% url 'p_get_sql_exec_details' %}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'id': id},
+                timeout: 30000,
+                cache: true
+            }).done(function (result) {
+                $('#modal_table_sql').modal('show');
+                $table_sql.bootstrapTable('destroy').bootstrapTable({
+                    columns: result.columns,
+                    data: result.data,
+                    pageNumber: 1,
+                    pageSize: 20,
+                    locale: 'zh-CN',
+                    sidePagination: "client",
+                    pagination: true,
+                    singleSelect: true,
+                    minimumCountColumns: 2,
+                    matchBrackets: true,
+                    lineWrapping: true,
+                    classes: 'table table-hover table-no-bordered'
+                });
+            });
+         }
 
         <!-- 批准的快捷方式 -->
         function link_ordersOp(id, url, btn_left, btn_right) {
