@@ -75,11 +75,11 @@
                                 </a>
                             </li>
                         {% endif %}
-                        {% if contents.progress_value in '已完成,已勾住,已核对,复核中' %}
+                        {% if contents.progress_value in '已完成,已勾住,已核对,复核中,已复核' %}
                             <li class="list-group-item">
                                 <b>查看执行结果</b>
                                 <a href="#" onclick="viewSqlDetails()" class="pull-right"><i
-                                        class='fa fa-search fa-lg'></i></a>
+                                        class='fa  fa-search-minus fa-lg'></i></a>
                             </li>
                         {% endif %}
                     </ul>
