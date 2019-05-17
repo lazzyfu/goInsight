@@ -7,6 +7,7 @@ import re
 import time
 
 import pymysql
+import sqlparse
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django_redis import get_redis_connection
@@ -75,11 +76,12 @@ class MySQLQueryApi(object):
     def _fmt(self, sqls):
         """格式化SQL语句，返回列表"""
         result = []
-        for i in [re.sub('^\s+', '', i, re.S, re.I) for i in sqls.strip().split(';') if
+        for i in [re.sub('^\s+', '', i, re.S, re.I) for i in sqlparse.split(sqls) if
                   re.sub('^\s+', '', i, re.S, re.I) != '']:
             # 匹配不以#开头的，此类为注释，不执行
             if re.search('^(?!#)', i, re.I):
-                result.append(i)
+                # 如果sql以分号结尾，移除分号
+                result.append(i[:-1] if i.endswith(';') else i)
         return result
 
     def _allowed(self, sqls):
