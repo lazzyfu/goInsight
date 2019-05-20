@@ -11,6 +11,7 @@ import sqlparse
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django_redis import get_redis_connection
+from sqlparse.tokens import Keyword
 
 from config.config import QUERY_LIMIT
 from opsql.settings import DATABASES
@@ -111,25 +112,35 @@ class MySQLQueryApi(object):
 
         # 对limit进行处理
         for sql in sqls:
-            limit = re.compile('^SELECT(.*)LIMIT([\s]*)(.*)', re.I | re.S)
-            no_limit = re.compile('^SELECT([\s\S]*)', re.I)
+            stmt = sqlparse.parse(sql)[0]
+            limit_match = ''
+            seen = False
+            # 匹配sql语句中的limit
+            for token in stmt.tokens:
+                if seen:
+                    limit_match += token.value
+                else:
+                    if token.ttype is Keyword and token.value.upper() == 'LIMIT':
+                        seen = True
+                        limit_match += token.value.upper()
 
-            if limit.match(sql) is None:
-                sqls[sqls.index(sql)] = no_limit.sub(r"SELECT \1 LIMIT {}".format(default_rows), sql)
+            # 匹配 limit N
+            limit_n = re.compile('limit([\s]*\d+[\s]*)$', re.I | re.S)
+            # 匹配limit N, N 或limit N offset N
+            limit_offset = re.compile('limit([\s]*\d+[\s]*)(,|offset)([\s]*\d+[\s]*)$',
+                                      re.I | re.S)
+            num = None
+            if limit_match == '':
+                num = default_rows
             else:
-                value = limit.match(sql).group(3).replace('\n', '').upper()
-                num = value
-                try:
-                    if ',' in value:
-                        num, o = value.split(',')
-                    elif 'OFFSET' in value:
-                        num, o = value.split('OFFSET')
-                    limit_num = int(num)
-                except ValueError as err:
-                    limit_num = default_rows
+                if limit_n.match(limit_match):
+                    num = limit_n.match(limit_match).group(1)
 
-                sqls[sqls.index(sql)] = limit.sub(
-                    r"SELECT \1 LIMIT {}".format(default_rows if int(limit_num) >= max_rows else int(limit_num)), sql)
+                if limit_offset.match(limit_match):
+                    num = limit_offset.match(limit_match).group(1)
+            limit = re.compile(f'^SELECT(.*){limit_match}', re.I | re.S)
+            sqls[sqls.index(sql)] = limit.sub(
+                r"SELECT \1 LIMIT {}".format(default_rows if int(num) >= max_rows else int(num)), sql)
         return sqls
 
     def get_map_mysql_user(self, sql):
