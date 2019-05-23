@@ -204,9 +204,6 @@ class StopExecuteSerializer(serializers.Serializer):
         action = sdata.get('action')
 
         obj = OrdersTasks.objects.get(id=id)
-        if obj.task_progress in ('2',):
-            return False, '请不要重复执行'
-
         if obj.sql_type != 'DDL':
             return False, '非DDL语句，无法执行'
 
