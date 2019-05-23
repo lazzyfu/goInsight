@@ -13,7 +13,7 @@ from orders.serializers.taskSerializers import GenerateSubtasksSerializer, Subta
 class GenerateSubtasksView(APIView):
     """将SQL工单拆解成子任务"""
     # 有执行权限的用户可以执行
-    permission_classes = (CanExecutePermission,)
+    permission_classes = (anyof(CanCommitPermission, CanExecutePermission, CanAuditPermission),)
 
     def post(self, request):
         serializer = GenerateSubtasksSerializer(data=request.data)
