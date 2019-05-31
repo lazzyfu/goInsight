@@ -6,9 +6,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/orders/my_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/orders/my_orders.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/orders/orders_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/orders/orders_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/orders/export_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/orders/export_orders.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/orders/ops_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/orders/ops_orders.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/query/sqlquery.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/query/sqlquery.html" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <ignored path=".idea/dataSources/b0174b19-1bfe-49e5-ad71-4c5b171d3055/storage_v2/_src_/schema/" />
@@ -64,10 +64,14 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/base.html">
+        <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="290" column="30" selection-start-line="290" selection-start-column="30" selection-end-line="290" selection-end-column="30" />
+            <state relative-caret-position="374">
+              <caret line="17" column="24" lean-forward="true" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -75,83 +79,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/orders/sql_orders.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="943">
-              <caret line="266" selection-start-line="266" selection-end-line="266" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/orders/orders_list.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="621">
-              <caret line="146" column="36" selection-start-line="146" selection-start-column="36" selection-end-line="146" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/orders/my_orders.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="467">
-              <caret line="146" column="36" selection-start-line="146" selection-start-column="36" selection-end-line="146" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5187">
-              <caret line="264" selection-start-line="264" selection-end-line="264" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1512">
-              <caret line="83" column="52" selection-start-line="83" selection-start-column="52" selection-end-line="83" selection-end-column="52" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/permissions.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="20" selection-start-line="20" selection-end-line="20" />
-              <folding>
-                <element signature="e#44#82#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/views/utilsView.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1869">
-              <caret line="99" column="33" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2121">
-              <caret line="117" column="28" selection-start-line="117" selection-start-column="28" selection-end-line="117" selection-end-column="28" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/opsql/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1239">
-              <caret line="64" column="6" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
+            <state relative-caret-position="302">
+              <caret line="40" column="86" selection-start-line="40" selection-start-column="86" selection-end-line="40" selection-end-column="86" />
             </state>
           </provider>
         </entry>
@@ -170,9 +99,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>envi_validator</find>
-      <find>purpose</find>
-      <find>autoRefreshInterval: 10,</find>
       <find>p_get_target_schemas</find>
       <find>create_lst</find>
       <find>sqlaudit</find>
@@ -200,6 +126,9 @@
       <find>debounce</find>
       <find>OrdersCommitForm</find>
       <find>generate_subtasks</find>
+      <find>getSchema</find>
+      <find>s_schema</find>
+      <find>plugin</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -241,15 +170,12 @@
         <option value="$PROJECT_DIR$/logs/readme.txt" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/config/config.py" />
-        <option value="$PROJECT_DIR$/templates/orders/export_orders.html" />
-        <option value="$PROJECT_DIR$/templates/orders/ops_orders.html" />
         <option value="$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py" />
         <option value="$PROJECT_DIR$/apps/orders/views/utilsView.py" />
         <option value="$PROJECT_DIR$/opsql/settings.py" />
         <option value="$PROJECT_DIR$/apps/orders/utils/task.py" />
         <option value="$PROJECT_DIR$/documents/initial.sql" />
         <option value="$PROJECT_DIR$/documents/install.md" />
-        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
         <option value="$PROJECT_DIR$/apps/orders/urls.py" />
         <option value="$PROJECT_DIR$/apps/query/forms.py" />
         <option value="$PROJECT_DIR$/templates/orders/online_version.html" />
@@ -263,10 +189,13 @@
         <option value="$PROJECT_DIR$/apps/query/models.py" />
         <option value="$PROJECT_DIR$/apps/query/admin.py" />
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
-        <option value="$PROJECT_DIR$/apps/orders/views/tasksView.py" />
         <option value="$PROJECT_DIR$/templates/orders/orders_list.html" />
         <option value="$PROJECT_DIR$/templates/orders/my_orders.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
+        <option value="$PROJECT_DIR$/apps/orders/views/tasksView.py" />
+        <option value="$PROJECT_DIR$/templates/orders/ops_orders.html" />
+        <option value="$PROJECT_DIR$/templates/orders/export_orders.html" />
+        <option value="$PROJECT_DIR$/templates/query/sqlquery.html" />
       </list>
     </option>
   </component>
@@ -282,8 +211,59 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="orders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="orders" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="users" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="orders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="query" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scope" />
-      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -443,6 +423,7 @@
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="DJANGO_SETTINGS_MODULE" value="opsql.settings" />
       </envs>
       <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -540,7 +521,11 @@
       <workItem from="1558933273671" duration="199000" />
       <workItem from="1558948713236" duration="543000" />
       <workItem from="1559028355777" duration="164000" />
-      <workItem from="1559028534524" duration="598000" />
+      <workItem from="1559028534524" duration="721000" />
+      <workItem from="1559038337701" duration="442000" />
+      <workItem from="1559093094506" duration="218000" />
+      <workItem from="1559100548554" duration="1242000" />
+      <workItem from="1559287827071" duration="2961000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -822,11 +807,18 @@
       <option name="project" value="LOCAL" />
       <updated>1558598426271</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="修复刷新丢失搜索内容的bug">
+      <created>1559029190133</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1559029190133</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="87473000" />
+    <option name="totallyTimeSpent" value="92459000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -839,8 +831,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.1485623" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.1773163" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -859,7 +852,7 @@
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.4476861" />
       <window_info anchor="bottom" id="Python Console" order="11" weight="0.31488934" />
       <window_info anchor="bottom" id="SonarLint" order="12" weight="0.32952183" />
-      <window_info anchor="bottom" id="Terminal" order="13" weight="0.44174266" />
+      <window_info anchor="bottom" id="Terminal" order="13" weight="0.44158417" />
       <window_info active="true" anchor="bottom" id="manage.py@AuditSQL" order="14" visible="true" weight="0.18312757" />
       <window_info anchor="bottom" id="Console" order="15" />
       <window_info anchor="bottom" id="DB Execution Console" order="16" />
@@ -943,7 +936,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="201904091259" />
     <MESSAGE value="201904091300" />
     <MESSAGE value="201904091202" />
     <MESSAGE value="201904091323" />
@@ -968,7 +960,8 @@
     <MESSAGE value="修复解析SQL中的limit识别错误的bug" />
     <MESSAGE value="修复gh-ost改表不能暂停的bug" />
     <MESSAGE value="修复详情点击权限" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复详情点击权限" />
+    <MESSAGE value="修复刷新丢失搜索内容的bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复刷新丢失搜索内容的bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -987,15 +980,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/opsql/table/auditsql_web_shell_grant" />
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/opsql/table/auditsql_web_shell_oplog" />
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_results_taskresult">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -1053,20 +1037,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/orders/export_orders.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="153" column="56" lean-forward="true" selection-start-line="153" selection-start-column="56" selection-end-line="153" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/orders/ops_orders.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="133" column="69" selection-start-line="133" selection-start-column="69" selection-end-line="133" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logs/all.log" />
     <entry file="file://$PROJECT_DIR$/apps/orders/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1117,13 +1087,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="53" selection-start-column="53" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11949">
-          <caret line="569" column="34" selection-start-line="569" selection-start-column="34" selection-end-line="569" selection-end-column="34" />
         </state>
       </provider>
     </entry>
@@ -1261,83 +1224,131 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/views/tasksView.py">
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5187">
-          <caret line="264" selection-start-line="264" selection-end-line="264" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1512">
-          <caret line="83" column="52" selection-start-line="83" selection-start-column="52" selection-end-line="83" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/permissions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-          <folding>
-            <element signature="e#44#82#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/views/utilsView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1869">
-          <caret line="99" column="33" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2121">
-          <caret line="117" column="28" selection-start-line="117" selection-start-column="28" selection-end-line="117" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/opsql/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1239">
-          <caret line="64" column="6" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/orders/sql_orders.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="943">
-          <caret line="266" selection-start-line="266" selection-end-line="266" />
+        <state relative-caret-position="7413">
+          <caret line="353" column="88" selection-start-line="353" selection-start-column="88" selection-end-line="353" selection-end-column="88" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/orders/orders_list.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="621">
+        <state relative-caret-position="3066">
           <caret line="146" column="36" selection-start-line="146" selection-start-column="36" selection-end-line="146" selection-end-column="36" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/orders/my_orders.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
+        <state relative-caret-position="3066">
           <caret line="146" column="36" selection-start-line="146" selection-start-column="36" selection-end-line="146" selection-end-column="36" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
+    <entry file="file://$PROJECT_DIR$/apps/users/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="290" column="30" selection-start-line="290" selection-start-column="30" selection-end-line="290" selection-end-column="30" />
+        <state relative-caret-position="594">
+          <caret line="33" column="65" selection-start-line="33" selection-start-column="65" selection-end-line="33" selection-end-column="65" />
+          <folding>
+            <element signature="e#43#94#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/orders/export_orders.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="112" column="50" lean-forward="true" selection-start-line="112" selection-start-column="50" selection-end-line="112" selection-end-column="50" />
+          <folding>
+            <element signature="n#style#0;n#select#0;n#div#0;n#div#6;n#div#1;n#div#0;n#div#0;n#form#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/orders/ops_orders.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="223">
+          <caret line="109" column="77" selection-start-line="109" selection-start-column="77" selection-end-line="109" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/permissions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="871">
+          <caret line="45" column="19" lean-forward="true" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="19" />
+          <folding>
+            <element signature="e#44#82#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="83" column="52" selection-start-line="83" selection-start-column="52" selection-end-line="83" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="633">
+          <caret line="264" selection-start-line="264" selection-end-line="264" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/views/tasksView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="15" column="41" selection-start-line="15" selection-start-column="41" selection-end-line="15" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/users/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="48" selection-start-line="48" selection-end-line="56" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/views/utilsView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="99" column="33" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/query/sqlQueryApi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="117" column="28" selection-start-line="117" selection-start-column="28" selection-end-line="117" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/opsql/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="64" column="6" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/orders/sql_orders.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="40" column="86" selection-start-line="40" selection-start-column="86" selection-end-line="40" selection-end-column="86" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="17" column="24" lean-forward="true" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
