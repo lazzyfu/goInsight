@@ -108,7 +108,7 @@ class MyOrderListSerializer(serializers.Serializer):
             envi_name=F('envi__envi_name')
         )
         if search_content:
-            obj = query.filter(Q(version__icontains=search_content) | Q(title__icontains=search_content) | Q(
+            obj = query.filter(Q(version__version__icontains=search_content) | Q(title__icontains=search_content) | Q(
                 applicant__icontains=search_content) | Q(auditor__icontains=search_content) | Q(
                 reviewer__icontains=search_content) | Q(host__icontains=search_content) | Q(
                 database__icontains=search_content) | Q(contents__icontains=search_content))
