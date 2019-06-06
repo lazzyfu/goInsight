@@ -24,7 +24,7 @@ readline-devel git mysql-devel
 # 不指定安装位置，默认安装到/usr/local/bin目录下
 wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
 tar -zxf Python-3.6.8.tgz
-./configure --enable-optimizations
+./configure
 make && make install
 ```
  
