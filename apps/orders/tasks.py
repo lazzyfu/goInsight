@@ -68,7 +68,7 @@ def async_full_execute(username, query, key):
 
 
 @shared_task
-def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, database=None, task_progress=None):
+def async_execute_sql(id=None, username=None, taskid=None, sql=None, host=None, port=None, database=None, task_progress=None):
     """执行SQL"""
     obj = MysqlConfig.objects.get(host=host, port=port)
 
@@ -84,7 +84,8 @@ def async_execute_sql(id=None, username=None, sql=None, host=None, port=None, da
 
     # 更新任务进度
     update_task_progress(id=id, exec_result=result, task_progress=task_progress)
-
+    # 更新父任务进度
+    update_orders_progress(username=username, taskid=taskid)
 
 @shared_task
 def async_export_tasks(username=None, id=None, sql=None, host=None, port=None, database=None):
