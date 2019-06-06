@@ -180,6 +180,7 @@ class SingleExecuteSerializer(serializers.Serializer):
                 if sql_type in ['DML', 'DDL']:
                     async_execute_sql.delay(
                         username=request.user.username,
+                        taskid=obj.taskid,                        
                         id=id,
                         sql=sql,
                         host=host,
@@ -187,8 +188,6 @@ class SingleExecuteSerializer(serializers.Serializer):
                         database=database,
                         task_progress='2')
 
-                # 更新父任务进度
-                update_orders_progress(request.user.username, obj.taskid)
                 return True, '任务已提交到后台执行，请查看输出'
 
 
