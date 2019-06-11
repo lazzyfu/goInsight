@@ -776,10 +776,10 @@ class GenerateHtmlView(View):
         # 自动删除2小时之前的临时文件
         for root, dirs, files in os.walk('media/tmp/'):
             for file in files:
-                filename = os.path.join(root, file)
-                file_ctime = os.path.getctime(filename)
+                oldfilename = os.path.join(root, file)
+                file_ctime = os.path.getctime(oldfilename)
                 if int(time.time() - file_ctime) > 7200:
-                    os.remove(filename)
+                    os.remove(oldfilename)
         # 存储临时文件
         with open(f'media/tmp/{filename}', 'a', encoding='utf-8') as f:
             f.write(html_start)
