@@ -77,7 +77,8 @@ class OnlineVersionNoExpireView(APIView):
         is_disable：是否禁用，0：否，1：是
         """
         before_30_days = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
-        query = f"select id, version, if(now() > expire_time,1,0) as is_disable from auditsql_online_version " \
+        query = f"select id, version, if(now() > date_add(expire_time, interval 8 hour ),1,0) as is_disable " \
+            f"from auditsql_online_version " \
             f"where is_deleted='0' and created_at >= '{before_30_days}' order by created_at desc"
         data = []
         for row in OnlineVersion.objects.raw(query):
