@@ -105,11 +105,14 @@ def send_op_mail(id, user=None, type=None, msg=None, domain_name_tips=None):
     if type == 'reply':
         data = OrderReply.objects.get(pk=id)
         title = Orders.objects.get(pk=data.reply_id).title
+        # 工单id，用于查找收件人
+        order_id = data.reply_id
     else:
         data = Orders.objects.get(pk=id)
         title = data.title
+        order_id = id
 
-    applicant_email, auditor_email, reviewer_email, email_cc_email = get_user_email(id)
+    applicant_email, auditor_email, reviewer_email, email_cc_email = get_user_email(order_id)
     # 收件人
     receiver_email = list(set(applicant_email + auditor_email + reviewer_email))
 
