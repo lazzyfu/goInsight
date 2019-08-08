@@ -241,6 +241,11 @@ class ExecuteSql(object):
                 if data:
                     exec_log += data
                     self._pull_msg(2, data)
+            # 读取剩余的输出
+            if p.stdout:
+                data = p.stdout.read().decode('utf8')
+                self._pull_msg(2, data)
+                exec_log += data
 
             end_time = time.time()
             runtime = str(round(float(end_time - start_time), 3)) + 's'
