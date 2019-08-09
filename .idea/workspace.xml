@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201904091200">
+    <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201907220958">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <list id="20808f28-3d55-4e5b-98a1-42ddb66c8cae" name="Revert: 集成小米的soar" comment="" />
     <ignored path=".idea/dataSources/b0174b19-1bfe-49e5-ad71-4c5b171d3055/storage_v2/_src_/schema/" />
@@ -67,33 +68,6 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/apps/orders/serializers/listSerializers.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2394">
-              <caret line="130" column="35" selection-start-line="130" selection-start-column="35" selection-end-line="130" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/orders/sql_orders.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="760">
-              <caret line="40" column="86" selection-start-line="40" selection-start-column="86" selection-end-line="40" selection-end-column="86" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/orders/orders_list.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3002">
-              <caret line="158" column="21" selection-start-line="158" selection-start-column="21" selection-end-line="158" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="2736">
@@ -129,20 +103,52 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="798">
-              <caret line="207" column="36" selection-start-line="207" selection-start-column="36" selection-end-line="207" selection-end-column="36" />
+            <state relative-caret-position="3762">
+              <caret line="209" column="46" selection-start-line="209" selection-start-column="46" selection-end-line="209" selection-end-column="46" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/orders/utils/tools.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/orders/utils/task.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
+            <state relative-caret-position="3648">
+              <caret line="214" column="68" selection-start-line="214" selection-start-column="68" selection-end-line="214" selection-end-column="68" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/apps/orders/api/executeStatementApi.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="406">
+              <caret line="239" column="57" lean-forward="true" selection-start-line="239" selection-start-column="57" selection-end-line="239" selection-end-column="57" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/base.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="6080">
+              <caret line="320" column="113" selection-start-line="320" selection-start-column="113" selection-end-line="320" selection-end-column="113" />
             </state>
           </provider>
         </entry>
@@ -161,9 +167,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>sqlaudit</find>
-      <find>AUTHENTICATION_BACKENDS</find>
-      <find>ss</find>
       <find>fuzongfei58</find>
       <find>LOGGING_CONFIG</find>
       <find>web</find>
@@ -191,6 +194,9 @@
       <find>plugin</find>
       <find>tw</find>
       <find>ExecuteExportTasksForm</find>
+      <find>poll</find>
+      <find>socket</find>
+      <find>p.poll</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -248,7 +254,6 @@
         <option value="$PROJECT_DIR$/apps/query/models.py" />
         <option value="$PROJECT_DIR$/apps/query/admin.py" />
         <option value="$PROJECT_DIR$/templates/orders/my_orders.html" />
-        <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/apps/orders/views/tasksView.py" />
         <option value="$PROJECT_DIR$/templates/orders/ops_orders.html" />
         <option value="$PROJECT_DIR$/templates/orders/export_orders.html" />
@@ -258,13 +263,15 @@
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/b0174b19-1bfe-49e5-ad71-4c5b171d3055/console.sql" />
         <option value="$PROJECT_DIR$/apps/orders/views/utilsView.py" />
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
+        <option value="$PROJECT_DIR$/templates/base.html" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="-1920" />
+  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
+    <option name="x" value="13" />
+    <option name="y" value="23" />
     <option name="width" value="1920" />
-    <option name="height" value="1080" />
+    <option name="height" value="1011" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -305,7 +312,7 @@
               <item name="opsql" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="orders" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
+              <item name="utils" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
@@ -596,7 +603,15 @@
       <workItem from="1560915775251" duration="870000" />
       <workItem from="1562058912841" duration="2116000" />
       <workItem from="1563521162217" duration="70000" />
-      <workItem from="1563760618417" duration="48000" />
+      <workItem from="1563760618417" duration="357000" />
+      <workItem from="1563770409148" duration="12000" />
+      <workItem from="1564647834862" duration="118000" />
+      <workItem from="1564975566743" duration="87000" />
+      <workItem from="1565141478502" duration="286000" />
+      <workItem from="1565160499276" duration="25000" />
+      <workItem from="1565254800759" duration="370000" />
+      <workItem from="1565259275577" duration="431000" />
+      <workItem from="1565316349869" duration="276000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -906,11 +921,18 @@
       <option name="project" value="LOCAL" />
       <updated>1560916889890</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="201907220958">
+      <created>1563760727359</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1563760727359</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="96446000" />
+    <option name="totallyTimeSpent" value="98360000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -922,10 +944,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
+    <frame x="0" y="0" width="1680" height="1050" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.18903089" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.20573871" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -1028,7 +1050,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="201904091200" />
     <MESSAGE value="201904091338" />
     <MESSAGE value="201904091611" />
     <MESSAGE value="201904091815" />
@@ -1053,7 +1074,8 @@
     <MESSAGE value="查询页面增加搜索框，优化字体" />
     <MESSAGE value="201906111645" />
     <MESSAGE value="修复上线版本号时区差异的bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复上线版本号时区差异的bug" />
+    <MESSAGE value="201907220958" />
+    <option name="LAST_COMMIT_MESSAGE" value="201907220958" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1072,20 +1094,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_periodictasks">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_intervalschedule">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_crontabschedule">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -1274,13 +1282,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7413">
-          <caret line="353" column="88" selection-start-line="353" selection-start-column="88" selection-end-line="353" selection-end-column="88" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/orders/my_orders.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3066">
@@ -1346,17 +1347,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
           <caret line="64" column="6" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1432,17 +1422,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/utils/task.py">
+    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
+        <state relative-caret-position="3762">
+          <caret line="209" column="46" selection-start-line="209" selection-start-column="46" selection-end-line="209" selection-end-column="46" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
+    <entry file="file://$PROJECT_DIR$/apps/orders/utils/tools.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/utils/task.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="798">
-          <caret line="207" column="36" selection-start-line="207" selection-start-column="36" selection-end-line="207" selection-end-column="36" />
+        <state relative-caret-position="3648">
+          <caret line="214" column="68" selection-start-line="214" selection-start-column="68" selection-end-line="214" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/query/sqlquery.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6080">
+          <caret line="320" column="113" selection-start-line="320" selection-start-column="113" selection-end-line="320" selection-end-column="113" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/api/executeStatementApi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="239" column="57" lean-forward="true" selection-start-line="239" selection-start-column="57" selection-end-line="239" selection-end-column="57" />
         </state>
       </provider>
     </entry>
