@@ -16,7 +16,7 @@ yum -y install net-tools vim lsof lrzsz bzip2-devel wget \
 gcc gcc-c++ make automake unzip curl curl-devel perl perl-devel \
 expat expat-devel zlib zlib-devel asciidoc xmlto gettext-devel \
 openssl-devel openssl mlocate python-devel openldap-devel \
-readline-devel git mysql-devel
+readline-devel git mysql-devel p7zip
 ```
 
 **安装Python-3.6**
