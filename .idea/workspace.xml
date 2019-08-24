@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a9f1b233-c073-4bd6-b9e6-67d1920de4ad" name="Default" comment="201907220958">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/orders/api/generalRollbackApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/orders/api/generalRollbackApi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/query/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/query/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/opsql/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/opsql/settings.py" afterDir="false" />
     </list>
@@ -67,11 +67,45 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/orders/api/generalRollbackApi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="830">
-              <caret line="200" column="21" lean-forward="true" selection-start-line="200" selection-start-column="21" selection-end-line="200" selection-end-column="21" />
+            <state relative-caret-position="3610">
+              <caret line="200" column="21" selection-start-line="200" selection-start-column="21" selection-end-line="200" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/opsql/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="806">
+              <caret line="191" column="6" selection-start-line="191" selection-start-column="6" selection-end-line="191" selection-end-column="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/apps/query/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="758">
+              <caret line="521" lean-forward="true" selection-start-line="521" selection-end-line="521" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/orders/utils/tools.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-5" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/query/forms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="804">
+              <caret line="216" column="18" selection-start-line="216" selection-start-column="18" selection-end-line="216" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -90,7 +124,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>LOGGING_CONFIG</find>
       <find>web</find>
       <find>auditsql_web</find>
       <find>web_shell</find>
@@ -120,6 +153,7 @@
       <find>socket</find>
       <find>p.poll</find>
       <find>django</find>
+      <find>DbDictQueryApi</find>
     </findStrings>
     <replaceStrings>
       <replace>renderOutputResult</replace>
@@ -136,7 +170,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/sqlaudit/settings.py" />
         <option value="$PROJECT_DIR$/apps/sqlorders/views.py" />
         <option value="$PROJECT_DIR$/apps/sqlquery/soar/__init__.py" />
         <option value="$PROJECT_DIR$/apps/sqlquery/soar/forms.py" />
@@ -159,7 +192,6 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/config/config.py" />
         <option value="$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py" />
-        <option value="$PROJECT_DIR$/opsql/settings.py" />
         <option value="$PROJECT_DIR$/apps/orders/utils/task.py" />
         <option value="$PROJECT_DIR$/documents/initial.sql" />
         <option value="$PROJECT_DIR$/documents/install.md" />
@@ -187,6 +219,8 @@
         <option value="$PROJECT_DIR$/apps/orders/serializers/taskSerializers.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/apps/orders/api/generalRollbackApi.py" />
+        <option value="$PROJECT_DIR$/opsql/settings.py" />
+        <option value="$PROJECT_DIR$/apps/query/utils.py" />
       </list>
     </option>
   </component>
@@ -241,6 +275,12 @@
               <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="orders" type="462c0819:PsiDirectoryNode" />
               <item name="utils" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
+              <item name="opsql" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="query" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="opsql" type="b2602c69:ProjectViewProjectNode" />
@@ -547,7 +587,10 @@
       <workItem from="1565316349869" duration="276000" />
       <workItem from="1565316673832" duration="319000" />
       <workItem from="1565321024150" duration="605000" />
-      <workItem from="1565684099147" duration="54000" />
+      <workItem from="1565684099147" duration="91000" />
+      <workItem from="1566444311670" duration="59000" />
+      <workItem from="1566467900751" duration="1177000" />
+      <workItem from="1566621304322" duration="56000" />
     </task>
     <task id="LOCAL-00001" summary="重构初始化提交">
       <created>1554709928043</created>
@@ -871,11 +914,18 @@
       <option name="project" value="LOCAL" />
       <updated>1565317000525</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="生成回滚SQL部分增加traceback">
+      <created>1565684183719</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1565684183719</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="99338000" />
+    <option name="totallyTimeSpent" value="100667000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -887,10 +937,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21246007" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49642858" visible="true" weight="0.21884984" />
       <window_info id="Structure" order="1" sideWeight="0.501996" side_tool="true" weight="0.13578275" />
       <window_info id="Favorites" order="2" sideWeight="0.50357145" side_tool="true" weight="0.19009584" />
       <window_info id="Project Explorer" order="3" weight="0.32960597" />
@@ -993,7 +1043,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="201904091611" />
     <MESSAGE value="201904091815" />
     <MESSAGE value="修复部分bug" />
     <MESSAGE value="201904101104" />
@@ -1018,7 +1067,8 @@
     <MESSAGE value="修复上线版本号时区差异的bug" />
     <MESSAGE value="201907220958" />
     <MESSAGE value="201908091016" />
-    <option name="LAST_COMMIT_MESSAGE" value="201908091016" />
+    <MESSAGE value="生成回滚SQL部分增加traceback" />
+    <option name="LAST_COMMIT_MESSAGE" value="生成回滚SQL部分增加traceback" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1037,13 +1087,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/auditsql_useraccounts">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/readme.txt" />
     <entry file="das://b0174b19-1bfe-49e5-ad71-4c5b171d3055/schema/auditsql/table/django_celery_beat_periodictask">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
@@ -1150,13 +1193,6 @@
           <folding>
             <element signature="e#0#50#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/query/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1656">
-          <caret line="83" selection-start-line="83" selection-end-line="83" />
         </state>
       </provider>
     </entry>
@@ -1344,20 +1380,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/orders/utils/tools.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/orders/serializers/commitSerializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="895">
           <caret line="209" column="46" selection-start-line="209" selection-start-column="46" selection-end-line="209" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/opsql/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="692">
-          <caret line="54" column="12" lean-forward="true" selection-start-line="54" selection-start-column="12" selection-end-line="54" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -1398,8 +1424,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/orders/api/generalRollbackApi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="830">
-          <caret line="200" column="21" lean-forward="true" selection-start-line="200" selection-start-column="21" selection-end-line="200" selection-end-column="21" />
+        <state relative-caret-position="3610">
+          <caret line="200" column="21" selection-start-line="200" selection-start-column="21" selection-end-line="200" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/opsql/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="806">
+          <caret line="191" column="6" selection-start-line="191" selection-start-column="6" selection-end-line="191" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/orders/utils/tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/query/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="804">
+          <caret line="216" column="18" selection-start-line="216" selection-start-column="18" selection-end-line="216" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/query/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="758">
+          <caret line="521" lean-forward="true" selection-start-line="521" selection-end-line="521" />
         </state>
       </provider>
     </entry>
