@@ -153,7 +153,7 @@ class HookOrdersSerializer(serializers.Serializer):
         else:
             # OPS运维工单默认0
             host, port, database = [0, 0, '']
-            if data.sql_type in ['DML', 'DDL']:
+            if data.sql_type in ['DML', 'DDL', 'EXPORT']:
                 host, port, database = sdata['schema'].split(',')
 
             # 已复核的工单才能执行hook
