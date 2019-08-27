@@ -7,7 +7,7 @@
         .CodeMirror {
             border: 1px solid #eee;
             height: 450px;
-            font-family: 'Titillium Web', sans-serif, Arial, sans-serif;
+            font-family: 'Menlo', 'Monaco', 'Consolas', sans-serif, Arial, sans-serif;
             font-size: 15px;
         }
 
@@ -55,6 +55,11 @@
                 <div class="row">
                     <div class="box-body box-border">
                         <div class="col-md-3" style="padding-right: 2px">
+                            <div class="search_input" style="margin-bottom: 8px;">
+                                <input type="text" style="width: 100%;height: 28px;padding: 6px 12px;"
+                                       spellcheck="false" placeholder="快速搜索表、字段..." id="search_input"/>
+                            </div>
+
                             <div style="height: 610px;overflow: scroll;border:2px solid #eee;border-left-width: 0; border-right-width: 4px">
                                 <div id="container"></div>
                             </div>
@@ -281,6 +286,10 @@
                     "icon": "fa fa-database text-green"
                 },
             },
+            "search": {
+                "case_sensitive": false,
+                "show_only_matches": true
+            },
             "contextmenu": {
                 select_node: true,
                 show_at_node: true,
@@ -326,7 +335,22 @@
                     }
                 }
             },
-            "plugins": ["types", "sort", "themes", "state", "contextmenu"]
+            "plugins": ["types", "sort", "themes", "state", "contextmenu", "search"]
+        });
+
+
+        //输入框输入定时自动搜索
+        $(document).ready(function () {
+            var to = false;
+            $('#search_input').keyup(function () {
+                if (to) {
+                    clearTimeout(to);
+                }
+
+                to = setTimeout(function () {
+                    $('#container').jstree(true).search($('#search_input').val());
+                }, 1000);
+            });
         });
 
         jstree_click();

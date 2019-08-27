@@ -16,7 +16,7 @@ yum -y install net-tools vim lsof lrzsz bzip2-devel wget \
 gcc gcc-c++ make automake unzip curl curl-devel perl perl-devel \
 expat expat-devel zlib zlib-devel asciidoc xmlto gettext-devel \
 openssl-devel openssl mlocate python-devel openldap-devel \
-readline-devel git mysql-devel
+readline-devel git mysql-devel p7zip
 ```
 
 **安装Python-3.6**
@@ -24,7 +24,7 @@ readline-devel git mysql-devel
 # 不指定安装位置，默认安装到/usr/local/bin目录下
 wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
 tar -zxf Python-3.6.8.tgz
-./configure --enable-optimizations
+./configure
 make && make install
 ```
  

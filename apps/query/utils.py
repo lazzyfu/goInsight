@@ -513,7 +513,7 @@ class DbDictQueryApi(object):
             f"group_concat(distinct concat_ws('<b>', s.INDEX_NAME,if(s.NON_UNIQUE=0,'唯一','不唯一'),s.Cardinality," \
             f"s.INDEX_TYPE,s.COLUMN_NAME) separator '<a>') as INDEX_INFO " \
             f"from COLUMNS c join TABLES t on c.TABLE_SCHEMA = t.TABLE_SCHEMA and c.TABLE_NAME = t.TABLE_NAME " \
-            f"join STATISTICS s on c.TABLE_SCHEMA = s.TABLE_SCHEMA and c.TABLE_NAME = s.TABLE_NAME " \
+            f"left join STATISTICS s on c.TABLE_SCHEMA = s.TABLE_SCHEMA and c.TABLE_NAME = s.TABLE_NAME " \
             f"where t.TABLE_SCHEMA='{self.schema}' " \
             f"group by t.TABLE_NAME,t.TABLE_COMMENT,t.CREATE_TIME"
         with cnx.cursor() as cursor:

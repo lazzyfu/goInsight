@@ -3,6 +3,8 @@
 import datetime
 import json
 import logging
+import sys
+import traceback
 
 import simplejson
 from pymysql import escape_string
@@ -189,6 +191,11 @@ class ReadRemoteBinlog(object):
             stream.close()
             result = {'status': 'success', 'data': self._generate_rollback_sql(rows)}
         except Exception as err:
+            # 增加traceback，便于定位权限问题
+            print("Exception in user code:")
+            print('-' * 60)
+            traceback.print_exc(file=sys.stdout)
+            print('-' * 60)
             result = {'status': 'fail', 'msg': str(err)}
 
         return result
