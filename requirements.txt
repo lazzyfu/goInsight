@@ -62,7 +62,7 @@ requests==2.21.0
 simplejson==3.16.0
 six==1.12.0
 sqlparse==0.3.0
-Twisted==19.2.1
+Twisted==19.7.0
 txaio==18.8.1
 typed-ast==1.3.5
 urllib3==1.24.2
