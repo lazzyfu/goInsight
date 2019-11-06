@@ -51,7 +51,7 @@ class MySQLQueryApi(object):
                               port=self.local_port,
                               database=self.local_schema,
                               max_allowed_packet=1024 * 1024 * 1024,
-                              charset='utf8',
+                              charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor)
         return cnx
 
