@@ -230,16 +230,13 @@ class MySQLQueryApi(object):
                     pull_msg = []
                     i = 1
                     for sql in match_sqls:
-                        # 获取字段名
-                        with conn.cursor() as cursor:
-                            cursor.execute(sql)
-                            keys = cursor.fetchone().keys()
-                            field = [{'field': j, 'title': j} for j in keys]
 
                         # 获取数据
                         start_time = time.time()
                         with conn.cursor() as cursor:
                             cursor.execute(sql)
+                            # 获取字段名
+                            field = [{'field': j[0], 'title': j[0]} for j in cursor.description]
                             querylog.affect_rows = cursor.rowcount
                             querylog.query_status = '成功'
                             querylog.save()
