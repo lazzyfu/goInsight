@@ -71,7 +71,7 @@ class GetGrantSchemaForm(forms.Form):
             queryset = MysqlConfig.objects.get(host=host, port=port)
             schema = id.split('___')[2]
             query_user = MysqlUserGroupMap.objects.filter(comment__id=queryset.pk, user__username=request.user.username,
-                                                          schema__icontains=schema).values_list('group', flat=True)
+                                                          schema=schema).values_list('group', flat=True)
             user = query_user[0]
             for i in query_user:
                 if i.startswith('s_'):
