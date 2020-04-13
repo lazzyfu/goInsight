@@ -153,7 +153,7 @@ def dingding_push(id, user=None, type=None, msg=None, webhook=None, domain_name_
     # 如果用户手机号存在，钉钉直接@mobile
     # 如果手机号不存在，钉钉直接@all
     applicant_mobile = UserAccounts.objects.get(username=data.applicant).mobile
-    auditor = ','.join([i['user'] for i in json.loads(data.auditor)])
+    auditor = [i['user'] for i in json.loads(data.auditor)]
     auditor_mobile = list(set(UserAccounts.objects.filter(username__in=auditor).values_list('mobile', flat=True)))
     reviewer = ','.join([i['user'] for i in json.loads(data.reviewer)])
 
@@ -170,7 +170,7 @@ def dingding_push(id, user=None, type=None, msg=None, webhook=None, domain_name_
             f"复核人: {reviewer}\n" \
             f"上线版本号: {data.version}\n" \
             f"需求: {data.description}\n" \
-            f"URL: {domain_name_tips}/orders/detail/{data.envi_id}/ \n" \
+            f"URL: {domain_name_tips}/orders/detail/{data.pk}/ \n" \
             f"提交时间: {timezone.localtime(data.created_at).strftime('%Y-%m-%d %H:%M:%S')}\n"
 
         if auditor_mobile:
