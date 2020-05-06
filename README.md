@@ -61,11 +61,4 @@ https://github.com/lazzyfu/AuditSQL/wiki/show
 ## 文档（使用和安装）
 https://github.com/lazzyfu/AuditSQL/wiki
 
-## 联系方式：
-QQ群号：710797678
-
-欢迎大家贡献代码，感谢大家的支持，谢谢
-
-## 感谢
-感谢各位大佬贡献宝贵的代码
 
