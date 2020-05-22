@@ -156,7 +156,7 @@ class MySQLQueryApi(object):
         # 没有在业务组里面，查找所映射的用户
         queryset = MysqlUserGroupMap.objects.filter(comment__id=self.queryset.pk,
                                                     user__username=self.user,
-                                                    schema__icontains=self.r_schema
+                                                    schema=self.r_schema
                                                     ).values_list('group', flat=True)
         for i in queryset:
             if i.startswith('s_'):
