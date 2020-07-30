@@ -1,3 +1,5 @@
+# 新版审核平台(前端基于VUE，提供更友好的前端界面和强健的审核功能，整合goInception)正在重构中...
+
 # AuditSQL数据库审核和执行平台
 
 AuditSQL是web版本的MySQL数据库审核平台，旨在降低DBA的运维成本
