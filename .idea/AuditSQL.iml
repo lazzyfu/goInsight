@@ -13,7 +13,7 @@
     </facet>
   </component>
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$">
+    <content url="">
       <sourceFolder url="file://$MODULE_DIR$/apps" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.6 (opsql)" jdkType="Python SDK" />
