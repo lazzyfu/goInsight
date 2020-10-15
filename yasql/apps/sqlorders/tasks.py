@@ -119,7 +119,7 @@ def update_task_progress_to_finish(id=None, result=None):
                 obj.save()
 
 
-@shared_task(queue='default')
+@shared_task(queue='dbtask')
 def async_execute_sql(id=None, sql=None):
     """异步执行SQL，获取当前任务的db信息"""
     config = models.DbOrdersExecuteTasks.objects.filter(pk=id).annotate(
@@ -144,7 +144,7 @@ def async_execute_sql(id=None, sql=None):
     update_task_progress_to_finish(id=id, result=result)
 
 
-@shared_task(queue='default')
+@shared_task(queue='dbtask')
 def async_execute_export(id=None, username=None, sql=None):
     """异步执行导出, 获取当前任务的db信息"""
     config = models.DbOrdersExecuteTasks.objects.filter(pk=id).annotate(
@@ -170,7 +170,7 @@ def async_execute_export(id=None, username=None, sql=None):
     update_task_progress_to_finish(id=id, result=result)
 
 
-@shared_task(queue='default')
+@shared_task(queue='dbtask')
 def async_execute_single(id=None, username=None):
     """执行单条SQL"""
     obj = models.DbOrdersExecuteTasks.objects.get(pk=id)
@@ -195,7 +195,7 @@ def async_execute_single(id=None, username=None):
     update_dborders_progress_to_finish(task_id=obj.task_id, username=username)
 
 
-@shared_task(queue='default')
+@shared_task(queue='dbtask')
 def async_execute_multi(task_id=None, username=None):
     # 匹配未执行和失败的工单
     for row in models.DbOrdersExecuteTasks.objects.filter(task_id=task_id, progress__in=(0, 3)):
@@ -214,7 +214,7 @@ def async_execute_multi(task_id=None, username=None):
     update_dborders_progress_to_finish(task_id=task_id, username=username)
 
 
-@shared_task(queue='default')
+@shared_task(queue='dbtask')
 def dbms_sync_dbschems():
     """
     同步远程的schema信息到表noah_dbms_sql_schemas
@@ -252,6 +252,6 @@ def dbms_sync_dbschems():
     logger.info(f'dbms_sync_dbschems任务结束...')
 
 
-@shared_task(queue='default')
+@shared_task()
 def msg_notice(**kwargs):
     MsgNotice(**kwargs).run()
