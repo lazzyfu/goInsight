@@ -17,7 +17,7 @@ import sys
 from kombu import Queue
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from config import REDIS, DB, LDAP_SUPPORT, NOTICE
+from config import REDIS, DB, LDAP_SUPPORT, NOTICE, DEBUG_ENABLED
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -34,9 +34,12 @@ AUTH_USER_MODEL = 'users.UserAccounts'
 SECRET_KEY = 'm3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=bwqi1o$r_c^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+if DEBUG_ENABLED:
+    DEBUG = True
+    ALLOWED_HOSTS = []
+else:
+    DEBUG = False
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 

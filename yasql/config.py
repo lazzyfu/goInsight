@@ -1,6 +1,10 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 
+# 关闭debug，本地开发时打开
+# 生产环境请务必改为：DEBUG_ENABLED = False
+DEBUG_ENABLED = True
+
 # 配置MySQL数据库，库必须先创建，且库的字符集必须为:utf8
 # 存储django程序运行的系统库表等数据
 # 权限：grant all on *.* to 'xxx'@'%' with grant options
@@ -15,7 +19,7 @@ DB = {
     'password': '1234.com',
 }
 
-# 连接目标数据库的用户
+# 连接目标需要审计或执行工单的数据库的用户
 # 每个连接的目标数据库都需要创建，用于goInception、工单执行、备份、查询
 # create user 'yasql_rw'@'%' identified by '1234.com'
 # grant all on *.* to 'yasql_user'@'%';
