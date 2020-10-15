@@ -189,4 +189,4 @@
       ]
     }
   }
-]
+][{"model": "django_celery_beat.intervalschedule", "pk": 1, "fields": {"every": 10, "period": "minutes"}}, {"model": "django_celery_beat.periodictasks", "pk": 1, "fields": {"last_update": "2020-10-15T08:37:16.160Z"}}, {"model": "django_celery_beat.periodictask", "pk": 1, "fields": {"name": "\u540c\u6b65\u6570\u636e\u5e93\u5143\u6570\u636e\u4fe1\u606f\u5230\u672c\u5730\u8868", "task": "sqlorders.tasks.dbms_sync_dbschems", "interval": 1, "crontab": null, "solar": null, "clocked": null, "args": "[]", "kwargs": "{}", "queue": null, "exchange": null, "routing_key": null, "headers": "{}", "priority": null, "expires": null, "one_off": false, "start_time": null, "enabled": true, "last_run_at": null, "total_run_count": 0, "date_changed": "2020-10-15T08:37:16.163Z", "description": ""}}]
