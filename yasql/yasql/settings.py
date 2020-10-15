@@ -188,7 +188,6 @@ CELERY_TASK_DEFAULT_EXCHANGE_TYPE = 'topic'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 CELERY_TASK_QUEUES = (
-    Queue('default', routing_key='default'),  # 默认队列
     Queue('dbtask', routing_key='dbtask'),  # 数据库工单任务
 )
 
