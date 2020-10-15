@@ -1,0 +1,192 @@
+[
+  {
+    "model": "users.useraccounts",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$F0xWM4DHSoCT$kIGxiGHX+0cqm4W31PbbAH+lpNZxf0GkVhWcLHq0UmU=",
+      "last_login": "2020-10-15T02:04:58.294Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "lisi@examplexxx.com",
+      "is_staff": true,
+      "date_joined": "2020-09-22T06:26:57.558Z",
+      "user_secret": "5c0b6448-c1d8-49da-81fc-91e37e8a48f7",
+      "is_active": true,
+      "displayname": "\u7ba1\u7406\u5458",
+      "mobile": null,
+      "department": "",
+      "avatar_file": "img/2020/09/22/cbc0f76fdfd2bd0c94a212f262625644.jpg",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.useraccounts",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$FWGkUeeZ4TE5$/+NAlNX6rIsAuXJRqQ78xZOdW3mFlTrpMHu5Mro6Qxs=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "lisi",
+      "first_name": "",
+      "last_name": "",
+      "email": "lisi@examplexxx.com",
+      "is_staff": false,
+      "date_joined": "2020-10-14T03:50:08.044Z",
+      "user_secret": "3c738fda-6e12-4d09-a206-36af463d9513",
+      "is_active": true,
+      "displayname": "\u674e\u56db",
+      "mobile": "18810480000",
+      "department": "",
+      "avatar_file": "img/avatar1.png",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.userroles",
+    "pk": 1,
+    "fields": {
+      "role_name": "\u5f00\u53d1",
+      "created_at": "2020-10-10T09:29:20.304Z",
+      "updated_at": "2020-10-15T02:09:14.628Z",
+      "user": [
+        2
+      ]
+    }
+  },
+  {
+    "model": "users.userroles",
+    "pk": 3,
+    "fields": {
+      "role_name": "\u6d4b\u8bd5",
+      "created_at": "2020-10-15T02:08:31.612Z",
+      "updated_at": "2020-10-15T02:08:31.612Z",
+      "user": []
+    }
+  },
+  {
+    "model": "users.userroles",
+    "pk": 4,
+    "fields": {
+      "role_name": "DBA",
+      "created_at": "2020-10-15T02:10:12.155Z",
+      "updated_at": "2020-10-15T02:10:12.155Z",
+      "user": []
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 1,
+    "fields": {
+      "permission_name": "can_commit_orders",
+      "permission_desc": "\u63d0\u4ea4\u5de5\u5355\u6743\u9650",
+      "created_at": "2020-10-10T09:25:58.736Z",
+      "updated_at": "2020-10-10T09:25:58.736Z",
+      "role": [
+        1,
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 2,
+    "fields": {
+      "permission_name": "can_audit_orders",
+      "permission_desc": "\u5ba1\u6838\u5de5\u5355\u6743\u9650",
+      "created_at": "2020-10-10T09:26:13.893Z",
+      "updated_at": "2020-10-10T09:26:13.893Z",
+      "role": [
+        1,
+        4
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 3,
+    "fields": {
+      "permission_name": "can_view_orders",
+      "permission_desc": "\u67e5\u770b\u5de5\u5355\u6743\u9650",
+      "created_at": "2020-10-10T09:26:35.961Z",
+      "updated_at": "2020-10-10T09:26:35.962Z",
+      "role": [
+        1,
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 4,
+    "fields": {
+      "permission_name": "can_execute_orders",
+      "permission_desc": "\u6267\u884c\u5de5\u5355\u6743\u9650",
+      "created_at": "2020-10-10T09:27:11.085Z",
+      "updated_at": "2020-10-10T09:27:55.318Z",
+      "role": [
+        4
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 5,
+    "fields": {
+      "permission_name": "can_view_versions",
+      "permission_desc": "\u67e5\u770b\u4e0a\u7ebf\u7248\u672c\u6743\u9650",
+      "created_at": "2020-10-10T09:28:07.894Z",
+      "updated_at": "2020-10-10T09:28:07.894Z",
+      "role": [
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 6,
+    "fields": {
+      "permission_name": "can_create_versions",
+      "permission_desc": "\u521b\u5efa\u4e0a\u7ebf\u7248\u672c\u6743\u9650",
+      "created_at": "2020-10-10T09:28:20.456Z",
+      "updated_at": "2020-10-10T09:28:20.456Z",
+      "role": [
+        1,
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 7,
+    "fields": {
+      "permission_name": "can_update_versions",
+      "permission_desc": "\u66f4\u65b0\u4e0a\u7ebf\u7248\u672c\u6743\u9650",
+      "created_at": "2020-10-10T09:28:32.320Z",
+      "updated_at": "2020-10-10T09:28:32.320Z",
+      "role": [
+        4
+      ]
+    }
+  },
+  {
+    "model": "users.rolepermissions",
+    "pk": 8,
+    "fields": {
+      "permission_name": "can_delete_versions",
+      "permission_desc": "\u5220\u9664\u4e0a\u7ebf\u7248\u672c\u6743\u9650",
+      "created_at": "2020-10-10T09:28:43.145Z",
+      "updated_at": "2020-10-10T09:28:43.145Z",
+      "role": [
+        4
+      ]
+    }
+  }
+]

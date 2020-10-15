@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "$(date '+%F %T') rowcount-complete schema:$GH_OST_DATABASE_NAME.$GH_OST_TABLE_NAME before_row:$GH_OST_ESTIMATED_ROWS"
+echo "$GH_OST_ESTIMATED_ROWS" > /tmp/$GH_OST_DATABASE_NAME.$GH_OST_TABLE_NAME.txt

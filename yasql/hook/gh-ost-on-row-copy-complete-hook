@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "时间: $(date '+%F %T') 库表: $GH_OST_DATABASE_NAME.$GH_OST_TABLE_NAME 预计总行数: $GH_OST_ESTIMATED_ROWS 拷贝总行数: $GH_OST_COPIED_ROWS"
+
+if [[ `cat /tmp/$GH_OST_DATABASE_NAME.$GH_OST_TABLE_NAME.txt` -gt $GH_OST_COPIED_ROWS ]];then
+  echo '拷贝总行数不匹配，修改失败，退出.'
+  sleep 5
+  exit -1
+fi
