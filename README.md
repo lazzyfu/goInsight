@@ -2,12 +2,12 @@
 YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范线上SQL执行流程。
 
 ## 开发组件
-* ![](https://img.shields.io/badge/Python_3.7-green.png)
-* ![](https://img.shields.io/badge/Ant_Design_Vue-green.png)
-* ![](https://img.shields.io/badge/Django_2.0+-green.png)
-* ![](https://img.shields.io/badge/Djangorestframework-green.png)
-* ![](https://img.shields.io/badge/Djangorestframework_jwt-green.png)
-* ![](https://img.shields.io/badge/Celery-green.png)
+* Python3.7
+* Ant Design Vue
+* Django2.0
+* Djangorestframework
+* Djangorestframework_jwt
+* Celery
 
 ## 功能简介
 * 自定义工单环境
