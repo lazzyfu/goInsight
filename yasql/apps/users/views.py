@@ -1,15 +1,13 @@
 # Create your views here.
-import json
 from uuid import uuid4
 
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from rest_framework import status, filters
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from rest_framework import status
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
-from libs.Pagination import Pagination
-from libs.RenderColumns import render_dynamic_columns
 from libs.response import JsonResponseV1
 from users import serializers, models
 
@@ -19,6 +17,11 @@ class Login(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.LoginSerializer
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request):
         serializer = serializers.LoginSerializer(data=request.data)
 
