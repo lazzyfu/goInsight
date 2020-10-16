@@ -15,12 +15,12 @@ const types = {
   403: {
     img: "https://gw.alipayobjects.com/zos/rmsportal/wZcnGqRDyhPOEYFcZDnb.svg",
     title: "403",
-    desc: "抱歉1，你无权访问该页面",
+    desc: "抱歉，你无权访问该页面",
   },
   404: {
     img: "https://gw.alipayobjects.com/zos/rmsportal/KpnpchXsobRgLElEozzI.svg",
     title: "404",
-    desc: "抱歉，你访问的下载资源不存在",
+    desc: "抱歉，你访问的资源不存在",
   },
   500: {
     img: "https://gw.alipayobjects.com/zos/rmsportal/RVRUAYdCGeYNBWoKiIwB.svg",
