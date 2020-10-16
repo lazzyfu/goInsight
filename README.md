@@ -41,4 +41,5 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
 https://github.com/lazzyfu/YaSQL/wiki
 
 
-## 群
+## QQ讨论群
+<img src="https://github.com/lazzyfu/YaSQL/blob/master/example_pic/qq.png" alt="" align=center />
