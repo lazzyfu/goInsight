@@ -8,7 +8,8 @@ from sqlorders import models
 class DbConfigAdmin(admin.ModelAdmin):
     list_display = ('host', 'port', 'character', 'env_id', 'use_type', 'rds_type', 'rds_category', 'comment')
     list_display_links = ('host',)
-    search_fields = ('host', 'port', 'env_id')
+    list_filter = ('use_type', 'rds_type', 'rds_category')
+    search_fields = ('host', 'port', 'env__name')
     list_per_page = 10
 
 
