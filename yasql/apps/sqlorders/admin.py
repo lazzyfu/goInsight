@@ -9,7 +9,7 @@ class DbConfigAdmin(admin.ModelAdmin):
     list_display = ('host', 'port', 'character', 'env_id', 'use_type', 'rds_type', 'rds_category', 'comment')
     list_display_links = ('host',)
     list_filter = ('use_type', 'rds_type', 'rds_category')
-    search_fields = ('host', 'port', 'env__name')
+    search_fields = ('host', 'port', 'env__name', 'comment')
     list_per_page = 10
 
 

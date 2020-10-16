@@ -278,7 +278,6 @@ export default {
       loading: false,
       executeLoading: false,
       // 钩子
-      envs: [],
       hookLoading: false,
       hookVisible: false,
       btnStatus: BtnStatus,
@@ -312,11 +311,6 @@ export default {
     }
   },
   methods: {
-    getEnvs() {
-      getDbEnvironment.then((response) => {
-        this.envs = response.data
-      })
-    },
     showTasksDrawer() {
       this.visibleDrawer = true
     },
@@ -324,10 +318,9 @@ export default {
       this.visibleDrawer = false
     },
     getOrderDetail() {
-      getSqlOrdersDetail(this.$route.params.order_id)
-        .then((response) => {
-          this.orderDetail = response.data
-        })
+      getSqlOrdersDetail(this.$route.params.order_id).then((response) => {
+        this.orderDetail = response.data
+      })
     },
     // 变更环境，获取schemas
     changeEnvs(value) {
@@ -410,12 +403,15 @@ export default {
     showHookModal() {
       this.ruleForm.title = this.orderDetail.title
       this.ruleForm.current_database = this.orderDetail.database
-      // 删除当前环境
-      this.sql_envs = []
-      this.envs.map((item) => {
-        if (item.name != this.orderDetail.env_id) {
-          this.sql_envs.push(item)
-        }
+      getDbEnvironment.then((response) => {
+        const envs = response.data
+        // 删除当前环境
+        this.sql_envs = []
+        envs.map((item) => {
+          if (item.name != this.orderDetail.env_id) {
+            this.sql_envs.push(item)
+          }
+        })
       })
       this.hookVisible = true
     },
@@ -458,7 +454,6 @@ export default {
     },
   },
   mounted() {
-    this.getEnvs()
     this.getOrderDetail()
   },
   filters: {
