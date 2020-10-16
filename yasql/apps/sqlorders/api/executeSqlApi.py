@@ -9,6 +9,7 @@ from warnings import filterwarnings
 
 import pymysql
 from asgiref.sync import async_to_sync
+from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
 
 from config import GH_OST_ARGS
@@ -17,6 +18,8 @@ from sqlorders.api.generateRollbacksql import ReadRemoteBinlog
 
 filterwarnings('ignore', category=pymysql.Warning)
 channel_layer = get_channel_layer()
+
+logger = get_task_logger('celery.logger')
 
 
 def pull_msg(task_id=None, msg=None):
@@ -243,8 +246,9 @@ class ExecuteSQL(object):
             return result
 
     def _ghost_tool(self):
-        syntaxcompile = re.compile(r'^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|CONVERT)([\s\S]*)',
-                                   re.I)
+        syntaxcompile = re.compile(
+            r'^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|CONVERT|ENGINE)([\s\S]*)',
+            re.I)
         syntaxmatch = syntaxcompile.match(self.sql)
         if syntaxmatch is not None:
             start_time = time.time()
@@ -271,7 +275,7 @@ class ExecuteSQL(object):
 
             # 输出到日志的命令，替换掉密码
             ghost_cmd_debug = re.sub(r"--password=(\S+)", '--password=xxx', ghost_cmd)
-            print(ghost_cmd_debug)
+            logger.info(ghost_cmd_debug)
 
             # 删除sock，如果存在的话
             sock = f"/tmp/gh-ost.{self.config['database']}.{table}.sock"
