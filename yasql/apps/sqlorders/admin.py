@@ -6,7 +6,7 @@ from sqlorders import models
 
 @admin.register(models.DbConfig)
 class DbConfigAdmin(admin.ModelAdmin):
-    list_display = ('host', 'port', 'character', 'env_id', 'use_type', 'rds_type', 'rds_category')
+    list_display = ('host', 'port', 'character', 'env_id', 'use_type', 'rds_type', 'rds_category', 'comment')
     list_display_links = ('host',)
     search_fields = ('host', 'port', 'env_id')
     list_per_page = 10
