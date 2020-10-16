@@ -408,37 +408,39 @@ export default {
     onMyChange(checked) {
       this.ruleForm.is_hide = checked ? 'ON' : 'OFF'
     },
-    getEnvs() {
-      getDbEnvironment.then((response) => {
-        this.envs = response.data
-      })
-    },
     handleTiDBOk(e) {
       this.tidbVisible = false
     },
     getsqltype() {
-      // 根据url变动，切换工单类型
-      const urlList = this.$route.path.split('/')
-      this.sqltype = urlList[urlList.length - 1].toUpperCase() // 此处需要转换为大写
-      this.cardTitle = `提交${this.sqltype}工单( * 为必填项)`
+      getDbEnvironment.then((response) => {
+        const envs = response.data
 
-      // 当为导出工单时，隐藏部分
-      this.isShow = true
-      if (this.sqltype === 'EXPORT') {
-        this.isShow = false
-      }
+        // 根据url变动，切换工单类型
+        const urlList = this.$route.path.split('/')
+        this.sqltype = urlList[urlList.length - 1].toUpperCase() // 此处需要转换为大写
+        this.cardTitle = `提交${this.sqltype}工单(每条SQL必须以 ; 结尾)`
 
-      // DDL工单进行过滤处理，不允许直接提交到生产环境
-      this.ruleForm.env_id = ''
-      this.ruleForm.database = ''
-      this.envs.map((item) => {
-        item.disabled = false
-        if (this.sqltype === 'DDL') {
-          if (item.id === 2) {
-            item.disabled = true
-          }
+        // 当为导出工单时，隐藏部分
+        this.isShow = true
+        if (this.sqltype === 'EXPORT') {
+          this.isShow = false
         }
-        return item
+
+        // // DDL工单进行过滤处理，不允许直接提交到生产环境
+        // // 此处可自行改造
+        // this.ruleForm.env_id = "";
+        // this.ruleForm.database = "";
+        // envs.map((item) => {
+        //   item.disabled = false;
+        //   if (this.sqltype === "DDL") {
+        //     if (item.id === 2) {   // 数据库中生产环境对应的值为2
+        //       item.disabled = true;
+        //     }
+        //   }
+        //   return item;
+        // });
+
+        this.envs = envs
       })
     },
     // 操作表格
@@ -581,7 +583,6 @@ export default {
     },
   },
   mounted() {
-    this.getEnvs()
     this.getsqltype()
     this.getUsersList()
     this.getReleaseVersionsList()
