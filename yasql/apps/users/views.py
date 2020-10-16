@@ -17,6 +17,10 @@ class Login(APIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.LoginSerializer
 
+    def perform_authentication(self, request):
+        # 不检查JWT，兼容/admin
+        pass
+
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
