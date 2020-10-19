@@ -17,6 +17,7 @@ from rest_framework.exceptions import PermissionDenied
 from config import REOMOTE_USER
 from sqlorders import models, utils, libs, tasks
 from sqlorders.api.goInceptionApi import InceptionApi
+from sqlorders.libs import check_export_column_unique
 from users.models import UserAccounts
 
 
@@ -83,6 +84,20 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
 
         # EXPORT类型的工单不需要检查语法
         if attrs['sql_type'] == 'EXPORT':
+            cid, database = attrs['database'].split('__')
+            obj = models.DbConfig.objects.get(pk=cid)
+            cfg = {
+                'host': obj.host,
+                'port': obj.port,
+                'database': database
+            }
+            cfg.update(REOMOTE_USER)
+
+            # 判断导出工单提交的列是否重复
+            status, msg = check_export_column_unique(config=cfg, sqls=attrs['sqls'])
+            if not status:
+                raise serializers.ValidationError(msg)
+
             raise serializers.ValidationError('EXPORT类型的工单不需要语法检查，请直接提交')
 
         # TiDB的ALTER语句需要单独的处理
@@ -191,6 +206,12 @@ class SqlOrdersCommitSerializer(serializers.ModelSerializer):
         # if attrs['sql_type'] == 'DML':
         #     if not api.check_insert_select():
         #         raise serializers.ValidationError('禁止提交INSERT INTO ... SELECT ...语句')
+
+        # 判断导出工单提交的列是否重复
+        if attrs['sql_type'] == 'EXPORT':
+            status, msg = check_export_column_unique(config=cfg, sqls=attrs['contents'])
+            if not status:
+                raise serializers.ValidationError(msg)
 
         # 导出工单不检查语法，仅检测是否以SELECT开头
         if attrs['sql_type'] != 'EXPORT':
