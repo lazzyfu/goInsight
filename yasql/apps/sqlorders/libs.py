@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
-
+import pymysql
 import sqlparse
 
 
@@ -34,4 +34,23 @@ def verify_sql_type(sqls=None, sql_type=None):
             return False, 'DDL模式下, 不支持SELECT|UPDATE|DELETE|INSERT等语句'
         if sql_type == 'DML':
             return False, 'DML模式下, 不支持ALTER|CREATE|TRUNCATE|DROP等语句'
+    return True, None
+
+
+def check_export_column_unique(config, sqls):
+    # ERROR 1060 (42S21): Duplicate column name 'xxx'
+    # 判断提交导出工单的列是否重复，重复不允许提交。dict数据类型不支持key重复
+
+    conn = pymysql.connect(**config)
+    for sql in sqlparse.split(sqls):
+        explain_query = f"explain select count(*) as count from ({sql.strip(';')}) as subquery"
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(explain_query)
+        except Exception as err:
+            if err.args[0] == 1060:
+                return False, f"SELECT列名重复, 请使用AS更换别名，错误信息：{err.args[1]}"
+            else:
+                return False, err
+    conn.close()
     return True, None

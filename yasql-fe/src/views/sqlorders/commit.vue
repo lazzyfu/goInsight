@@ -5,7 +5,14 @@
         <a-col :span="16" :push="8">
           <div style="margin-bottom: 5px">
             <a-button type="dashed" icon="thunderbolt" style="margin-right: 6px" @click="formatSQL()">格式化</a-button>
-            <a-button type="dashed" icon="safety" style="margin-right: 6px" @click="syntaxCheck()">语法检查</a-button>
+            <a-button
+              type="dashed"
+              icon="safety"
+              style="margin-right: 6px"
+              :disabled="checkBtnStatus"
+              @click="syntaxCheck()"
+              >语法检查</a-button
+            >
           </div>
           <codemirror ref="myCm" v-model="code" :options="cmOptions" @ready="onCmReady"></codemirror>
         </a-col>
@@ -303,6 +310,7 @@ export default {
     }
     return {
       isDisabledCommit: false,
+      checkBtnStatus: false,
       visibleAuditResult: false,
       tidbVisible: false,
       cardTitle: '',
@@ -470,34 +478,44 @@ export default {
     },
     // 语法检查
     syntaxCheck() {
-      this.tableLoading = true
+      this.$message.info('正在执行语法检测，请稍等')
       const params = {
         rds_category: this.ruleForm.rds_category,
         database: this.ruleForm.database,
         sqls: this.codemirror.getValue(),
         sql_type: this.sqltype,
       }
-      incepSyntaxCheck(params).then((response) => {
-        if (response.code === '0000') {
-          this.visibleAuditResult = true
 
-          // 滚动到页面的底部
-          this.$nextTick(() => {
-            document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight
-          })
-          if (response.data.data.status === 0) {
-            this.$message.success(response.message)
+      // 滚动到页面的底部
+      this.$nextTick(() => {
+        document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight
+      })
+
+      this.tableLoading = true
+      this.checkBtnStatus = true
+      this.visibleAuditResult = true
+
+      incepSyntaxCheck(params)
+        .then((response) => {
+          if (response.code === '0000') {
+            if (response.data.data.status === 0) {
+              this.$message.success(response.message)
+            } else {
+              this.$message.error(response.message)
+            }
+            this.table.data = response.data.data.data
+            this.table.columns = response.data.columns
           } else {
             this.$message.error(response.message)
           }
-
-          this.table.data = response.data.data.data
-          this.table.columns = response.data.columns
-        } else {
-          this.$message.error(response.message)
-        }
-        this.tableLoading = false
-      })
+          this.tableLoading = false
+          this.checkBtnStatus = false
+        })
+        .catch((error) => {
+          this.$message.error('语法检查失败，错误码: ' + error.response.status)
+          this.tableLoading = false
+          this.checkBtnStatus = false
+        })
     },
     // 设置行的颜色
     setRowClass(record) {
@@ -567,7 +585,8 @@ export default {
                   this.$message.error(response.message)
                 }
               })
-              .catch(() => {
+              .catch((error) => {
+                this.$message.error('提交失败，错误码: ' + error.response.status)
                 this.isDisabledCommit = false
               })
           } else {
