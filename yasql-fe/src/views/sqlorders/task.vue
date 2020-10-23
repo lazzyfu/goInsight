@@ -356,16 +356,4 @@ export default {
 </script>
 
 <style>
-.CodeMirror {
-  border: 2px solid #eee;
-  font-size: 11px;
-  min-height: 100px;
-  max-height: 800px;
-  /* 支持上下拉伸 */
-  resize: vertical;
-  overflow: y !important;
-}
-.CodeMirror pre.CodeMirror-placeholder {
-  color: #999;
-}
 </style>

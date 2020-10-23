@@ -620,18 +620,6 @@ export default {
 </script>
 
 <style>
-.CodeMirror {
-  border: 2px solid #eee;
-  font-size: 12px;
-  font-family: 'JetBrains Mono NL', Menlo, Monaco, Consolas, 'Lucida Console', 'Courier New', monospace;
-  min-height: 100px;
-  /* 支持上下拉伸 */
-  resize: vertical;
-  overflow: y !important;
-}
-.CodeMirror pre.CodeMirror-placeholder {
-  color: #999;
-}
 .row-info {
   color: green;
 }
