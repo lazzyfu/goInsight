@@ -13,7 +13,7 @@ channels==2.4.0
 channels-redis==3.1.0
 chardet==3.0.4
 constantly==15.1.0
-cryptography==3.1
+cryptography==3.2
 daphne==2.5.0
 DingtalkChatbot==1.5.1
 Django==2.2.16

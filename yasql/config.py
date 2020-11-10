@@ -42,19 +42,22 @@ REDIS = {
 LDAP_SUPPORT = {
     'enable': False,  # 为True启用LDAP，为False禁用LDAP
     'config': {
-        'AUTH_LDAP_SERVER_URI': "ldap://ldapxx.xxx.com:389",
-        'AUTH_LDAP_ALWAYS_UPDATE_USER': True,
-        'AUTH_LDAP_BIND_DN': "cn=admin,dc=xxx,dc=com",  # 用户，绝对路径
-        'AUTH_LDAP_BIND_PASSWORD': '123.com',  # 密码
-        'AUTH_LDAP_USER_SEARCH': LDAPSearch("ou=people,dc=xxx,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"),
-        # 用户映射，key为系统表字段，value为ldap字段
-        # 请根据自己公司的ldap配置调整value部分（username/mail/givenName/mobile）
+        'AUTH_LDAP_SERVER_URI': "ldap://192.168.3.221:389",
+        'AUTH_LDAP_BIND_DN': "uid=lisi,ou=people,dc=fzf,dc=com",  # 用户，绝对路径
+        'AUTH_LDAP_BIND_PASSWORD': '1234.com',  # 密码
+        'AUTH_LDAP_USER_SEARCH': LDAPSearch(
+            "ou=people,dc=fzf,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
+        ),
+        # 用户属性映射(key:value) key为系统表字段，value为ldap字段(value部分对齐自己公司的ldap属性)
         'AUTH_LDAP_USER_ATTR_MAP': {
-            'username': 'username',
-            'email': 'mail',
-            'displayname': 'givenName',
-            'mobile': 'mobile'
-        }
+            'username': 'uid',
+            'displayname': 'description',
+            'email': 'email',
+            'mobile': 'phone',
+            'department': 'department'
+        },
+        'AUTH_LDAP_ALWAYS_UPDATE_USER': True,
+        'AUTH_LDAP_START_TLS': False
     }
 }
 
