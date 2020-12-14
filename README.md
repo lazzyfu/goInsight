@@ -40,7 +40,8 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
   * 支持集成LDAP（若支持LDAP密码修改，请自行实现相关接口）
   * 支持后台创建用户、密码修改（非LDAP模式）、修改头像
   
-## WIKI地址(项目截图预览)
+## WIKI地址(内有项目截图)
+> 请先查看项目截图（建议翻墙或者查看项目的example_pic目录），不适合自己就不要往下看了，避免浪费时间
 https://github.com/lazzyfu/YaSQL/wiki
 
 
