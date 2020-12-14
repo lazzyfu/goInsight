@@ -221,16 +221,17 @@ ASGI_APPLICATION = "yasql.routing.application"
 # 启用LDAP支持
 if LDAP_SUPPORT['enable'] is True:
     AUTHENTICATION_BACKENDS = [
-        'django_auth_ldap.backend.LDAPBackend',
-        'django.contrib.auth.backends.ModelBackend',
+        "django_auth_ldap.backend.LDAPBackend",
+        "django.contrib.auth.backends.ModelBackend",
     ]
 
     AUTH_LDAP_SERVER_URI = LDAP_SUPPORT['config']['AUTH_LDAP_SERVER_URI']
-    AUTH_LDAP_ALWAYS_UPDATE_USER = LDAP_SUPPORT['config']['AUTH_LDAP_ALWAYS_UPDATE_USER']
     AUTH_LDAP_BIND_DN = LDAP_SUPPORT['config']['AUTH_LDAP_BIND_DN']
     AUTH_LDAP_BIND_PASSWORD = LDAP_SUPPORT['config']['AUTH_LDAP_BIND_PASSWORD']
     AUTH_LDAP_USER_SEARCH = LDAP_SUPPORT['config']['AUTH_LDAP_USER_SEARCH']
     AUTH_LDAP_USER_ATTR_MAP = LDAP_SUPPORT['config']['AUTH_LDAP_USER_ATTR_MAP']
+    AUTH_LDAP_ALWAYS_UPDATE_USER = LDAP_SUPPORT['config']['AUTH_LDAP_ALWAYS_UPDATE_USER']
+    AUTH_LDAP_START_TLS = LDAP_SUPPORT['config']['AUTH_LDAP_START_TLS']
 
 # 邮箱配置
 if NOTICE['MAIL']['enabled'] is True:
