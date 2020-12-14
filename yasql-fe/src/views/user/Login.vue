@@ -3,13 +3,7 @@
     <a-form id="formLogin" class="user-layout-login" ref="formLogin" :form="form" @submit="handleSubmit">
       <a-tabs :activeKey="customActiveKey" :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }">
         <a-tab-pane key="tab1" tab="账号密码登录">
-          <a-alert
-            v-if="isLoginError"
-            type="error"
-            showIcon
-            style="margin-bottom: 24px"
-            message=""
-          />
+          <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px" message="" />
           <a-form-item>
             <a-input
               size="large"
@@ -71,6 +65,7 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 export default {
   data() {
     return {
+      isLoginError: false,
       customActiveKey: 'tab1',
       loginBtn: false,
       // login type: 0 email, 1 username, 2 telephone
