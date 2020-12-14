@@ -217,20 +217,19 @@ def async_execute_multi(task_id=None, username=None):
 @shared_task(queue='dbtask')
 def dbms_sync_dbschems():
     """
-    同步远程的schema信息到表noah_dbms_sql_schemas
+    同步远程的schema信息到表yasql_dbms_sql_schemas
     用于提交工单使用
     """
     ignored_schemas = ('PERFORMANCE_SCHEMA', 'INFORMATION_SCHEMA', 'PERCONA', 'MYSQL', 'SYS',
                        'DM_META', 'DM_HEARTBEAT', 'DBMS_MONITOR', 'METRICS_SCHEMA', 'TIDB_BINLOG', 'TIDB_LOADER')
     query = f"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA"
     # 同步DB信息
-    for row in models.DbConfig.objects.all():
-        logger.info(row)
+    for row in models.DbConfig.objects.filter(use_type=0):
         try:
             config = {
                 'host': row.host,
                 'port': row.port,
-                'read_timeout': 1,  # socket.timeout: timed out，比如阿里的rds就很操蛋，没开白名单会hang住
+                'read_timeout': 10,  # socket.timeout: timed out，比如阿里的rds就很操蛋，没开白名单会hang住
                 'cursorclass': pymysql.cursors.DictCursor
             }
             config.update(REOMOTE_USER)

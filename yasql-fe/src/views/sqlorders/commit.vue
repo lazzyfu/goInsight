@@ -265,12 +265,8 @@ import {
 } from '@/api/sql'
 import sqlFormat from 'sql-formatter'
 
-import 'codemirror/theme/ambiance.css'
-import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/sql/sql.js'
 import 'codemirror/addon/selection/active-line'
-import 'codemirror/addon/edit/matchbrackets'
-import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/display/autorefresh'
 
 // 提示和自动补全
@@ -401,10 +397,8 @@ export default {
         autoRefresh: true,
         lineNumbers: true,
         matchBrackets: true, // 括号匹配
-        styleActiveLine: true, //背景高亮
         autofocus: true,
         keyMap: 'sublime', // 编辑器模式
-        autoCloseBrackets: true,
         autorefresh: true,
         viewportMargin: Infinity, // 解决切换空白的问题
       },
@@ -462,7 +456,7 @@ export default {
       const formHeight = this.$refs.ruleForm.$el.offsetHeight - 30
       cm.setSize('height', `${formHeight}px`)
       cm.on('keypress', () => {
-        cm.showHint()
+        cm.showHint({completeSingle: false});
       })
     },
     // 获取上线版本号

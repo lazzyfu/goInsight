@@ -20,7 +20,7 @@ from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 from sqlorders import models, tasks
 
 channel_layer = get_channel_layer()
-logger = get_task_logger('noahCelery')
+logger = get_task_logger('celery.logger')
 
 
 class PullMsg(object):

@@ -10,7 +10,7 @@ from sqlorders.consumers import SqlConsumer
 application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
-            path("ws/sql/<str:flag>/", SqlConsumer),  # flag为task_id
+            path("ws/sql/<str:flag>/", SqlConsumer),  # flag为前端传入的动态值，如：taskid、username
         ])
     )
 })
