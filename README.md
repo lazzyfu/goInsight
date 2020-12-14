@@ -21,6 +21,10 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
 * 语法规则
   * 集成goInception，语法规则请参考：https://github.com/hanchuanchuan/goInception
   * 支持语法高亮、格式化、注释、补全
+* 支持MySQL/TIDB查询（DMS查询功能）
+  * 支持库表级别授权
+  * 支持基于用户/组授权
+  * 支持查询审计功能（自动记录用户执行的SQL）
 * 消息推送功能
   * 邮件
   * 钉钉
