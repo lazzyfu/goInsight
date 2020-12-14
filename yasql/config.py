@@ -42,8 +42,12 @@ QUERY_USER = {
     'password': '1234.com'
 }
 
+# 查询LIMIT限制
+# 如果查询没有LIMIT子句，默认加上limit default_return_rows
+# 如果查询LIMIT子句返回行数大于max_return_rows，则改写为：limit max_return_rows
 QUERY_LIMIT = {
-
+    'default_return_rows': 100,
+    'max_return_rows': 2000
 }
 
 # REDIS配置

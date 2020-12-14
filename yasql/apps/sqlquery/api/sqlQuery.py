@@ -12,6 +12,7 @@ from channels.layers import get_channel_layer
 from django_redis import get_redis_connection
 from sqlparse.tokens import Whitespace, Keyword
 
+from config import QUERY_LIMIT
 from sqlquery.models import DbQueryLog
 
 channel_layer = get_channel_layer()
@@ -110,8 +111,8 @@ class SqlQuery(object):
 
     def _limit_rules(self, sql):
         """检查SQL语句是否有LIMIT子句，并进行LIMIT限制"""
-        default_return_rows = 100
-        max_return_rows = 2000
+        default_return_rows = QUERY_LIMIT.get('default_return_rows')
+        max_return_rows = QUERY_LIMIT.get('max_return_rows')
 
         # 从SQL语句中提取尾部的LIMIT子句
         # 不对SQL语句中的子查询的LIMIT做处理
