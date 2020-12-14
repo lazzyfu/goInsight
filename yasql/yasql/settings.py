@@ -17,7 +17,7 @@ import sys
 from kombu import Queue
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from config import REDIS, DB, LDAP_SUPPORT, NOTICE, DEBUG_ENABLED
+from config import REDIS, DB, LDAP_SUPPORT, NOTICE, DEBUG_ENABLED, SECRET_KEY
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,7 +31,10 @@ AUTH_USER_MODEL = 'users.UserAccounts'
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'm3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=bwqi1o$r_c^'
+if SECRET_KEY:
+    SECRET_KEY = SECRET_KEY
+else:
+    SECRET_KEY = 'm3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=bwqi1o$r_c^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if DEBUG_ENABLED:
@@ -56,6 +59,7 @@ INSTALLED_APPS = [
     'channels',
     'users',
     'sqlorders',
+    'sqlquery',
 ]
 
 REST_FRAMEWORK = {

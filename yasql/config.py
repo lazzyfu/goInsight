@@ -1,16 +1,19 @@
 # -*- coding:utf-8 -*-
 # edit by fuzongfei
 
+import ldap
+from django_auth_ldap.config import LDAPSearch
+
 # 关闭debug，本地开发时打开
 # 生产环境请务必改为：DEBUG_ENABLED = False
 DEBUG_ENABLED = True
 
+# 在生产环境中，请变更此KEY，自己随机生成一个即可
+SECRET_KEY = 'm3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=bwqi1o$r_c^'
+
 # 配置MySQL数据库，库必须先创建，且库的字符集必须为:utf8
 # 存储django程序运行的系统库表等数据
 # 权限：grant all on *.* to 'xxx'@'%' with grant options
-import ldap
-from django_auth_ldap.config import LDAPSearch
-
 DB = {
     'database': 'yasql',
     'user': 'yasql_rw',
@@ -22,11 +25,25 @@ DB = {
 # 连接目标需要审计或执行工单的数据库的用户
 # 每个连接的目标数据库都需要创建，用于goInception、工单执行、备份、查询
 # create user 'yasql_rw'@'%' identified by '1234.com'
-# grant all on *.* to 'yasql_user'@'%';
+# grant all on *.* to 'yasql_rw'@'%';
 # 用户名和密码请进行自行修改，不要使用默认的
 REOMOTE_USER = {
     'user': 'yasql_rw',
     'password': '1234.com'
+}
+
+# 作为开发查询数据库使用
+# 该账户仅设置为只读即可
+# create user 'yasql_ro'@'%' identified by '1234.com'
+# grant select on *.* to 'yasql_ro'@'%';
+# 用户名和密码请进行自行修改，不要使用默认的
+QUERY_USER = {
+    'user': 'yasql_ro',
+    'password': '1234.com'
+}
+
+QUERY_LIMIT = {
+
 }
 
 # REDIS配置
@@ -61,7 +78,7 @@ LDAP_SUPPORT = {
     }
 }
 
-# gh-ost工具使用
+# gh-ost工具使用，新的参数自行添加即可
 GH_OST_ARGS = ['--allow-on-master',
                '--assume-rbr',
                '--initially-drop-ghost-table',

@@ -11,7 +11,7 @@ from pymysqlreplication import BinLogStreamReader
 from pymysqlreplication.event import QueryEvent
 from pymysqlreplication.row_event import DeleteRowsEvent, UpdateRowsEvent, WriteRowsEvent
 
-logger = logging.getLogger('django')
+logger = logging.getLogger('main')
 
 
 class ReadRemoteBinlog(object):

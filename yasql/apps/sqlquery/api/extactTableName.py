@@ -163,25 +163,3 @@ def get_query_tables(query: str) -> List[str]:
             tables = _update_table_names(tables, tokens, index, last_keyword)
 
     return unique(tables)
-
-
-sql = """
-select
- d.ch_dealer_id,
-  ifnull(w.i_weight, 5) as i_weight
-from
-  (
-    select
-      distinct ch_dealer_id
-    from
-      b_broker_dealer_setting as xxx
-    where
-      b_is_dropped = 0
-      and b_is_stop_service = 0
-      and i_bankcard_quota > 0
-  ) as d
-  straight_join b_dealer_pay_weight as w on w.ch_dealer_id = d.ch_dealer_id
-  and w.i_type = 8010
-"""
-
-print(get_query_tables(sql))
