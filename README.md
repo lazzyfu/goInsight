@@ -2,12 +2,11 @@
 YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范线上SQL执行流程。
 
 ## 开发组件
-* Python3.7
-* Ant Design Vue
-* Django2.0
-* Djangorestframework
-* Djangorestframework_jwt
-* Celery
+* ![](https://img.shields.io/static/v1?label=Python&message=3.7&color=green&?style=for-the-badge)
+* ![](https://img.shields.io/static/v1?label=Vue&message=Ant_Design_Vue&color=green&?style=for-the-badge)
+* ![](https://img.shields.io/static/v1?label=Django&message=Djangorestframework&color=green&?style=for-the-badge)
+* ![](https://img.shields.io/static/v1?label=Jwt&message=Djangorestframework_jwt&color=green&?style=for-the-badge)
+* ![](https://img.shields.io/static/v1?label=Celery&message=4&color=green&?style=for-the-badge) 
 
 ## 功能简介
 * 自定义工单环境
@@ -22,6 +21,10 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
 * 语法规则
   * 集成goInception，语法规则请参考：https://github.com/hanchuanchuan/goInception
   * 支持语法高亮、格式化、注释、补全
+* 支持MySQL/TIDB查询（DMS查询功能）
+  * 支持库表级别授权
+  * 支持基于用户/组授权
+  * 支持查询审计功能（自动记录用户执行的SQL）
 * 消息推送功能
   * 邮件
   * 钉钉
@@ -37,7 +40,9 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
   * 支持集成LDAP（若支持LDAP密码修改，请自行实现相关接口）
   * 支持后台创建用户、密码修改（非LDAP模式）、修改头像
   
-## WIKI地址(项目截图预览)
+## WIKI安装部署地址(内有项目截图)
+> 点击下面wiki链接，请先查看项目截图（建议翻墙或者查看项目的example_pic目录，截图都在该目录），不适合自己就不要往下看了，避免浪费时间
+
 https://github.com/lazzyfu/YaSQL/wiki
 
 
