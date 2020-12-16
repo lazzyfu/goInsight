@@ -41,19 +41,6 @@ canvas {
   display: block;
 }
 
-.CodeMirror {
-  border: 2px solid #eee;
-  font-size: 13px;
-  font-family: 'JetBrains Mono NL', Menlo, Monaco, Consolas, 'Lucida Console', 'Courier New', monospace;
-  min-height: 100px;
-  /* 支持上下拉伸 */
-  resize: vertical;
-  overflow: y !important;
-}
-.CodeMirror pre.CodeMirror-placeholder {
-  color: #999;
-}
-
 body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -126,4 +113,34 @@ ol {
       }
     }
   }
+}
+
+.CodeMirror {
+  border: 2px solid #eee;
+  font-size: 13px;
+  font-family: 'JetBrains Mono NL', Menlo, Monaco, Consolas, 'Lucida Console', 'Courier New', monospace;
+  min-height: 100px;
+  /* 支持上下拉伸 */
+  resize: vertical;
+  overflow: y !important;
+}
+
+.CodeMirror pre.CodeMirror-placeholder {
+  color: #999;
+}
+
+// bootstrap表头颜色
+.bootstrap-table .fixed-table-container .table thead th .th-inner {
+  background-color: #EAEAEA
+}
+
+/* 修复bootstrap-table中显示数据时，若原数据包含了多个空格显示为一个空格的bug */
+.bootstrap-table .fixed-table-container .table td {
+  white-space: pre !important;
+}
+
+/* 修复因为设置white-space: pre !important;导致checkbox样式错乱的问题*/
+.bootstrap-table .fixed-table-container .table .bs-checkbox label {
+  margin-bottom: 0;
+  white-space: initial;
 }
