@@ -312,6 +312,7 @@ import "codemirror/addon/hint/anyword-hint";
 import "codemirror/addon/hint/sql-hint";
 import "codemirror/addon/comment/comment"
 import "codemirror/addon/edit/matchbrackets"
+import "codemirror/addon/edit/closebrackets";
 
 // 编辑器类型
 import "codemirror/keymap/sublime";
