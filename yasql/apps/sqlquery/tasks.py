@@ -8,13 +8,13 @@ from config import QUERY_USER
 from sqlorders.models import DbConfig
 from sqlquery.models import DbQuerySchemas, DbQueryTables
 
-logger = get_task_logger('noahCelery')
+logger = get_task_logger('celery.logger')
 
 
 @shared_task(queue='dbtask')
 def sqlquery_sync_schemas_tables():
     """
-    同步远程的schema信息到表noah_sqlquery_meta，查询授权使用
+    同步远程的schema信息到表yasql_sqlquery_meta，查询授权使用
     """
     ignored_schemas = ('PERFORMANCE_SCHEMA', 'INFORMATION_SCHEMA', 'PERCONA', 'MYSQL', 'SYS',
                        'DM_META', 'DM_HEARTBEAT', 'DBMS_MONITOR', 'METRICS_SCHEMA', 'TIDB_BINLOG', 'TIDB_LOADER')
