@@ -22,7 +22,7 @@ def verify_sql_type(sqls=None, sql_type=None):
 
     for sql in sqlparse.split(sqls):
         """解析SQL类型，返回是DML还是DDL"""
-        res = sqlparse.parse(sql)
+        res = sqlparse.parse(remove_sql_comment(sql))
         syntax_type = res[0].token_first().ttype.__str__()
         if syntax_type == 'Token.Keyword.DDL':
             result.append('DDL')
