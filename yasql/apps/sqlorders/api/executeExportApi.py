@@ -8,6 +8,7 @@ import time
 from decimal import Decimal
 
 import pymysql
+from clickhouse_driver import dbapi
 from asgiref.sync import async_to_sync
 from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
@@ -15,6 +16,7 @@ from django.core.files import File
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from openpyxl import Workbook
+from sqlorders.libs import handle_duplicate_column
 from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 
 from sqlorders import models, tasks
@@ -49,13 +51,13 @@ class PullMsg(object):
 class ExecuteExport(object):
     def __init__(self, config):
         """
-        {'host': '127.0.0.1', 'port': 3306, 'charset': 'utf8', 'rds_type': 3, 'database': 'test', 'file_format': 'csv',
-        'user': 'yasql_rw', 'password': '123.com', 'task_id': '1e0695520bb640e2ab9dcb8258aeb937'，
+        {'host': '127.0.0.1', 'port': 3306, 'charset': 'utf8', 'rds_type': 3, 'database': 'test', , rds_category: 1,
+        'file_format': 'csv', 'user': 'yasql_rw', 'password': '123.com', 'task_id': '1e0695520bb640e2ab9dcb8258aeb937',
         'id': 11, 'username': ''}
         """
         self.config = config
         self.sql = None
-
+        self.clickhouse = True if self.config['rds_category'] == 3 else False
         # 文件编码
         self.encoding = 'gbk'
 
@@ -83,13 +85,20 @@ class ExecuteExport(object):
         del cfg['task_id']
         del cfg['rds_type']
         del cfg['file_format']
-        cnx = pymysql.connect(**cfg)
-        with cnx.cursor() as cursor:
-            cursor.execute("set session lock_wait_timeout = 30")
-        with cnx.cursor() as cursor:
-            cursor.execute("set session net_read_timeout=3600")
-        with cnx.cursor() as cursor:
-            cursor.execute("set session net_write_timeout=3600")
+        del cfg['rds_category']
+        if not self.clickhouse:
+            cnx = pymysql.connect(**cfg)
+            with cnx.cursor() as cursor:
+                cursor.execute("set session lock_wait_timeout = 30")
+            with cnx.cursor() as cursor:
+                cursor.execute("set session net_read_timeout = 3600")
+            with cnx.cursor() as cursor:
+                cursor.execute("set session net_write_timeout = 3600")
+        else:
+            del cfg['charset']
+            cfg['send_receive_timeout'] = 3600
+            cnx = dbapi.connect(**cfg)
+            cnx.thread_id = lambda: 1
         return cnx
 
     def correct_int_row(self, x):
@@ -115,17 +124,28 @@ class ExecuteExport(object):
         self.execute_log.append(msg)
 
         # 使用游标读取数据，避免数据量过大产生OOM
-        cnx.cursorclass = pymysql.cursors.SSCursor
+        if not self.clickhouse:
+            cnx.cursorclass = pymysql.cursors.SSCursor
         with cnx.cursor() as cursor:
+            if self.clickhouse:
+                cursor.set_stream_results(True, 1000)
             cursor.execute(self.sql)
             # 推送消息
             msg = f'正在处理并生成XLSX数据 \n'
             self.pm.pull(msg=msg)
             self.execute_log.append(msg)
             # 标题
-            ws.append([x[0] for x in cursor.description])
+            if self.clickhouse:
+                header = handle_duplicate_column([x.name for x in cursor.description])
+            else:
+                header = [x[0] for x in cursor.description]
+            ws.append(header)
+
             # 返回行数
-            self.result['affected_rows'] = cursor.rownumber
+            if self.clickhouse:
+                self.result['affected_rows'] = cursor.rowcount
+            else:
+                self.result['affected_rows'] = cursor.rownumber
             # 操作数据
             while True:
                 row = cursor.fetchone()
@@ -155,17 +175,28 @@ class ExecuteExport(object):
         # 打开csv文件
         with open(self.tmp_file, 'w', newline='', encoding='utf-8') as csvfile:
             # 使用游标读取数据，避免数据量过大产生OOM
-            cnx.cursorclass = pymysql.cursors.SSDictCursor
+            if not self.clickhouse:
+                cnx.cursorclass = pymysql.cursors.SSDictCursor
             with cnx.cursor() as cursor:
+                if self.clickhouse:
+                    cursor.set_stream_results(True, 1000)
                 cursor.execute(self.sql)
                 # 推送消息
                 msg = f'正在处理并生成CSV数据 \n'
                 self.pm.pull(msg=msg)
                 self.execute_log.append(msg)
                 # 标题
-                fieldnames = ([x[0] for x in cursor.description])
+                if self.clickhouse:
+                    header = handle_duplicate_column([x.name for x in cursor.description])
+                else:
+                    header = ([x[0] for x in cursor.description])
+                fieldnames = header
                 # 返回行数
-                self.result['affected_rows'] = cursor.rownumber
+                if self.clickhouse:
+                    self.result['affected_rows'] = cursor.rowcount
+                else:
+                    self.result['affected_rows'] = cursor.rownumber
+
                 # 实例化csv
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
@@ -175,6 +206,9 @@ class ExecuteExport(object):
                     if not row:
                         break
                     # 过滤掉特殊字符
+                    if self.clickhouse:
+                        # clickhouse流式不支持字典
+                        row = dict(zip(header, row))
                     for k, v in row.items():
                         filter_illegal_characters_value = ILLEGAL_CHARACTERS_RE.sub(r'', v) \
                             if isinstance(v, str) else v

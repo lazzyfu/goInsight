@@ -6,6 +6,7 @@
 rdsCategory = (
     (1, 'mysql'),
     (2, 'tidb'),
+    (3, 'clickhouse'),
 )
 
 # 提供商

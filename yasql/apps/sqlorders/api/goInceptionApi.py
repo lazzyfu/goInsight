@@ -52,6 +52,8 @@ class InceptionApi(object):
 
     def check_cnx(self):
         """检查inception的连接状态"""
+        if self.rds_category == 3:
+            return True, None
         try:
             self.inception_cfg['read_timeout'] = 0.5
             pymysql.connect(**self.inception_cfg)
@@ -86,6 +88,8 @@ class InceptionApi(object):
 
     def check_insert_select(self):
         """检查语句中是否包含insert into ... select 语句"""
+        if self.rds_category == 3:
+            return True
         rs = re.compile(r'insert([\s\S]+)into([\s\S]+)select(.*)', re.I)
         data = self.run_check()
         for row in data:
@@ -96,6 +100,8 @@ class InceptionApi(object):
 
     def is_check_pass(self):
         """判断语法检查是否通过"""
+        if self.rds_category == 3:
+            return True
         data = self.run_check()
         keys = ['error_level']
         error_level = [itemgetter(*keys)(row) for row in data]
