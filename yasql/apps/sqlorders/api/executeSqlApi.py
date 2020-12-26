@@ -8,6 +8,7 @@ import time
 from warnings import filterwarnings
 
 import pymysql
+from clickhouse_driver import dbapi
 from asgiref.sync import async_to_sync
 from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
@@ -79,6 +80,7 @@ class ExecuteSQL(object):
         """
         self.config = config
         self.sql = None
+        self.clickhouse = True if self.config['rds_category'] == 3 else False
 
     def _cnx(self):
         # 新建连接
@@ -87,13 +89,19 @@ class ExecuteSQL(object):
         del cfg['task_id']
         del cfg['sql_type']
         del cfg['rds_category']
-        cfg['cursorclass'] = pymysql.cursors.DictCursor
-        # 执行SQL设置为严格模式
-        cfg['sql_mode'] = "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES"
-        cnx = pymysql.connect(**cfg)
-        # 设置锁定等待超时，避免一直等待下去
-        with cnx.cursor() as cursor:
-            cursor.execute("set session lock_wait_timeout = 10")
+        if not self.clickhouse:
+            cfg['cursorclass'] = pymysql.cursors.DictCursor
+            # 执行SQL设置为严格模式
+            cfg['sql_mode'] = "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES"
+            cnx = pymysql.connect(**cfg)
+            # 设置锁定等待超时，避免一直等待下去
+            with cnx.cursor() as cursor:
+                cursor.execute("set session lock_wait_timeout = 10")
+        else:
+            del cfg['charset']
+            cnx = dbapi.connect(**cfg)
+            cnx.thread_id = lambda: 1
+
         return cnx
 
     def _extract_tables(self):
@@ -245,6 +253,9 @@ class ExecuteSQL(object):
             result = {'status': 'fail', 'execute_log': execute_log}
             return result
 
+    def _op_clickhouse_dml(self, cnx):
+        return self._op_tidb_dml(cnx)
+
     def _ghost_tool(self):
         syntaxcompile = re.compile(
             r'^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|CONVERT|ENGINE)([\s\S]*)',
@@ -387,6 +398,9 @@ class ExecuteSQL(object):
                 result = {'status': 'fail', 'execute_log': execute_log}
                 return result
 
+    def _op_clickhouse_ddl(self, cnx):
+        return self._op_clickhouse_dml(cnx)
+
     def check_read_only(self, cnx):
         # 执行SQL之前，检查数据库是否关闭只读, read_only = 0 为只读关闭，=1为只读打开
         # 如果只读为ON，则不执行，请确认是否连接的是主库
@@ -427,11 +441,15 @@ class ExecuteSQL(object):
                     result = self._op_mysql_dml(cnx)
                 if self.config['rds_category'] == 2:
                     result = self._op_tidb_dml(cnx)
+                if self.config['rds_category'] == 3:
+                    result = self._op_clickhouse_dml(cnx)
             if self.config['sql_type'] == 'DDL':
                 if self.config['rds_category'] == 1:
                     result = self._op_mysql_ddl(cnx)
                 if self.config['rds_category'] == 2:
                     result = self._op_tidb_ddl(cnx)
+                if self.config['rds_category'] == 3:
+                    result = self._op_clickhouse_ddl(cnx)
             cnx.close()
         except Exception as err:
             msg = {'type': 'execute', 'data': str(err)}
