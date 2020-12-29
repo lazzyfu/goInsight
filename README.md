@@ -19,6 +19,7 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
   * MySQL（>=5.6， Percona Server & 官方MySQL）
   * TiDB
   * Mariadb（暂不支持Mariadb生成备份）
+  * ClickHouse
 * 语法规则
   * 集成goInception，语法规则请参考：https://github.com/hanchuanchuan/goInception
   * 支持语法高亮、格式化、注释、补全
