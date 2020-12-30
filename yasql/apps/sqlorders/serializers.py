@@ -84,7 +84,7 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg)
 
         # EXPORT类型的工单不需要检查语法
-        if attrs['sql_type'] == 'EXPORT':
+        if attrs['sql_type'] == 'EXPORT' and attrs['rds_category'] != 3:
             cid, database = attrs['database'].split('__')
             obj = models.DbConfig.objects.get(pk=cid)
             cfg = {
@@ -122,6 +122,8 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
 
     def check(self):
         vdata = self.validated_data
+        if vdata['rds_category'] == 3:
+            return True, None
         cid, database = vdata['database'].split('__')
         obj = models.DbConfig.objects.get(pk=cid)
         cfg = {
@@ -209,7 +211,7 @@ class SqlOrdersCommitSerializer(serializers.ModelSerializer):
         #         raise serializers.ValidationError('禁止提交INSERT INTO ... SELECT ...语句')
 
         # 判断导出工单提交的列是否重复
-        if attrs['sql_type'] == 'EXPORT':
+        if attrs['sql_type'] == 'EXPORT' and attrs['rds_category'] != 3:
             status, msg = check_export_column_unique(config=cfg, sqls=attrs['contents'])
             if not status:
                 raise serializers.ValidationError(msg)

@@ -3,6 +3,8 @@
 import pymysql
 import sqlparse
 
+from collections import Counter
+
 
 def remove_sql_comment(sql):
     # 执行前,删除语句开头的注释
@@ -54,3 +56,15 @@ def check_export_column_unique(config, sqls):
                 return False, err
     conn.close()
     return True, None
+
+
+def handle_duplicate_column(column):
+    column_count = Counter(column)
+    _column = []
+    _ = 0
+    for col in column:
+        if column_count[col] > 1:
+            col = f"{col}_{str(_)}"
+            _ += 1
+        _column.append(col)
+    return _column

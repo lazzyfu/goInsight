@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 
 import pymysql
+from clickhouse_driver import Client
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db.models import F
@@ -151,8 +152,9 @@ def async_execute_export(id=None, username=None, sql=None):
         host=F('order__cid__host'),
         port=F('order__cid__port'),
         charset=F('order__cid__character'),
-        rds_type=F('order__cid__rds_type')
-    ).values('host', 'port', 'charset', 'rds_type').first()
+        rds_type=F('order__cid__rds_type'),
+        rds_category=F('order__rds_category')
+    ).values('host', 'port', 'charset', 'rds_type', 'rds_category').first()
 
     # 获取当前任务对应的数据库
     database = models.DbOrdersExecuteTasks.objects.filter(pk=id).annotate(
@@ -214,36 +216,68 @@ def async_execute_multi(task_id=None, username=None):
     update_dborders_progress_to_finish(task_id=task_id, username=username)
 
 
+def dbms_sync_clickhouse_schema(row):
+    ignored_schemas = ('_temporary_and_external_tables', 'system', 'default')
+    query = f"select name from system.databases where name not in {ignored_schemas}"
+    config = {
+        'host': row.host,
+        'port': row.port,
+        'database': 'default',
+        'connect_timeout': 5,
+        'send_receive_timeout': 5,
+    }
+    # 请在clickhouse创建好用户
+    config.update(REOMOTE_USER)
+    cnx = Client(**config)
+    result = cnx.execute(query)
+    for i in result:
+        schema = i[0]
+        models.DbSchemas.objects.update_or_create(
+            cid_id=row.id,
+            schema=schema,
+            defaults={'schema': schema}
+        )
+    cnx.disconnect()
+
+
+def dbms_sync_mysql_schema(row):
+    ignored_schemas = ('PERFORMANCE_SCHEMA', 'INFORMATION_SCHEMA', 'PERCONA', 'MYSQL', 'SYS',
+                       'DM_META', 'DM_HEARTBEAT', 'DBMS_MONITOR', 'METRICS_SCHEMA', 'TIDB_BINLOG', 'TIDB_LOADER')
+    query = f"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA"
+    config = {
+        'host': row.host,
+        'port': row.port,
+        'read_timeout': 10,  # socket.timeout: timed out，比如阿里的rds就很操蛋，没开白名单会hang住
+        'cursorclass': pymysql.cursors.DictCursor
+    }
+    config.update(REOMOTE_USER)
+    cnx = pymysql.connect(**config)
+    with cnx.cursor() as cursor:
+        cursor.execute(query)
+        for i in cursor.fetchall():
+            if i['SCHEMA_NAME'].upper() not in ignored_schemas:
+                models.DbSchemas.objects.update_or_create(
+                    cid_id=row.id,
+                    schema=i['SCHEMA_NAME'],
+                    defaults={'schema': i['SCHEMA_NAME']}
+                )
+    cnx.close()
+
+
 @shared_task(queue='dbtask')
 def dbms_sync_dbschems():
     """
     同步远程的schema信息到表yasql_dbms_sql_schemas
     用于提交工单使用
     """
-    ignored_schemas = ('PERFORMANCE_SCHEMA', 'INFORMATION_SCHEMA', 'PERCONA', 'MYSQL', 'SYS',
-                       'DM_META', 'DM_HEARTBEAT', 'DBMS_MONITOR', 'METRICS_SCHEMA', 'TIDB_BINLOG', 'TIDB_LOADER')
-    query = f"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA"
     # 同步DB信息
     for row in models.DbConfig.objects.filter(use_type=0):
         try:
-            config = {
-                'host': row.host,
-                'port': row.port,
-                'read_timeout': 10,  # socket.timeout: timed out，比如阿里的rds就很操蛋，没开白名单会hang住
-                'cursorclass': pymysql.cursors.DictCursor
-            }
-            config.update(REOMOTE_USER)
-            cnx = pymysql.connect(**config)
-            with cnx.cursor() as cursor:
-                cursor.execute(query)
-                for i in cursor.fetchall():
-                    if i['SCHEMA_NAME'].upper() not in ignored_schemas:
-                        models.DbSchemas.objects.update_or_create(
-                            cid_id=row.id,
-                            schema=i['SCHEMA_NAME'],
-                            defaults={'schema': i['SCHEMA_NAME']}
-                        )
-            cnx.close()
+            category = row.rds_category
+            if category == 3:  # clickhouse
+                dbms_sync_clickhouse_schema(row)
+            elif category in (1, 2):
+                dbms_sync_mysql_schema(row)
         except Exception as err:
             logger.error(f"异常主机：{row.host}")
             logger.error(err)
