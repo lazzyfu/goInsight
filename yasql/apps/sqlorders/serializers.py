@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime
 
 import sqlparse
+from django.core.cache import cache
 from django.db.models import F
 from django.utils import timezone
 from django.utils.html import linebreaks
@@ -527,7 +528,17 @@ class SqlOrdersTasksListSerializer(serializers.ModelSerializer):
 class ExecuteSingleTaskSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
+    def check_task_locked(self, id):
+        key = f'execute_single_task_id_{str(id)}'
+        if cache.get(key):
+            raise serializers.ValidationError('当前任务已被触发，10s内请不要重复点击')
+        # 锁定10s
+        cache.set(key, 1, 10)
+
     def validate_id(self, data):
+        # 检查任务是否被锁定，避免连击
+        self.check_task_locked(data)
+
         try:
             obj = models.DbOrdersExecuteTasks.objects.get(pk=data)
         except models.DbOrdersExecuteTasks.DoesNotExist as err:
@@ -572,7 +583,17 @@ class ExecuteSingleTaskSerializer(serializers.Serializer):
 class ExecuteMultiTasksSerializer(serializers.Serializer):
     task_id = serializers.CharField()
 
+    def check_task_locked(self, taskid):
+        key = f'execute_multi_tasks_taskid_{taskid}'
+        if cache.get(key):
+            raise serializers.ValidationError('当前任务已被触发，10s内请不要重复点击')
+        # 锁定10s
+        cache.set(key, 1, 10)
+
     def validate_task_id(self, data):
+        # 检查任务是否被锁定，避免连击
+        self.check_task_locked(data)
+        
         if not models.DbOrdersExecuteTasks.objects.filter(task_id=data).exists():
             raise serializers.ValidationError('查询的结果不存在')
 
