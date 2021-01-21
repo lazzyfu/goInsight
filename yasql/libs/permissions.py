@@ -93,3 +93,10 @@ class CanDeleteVersionsPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return check_permission(request, 'can_delete_versions')
+
+
+class CanExecRedisPermission(permissions.BasePermission):
+    message = "您没有Redis操作权限"
+
+    def has_permission(self, request, view):
+        return check_permission(request, 'can_exec_redis')

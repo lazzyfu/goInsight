@@ -1,0 +1,4 @@
+'2021-01-10 19:58:25,884 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-10 19:58:26,732 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-10 19:58:26,732 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-10 19:58:26,733 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
