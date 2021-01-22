@@ -3,6 +3,7 @@ import { UserLayout, BasicLayout } from '@/layouts'
 import Account from '@/views/account/route'
 import SqlOrders from '@/views/sqlorders/route'
 import SqlQuery from '@/views/sqlquery/route.js'
+import RedisMS from '@/views/redisms/route.js'
 
 export const asyncRouterMap = [
   {
@@ -11,7 +12,7 @@ export const asyncRouterMap = [
     component: BasicLayout,
     meta: { title: '首页' },
     redirect: { name: 'account' },
-    children: [Account, SqlOrders, SqlQuery]
+    children: [Account, SqlOrders, SqlQuery, RedisMS]
   },
   {
     path: '*',

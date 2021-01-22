@@ -1,0 +1,1824 @@
+'2021-01-17 12:00:15,450 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:00:17,371 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:00:17,371 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:00:17,380 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:00:21,832 [django.request:228] [WARNING]- Not Found: /'
+'2021-01-17 12:00:21,838 [django.channels.server:149] [WARNING]- HTTP GET / 404 [0.06, 127.0.0.1:52125]'
+'2021-01-17 12:00:45,307 [django.channels.server:141] [INFO]- HTTP POST /api/users/login 200 [0.43, 127.0.0.1:52151]'
+'2021-01-17 12:00:45,474 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.13, 127.0.0.1:52155]'
+'2021-01-17 12:00:45,878 [django.channels.server:141] [INFO]- HTTP GET /api/media/img/2020/09/22/cbc0f76fdfd2bd0c94a212f262625644.jpg 200 [0.01, 127.0.0.1:52158]'
+'2021-01-17 12:00:53,771 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.27, 127.0.0.1:52167]'
+'2021-01-17 12:00:53,935 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:00:53,967 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.47, 127.0.0.1:52166]'
+'2021-01-17 12:01:50,322 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.16, 127.0.0.1:52188]'
+'2021-01-17 12:01:51,217 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.39, 127.0.0.1:52193]'
+'2021-01-17 12:01:51,431 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:01:51,435 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.64, 127.0.0.1:52192]'
+'2021-01-17 12:03:00,460 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.23, 127.0.0.1:52469]'
+'2021-01-17 12:03:02,734 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.18, 127.0.0.1:52488]'
+'2021-01-17 12:03:02,990 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:03:03,028 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.47, 127.0.0.1:52487]'
+'2021-01-17 12:03:16,883 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.22, 127.0.0.1:52550]'
+'2021-01-17 12:03:17,043 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:03:17,057 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.40, 127.0.0.1:52549]'
+'2021-01-17 12:03:17,551 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.14, 127.0.0.1:52561]'
+'2021-01-17 12:03:17,634 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:03:17,638 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.24, 127.0.0.1:52558]'
+'2021-01-17 12:03:57,253 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:03:57,257 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.17, 127.0.0.1:52740]'
+'2021-01-17 12:03:57,262 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.38, 127.0.0.1:52737]'
+'2021-01-17 12:04:26,711 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.17, 127.0.0.1:52864]'
+'2021-01-17 12:04:26,807 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:04:26,810 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.27, 127.0.0.1:52862]'
+'2021-01-17 12:04:41,084 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.16, 127.0.0.1:52938]'
+'2021-01-17 12:04:42,886 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.17, 127.0.0.1:52950]'
+'2021-01-17 12:04:43,193 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:04:43,214 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.51, 127.0.0.1:52947]'
+'2021-01-17 12:04:48,582 [django.channels.server:141] [INFO]- HTTP GET /api/users/list 200 [0.21, 127.0.0.1:52981]'
+'2021-01-17 12:04:48,611 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/versions/get 200 [0.23, 127.0.0.1:52983]'
+'2021-01-17 12:04:48,647 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/envs 200 [0.27, 127.0.0.1:52982]'
+'2021-01-17 12:04:48,829 [django.request:228] [WARNING]- Forbidden: /api/sqlorders/versions/list'
+'2021-01-17 12:04:48,833 [django.channels.server:151] [WARNING]- HTTP GET /api/sqlorders/versions/list?page_size=10&page=1 403 [0.20, 127.0.0.1:52988]'
+'2021-01-17 12:06:41,326 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.22, 127.0.0.1:53166]'
+'2021-01-17 12:06:42,053 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/envs 200 [0.62, 127.0.0.1:53172]'
+'2021-01-17 12:06:42,062 [django.channels.server:141] [INFO]- HTTP GET /api/users/list 200 [0.65, 127.0.0.1:53170]'
+'2021-01-17 12:06:42,077 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/versions/get 200 [0.59, 127.0.0.1:53174]'
+'2021-01-17 12:06:42,495 [django.request:228] [WARNING]- Forbidden: /api/sqlorders/versions/list'
+'2021-01-17 12:06:42,498 [django.channels.server:151] [WARNING]- HTTP GET /api/sqlorders/versions/list?page_size=10&page=1 403 [0.17, 127.0.0.1:53176]'
+'2021-01-17 12:06:48,527 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.21, 127.0.0.1:53186]'
+'2021-01-17 12:06:48,852 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/envs 200 [0.23, 127.0.0.1:53192]'
+'2021-01-17 12:06:48,931 [django.channels.server:141] [INFO]- HTTP GET /api/users/list 200 [0.33, 127.0.0.1:53190]'
+'2021-01-17 12:06:48,940 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/versions/get 200 [0.26, 127.0.0.1:53194]'
+'2021-01-17 12:06:49,339 [django.request:228] [WARNING]- Forbidden: /api/sqlorders/versions/list'
+'2021-01-17 12:06:49,342 [django.channels.server:151] [WARNING]- HTTP GET /api/sqlorders/versions/list?page_size=10&page=1 403 [0.18, 127.0.0.1:53196]'
+'2021-01-17 12:07:21,157 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.30, 127.0.0.1:53216]'
+'2021-01-17 12:07:22,191 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/versions/get 200 [0.84, 127.0.0.1:53225]'
+'2021-01-17 12:07:22,459 [django.channels.server:141] [INFO]- HTTP GET /api/users/list 200 [1.12, 127.0.0.1:53221]'
+'2021-01-17 12:07:22,524 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/envs 200 [1.18, 127.0.0.1:53222]'
+'2021-01-17 12:07:23,186 [django.request:228] [WARNING]- Forbidden: /api/sqlorders/versions/list'
+'2021-01-17 12:07:23,192 [django.channels.server:151] [WARNING]- HTTP GET /api/sqlorders/versions/list?page_size=10&page=1 403 [0.12, 127.0.0.1:53229]'
+'2021-01-17 12:07:29,627 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.17, 127.0.0.1:53237]'
+'2021-01-17 12:07:29,892 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/versions/get 200 [0.19, 127.0.0.1:53245]'
+'2021-01-17 12:07:29,944 [django.channels.server:141] [INFO]- HTTP GET /api/sqlorders/envs 200 [0.25, 127.0.0.1:53244]'
+'2021-01-17 12:07:29,948 [django.channels.server:141] [INFO]- HTTP GET /api/users/list 200 [0.26, 127.0.0.1:53242]'
+'2021-01-17 12:07:30,293 [django.request:228] [WARNING]- Forbidden: /api/sqlorders/versions/list'
+'2021-01-17 12:07:30,300 [django.channels.server:151] [WARNING]- HTTP GET /api/sqlorders/versions/list?page_size=10&page=1 403 [0.18, 127.0.0.1:53248]'
+'2021-01-17 12:07:33,391 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.14, 127.0.0.1:53254]'
+'2021-01-17 12:07:33,635 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:07:33,640 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.40, 127.0.0.1:53252]'
+'2021-01-17 12:07:48,906 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.18, 127.0.0.1:53265]'
+'2021-01-17 12:07:49,536 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.23, 127.0.0.1:53270]'
+'2021-01-17 12:07:49,659 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:07:49,663 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.36, 127.0.0.1:53269]'
+'2021-01-17 12:08:27,046 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:08:27,050 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.29, 127.0.0.1:53283]'
+'2021-01-17 12:08:31,518 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.24, 127.0.0.1:53291]'
+'2021-01-17 12:08:32,347 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:08:32,355 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.32, 127.0.0.1:53296]'
+'2021-01-17 12:08:58,122 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.20, 127.0.0.1:53322]'
+'2021-01-17 12:08:59,269 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:08:59,274 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.38, 127.0.0.1:53326]'
+'2021-01-17 12:09:17,407 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:09:17,411 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.20, 127.0.0.1:53336]'
+'2021-01-17 12:09:37,105 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:09:37,111 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.16, 127.0.0.1:53343]'
+'2021-01-17 12:09:57,532 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:09:57,536 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.30, 127.0.0.1:53354]'
+'2021-01-17 12:10:06,872 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:10:06,875 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.15, 127.0.0.1:53363]'
+'2021-01-17 12:10:16,962 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:10:16,966 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.20, 127.0.0.1:53367]'
+'2021-01-17 12:10:37,180 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:10:37,183 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.18, 127.0.0.1:53380]'
+'2021-01-17 12:10:47,013 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:10:47,017 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.36, 127.0.0.1:53384]'
+'2021-01-17 12:11:16,895 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:11:16,900 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.16, 127.0.0.1:53401]'
+'2021-01-17 12:11:26,951 [django.request:228] [ERROR]- Internal Server Error: /api/v1/redis/list'
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 505, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 465, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 476, in raise_uncaught_exception
+    raise exc
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/views.py", line 502, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py", line 21, in get
+    return JsonResponseV1(serializer.data)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 760, in data
+    ret = super().data
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 260, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/rest_framework/serializers.py", line 678, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 274, in __iter__
+    self._fetch_all()
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 1242, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/query.py", line 55, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/models/sql/compiler.py", line 1142, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+django.db.utils.OperationalError: (1054, "Unknown column 'yasql_redis_group.env_id' in 'field list'")
+'2021-01-17 12:11:26,954 [django.channels.server:154] [ERROR]- HTTP GET /api/v1/redis/list 500 [0.14, 127.0.0.1:53407]'
+'2021-01-17 12:12:11,428 [django.channels.server:147] [INFO]- HTTP GET /admin/ 302 [0.13, 127.0.0.1:53419]'
+'2021-01-17 12:12:11,514 [django.channels.server:141] [INFO]- HTTP GET /admin/login/?next=/admin/ 200 [0.07, 127.0.0.1:53419]'
+'2021-01-17 12:12:33,923 [daphne.server:269] [WARNING]- Application instance <Task pending coro=<AsgiHandler.__call__() running at /Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/channels/http.py:192> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/asyncio/futures.py:403, <TaskWakeupMethWrapper object at 0x7fa4682a9e58>()]>> for connection <WebRequest at 0x7fa468112160 method=POST uri=/admin/login/?next=/admin/ clientproto=HTTP/1.1> took too long to shut down and was killed.'
+'2021-01-17 12:15:41,857 [django.utils.autoreload:217] [INFO]- /Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/migrations/0001_initial.py changed, reloading.'
+'2021-01-17 12:17:43,812 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:17:44,815 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:17:44,816 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:17:44,817 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:17:45,250 [django.channels.server:141] [INFO]- HTTP GET /admin/login/?next=/admin/ 200 [0.27, 127.0.0.1:53526]'
+'2021-01-17 12:18:14,912 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:18:15,802 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:18:15,802 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:18:15,804 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:18:57,184 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:19:13,486 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:19:14,287 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:19:14,287 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:19:14,289 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:19:28,483 [django.channels.server:141] [INFO]- HTTP GET /admin/login/?next=/admin/ 200 [2.49, 127.0.0.1:53557]'
+'2021-01-17 12:19:36,413 [daphne.server:269] [WARNING]- Application instance <Task pending coro=<AsgiHandler.__call__() running at /Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/channels/http.py:192> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/asyncio/futures.py:403, <TaskWakeupMethWrapper object at 0x7f8e6b1eac18>()]>> for connection <WebRequest at 0x7f8e6b442c18 method=POST uri=/admin/login/?next=/admin/ clientproto=HTTP/1.1> took too long to shut down and was killed.'
+'2021-01-17 12:23:24,723 [daphne.server:269] [WARNING]- Application instance <Task pending coro=<AsgiHandler.__call__() running at /Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/channels/http.py:192> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/asyncio/futures.py:403, <TaskWakeupMethWrapper object at 0x7f8e6b6eb858>()]>> for connection <WebRequest at 0x7f8e54c35668 method=POST uri=/admin/login/?next=/admin/ clientproto=HTTP/1.1> took too long to shut down and was killed.'
+'2021-01-17 12:27:43,253 [daphne.server:269] [WARNING]- Application instance <Task pending coro=<AsgiHandler.__call__() running at /Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/channels/http.py:192> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/asyncio/futures.py:403, <TaskWakeupMethWrapper object at 0x7f8e54c58918>()]>> for connection <WebRequest at 0x7f8e6b442e10 method=POST uri=/admin/login/?next=/admin/ clientproto=HTTP/1.1> took too long to shut down and was killed.'
+'2021-01-17 12:27:44,298 [daphne.server:269] [WARNING]- Application instance <Task pending coro=<AsgiHandler.__call__() running at /Users/pandonglin/PycharmProjects/YaSQL/yasql/venv/lib/python3.6/site-packages/channels/http.py:192> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/asyncio/futures.py:403, <TaskWakeupMethWrapper object at 0x7f8e6b65a6a8>()]>> for connection <WebRequest at 0x7f8e6b4f5438 method=POST uri=/admin/login/?next=/admin/ clientproto=HTTP/1.1> took too long to shut down and was killed.'
+'2021-01-17 12:35:25,410 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:35:26,180 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:35:26,180 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:35:26,182 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:35:29,619 [django.channels.server:141] [INFO]- HTTP GET /admin/login/?next=/admin/ 200 [0.21, 127.0.0.1:53794]'
+'2021-01-17 12:35:36,554 [django.channels.server:147] [INFO]- HTTP POST /admin/login/?next=/admin/ 302 [0.30, 127.0.0.1:53794]'
+'2021-01-17 12:35:36,706 [django.channels.server:141] [INFO]- HTTP GET /admin/ 200 [0.14, 127.0.0.1:53794]'
+'2021-01-17 12:35:36,881 [django.channels.server:141] [INFO]- HTTP GET /static/admin/css/dashboard.css 200 [0.07, 127.0.0.1:53794]'
+'2021-01-17 12:35:36,897 [django.channels.server:141] [INFO]- HTTP GET /static/admin/img/icon-changelink.svg 200 [0.03, 127.0.0.1:53801]'
+'2021-01-17 12:35:36,899 [django.channels.server:141] [INFO]- HTTP GET /static/admin/img/icon-viewlink.svg 200 [0.02, 127.0.0.1:53802]'
+'2021-01-17 12:35:36,900 [django.channels.server:141] [INFO]- HTTP GET /static/admin/img/icon-addlink.svg 200 [0.05, 127.0.0.1:53795]'
+'2021-01-17 12:35:36,903 [django.channels.server:141] [INFO]- HTTP GET /static/admin/fonts/Roboto-Bold-webfont.woff 200 [0.01, 127.0.0.1:53794]'
+'2021-01-17 12:51:47,053 [django.utils.autoreload:217] [INFO]- /Users/pandonglin/PycharmProjects/YaSQL/yasql/yasql/urls.py changed, reloading.'
+'2021-01-17 12:51:48,697 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:51:49,422 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:51:49,423 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:51:49,424 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:52:04,479 [django.channels.server:141] [INFO]- HTTP GET /admin/ 200 [0.26, 127.0.0.1:53985]'
+'2021-01-17 12:52:04,581 [django.channels.server:145] [INFO]- HTTP GET /static/admin/css/base.css 304 [0.02, 127.0.0.1:53985]'
+'2021-01-17 12:52:08,684 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/ 200 [0.15, 127.0.0.1:53985]'
+'2021-01-17 12:52:08,826 [django.channels.server:141] [INFO]- HTTP GET /static/admin/css/changelists.css 200 [0.07, 127.0.0.1:53985]'
+'2021-01-17 12:52:08,845 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/vendor/jquery/jquery.js 200 [0.06, 127.0.0.1:53990]'
+'2021-01-17 12:52:08,858 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/jquery.init.js 200 [0.07, 127.0.0.1:53991]'
+'2021-01-17 12:52:08,880 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/core.js 200 [0.08, 127.0.0.1:53992]'
+'2021-01-17 12:52:08,880 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/admin/RelatedObjectLookups.js 200 [0.07, 127.0.0.1:53993]'
+'2021-01-17 12:52:08,913 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/actions.js 200 [0.09, 127.0.0.1:53985]'
+'2021-01-17 12:52:08,927 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/urlify.js 200 [0.06, 127.0.0.1:53990]'
+'2021-01-17 12:52:08,929 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/prepopulate.js 200 [0.07, 127.0.0.1:53991]'
+'2021-01-17 12:52:08,944 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/vendor/xregexp/xregexp.js 200 [0.06, 127.0.0.1:53992]'
+'2021-01-17 12:52:08,981 [django.channels.server:141] [INFO]- HTTP GET /static/admin/img/search.svg 200 [0.02, 127.0.0.1:53992]'
+'2021-01-17 12:52:09,026 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.27, 127.0.0.1:53986]'
+'2021-01-17 12:52:09,215 [django.channels.server:141] [INFO]- HTTP GET /static/admin/img/tooltag-add.svg 200 [0.01, 127.0.0.1:53986]'
+'2021-01-17 12:52:10,641 [django.channels.server:141] [INFO]- HTTP GET /admin/ 200 [0.15, 127.0.0.1:53986]'
+'2021-01-17 12:52:14,618 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/ 200 [0.14, 127.0.0.1:53986]'
+'2021-01-17 12:52:14,898 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.21, 127.0.0.1:53986]'
+'2021-01-17 12:52:16,796 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/add/ 200 [0.19, 127.0.0.1:53986]'
+'2021-01-17 12:52:16,913 [django.channels.server:141] [INFO]- HTTP GET /static/admin/css/forms.css 200 [0.04, 127.0.0.1:53986]'
+'2021-01-17 12:52:16,973 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/change_form.js 200 [0.02, 127.0.0.1:53986]'
+'2021-01-17 12:52:16,980 [django.channels.server:141] [INFO]- HTTP GET /static/admin/css/widgets.css 200 [0.02, 127.0.0.1:53990]'
+'2021-01-17 12:52:16,994 [django.channels.server:141] [INFO]- HTTP GET /static/admin/js/prepopulate_init.js 200 [0.01, 127.0.0.1:53990]'
+'2021-01-17 12:52:17,133 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.26, 127.0.0.1:53992]'
+'2021-01-17 12:52:22,324 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/ 200 [0.16, 127.0.0.1:53992]'
+'2021-01-17 12:52:24,178 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/ 200 [0.11, 127.0.0.1:53992]'
+'2021-01-17 12:52:53,101 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:52:53,763 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:52:53,763 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:52:53,764 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:52:56,517 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/ 200 [0.24, 127.0.0.1:54010]'
+'2021-01-17 12:52:58,338 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisenv/ 200 [0.15, 127.0.0.1:54010]'
+'2021-01-17 12:52:58,534 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.12, 127.0.0.1:54010]'
+'2021-01-17 12:53:00,067 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisenv/add/ 200 [0.15, 127.0.0.1:54010]'
+'2021-01-17 12:53:00,322 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.16, 127.0.0.1:54010]'
+'2021-01-17 12:53:07,664 [django.channels.server:147] [INFO]- HTTP POST /admin/redisms/redisenv/add/ 302 [0.13, 127.0.0.1:54010]'
+'2021-01-17 12:53:07,826 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisenv/add/ 200 [0.15, 127.0.0.1:54010]'
+'2021-01-17 12:53:08,054 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.12, 127.0.0.1:54010]'
+'2021-01-17 12:53:08,183 [django.channels.server:145] [INFO]- HTTP GET /static/admin/css/responsive.css 304 [0.01, 127.0.0.1:54010]'
+'2021-01-17 12:53:08,366 [django.channels.server:141] [INFO]- HTTP GET /static/admin/img/icon-yes.svg 200 [0.07, 127.0.0.1:54010]'
+'2021-01-17 12:53:08,374 [django.channels.server:145] [INFO]- HTTP GET /static/admin/fonts/Roboto-Regular-webfont.woff 304 [0.03, 127.0.0.1:54011]'
+'2021-01-17 12:53:08,377 [django.channels.server:145] [INFO]- HTTP GET /static/admin/fonts/Roboto-Light-webfont.woff 304 [0.02, 127.0.0.1:54029]'
+'2021-01-17 12:53:11,644 [django.channels.server:147] [INFO]- HTTP POST /admin/redisms/redisenv/add/ 302 [0.14, 127.0.0.1:54029]'
+'2021-01-17 12:53:11,837 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisenv/ 200 [0.18, 127.0.0.1:54029]'
+'2021-01-17 12:53:12,047 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.11, 127.0.0.1:54029]'
+'2021-01-17 12:53:13,172 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/ 200 [0.13, 127.0.0.1:54029]'
+'2021-01-17 12:53:16,049 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisgroup/ 200 [0.15, 127.0.0.1:54029]'
+'2021-01-17 12:53:16,304 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.19, 127.0.0.1:54029]'
+'2021-01-17 12:53:17,890 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisgroup/add/ 200 [0.16, 127.0.0.1:54029]'
+'2021-01-17 12:53:18,191 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.23, 127.0.0.1:54029]'
+'2021-01-17 12:53:25,800 [django.channels.server:147] [INFO]- HTTP POST /admin/redisms/redisgroup/add/ 302 [0.17, 127.0.0.1:54029]'
+'2021-01-17 12:53:25,992 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisgroup/ 200 [0.19, 127.0.0.1:54029]'
+'2021-01-17 12:53:26,251 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.17, 127.0.0.1:54029]'
+'2021-01-17 12:53:27,076 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/ 200 [0.11, 127.0.0.1:54029]'
+'2021-01-17 12:53:29,195 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisgrant/ 200 [0.16, 127.0.0.1:54029]'
+'2021-01-17 12:53:29,380 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.14, 127.0.0.1:54029]'
+'2021-01-17 12:53:30,886 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisgrant/add/ 200 [0.18, 127.0.0.1:54029]'
+'2021-01-17 12:53:31,152 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.20, 127.0.0.1:54029]'
+'2021-01-17 12:53:39,982 [django.channels.server:147] [INFO]- HTTP POST /admin/redisms/redisgrant/add/ 302 [0.15, 127.0.0.1:54029]'
+'2021-01-17 12:53:40,156 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisgrant/ 200 [0.16, 127.0.0.1:54029]'
+'2021-01-17 12:53:40,440 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.16, 127.0.0.1:54029]'
+'2021-01-17 12:53:50,513 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.21, 127.0.0.1:54071]'
+'2021-01-17 12:53:53,704 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.18, 127.0.0.1:54076]'
+'2021-01-17 12:54:10,217 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/ 200 [0.12, 127.0.0.1:54029]'
+'2021-01-17 12:54:12,987 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/ 200 [0.15, 127.0.0.1:54029]'
+'2021-01-17 12:54:13,146 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.10, 127.0.0.1:54029]'
+'2021-01-17 12:54:14,745 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/add/ 200 [0.19, 127.0.0.1:54029]'
+'2021-01-17 12:54:15,041 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.20, 127.0.0.1:54029]'
+'2021-01-17 12:54:32,639 [django.channels.server:147] [INFO]- HTTP POST /admin/redisms/redisconfig/add/ 302 [0.13, 127.0.0.1:54029]'
+'2021-01-17 12:54:32,783 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/ 200 [0.13, 127.0.0.1:54029]'
+'2021-01-17 12:54:33,024 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.16, 127.0.0.1:54029]'
+'2021-01-17 12:54:38,394 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.19, 127.0.0.1:54097]'
+'2021-01-17 12:54:39,064 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.20, 127.0.0.1:54100]'
+'2021-01-17 12:54:47,766 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.18, 127.0.0.1:54105]'
+'2021-01-17 12:56:57,804 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:56:58,421 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:56:58,421 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:56:58,423 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:57:03,485 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.21, 127.0.0.1:54148]'
+'2021-01-17 12:57:04,101 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.20, 127.0.0.1:54152]'
+'2021-01-17 12:57:10,233 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/1/metrics?db=0 200 [1.14, 127.0.0.1:54160]'
+'2021-01-17 12:58:08,083 [django.utils.autoreload:217] [INFO]- /Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/views.py changed, reloading.'
+'2021-01-17 12:58:10,184 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 12:58:11,462 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 12:58:11,462 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 12:58:11,464 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 12:58:49,290 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.14, 127.0.0.1:54189]'
+'2021-01-17 12:58:49,316 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.18, 127.0.0.1:54187]'
+'2021-01-17 12:59:03,961 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.16, 127.0.0.1:54202]'
+'2021-01-17 12:59:04,830 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.29, 127.0.0.1:54206]'
+'2021-01-17 12:59:04,830 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.28, 127.0.0.1:54207]'
+'2021-01-17 12:59:22,877 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.19, 127.0.0.1:54218]'
+'2021-01-17 12:59:34,911 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.24, 127.0.0.1:54222]'
+'2021-01-17 12:59:46,288 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.18, 127.0.0.1:54228]'
+'2021-01-17 12:59:49,667 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.17, 127.0.0.1:54232]'
+'2021-01-17 13:00:03,779 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.17, 127.0.0.1:54244]'
+'2021-01-17 13:00:51,026 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/1/change/ 200 [0.39, 127.0.0.1:54257]'
+'2021-01-17 13:00:51,344 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.24, 127.0.0.1:54257]'
+'2021-01-17 13:00:56,990 [django.channels.server:147] [INFO]- HTTP POST /admin/redisms/redisconfig/1/change/ 302 [0.14, 127.0.0.1:54257]'
+'2021-01-17 13:00:57,198 [django.channels.server:141] [INFO]- HTTP GET /admin/redisms/redisconfig/ 200 [0.20, 127.0.0.1:54257]'
+'2021-01-17 13:00:57,444 [django.channels.server:141] [INFO]- HTTP GET /admin/jsi18n/ 200 [0.17, 127.0.0.1:54257]'
+'2021-01-17 13:01:01,740 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.19, 127.0.0.1:54272]'
+'2021-01-17 13:01:02,327 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.11, 127.0.0.1:54278]'
+'2021-01-17 13:01:02,345 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.16, 127.0.0.1:54276]'
+'2021-01-17 13:02:31,895 [django.utils.autoreload:217] [INFO]- /Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/models.py changed, reloading.'
+'2021-01-17 13:02:34,590 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 13:02:35,225 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 13:02:35,226 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 13:02:35,227 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 13:02:38,767 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.21, 127.0.0.1:54308]'
+'2021-01-17 13:02:39,407 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.16, 127.0.0.1:54313]'
+'2021-01-17 13:02:39,473 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.23, 127.0.0.1:54312]'
+'2021-01-17 13:02:46,375 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/1/metrics?db=0 200 [1.14, 127.0.0.1:54317]'
+'2021-01-17 13:04:04,103 [django.utils.autoreload:217] [INFO]- /Users/pandonglin/PycharmProjects/YaSQL/yasql/apps/redisms/models.py changed, reloading.'
+'2021-01-17 13:04:05,739 [django.utils.autoreload:597] [INFO]- Watching for file changes with StatReloader'
+'2021-01-17 13:04:06,482 [daphne.server:111] [INFO]- HTTP/2 support not enabled (install the http2 and tls Twisted extras)'
+'2021-01-17 13:04:06,482 [daphne.server:119] [INFO]- Configuring endpoint tcp:port=8000:interface=127.0.0.1'
+'2021-01-17 13:04:06,484 [daphne.server:153] [INFO]- Listening on TCP address 127.0.0.1:8000'
+'2021-01-17 13:04:26,703 [django.channels.server:141] [INFO]- HTTP GET /api/users/info 200 [0.22, 127.0.0.1:54348]'
+'2021-01-17 13:04:27,390 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/cmds 200 [0.18, 127.0.0.1:54353]'
+'2021-01-17 13:04:27,431 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/list 200 [0.22, 127.0.0.1:54352]'
+'2021-01-17 13:04:53,147 [django.channels.server:141] [INFO]- HTTP GET /api/v1/redis/1/metrics?db=0 200 [1.17, 127.0.0.1:54356]'
+'2021-01-17 13:05:00,510 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.20, 127.0.0.1:54362]'
+'2021-01-17 13:05:12,460 [django.channels.server:141] [INFO]- HTTP POST /api/v1/redis/exec_cmd 200 [0.21, 127.0.0.1:54374]'

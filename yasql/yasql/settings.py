@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'users',
     'sqlorders',
     'sqlquery',
+    'redisms',
 ]
 
 REST_FRAMEWORK = {
