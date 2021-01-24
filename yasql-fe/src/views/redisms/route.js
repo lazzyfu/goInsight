@@ -9,7 +9,7 @@ const route = {
       name: 'redisms.list',
       path: 'list',
       component: () => import('./List/index.vue'),
-      meta: { title: 'Redis查询', icon: 'search' },
+      meta: { title: '执行命令', icon: 'search' },
     }
   ],
 }
