@@ -125,7 +125,11 @@ class GetTreeSerializer(serializers.Serializer):
             }
             config.update(QUERY_USER)
 
-            return GetTablesMeta(config=config, cid=cid).get_tables_treedata(schema=schema)
+            return GetTablesMeta(
+                config=config,
+                cid=cid,
+                rds_category=obj.rds_category
+            ).get_tables_treedata(schema=schema)
 
 
 class DeleteQueryHashSerializer(serializers.Serializer):
@@ -180,10 +184,18 @@ class GetTableInfoSerializer(serializers.Serializer):
         }
         config.update(QUERY_USER)
         if type == 'table_structure':
-            return GetTablesMeta(config=config, cid=cid).get_table_structure(schema=schema, table=table)
+            return GetTablesMeta(
+                config=config,
+                cid=cid,
+                rds_category=obj.rds_category
+            ).get_table_structure(schema=schema, table=table)
 
         if type == 'table_base':
-            return GetTablesMeta(config=config, cid=cid).get_table_base(schema=schema, table=table)
+            return GetTablesMeta(
+                config=config,
+                cid=cid,
+                rds_category=obj.rds_category
+            ).get_table_base(schema=schema, table=table)
 
 
 class GetHistorySQLSerializer(serializers.ModelSerializer):
@@ -211,4 +223,8 @@ class GetDBDictSerializer(serializers.Serializer):
             'db': 'INFORMATION_SCHEMA'
         }
         config.update(QUERY_USER)
-        return GetTablesMeta(config=config, cid=cid).get_db_dict(schema=schema)
+        return GetTablesMeta(
+            config=config,
+            cid=cid,
+            rds_category=obj.rds_category
+        ).get_db_dict(schema=schema)

@@ -55,7 +55,7 @@ class InceptionApi(object):
         if self.rds_category == 3:
             return True, None
         try:
-            self.inception_cfg['read_timeout'] = 0.5
+            self.inception_cfg['read_timeout'] = 3
             pymysql.connect(**self.inception_cfg)
             return True, None
         except pymysql.err.OperationalError as err:

@@ -190,6 +190,17 @@
     }
   },
   {
+    "model": "users.rolepermissions",
+    "pk": 9,
+    "fields": {
+      "permission_name": "can_exec_redis",
+      "permission_desc": "redis\u6267\u884c\u6743\u9650",
+      "created_at": "2021-01-27T11:13:31Z",
+      "updated_at": "2021-01-27T11:13:33Z",
+      "role": []
+    }
+  },
+  {
     "model": "django_celery_beat.intervalschedule",
     "pk": 1,
     "fields": {

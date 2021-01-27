@@ -5,6 +5,7 @@ import logging
 import re
 import time
 
+import clickhouse_driver
 import pymysql
 import sqlparse
 from asgiref.sync import async_to_sync
@@ -28,8 +29,6 @@ def pull_msg(username=None, msg=None):
     'data': str(err)
     }
     """
-    logger.warning(username)
-    logger.warning(msg)
     async_to_sync(channel_layer.group_send)(
         username,
         {
@@ -80,17 +79,23 @@ class SqlQuery(object):
         config = self.kwargs.get('config')
         config['database'] = self.kwargs['schema']
 
-        config.update(
-            {
-                'max_allowed_packet': 1024 * 1024 * 1024,
-                'db': self.kwargs['schema'],
-                'cursorclass': pymysql.cursors.DictCursor
-            }
-        )
-        cnx = pymysql.connect(**config)
-        # 设置最大查询时间600s
-        cnx._read_timeout = 600
-        return cnx
+        if self.kwargs['rds_category'] in [1, 2]:
+            config.update(
+                {
+                    'max_allowed_packet': 1024 * 1024 * 1024,
+                    'db': self.kwargs['schema'],
+                    'read_timeout': 600,  # 设置最大查询时间600s
+                    'cursorclass': pymysql.cursors.DictCursor
+                }
+            )
+            if self.kwargs['rds_category'] in [1]:
+                config['init_command'] = 'set session MAX_EXECUTION_TIME=600000'
+            cnx = pymysql.connect(**config)
+            return cnx
+        if self.kwargs['rds_category'] in [3]:
+            config.pop('charset')
+            cnx = clickhouse_driver.connect(**config)
+            return cnx
 
     def _operations_filter(self, sql):
         """检查语句的开头是否符合要求"""
@@ -165,20 +170,39 @@ class SqlQuery(object):
             return sql
 
     def _escape_row(self, row):
-        for k in row:
-            if isinstance(row[k], datetime.datetime):
-                # 时间类型转换为字符串，避免前端转时间的问题
-                row[k] = str(row[k])
-            elif isinstance(row[k], datetime.timedelta):
-                row[k] = str(row[k])
-            elif isinstance(row[k], NoneType):
-                row[k] = 'NULL'
-            elif isinstance(row[k], int):
-                row[k] = str(row[k])
-            elif isinstance(row[k], bytes):
-                # mysql列可能存在bit类型，转换成字符串和utf-8编码
-                row[k] = str(row[k], encoding='utf-8')
-        return row
+        if isinstance(row, dict):
+            for k in row:
+                if isinstance(row[k], datetime.datetime):
+                    # 时间类型转换为字符串，避免前端转时间的问题
+                    row[k] = str(row[k])
+                elif isinstance(row[k], datetime.timedelta):
+                    row[k] = str(row[k])
+                elif isinstance(row[k], NoneType):
+                    row[k] = 'NULL'
+                elif isinstance(row[k], int):
+                    row[k] = str(row[k])
+                elif isinstance(row[k], bytes):
+                    # mysql列可能存在bit类型，转换成字符串和utf-8编码
+                    row[k] = str(row[k], encoding='utf-8')
+            return row
+        if isinstance(row, tuple):
+            new_row = []
+            for i in row:
+                if isinstance(i, datetime.datetime):
+                    # 时间类型转换为字符串，避免前端转时间的问题
+                    new_row.append(str(i))
+                elif isinstance(i, datetime.timedelta):
+                    new_row.append(str(i))
+                elif isinstance(i, NoneType):
+                    new_row.append('NULL')
+                elif isinstance(i, int):
+                    new_row.append(str(i))
+                elif isinstance(i, bytes):
+                    # mysql列可能存在bit类型，转换成字符串和utf-8编码
+                    new_row.append(str(i, encoding='utf-8'))
+                else:
+                    new_row.append(i)
+            return new_row
 
     def execute(self):
         msg = []
@@ -200,20 +224,29 @@ class SqlQuery(object):
         try:
             cnx = self._remote_cnx()
             # 插入page_hash，设置过期时间为600s
-            self.thread_id = cnx.thread_id()
+            if self.kwargs['rds_category'] in [3]:
+                self.thread_id = None
+            else:
+                # clickhouse拿不到thread_id
+                self.thread_id = cnx.thread_id()
             self._add_query_hash_to_redis()
+
             with cnx.cursor() as cursor:
                 start_time = time.time()
                 cursor.execute(rule_sql)
 
                 # 获取列名
+                description = cursor.description
                 fields = [{'field': 'state', 'checkbox': True}]
-                fields.extend([{'field': x[0], 'title': x[0], 'escape': True} for x in cursor.description])
+                fields.extend([{'field': x[0], 'title': x[0], 'escape': True} for x in description])
 
                 # 获取数据
                 data = []
                 for row in cursor.fetchall():
-                    data.append(self._escape_row(row))
+                    escape_row = self._escape_row(row)
+                    if isinstance(escape_row, list):
+                        escape_row = dict(zip([i.name for i in description], escape_row))
+                    data.append(escape_row)
 
                 # 记录执行成功的语句，作为审计
                 end_time = time.time()
@@ -229,8 +262,8 @@ class SqlQuery(object):
             cnx.close()
             return {'status': True, 'data': {'columns': fields, 'data': data}}
         except Exception as err:
-            logger.error(err)
-            obj_record.query_status = str(err)
+            err = err.args.__str__()[:1024]
+            obj_record.query_status = err
             obj_record.save()
             msg.append(str(err))
             return {'status': False, 'msg': str(err)}
