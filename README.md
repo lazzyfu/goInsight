@@ -67,10 +67,6 @@ YaSQL是MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成�
   - [配置查询超时](配置查询超时)
 - [升级](升级)
  
-## WIKI安装部署地址(内有项目截图)
-> 点击下面wiki链接（建议翻墙或者查看项目的example_pic目录，截图都在该目录）
-https://github.com/lazzyfu/YaSQL/wiki
-
 
 ## QQ讨论群
 <img src="https://github.com/lazzyfu/YaSQL/blob/master/example_pic/qq.png" alt="" align=center />
