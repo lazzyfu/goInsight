@@ -45,27 +45,27 @@ YaSQL是MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成�
 ## 使用文档
 - [YaSQL预览](Home)
 - YaSQL部署
-  - [介绍](介绍)
-  - [初始化环境](初始化环境)
-  - [克隆项目](克隆项目)
-  - [部署前端服务](部署前端服务)
-  - [部署后端服务](部署后端服务)
-  - [集成goInception](集成goInception)
-  - [集成gh-ost](集成gh-ost)
+  - [介绍](https://github.com/lazzyfu/YaSQL/wiki/%E4%BB%8B%E7%BB%8D)
+  - [初始化环境](https://github.com/lazzyfu/YaSQL/wiki/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%8E%AF%E5%A2%83)
+  - [克隆项目](https://github.com/lazzyfu/YaSQL/wiki/%E5%85%8B%E9%9A%86%E9%A1%B9%E7%9B%AE)
+  - [部署前端服务](https://github.com/lazzyfu/YaSQL/wiki/%E9%83%A8%E7%BD%B2%E5%89%8D%E7%AB%AF%E6%9C%8D%E5%8A%A1)
+  - [部署后端服务](https://github.com/lazzyfu/YaSQL/wiki/%E9%83%A8%E7%BD%B2%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1)
+  - [集成goInception](https://github.com/lazzyfu/YaSQL/wiki/%E9%9B%86%E6%88%90goInception)
+  - [集成gh-ost](https://github.com/lazzyfu/YaSQL/wiki/%E9%9B%86%E6%88%90gh-ost)
 - YaSQL用户管理
-  - [集成LDAP](集成LDAP)
-  - [用户管理](用户管理)
+  - [集成LDAP](https://github.com/lazzyfu/YaSQL/wiki/%E9%9B%86%E6%88%90LDAPP)
+  - [用户管理](https://github.com/lazzyfu/YaSQL/wiki/%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86)
 - YaSQL工单配置和使用
-  - [配置工单环境](配置工单环境)
-  - [配置审核数据库](配置审核数据库)
-  - [工单钩子](工单钩子)
-  - [工单流程](工单流程)
+  - [配置工单环境](https://github.com/lazzyfu/YaSQL/wiki/%E9%85%8D%E7%BD%AE%E5%B7%A5%E5%8D%95%E7%8E%AF%E5%A2%83)
+  - [配置审核数据库](https://github.com/lazzyfu/YaSQL/wiki/%E9%85%8D%E7%BD%AE%E5%AE%A1%E6%A0%B8%E6%95%B0%E6%8D%AE%E5%BA%93)
+  - [工单钩子](https://github.com/lazzyfu/YaSQL/wiki/%E5%B7%A5%E5%8D%95%E9%92%A9%E5%AD%90)
+  - [工单流程](https://github.com/lazzyfu/YaSQL/wiki/%E5%B7%A5%E5%8D%95%E6%B5%81%E7%A8%8B)
 - YaSQL查询配置和使用
-  - [查询配置](查询配置)
-  - [配置权限](配置权限)
-  - [配置返回行数](配置返回行数)
-  - [配置查询超时](配置查询超时)
-- [升级](升级)
+  - [查询配置](https://github.com/lazzyfu/YaSQL/wiki/%E6%9F%A5%E8%AF%A2%E9%85%8D%E7%BD%AE)
+  - [配置权限](https://github.com/lazzyfu/YaSQL/wiki/%E9%85%8D%E7%BD%AE%E6%9D%83%E9%99%90)
+  - [配置返回行数](https://github.com/lazzyfu/YaSQL/wiki/%E9%85%8D%E7%BD%AE%E8%BF%94%E5%9B%9E%E8%A1%8C%E6%95%B0)
+  - [配置查询超时](https://github.com/lazzyfu/YaSQL/wiki/%E9%85%8D%E7%BD%AE%E6%9F%A5%E8%AF%A2%E8%B6%85%E6%97%B6)
+- [升级](https://github.com/lazzyfu/YaSQL/wiki/%E5%8D%87%E7%BA%A7)
  
 
 ## QQ讨论群
