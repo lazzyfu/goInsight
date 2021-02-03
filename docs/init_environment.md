@@ -27,3 +27,5 @@ make -j 4 && make install
 /usr/local/bin/pip3.7 install virtualenv -i https://mirrors.aliyun.com/pypi/simple
 /usr/local/bin/virtualenv /venvyasql --python=/usr/local/bin/python3.7
 ```
+
+恭喜您已完成了系统初始化工作。
