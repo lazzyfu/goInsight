@@ -75,19 +75,21 @@ class RedisApi:
         result1 = self.conn.info()
         time.sleep(1)
         result2 = self.conn.info()
+        slowlog = self.read_slowlog_len()
         data = {
             "version": result1.get("redis_version"),
-            "run_time": "%s天" % result1.get("uptime_in_days"),
-            "connected_clients": result1.get("connected_clients"),
-            "blocked_clients": result1.get("blocked_clients"),
+            "run_time": "%s days" % result1.get("uptime_in_days"),
+            "connected_client": result1.get("connected_clients"),
+            "blocked_client": result1.get("blocked_clients"),
             "used_memory": result1.get("used_memory_human"),
             "total_memory": result1.get("total_system_memory_human"),
             "used_cpu_sys": float('%.2f' % (result2.get("used_cpu_sys") - result1.get("used_cpu_sys"))),
             "used_cpu_user": float('%.2f' % (result2.get("used_cpu_user") - result1.get("used_cpu_user"))),
             "hits": result1.get("keyspace_hits"),
             "misses": result1.get("keyspace_misses"),
-            "ops_per_sec": result1.get("instantaneous_ops_per_sec"),
-            "db_info": result1.get(db),
+            "qps": result1.get("instantaneous_ops_per_sec"),
+            "slowlog_num": slowlog,
+            "keys": result1.get(db),
         }
         return data
 
@@ -102,6 +104,10 @@ class RedisApi:
             return self.conn.info()
         else:
             return "ERR wrong number of arguments for 'info' command"
+
+    def read_slowlog_len(self):
+        """获取慢日志数量"""
+        return self.conn.slowlog_len()
 
     def read_exists(self, args_list):
         """检查给定 key 是否存在"""
