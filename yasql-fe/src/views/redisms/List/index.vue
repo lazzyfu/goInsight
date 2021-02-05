@@ -40,17 +40,19 @@
       </a-row>
     </a-spin>
     <a-modal v-model="visibleModal" :footer="null" title="实例统计信息" width="60%">
-      <a-descriptions bordered size="small" :column="2" >
-        <a-descriptions-item label="实例" :span="2">
-          <span>{{ redisTitle }}</span>
-        </a-descriptions-item>
-        <a-descriptions-item label="状态" :span="2">
-          <a-badge status="processing" text="Running" />
-        </a-descriptions-item>
-        <a-descriptions-item v-for="(v, k) in redisMetrics" :key="k" :value="v" :label="k">
-          <span>{{ v }}</span>
-        </a-descriptions-item>
-      </a-descriptions>
+      <a-spin tip="Loading..." :spinning="spin">
+        <a-descriptions bordered size="small" :column="2" >
+          <a-descriptions-item label="实例" :span="2">
+            <span>{{ redisTitle }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="状态" :span="2">
+            <a-badge status="processing" text="Running" />
+          </a-descriptions-item>
+          <a-descriptions-item v-for="(v, k) in redisMetrics" :key="k" :value="v" :label="k">
+            <span>{{ v }}</span>
+          </a-descriptions-item>
+        </a-descriptions>
+      </a-spin>
     </a-modal>
   </a-card>
 </template>
@@ -83,6 +85,7 @@ export default {
       redisDBList: [...new Array(16).keys()],
       redisMetrics: null,
       pushing: false,
+      spin: false,
       visibleModal: false,
       redisCmds: [],
       dataSource: [],
@@ -136,6 +139,7 @@ export default {
     handleAdd(e) {
       this.redisTitle = e.title
       this.redisMetrics = null
+      this.spin = true
       redisApi.getRedisCmd(e.key, this.redisDB).then(resp => {
         this.redisMetrics = resp.data
       }).catch(error => {
@@ -143,6 +147,8 @@ export default {
           message: 'error',
           description: "无法加载redis Metrics"
         })
+      }).finally(() => {
+        this.spin = false
       })
       this.visibleModal = true
     },
