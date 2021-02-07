@@ -76,7 +76,11 @@ DEBUG_ENABLED = False
 
 执行migrate生成表结构，该操作会连接到上面的MySQL数据库创建表结构
 
->如果报数据库无法连接，请检查config.py里面的MySQL配置是否正确
+> 如果报数据库无法连接，请检查config.py里面的MySQL配置是否正确
+
+> 要设置库的字符集为utf8。否则可能执行migrate失败
+
+> CREATE DATABASE `yasql` /*!40100 DEFAULT CHARACTER SET utf8 */
 
 `/venvyasql/bin/python3.7 manage.py migrate`
 

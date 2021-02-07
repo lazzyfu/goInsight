@@ -14,6 +14,7 @@ SECRET_KEY = 'm3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=bwqi1o$r_c^'
 # 配置MySQL数据库，库必须先创建，且库的字符集必须为:utf8
 # 存储django程序运行的系统库表等数据
 # 权限：grant all on *.* to 'xxx'@'%' with grant options
+# CREATE DATABASE `yasql` /*!40100 DEFAULT CHARACTER SET utf8 */ 要设置库的字符集为utf8
 DB = {
     'database': 'yasql',
     'user': 'yasql_rw',
