@@ -88,8 +88,9 @@ class SqlQuery(object):
                     'cursorclass': pymysql.cursors.DictCursor
                 }
             )
-            if self.kwargs['rds_category'] in [1]:
-                config['init_command'] = 'set session MAX_EXECUTION_TIME=600000'
+            # 先注释掉，兼容低版本，后续做下版本采集进行判断
+            # if self.kwargs['rds_category'] in [1]:
+            #     config['init_command'] = 'set session MAX_EXECUTION_TIME=600000'
             cnx = pymysql.connect(**config)
             return cnx
         if self.kwargs['rds_category'] in [3]:
