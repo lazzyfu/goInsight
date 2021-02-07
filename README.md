@@ -9,6 +9,7 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
 * ![](https://img.shields.io/static/v1?label=Celery&message=4&color=green&?style=for-the-badge) 
 
 ## 功能简介
+
 * 自定义工单环境
   * 可根据业务场景，自定义工单的环境，比如：测试环境、预发布环境、生产环境等等
 * 支持的工单类型
@@ -18,11 +19,12 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
 * 支持的DB类型
   * MySQL（>=5.6， Percona Server & 官方MySQL）
   * TiDB
-  * Mariadb（暂不支持Mariadb生成备份）
+  * Mariadb（暂不支持Mariadb生成备份语句）
+  * ClickHouse（暂不支持生成备份语句）
 * 语法规则
   * 集成goInception，语法规则请参考：https://github.com/hanchuanchuan/goInception
-  * 支持语法高亮、格式化、注释、补全
-* 支持MySQL/TIDB查询（DMS查询功能）
+  * 前端支持语法高亮、格式化、注释、补全
+* 支持MySQL/TIDB/ClickHouse/Redis查询（类似DMS查询功能）
   * 支持库表级别授权
   * 支持基于用户/组授权
   * 支持查询审计功能（自动记录用户执行的SQL）
