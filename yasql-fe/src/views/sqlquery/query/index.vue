@@ -499,7 +499,7 @@ export default {
       //
     },
     socketOnError() {
-      this.init_websocket();
+     // this.init_websocket();
     },
     socketOnMessage(msg) {
       // 接收socket信息
