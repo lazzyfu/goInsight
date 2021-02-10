@@ -9,7 +9,7 @@
           </a>
         </div>
         <div class="desc">
-          简单的MySQL/TiDB数据库审核执行平台
+          数据库工单平台
         </div>
       </div>
 
