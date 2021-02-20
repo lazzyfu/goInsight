@@ -148,5 +148,4 @@ class SelfDashboard(APIView):
                     counts=Count(id))
             ]
         }
-        print(data)
         return JsonResponseV1(data=data)

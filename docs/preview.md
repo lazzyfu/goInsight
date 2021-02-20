@@ -1,6 +1,10 @@
 # 截图预览
 仅展示部分截图
 
+* 仪表盘
+<img src="./pic/dashboard.png" alt="" align=center />
+
+
 * 提交页面（展示DML，DDL、EXPORT类似）
 <img src="./pic/commit.png" alt="" align=center />
 

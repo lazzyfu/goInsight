@@ -12,6 +12,10 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
 
 ![](https://github.com/lazzyfu/YaSQL/blob/master/docs/pic/architecture.png)
 
+## 仪表盘
+
+![](https://github.com/lazzyfu/YaSQL/blob/master/docs/pic/dashboard.png)
+
 ## 功能简介
 
 * 自定义工单环境
