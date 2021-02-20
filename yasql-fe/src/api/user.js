@@ -26,3 +26,4 @@ export const ChangeAvatar = params =>
     contentType: false, 
     processData: false,
   })
+

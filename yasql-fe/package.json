@@ -19,6 +19,7 @@
     "bootstrap": "^4.5.3",
     "bootstrap-table": "^1.18.1",
     "core-js": "^3.1.2",
+    "echarts": "^5.0.2",
     "element-ui": "^2.13.2",
     "enquire.js": "^2.1.6",
     "fsevents": "^2.1.3",

@@ -2,9 +2,9 @@ const route = {
   path: '/account',
   name: 'account',
   component: () => import('@/views/account/settings/Index'),
-  meta: { title: '个人设置', hideHeader: true , icon: 'user' },
+  meta: { title: '个人设置', hideHeader: true, icon: 'user' },
   redirect: '/account/settings/base',
-  hideChildrenInMenu: true,
+  hidden: true,
   children: [
     {
       path: '/account/settings/base',
@@ -24,12 +24,12 @@ const route = {
     //   component: () => import('@/views/account/settings/Custom'),
     //   meta: { title: '个性化设置', hidden: true, keepAlive: true }
     // },
-    // {
-    //   path: '/account/settings/binding',
-    //   name: 'BindingSettings',
-    //   component: () => import('@/views/account/settings/Binding'),
-    //   meta: { title: '账户绑定', hidden: true, keepAlive: true }
-    // },
+    {
+      path: '/account/settings/binding',
+      name: 'BindingSettings',
+      component: () => import('@/views/account/settings/Binding'),
+      meta: { title: '账户绑定', hidden: true, keepAlive: true }
+    }
     // {
     //   path: '/account/settings/notification',
     //   name: 'NotificationSettings',
@@ -38,6 +38,5 @@ const route = {
     // }
   ]
 }
-
 
 export default route

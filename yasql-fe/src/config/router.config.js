@@ -1,6 +1,7 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout } from '@/layouts'
 import Account from '@/views/account/route'
+import Dashboard from '@/views/dashboard/route'
 import SqlOrders from '@/views/sqlorders/route'
 import SqlQuery from '@/views/sqlquery/route.js'
 import RedisMS from '@/views/redisms/route.js'
@@ -10,9 +11,8 @@ export const asyncRouterMap = [
     path: '/',
     name: 'menu.home',
     component: BasicLayout,
-    meta: { title: '首页' },
-    redirect: { name: 'account' },
-    children: [Account, SqlOrders, SqlQuery, RedisMS]
+    redirect: { name: 'view.dashboard' },
+    children: [Account, Dashboard, SqlOrders, SqlQuery, RedisMS]
   },
   {
     path: '*',

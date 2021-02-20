@@ -4542,6 +4542,14 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
+echarts@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/echarts/-/echarts-5.0.2.tgz#1726d17a57cf05d62cd0567b4325e1201a56baf6"
+  integrity sha512-En0VYpc96nw2/2AZoBWPHsGi471zMublttj50kfFpYAeR4geup0Tj9iVgEXh7QYZFPnRiruDJEjcB5PXZ+BYzQ==
+  dependencies:
+    tslib "2.0.3"
+    zrender "5.0.4"
+
 editorconfig@^0.15.3:
   version "0.15.3"
   resolved "https://registry.yarnpkg.com/editorconfig/-/editorconfig-0.15.3.tgz#bef84c4e75fb8dcb0ce5cee8efd51c15999befc5"
@@ -10870,6 +10878,11 @@ tsconfig@^7.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
+tslib@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
+  integrity sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
+
 tslib@^1.10.0, tslib@^1.9.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
@@ -11864,3 +11877,10 @@ yorkie@^2.0.0:
     is-ci "^1.0.10"
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
+
+zrender@5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/zrender/-/zrender-5.0.4.tgz#89c355af908b9f64a301b38f751b7951f2c8a95a"
+  integrity sha512-DJpy0yrHYY5CuH6vhb9IINWbjvBUe/56J8aH86Jb7O8rRPAYZ3M2E469Qf5B3EOIfM3o3aUrO5edRQfLJ+l1Qw==
+  dependencies:
+    tslib "2.0.3"

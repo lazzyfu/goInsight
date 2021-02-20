@@ -12,4 +12,6 @@ urlpatterns = [
     path('update/<str:username>', views.UpdateUserInfo.as_view(), name='v1.users.update'),
     path('change/password', views.ChangePassword.as_view(), name='v1.users.change.password'),
     path('change/avatar', views.ChangeAvatar.as_view(), name='v1.users.change.avatar'),
+    path('dashboard/sys', views.SysDashboard.as_view(), name='v1.users.dashboard.sys'),
+    path('dashboard/self', views.SelfDashboard.as_view(), name='v1.users.dashboard.self'),
 ]
