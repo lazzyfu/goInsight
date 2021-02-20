@@ -1,6 +1,8 @@
 # Create your views here.
+import datetime
 from uuid import uuid4
 
+from django.db.models import Count
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from rest_framework import status
@@ -9,6 +11,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from libs.response import JsonResponseV1
+from sqlorders.models import DbConfig, DbOrders
+from sqlquery.models import DbQueryLog
 from users import serializers, models
 
 
@@ -104,3 +108,45 @@ class ChangeAvatar(APIView):
         photo_instance.avatar_file = fileobj
         photo_instance.save()
         return JsonResponseV1(message="上传成功")
+
+
+class SysDashboard(APIView):
+    """获取系统仪表盘信息"""
+
+    def get(self, request):
+        today = datetime.datetime.now().date()
+        data = {
+            'user_count': models.UserAccounts.objects.count(),
+            'user_count_inc': models.UserAccounts.objects.filter(date_joined__gt=today).count(),
+            'database_source': DbConfig.objects.count(),
+            'database_source_inc': DbConfig.objects.filter(created_at__gt=today).count(),
+            'orders_count': DbOrders.objects.count(),
+            'orders_count_inc': DbOrders.objects.filter(created_at__gt=today).count(),
+            'dms_count': DbQueryLog.objects.count(),
+            'dms_count_inc': DbQueryLog.objects.filter(created_at__gt=today).count(),
+            'pie_data': [
+                {'name': x[0], 'value': x[1]} for x in
+                DbOrders.objects.values_list('sql_type').annotate(counts=Count(id))
+            ]
+        }
+        return JsonResponseV1(data=data)
+
+
+class SelfDashboard(APIView):
+    """获取系统仪表盘信息"""
+
+    def get(self, request):
+        today = datetime.datetime.now().date()
+        data = {
+            'orders_count': DbOrders.objects.count(),
+            'orders_count_inc': DbOrders.objects.filter(created_at__gt=today).count(),
+            'dms_count': DbQueryLog.objects.count(),
+            'dms_count_inc': DbQueryLog.objects.filter(created_at__gt=today).count(),
+            'pie_data': [
+                {'name': x[0], 'value': x[1]} for x in
+                DbOrders.objects.filter(applicant=request.user.username).values_list('sql_type').annotate(
+                    counts=Count(id))
+            ]
+        }
+        print(data)
+        return JsonResponseV1(data=data)
