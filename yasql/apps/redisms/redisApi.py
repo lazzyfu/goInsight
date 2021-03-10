@@ -101,16 +101,13 @@ class RedisApi:
 
     def metrics(self):
         """性能"""
-        data = {}
+        data = []
         result = self.conn.info()
         used_memory = result.get("used_memory", 0)
         max_memory = result.get("max_memory", None) or result.get("total_system_memory", None) or 0
         used_memory_percent = used_memory / max_memory if max_memory > 0 else 0
         if used_memory_percent > 0.9:
-            data = {
-                "status": "warning",
-                "msg": "memory usage > 90%"
-            }
+            data.append({"status": "warning", "msg": "memory usage > 90%"})
         return data
 
     def bulk_ops(self):
@@ -118,25 +115,16 @@ class RedisApi:
         import random
         import string
         k = ''.join(random.sample(string.ascii_letters + string.digits, 32))
-        data = {}
+        data = []
         try:
-            if self.conn.setnx(k, "1"):
-                r2 = self.conn.get(k)
-                if r2 != "1":
-                    data = {
-                        "status": "err",
-                        "msg": "can't write"
-                    }
+            if self.conn.set(k, "1", ex=3):
+                v = self.conn.get(k)
+                if v != "1":
+                    data.append({"status": "err", "msg": "redis can't read"})
             else:
-                data = {
-                    "status": "err",
-                    "msg": "can't read"
-                }
+                data.append({"status": "err", "msg": "redis can't write"})
         except Exception as err:
-            data = {
-                "status": "err",
-                "msg": err
-            }
+            data.append({"status": "err", "msg": err})
         return data
 
     def get_metrics(self, db):

@@ -79,7 +79,7 @@
                   <a-progress style="right: 10px;" :percent="progress" />
               </a-card>
               <a-card title="检测结果" style="margin-top: 10px;">
-                <div v-for="item in redisHealth" :key="item">
+                <div v-for="(item, key) in redisHealth" :key="key">
                   <span v-if="item.length>0">{{ item }}</span>
                 </div>
               </a-card>
@@ -259,7 +259,9 @@ export default {
         await redisApi.getRedisHealth(this.openKeys, option).then(resp => {
           this.progress += Math.floor(Math.random() * 10) + 5
           if(resp.code === "0000") {
-            this.redisHealth.push(resp.data)
+            if(resp.data.length>0) {
+              this.redisHealth.push(resp.data)
+            }
           } else {
             this.$message.error(resp.message)
           }
@@ -267,8 +269,7 @@ export default {
           this.$message.error("内部错误")
         })
       }
-      const filterRedisHealth = this.redisHealth.filter(item => item.length>0)
-      if(filterRedisHealth) {
+      if(this.redisHealth.length===0) {
         this.redisHealth = ["检测完成，暂未发现问题"]
       }
       this.progress = 100
