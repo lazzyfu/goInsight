@@ -45,3 +45,23 @@ class RedisMetrics(APIView):
         except Exception as err:
             pass
         return JsonResponseV1(data)
+
+
+class RedisHealthCheck(APIView):
+    permission_classes = (permissions.CanExecRedisPermission,)
+
+    def get(self, request, pk):
+        data = None
+        try:
+            option = request.query_params.get("option")
+            redis_ins = models.RedisConfig.objects.get(pk=pk, group__rg_group__user=request.user)
+            redis_api = RedisApi(redis_ins.host, redis_ins.port, password=redis_ins.decrypt_password)
+            if hasattr(redis_api, option):
+                func = getattr(redis_api, option)
+                data = func()
+        except Exception as err:
+            data = {
+                "status": "err",
+                "msg": err
+            }
+        return JsonResponseV1(data)

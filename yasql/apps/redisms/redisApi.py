@@ -70,6 +70,75 @@ class RedisApi:
             raise Exception("can't connect redis")
         return conn
 
+    def durability(self):
+        """数据持久检查"""
+        data = []
+        result = self.conn.info()
+        rdb_last_bgsave_status = result.get("rdb_last_bgsave_status", None)
+        if rdb_last_bgsave_status != "ok":
+            data.append({
+                "status": "err",
+                "msg": "rdb bgsave error"
+            })
+        aof_last_bgrewrite_status = result.get("aof_last_bgrewrite_status", None)
+        if aof_last_bgrewrite_status != "ok":
+            data.append({
+                "status": "err",
+                "msg": "aof bgrewrite error"
+            })
+        aof_last_write_status = result.get("aof_last_write_status", None)
+        if aof_last_write_status != "ok":
+            data.append({
+                "status": "err",
+                "msg": "aof write error"
+            })
+        return data
+
+    def cluster_status(self):
+        """TODO：集群状态 """
+        data = []
+        return data
+
+    def metrics(self):
+        """性能"""
+        data = {}
+        result = self.conn.info()
+        used_memory = result.get("used_memory", 0)
+        max_memory = result.get("max_memory", None) or result.get("total_system_memory", None) or 0
+        used_memory_percent = used_memory / max_memory if max_memory > 0 else 0
+        if used_memory_percent > 0.9:
+            data = {
+                "status": "warning",
+                "msg": "memory usage > 90%"
+            }
+        return data
+
+    def bulk_ops(self):
+        """set/get"""
+        import random
+        import string
+        k = ''.join(random.sample(string.ascii_letters + string.digits, 32))
+        data = {}
+        try:
+            if self.conn.setnx(k, "1"):
+                r2 = self.conn.get(k)
+                if r2 != "1":
+                    data = {
+                        "status": "err",
+                        "msg": "can't write"
+                    }
+            else:
+                data = {
+                    "status": "err",
+                    "msg": "can't read"
+                }
+        except Exception as err:
+            data = {
+                "status": "err",
+                "msg": err
+            }
+        return data
+
     def get_metrics(self, db):
         """监控指标"""
         result1 = self.conn.info()

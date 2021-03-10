@@ -11,6 +11,8 @@ v1_patterns = [
     path(r'list', views.MyRedisList.as_view(), name='v1.redis.list'),
     # 执行查询
     path(r'exec_cmd', views.ExecRedisCmd.as_view(), name='v1.redis.cmd'),
+    # 健康检测
+    path(r'<int:pk>/check', views.RedisHealthCheck.as_view(), name='v1.redis.check'),
     # 性能指标
     path(r'<int:pk>/metrics', views.RedisMetrics.as_view(), name='v1.redis.metrics'),
 ]

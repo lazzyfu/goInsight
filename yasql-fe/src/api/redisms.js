@@ -26,5 +26,12 @@ export default {
       url: `/v1/redis/${pk}/metrics`,
       params: {"db": db},
     })
+  },
+  getRedisHealth(pk, option) {
+    return axios.request({
+      method: 'get',
+      url: `/v1/redis/${pk}/check`,
+      params: {"option": option},
+    })
   }
 }
