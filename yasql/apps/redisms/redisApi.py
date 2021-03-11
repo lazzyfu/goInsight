@@ -85,9 +85,6 @@ class RedisApi:
             aof_last_bgrewrite_status = result.get("aof_last_bgrewrite_status", None)
             if aof_last_bgrewrite_status != "ok":
                 data.append({"status": "err", "msg": "aof bgrewrite error"})
-            aof_last_write_status = result.get("aof_last_write_status", None)
-            if aof_last_write_status != "ok":
-                data.append({"status": "err", "msg": "aof write error"})
         return data
 
     def cluster_status(self):
@@ -100,11 +97,15 @@ class RedisApi:
         data = []
         result = self.conn.info()
         # 内存使用
-        used_memory = result.get("used_memory", 0)
         max_memory = result.get("max_memory", None) or result.get("total_system_memory", None)
+        used_memory = result.get("used_memory", 0)
         used_memory_percent = float(used_memory) / max_memory if max_memory else 0
-        if used_memory_percent > 0.9:
-            data.append({"status": "warning", "msg": "redis memory usage > 90%"})
+        if used_memory_percent > 0.8:
+            data.append({"status": "warning", "msg": "current redis memory usage > 80%"})
+        used_memory_peak = result.get("used_memory_peak", 0)
+        used_memory_peak_percent = float(used_memory_peak) / max_memory if max_memory else 0
+        if used_memory_peak_percent > 0.9:
+            data.append({"status": "err", "msg": "redis memory peak usage > 90%"})
         # 连接数
         connected_client = result.get("connected_clients", 0)
         max_connect = self.get_config("maxclients").get("maxclients")
