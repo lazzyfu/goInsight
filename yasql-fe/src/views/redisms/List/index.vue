@@ -137,7 +137,7 @@ export default {
         theme: "material",
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       },
-      checkOptions: ["cluster_status", "durability", "bulk_ops", "metrics"],
+      checkOptions: ["cluster_status", "persistence", "bulk_ops", "metrics"],
     }
   },
   created () {
