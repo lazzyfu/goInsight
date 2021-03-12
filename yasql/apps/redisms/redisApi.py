@@ -70,6 +70,80 @@ class RedisApi:
             raise Exception("can't connect redis")
         return conn
 
+    def persistence(self):
+        """数据持久检查"""
+        data = []
+        result = self.conn.info()
+        rdb_last_bgsave_status = result.get("rdb_last_bgsave_status", None)
+        if rdb_last_bgsave_status != "ok":
+            data.append({"status": "err", "msg": "rdb bgsave error"})
+
+        append_only = self.get_config("appendonly")
+        if not append_only:
+            data.append({"status": "fatal", "msg": "aof is disabled"})
+        else:
+            aof_last_bgrewrite_status = result.get("aof_last_bgrewrite_status", None)
+            if aof_last_bgrewrite_status != "ok":
+                data.append({"status": "err", "msg": "aof bgrewrite error"})
+        return data
+
+    def cluster_status(self):
+        """TODO：集群状态 """
+        data = []
+        return data
+
+    def metrics(self):
+        """性能"""
+        data = []
+        result = self.conn.info()
+        # 内存使用
+        max_memory = result.get("max_memory", None) or result.get("total_system_memory", None)
+        used_memory = result.get("used_memory", 0)
+        used_memory_percent = float(used_memory) / max_memory if max_memory else 0
+        if used_memory_percent > 0.8:
+            data.append({"status": "warning", "msg": "current redis memory usage > 80%"})
+        used_memory_peak = result.get("used_memory_peak", 0)
+        used_memory_peak_percent = float(used_memory_peak) / max_memory if max_memory else 0
+        if used_memory_peak_percent > 0.9:
+            data.append({"status": "err", "msg": "redis memory peak usage > 90%"})
+        # 连接数
+        connected_client = result.get("connected_clients", 0)
+        max_connect = self.get_config("maxclients").get("maxclients")
+        used_connect_percent = float(connected_client) / int(max_connect) if max_connect.isdigit() else 1
+        if used_connect_percent > 0.8:
+            data.append({"status": "warning", "msg": "client connect usage > 80%"})
+        # qps
+        qps = result.get("instantaneous_ops_per_sec", 0)
+        if qps > 60000:
+            data.append({"status": "fatal", "msg": "qps connect usage > 60000"})
+        return data
+
+    def bulk_ops(self):
+        """set/get"""
+        k = "test_ds50K7NHyV6z1rCit8DSqaRXxTAuLnBO"  # 测试key
+        data = []
+        try:
+            if self.conn.set(k, "1", ex=3):
+                v = self.conn.get(k)
+                if v != "1":
+                    data.append({"status": "err", "msg": "redis can't read"})
+            else:
+                data.append({"status": "err", "msg": "redis can't write"})
+        except Exception as err:
+            data.append({"status": "err", "msg": err})
+        return data
+
+    def get_config(self, conf_arg):
+        """获取配置信息"""
+        if conf_arg:
+            try:
+                r = self.conn.config_get(conf_arg)
+            except Exception as err:
+                r = str(err)
+            return r
+        else:
+            return "ERR wrong number of arguments for 'config' command"
+
     def get_metrics(self, db):
         """监控指标"""
         result1 = self.conn.info()

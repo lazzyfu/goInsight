@@ -1,59 +1,93 @@
 <template>
-  <a-card title="Redis管理">
-    <a-spin :spinning="pushing">
-      <a-row :gutter="8">
-        <a-col :span="6" style="padding-right: 5px">
-          <span>选择DB实例：</span> 
-          <a-select v-model="redisDB" style="width: 120px">
-            <a-select-option v-for="v in redisDBList" :key="v" :value="v">{{ v }}</a-select-option>
-          </a-select>
-          <div style="margin-top: 5px;height: 450px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 1px">
-            <s-tree
-              showIcon
-              :dataSource="orgTree"
-              @add="handleAdd"
-              @click="handleClick">
-            </s-tree>
-          </div>
-        </a-col>
-        <a-col :span="18">
-          <codemirror ref="myCm" :options="cmOptions"></codemirror>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col :span="24">
-          <a-auto-complete @select="onSelect" @search="handleSearch">
-            <template slot="dataSource">
-              <a-select-option disabled key="null" v-if="dataSource.length > 0">可执行以下命令</a-select-option>
-              <a-select-option v-for="v in dataSource" :key="v">{{ v }}</a-select-option>
-            </template>
-            <a-textarea
-              style="margin: 5px;height: 100px;width: 1000px;"
-              v-model="redis_cmd"
-              @keydown.tab.native="handleKeyTab"
-              placeholder="输入执行命令..." />
-          </a-auto-complete>
-        </a-col>
-        <a-col :span="24">
-          <a-button style="top: 10px;left: 10px;" type="primary" size="large" @click="handleCmd">执行</a-button>
-        </a-col>
-      </a-row>
+  <a-card>
+    <a-spin tip="Loading..." :spinning="pushing">
+      <a-tabs default-active-key="1" @change="changeTab">
+        <a-tab-pane key="1" force-render>
+          <span slot="tab">
+            <a-icon type="home" />执行命令
+          </span>
+          <a-row :gutter="8" v-if="selectKey==='1'">
+            <a-col :span="6" style="padding-right: 5px">
+              <span>选择DB实例：</span> 
+              <a-select v-model="redisDB" style="width: 120px">
+                <a-select-option v-for="v in redisDBList" :key="v" :value="v">{{ v }}</a-select-option>
+              </a-select>
+              <div style="margin-top: 5px;height: 450px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 1px">
+                <s-tree
+                  showIcon
+                  :dataSource="orgTree"
+                  @click="handleClick">
+                </s-tree>
+              </div>
+            </a-col>
+            <a-col :span="18">
+              <codemirror ref="myCm" :options="cmOptions"></codemirror>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="24">
+              <a-auto-complete @select="onSelect" @search="handleSearch">
+                <template slot="dataSource">
+                  <a-select-option disabled key="null" v-if="dataSource.length > 0">可执行以下命令</a-select-option>
+                  <a-select-option v-for="v in dataSource" :key="v">{{ v }}</a-select-option>
+                </template>
+                <a-textarea
+                  style="margin: 5px;height: 100px;width: 1000px;"
+                  v-model="redis_cmd"
+                  @keydown.tab.native="handleKeyTab"
+                  placeholder="输入执行命令..." />
+              </a-auto-complete>
+            </a-col>
+            <a-col :span="24">
+              <a-button style="left: 10px;" type="primary" size="large" @click="handleCmd">执行</a-button>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="实例信息">
+          <a-row :gutter="8" v-if="selectKey==='2'">
+            <a-col :span="6" style="padding-right: 5px">
+              <div style="margin-top: 5px;height: 650px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 1px">
+                <s-tree
+                  showIcon
+                  :dataSource="orgTree"
+                  @click="getRedisInfo">
+                </s-tree>
+              </div>
+            </a-col>
+            <a-col :span="18">
+              <a-descriptions bordered size="small" :column="2" >
+                <a-descriptions-item v-for="(v, k) in redisMetrics" :key="k" :value="v" :label="k">
+                  <span>{{ v }}</span>
+                </a-descriptions-item>
+              </a-descriptions>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+        <a-tab-pane key="3" tab="健康检测">
+          <a-row :gutter="8" v-if="selectKey==='3'">
+            <a-col :span="6" style="padding-right: 5px">
+              <div style="margin-top: 5px;height: 650px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 1px">
+                <s-tree showIcon
+                  :dataSource="orgTree"
+                  @click="handleClick">
+                </s-tree>
+              </div>
+            </a-col>
+            <a-col :span="18">
+              <a-card title="检测进度">
+                  <a-button style="left: 10px;" type="primary" :disabled="disButton" @click="checkHealth">开始检测</a-button>
+                  <a-progress style="right: 10px;" :percent="progress" />
+              </a-card>
+              <a-card title="检测结果" style="margin-top: 10px;">
+                <div v-for="(item, key) in redisHealth" :key="key">
+                  <span v-if="item.length>0">{{ item }}</span>
+                </div>
+              </a-card>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+      </a-tabs>
     </a-spin>
-    <a-modal v-model="visibleModal" :footer="null" title="实例统计信息" width="60%">
-      <a-spin tip="Loading..." :spinning="spin">
-        <a-descriptions bordered size="small" :column="2" >
-          <a-descriptions-item label="实例" :span="2">
-            <span>{{ redisTitle }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="状态" :span="2">
-            <a-badge status="processing" text="Running" />
-          </a-descriptions-item>
-          <a-descriptions-item v-for="(v, k) in redisMetrics" :key="k" :value="v" :label="k">
-            <span>{{ v }}</span>
-          </a-descriptions-item>
-        </a-descriptions>
-      </a-spin>
-    </a-modal>
   </a-card>
 </template>
 
@@ -80,16 +114,17 @@ export default {
       orgTree: [],
       result: [],
       openKeys: null,
+      selectKey: '1',
       redis_cmd: null,
       redisDB: 0,
       redisDBList: [...new Array(16).keys()],
       redisMetrics: null,
+      redisHealth: ["暂无数据"],
       pushing: false,
-      spin: false,
-      visibleModal: false,
+      progress: 0,
+      disButton: false,
       redisCmds: [],
       dataSource: [],
-      redisTitle: '',
       cmOptions: {
         mode: "text/x-shell",
         readOnly: true,
@@ -102,6 +137,7 @@ export default {
         theme: "material",
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       },
+      checkOptions: ["cluster_status", "persistence", "bulk_ops", "metrics"],
     }
   },
   created () {
@@ -114,7 +150,7 @@ export default {
   computed: {
     codemirror() {
       return this.$refs.myCm.codemirror
-    }
+    },
   },
   methods: {
     fetchRedisIns() {
@@ -132,14 +168,17 @@ export default {
         this.redisCmds = resp.data
       })
     },
+    changeTab(e) {
+      this.openKeys = null
+      this.selectKey = e
+    },
     handleClick (e) {
       this.openKeys = e.key
       //console.log(this.$refs.myCm.codemirror)
     },
-    handleAdd(e) {
-      this.redisTitle = e.title
+    getRedisInfo(e) {
       this.redisMetrics = null
-      this.spin = true
+      this.pushing = true
       redisApi.getRedisCmd(e.key, this.redisDB).then(resp => {
         this.redisMetrics = resp.data
       }).catch(error => {
@@ -148,9 +187,8 @@ export default {
           description: "无法加载redis Metrics"
         })
       }).finally(() => {
-        this.spin = false
+        this.pushing = false
       })
-      this.visibleModal = true
     },
     onSelect(value) {
       this.redis_cmd = value
@@ -204,6 +242,38 @@ export default {
       }).finally(() => {
         this.pushing = false
       })
+    },
+    checkHealth() {
+      if(this.openKeys === null){
+        this.$message.error("请先选择redis实例")
+        return false
+      } else {
+        this.checkDetailHealth()
+      }
+    },
+    async checkDetailHealth() {
+      this.redisHealth = []
+      this.progress = 0
+      this.disButton = true 
+      for(let option of this.checkOptions) {
+        await redisApi.getRedisHealth(this.openKeys, option).then(resp => {
+          this.progress += Math.floor(Math.random() * 10) + 5
+          if(resp.code === "0000") {
+            if(resp.data.length>0) {
+              this.redisHealth.push(resp.data)
+            }
+          } else {
+            this.$message.error(resp.message)
+          }
+        }).catch(error => {
+          this.$message.error("内部错误")
+        })
+      }
+      if(this.redisHealth.length===0) {
+        this.redisHealth = ["检测完成，暂未发现问题"]
+      }
+      this.progress = 100
+      this.disButton = false  
     },
     formatData(obj, flag) {
       if (!obj && typeof(obj) != "undefined" && obj !== 0) {
