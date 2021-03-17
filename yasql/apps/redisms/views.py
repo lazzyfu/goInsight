@@ -5,6 +5,7 @@ from redisms.redisApi import REDIS_CMDS, RedisApi
 from libs.response import JsonResponseV1
 from rest_framework.views import APIView
 from libs import permissions
+from redisms.analysis import StatCounter
 
 
 class RedisLCmds(APIView):
@@ -32,7 +33,7 @@ class ExecRedisCmd(APIView):
         return JsonResponseV1(message=serializer.errors, code="0001")
 
 
-class RedisMetrics(APIView):
+class RedisInfo(APIView):
     permission_classes = (permissions.CanExecRedisPermission,)
 
     def get(self, request, pk):
@@ -64,4 +65,20 @@ class RedisHealthCheck(APIView):
                 "status": "err",
                 "msg": err
             }
+        return JsonResponseV1(data)
+
+
+class RedisAnalysis(APIView):
+    permission_classes = (permissions.CanExecRedisPermission,)
+
+    def get(self, request, pk):
+        data = {}
+        try:
+            redis_ins = models.RedisConfig.objects.get(pk=pk, group__rg_group__user=request.user)
+            redis_api = RedisApi(redis_ins.host, redis_ins.port, password=redis_ins.decrypt_password)
+            analysis = StatCounter()
+            monitor_data = redis_api.get_monitor()
+            data = analysis.handle_data(monitor_data)
+        except Exception as err:
+            pass
         return JsonResponseV1(data)

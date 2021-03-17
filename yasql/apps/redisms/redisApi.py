@@ -60,15 +60,28 @@ REDIS_CMDS = REDIS_READ_CMDS + REDIS_WRITE_CMDS
 
 class RedisApi:
     def __init__(self, host, port, db=0, password=None):
-        self.conn = self.get_conn(host, port, db, password)
+        self.host = host
+        self.port = port
+        self.db = db
+        self.password = password
+        self.conn = self.get_conn()
 
-    def get_conn(self, host, port, db, password):
-        conn = redis.Redis(host, port, db, password=password, decode_responses=True)
+    def get_conn(self):
+        conn = redis.Redis(self.host, self.port, self.db, password=self.password,
+                           socket_timeout=15, socket_connect_timeout=3, decode_responses=True)
         try:
             conn.ping()
         except Exception as err:
             raise Exception("can't connect redis")
         return conn
+
+    def check_ping(self):
+        conn = redis.Redis(self.host, self.port, password=self.password,
+                           socket_timeout=15, socket_connect_timeout=3, decode_responses=True)
+        try:
+            conn.ping()
+        except Exception as err:
+            return [{"status": "fatal", "msg": "can't connect redis"}]
 
     def persistence(self):
         """数据持久检查"""
@@ -93,7 +106,7 @@ class RedisApi:
         return data
 
     def metrics(self):
-        """性能"""
+        """通用指标"""
         data = []
         result = self.conn.info()
         # 内存使用
@@ -115,7 +128,7 @@ class RedisApi:
         # qps
         qps = result.get("instantaneous_ops_per_sec", 0)
         if qps > 60000:
-            data.append({"status": "fatal", "msg": "qps connect usage > 60000"})
+            data.append({"status": "fatal", "msg": "qps usage > 60000"})
         return data
 
     def bulk_ops(self):
@@ -133,16 +146,20 @@ class RedisApi:
             data.append({"status": "err", "msg": err})
         return data
 
-    def get_config(self, conf_arg):
-        """获取配置信息"""
-        if conf_arg:
-            try:
-                r = self.conn.config_get(conf_arg)
-            except Exception as err:
-                r = str(err)
-            return r
-        else:
-            return "ERR wrong number of arguments for 'config' command"
+    def get_monitor(self):
+        """监控执行命令"""
+        data = []
+        start_at = time.time()
+        try:
+            with self.conn.monitor() as m:
+                for command in m.listen():
+                    data.append(command)
+                    used_time = time.time() - start_at
+                    if len(data) > 500 or used_time > 10: # 最多取500条monitor数据 或者收集超过10s
+                        break
+        except Exception as err:
+            pass
+        return data
 
     def get_metrics(self, db):
         """监控指标"""
@@ -168,6 +185,17 @@ class RedisApi:
             "keys": result1.get(db),
         }
         return data
+
+    def get_config(self, conf_arg):
+        """获取配置信息"""
+        if conf_arg:
+            try:
+                r = self.conn.config_get(conf_arg)
+            except Exception as err:
+                r = str(err)
+            return r
+        else:
+            return "ERR wrong number of arguments for 'config' command"
 
     def read_help(self, args_list):
         if len(args_list) == 0:
