@@ -75,13 +75,33 @@
             </a-col>
             <a-col :span="18">
               <a-card title="检测进度">
-                  <a-button style="left: 10px;" type="primary" :disabled="disButton" @click="checkHealth">开始检测</a-button>
+                  <a-button style="left: 10px;" type="primary" ghost :disabled="disButton" @click="checkHealth">开始检测</a-button>
                   <a-progress style="right: 10px;" :percent="progress" />
               </a-card>
               <a-card title="检测结果" style="margin-top: 10px;">
                 <div v-for="(item, key) in redisHealth" :key="key">
                   <span v-if="item.length>0">{{ item }}</span>
                 </div>
+              </a-card>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+        <a-tab-pane key="4" tab="实时分析">
+          <a-row :gutter="8" v-if="selectKey==='4'">
+            <a-col :span="6" style="padding-right: 5px">
+              <div style="margin-top: 5px;height: 650px;overflow: scroll;border:1px solid #a5b6c8;border-left-width: 0; border-right-width: 1px">
+                <s-tree showIcon
+                  :dataSource="orgTree"
+                  @click="handleClick">
+                </s-tree>
+              </div>
+            </a-col>
+            <a-col :span="18">
+              <a-card title="诊断报告">
+                  <a-button style="left: 10px;" type="primary" ghost :disabled="disButton1" @click="checkAnalysis">立即分析</a-button>
+              </a-card>
+              <a-card style="margin-top: 10px;">
+                <pre>{{ redisAnalysis }}</pre>
               </a-card>
             </a-col>
           </a-row>
@@ -120,9 +140,11 @@ export default {
       redisDBList: [...new Array(16).keys()],
       redisMetrics: null,
       redisHealth: ["暂无数据"],
+      redisAnalysis: "暂无数据",
       pushing: false,
       progress: 0,
       disButton: false,
+      disButton1: false,
       redisCmds: [],
       dataSource: [],
       cmOptions: {
@@ -137,7 +159,7 @@ export default {
         theme: "material",
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       },
-      checkOptions: ["cluster_status", "persistence", "bulk_ops", "metrics"],
+      checkOptions: ["check_ping", "cluster_status", "persistence", "bulk_ops", "metrics"],
     }
   },
   created () {
@@ -274,6 +296,32 @@ export default {
       }
       this.progress = 100
       this.disButton = false  
+    },
+    checkAnalysis() {
+      if(this.openKeys === null){
+        this.$message.error("请先选择redis实例")
+        return false
+      } else {
+        this.checkDetailAnalysis()
+      }
+    },
+    checkDetailAnalysis() {
+      this.redisAnalysis = null
+      this.disButton1 = true
+      this.pushing = true
+      redisApi.getRedisAnalysis(this.openKeys).then(resp => {
+        if(resp.code === "0000") {
+          this.redisAnalysis = resp.data
+          console.log(this.redisAnalysis)
+        } else {
+          this.$message.error(resp.message)
+        }
+      }).catch(error => {
+        this.$message.error("内部错误")
+      }).finally(() => {
+        this.disButton1 = false  
+        this.pushing = false
+      })
     },
     formatData(obj, flag) {
       if (!obj && typeof(obj) != "undefined" && obj !== 0) {

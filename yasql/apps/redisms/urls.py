@@ -13,8 +13,10 @@ v1_patterns = [
     path(r'exec_cmd', views.ExecRedisCmd.as_view(), name='v1.redis.cmd'),
     # 健康检测
     path(r'<int:pk>/check', views.RedisHealthCheck.as_view(), name='v1.redis.check'),
-    # 性能指标
-    path(r'<int:pk>/metrics', views.RedisMetrics.as_view(), name='v1.redis.metrics'),
+    # 实例信息
+    path(r'<int:pk>/info', views.RedisInfo.as_view(), name='v1.redis.info'),
+    # 性能分析
+    path(r'<int:pk>/analysis', views.RedisAnalysis.as_view(), name='v1.redis.analysis'),
 ]
 
 urlpatterns = [
