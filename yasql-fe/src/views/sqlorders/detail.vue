@@ -97,7 +97,6 @@
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
-                  :disabled="item.disabled"
                 ></el-option>
               </el-select>
             </el-form-item>
