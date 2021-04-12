@@ -40,7 +40,7 @@ REOMOTE_USER = {
 # 用户名和密码请进行自行修改，不要使用默认的
 QUERY_USER = {
     'user': 'yasql_ro',
-    'password': '1234.com'
+    'password': ''
 }
 
 # 查询LIMIT限制

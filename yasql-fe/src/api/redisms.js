@@ -23,8 +23,21 @@ export default {
   getRedisCmd(pk, db) {
     return axios.request({
       method: 'get',
-      url: `/v1/redis/${pk}/metrics`,
+      url: `/v1/redis/${pk}/info`,
       params: {"db": db},
+    })
+  },
+  getRedisHealth(pk, option) {
+    return axios.request({
+      method: 'get',
+      url: `/v1/redis/${pk}/check`,
+      params: {"option": option},
+    })
+  },
+  getRedisAnalysis(pk) {
+    return axios.request({
+      method: 'get',
+      url: `/v1/redis/${pk}/analysis`,
     })
   }
 }
