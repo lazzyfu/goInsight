@@ -173,16 +173,29 @@ class ReadRemoteBinlog(object):
     def run_by_rows(self):
         try:
             server_id = 6666666 + int(self.thread_id)
-            stream = BinLogStreamReader(connection_settings=self.mysql_setting,
-                                        server_id=server_id,
-                                        only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, QueryEvent],
-                                        resume_stream=True,
-                                        blocking=False,
-                                        log_file=f'{self.binlog_file}',
-                                        log_pos=self.start_pos,
-                                        only_schemas=f'{self.only_schemas}',
-                                        only_tables=f'{self.only_tables}'
-                                        )
+            if self.only_tables:
+                # 优先以提取到的表名进行匹配
+                stream = BinLogStreamReader(connection_settings=self.mysql_setting,
+                                            server_id=server_id,
+                                            only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, QueryEvent],
+                                            resume_stream=True,
+                                            blocking=False,
+                                            log_file=f'{self.binlog_file}',
+                                            log_pos=self.start_pos,
+                                            only_schemas=f'{self.only_schemas}',
+                                            only_tables=f'{self.only_tables}'
+                                            )
+            else:
+                # 修复语句中包含mysql关键字表名时解析语句提取不到表名导致备份失败的bug
+                stream = BinLogStreamReader(connection_settings=self.mysql_setting,
+                                            server_id=server_id,
+                                            only_events=[DeleteRowsEvent, WriteRowsEvent, UpdateRowsEvent, QueryEvent],
+                                            resume_stream=True,
+                                            blocking=False,
+                                            log_file=f'{self.binlog_file}',
+                                            log_pos=self.start_pos,
+                                            only_schemas=f'{self.only_schemas}'
+                                            )
             rows = []
             thread_id = query = None
             for binlogevent in stream:
