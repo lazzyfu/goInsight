@@ -24,7 +24,7 @@ django-celery-results==1.0.4
 django-filter==2.3.0
 django-redis==4.12.1
 django-timezone-field==4.0
-djangorestframework==3.11.1
+djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 et-xmlfile==1.0.1
 hiredis==1.1.0
