@@ -210,7 +210,9 @@ class SqlQuery(object):
         status, _ = self._operations_filter(self.kwargs['sql'])
         if not status:
             return {'status': False, 'msg': _}
-        rule_sql = self._limit_rules(_)
+        # strip_comments防止下面SQL绕过limit
+        # select * from noah_cmdb_instances;--
+        rule_sql = self._limit_rules(sqlparse.format(_, strip_comments=True))
 
         # 记录执行SQL
         obj_record = DbQueryLog.objects.create(
