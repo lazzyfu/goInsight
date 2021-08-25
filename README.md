@@ -1,5 +1,6 @@
 # YaSQL简介[[使用文档](https://github.com/lazzyfu/YaSQL/tree/master/docs)]
 YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范线上SQL执行流程。
+欢迎大家进行二次开发！！！
 
 ## 开发组件
 * ![](https://img.shields.io/static/v1?label=Python&message=3.7&color=green&?style=for-the-badge)
