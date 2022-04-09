@@ -32,7 +32,7 @@
     "lodash.pick": "^4.4.0",
     "md5": "^2.2.1",
     "mockjs2": "1.0.8",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "node-fetch": "^2.6.1",
     "nprogress": "^0.2.0",
     "popper.js": "^1.16.1",
