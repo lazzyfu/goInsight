@@ -17,7 +17,7 @@
     "ant-design-vue": "^1.6.2",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
-    "bootstrap-table": "^1.18.1",
+    "bootstrap-table": "^1.20.2",
     "core-js": "^3.1.2",
     "echarts": "^5.0.2",
     "element-ui": "^2.13.2",
