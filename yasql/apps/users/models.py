@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# edit by fuzongfei
+# edit by xff
 from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser

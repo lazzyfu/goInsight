@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# edit by fuzongfei
+# edit by xff
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import URLRouter, ProtocolTypeRouter

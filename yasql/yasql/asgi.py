@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# edit by fuzongfei
+# edit by xff
 
 """
 ASGI entrypoint. Configures Django and then runs the application

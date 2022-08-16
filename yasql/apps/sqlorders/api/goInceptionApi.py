@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# edit by fuzongfei
+# edit by xff
 import re
 from operator import itemgetter
 

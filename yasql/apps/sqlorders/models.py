@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# edit by fuzongfei
+# edit by xff
 import humanfriendly as humanfriendly
 from django.db import models
 
