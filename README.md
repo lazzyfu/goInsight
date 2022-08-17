@@ -5,20 +5,16 @@
 ![](https://img.shields.io/static/v1?label=Jwt&message=Djangorestframework_jwt&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=Celery&message=4&color=green&?style=flat-square) 
 ![License](https://img.shields.io/github/license/lazzyfu/YaSQL?style=flat-square)
-YaSQL是一款MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范上线SQL执行流程。
+
+YaSQL是一款MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范上线SQL执行流程
 
 ## 文档
 [使用文档](https://github.com/lazzyfu/YaSQL/tree/master/docs)
 
 ## 语法审核工具
-* [gAudit](https://github.com/lazzyfu/gAudit)
-
-
-## 系统架构
-![](https://github.com/lazzyfu/YaSQL/blob/master/docs/pic/architecture.png)
+[gAudit](https://github.com/lazzyfu/gAudit)
 
 ## 功能简介
-
 * 自定义工单环境
   * 可根据业务场景，自定义工单的环境，比如：测试环境、预发布环境、生产环境等等
 * 支持的工单类型
@@ -51,6 +47,9 @@ YaSQL是一款MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运�
   * 支持自定义用户角色、可为每个角色绑定不同的工单权限
   * 支持集成LDAP（若支持LDAP密码修改，请自行实现相关接口）
   * 支持后台创建用户、密码修改（非LDAP模式）、修改头像
+
+## 系统架构
+![](https://github.com/lazzyfu/YaSQL/blob/master/docs/pic/architecture.png)
 
 ## 预览
 ![](./docs/pic/commit.png)
