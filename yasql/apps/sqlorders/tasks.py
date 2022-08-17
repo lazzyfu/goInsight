@@ -57,7 +57,7 @@ def update_dborders_progress_to_finish(task_id, username=None):
 
 
 def save_rbsql_as_file(rollbacksql):
-    """当备份的数据太大时，数据库由于max_allowed_packet问题无法保存，此时保存到文件"""
+    """当备份的数据太大时,数据库由于max_allowed_packet问题无法保存,此时保存到文件"""
     if not os.path.exists(r'media/rbsql'):
         os.makedirs('media/rbsql')
     filename = f"media/rbsql/rbsql_{datetime.now().strftime('%Y%m%d%H%M%S%f')}.sql"
@@ -67,7 +67,7 @@ def save_rbsql_as_file(rollbacksql):
 
 
 def save_ghost_log_as_file(log):
-    """当日志太大时，数据库由于max_allowed_packet问题无法保存，此时保存到文件"""
+    """当日志太大时,数据库由于max_allowed_packet问题无法保存,此时保存到文件"""
     if not os.path.exists(r'media/ghost_log'):
         os.makedirs('media/ghost_log')
     filename = f"media/ghost_log/ghost_{datetime.now().strftime('%Y%m%d%H%M%S%f')}.sql"
@@ -98,7 +98,7 @@ def update_task_progress_to_finish(id=None, result=None):
             except Exception as err:
                 filename = save_rbsql_as_file(rbsql)
                 obj.rollback_sql = '\n'.join([
-                    '回滚数据超出max_allowed_packet，写入到数据库失败',
+                    '回滚数据超出max_allowed_packet,写入到数据库失败',
                     '备份数据已经以文本的形式进行了保存',
                     '存储路径：',
                     filename
@@ -108,7 +108,7 @@ def update_task_progress_to_finish(id=None, result=None):
             except Exception as err:
                 filename = save_ghost_log_as_file(execute_log)
                 obj.rollback_sql = '\n'.join([
-                    '日志数据超出max_allowed_packet，写入到数据库失败',
+                    '日志数据超出max_allowed_packet,写入到数据库失败',
                     '日志数据已经以文本的形式进行了保存',
                     '存储路径：',
                     filename
@@ -122,7 +122,7 @@ def update_task_progress_to_finish(id=None, result=None):
 
 @shared_task(queue='dbtask')
 def async_execute_sql(id=None, sql=None):
-    """异步执行SQL，获取当前任务的db信息"""
+    """异步执行SQL,获取当前任务的db信息"""
     config = models.DbOrdersExecuteTasks.objects.filter(pk=id).annotate(
         host=F('order__cid__host'),
         port=F('order__cid__port'),
@@ -188,9 +188,9 @@ def async_execute_single(id=None, username=None):
             username=obj.applicant,  # 收件人为工单的申请人
             sql=obj.sql
         )
-    # 监控当前任务是否执行完成，当执行完成后，执行修改父工单的状态
+    # 监控当前任务是否执行完成,当执行完成后,执行修改父工单的状态
     # 否则方法update_dborders_progress_to_finish将先于任务执行完成
-    # 此处的while不能引用obj，obj属于查询结果的对象，而不会每次查询数据，否则死的很惨...
+    # 此处的while不能引用obj,obj属于查询结果的对象,而不会每次查询数据,否则死的很惨...
     while models.DbOrdersExecuteTasks.objects.get(pk=id).progress == 2:
         time.sleep(0.01)
         continue
@@ -209,7 +209,7 @@ def async_execute_multi(task_id=None, username=None):
         obj.save()
         # 执行
         async_execute_single.delay(id=row.id, username=username)
-        # 监控当前任务是否执行完成，当执行完成后，继续执行下一个任务
+        # 监控当前任务是否执行完成,当执行完成后,继续执行下一个任务
         while models.DbOrdersExecuteTasks.objects.get(id=row.id).progress == 2:
             time.sleep(0.01)
             continue
@@ -247,7 +247,7 @@ def dbms_sync_mysql_schema(row):
     config = {
         'host': row.host,
         'port': row.port,
-        'read_timeout': 10,  # socket.timeout: timed out，比如阿里的rds就很操蛋，没开白名单会hang住
+        'read_timeout': 10,  # socket.timeout: timed out,比如阿里的rds就很操蛋,没开白名单会hang住
         'cursorclass': pymysql.cursors.DictCursor
     }
     config.update(REOMOTE_USER)

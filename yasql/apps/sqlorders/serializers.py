@@ -17,7 +17,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from config import REOMOTE_USER
 from sqlorders import models, utils, libs, tasks
-from sqlorders.api.goInceptionApi import InceptionApi
+from sqlorders.api.gaudit import GAuditApi
 from sqlorders.libs import check_export_column_unique
 from users.models import UserAccounts
 
@@ -98,26 +98,7 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
             status, msg = check_export_column_unique(config=cfg, sqls=attrs['sqls'])
             if not status:
                 raise serializers.ValidationError(msg)
-
             raise serializers.ValidationError('EXPORT类型的工单不需要语法检查，请直接提交')
-
-        # TiDB的ALTER语句需要单独的处理
-        if attrs['rds_category'] == 2:
-            if attrs['sql_type'] == 'DDL':
-                sc = re.compile(r'^ALTER([\s\S]+)([,])(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|CONVERT)([\s\S]+)', re.I)
-                for sql in sqlparse.split(attrs['sqls']):
-                    try:
-                        m = sc.match(sql)
-                        if m.groups():
-                            raise serializers.ValidationError('TiDB下的同一个表的多个操作，请拆分成多个ALTER语句')
-                    except AttributeError:
-                        pass
-
-        # 检查goInception是否可以访问
-        status, msg = InceptionApi().check_cnx()
-        if not status:
-            raise serializers.ValidationError(msg)
-
         return super(IncepSyntaxCheckSerializer, self).validate(attrs)
 
     def check(self):
@@ -132,11 +113,8 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
             'database': database
         }
         cfg.update(REOMOTE_USER)
-        api = InceptionApi(cfg=cfg, sqls=vdata['sqls'], rds_category=vdata['rds_category'])
-        context = api.run_check()
-        status = api.is_check_pass()
-        return status, context
-
+        api = GAuditApi(cfg=cfg, sqls=vdata['sqls'], rds_category=vdata['rds_category'])
+        return api.check()
 
 class SqlOrdersCommitSerializer(serializers.ModelSerializer):
     env_id = serializers.IntegerField()
@@ -197,18 +175,7 @@ class SqlOrdersCommitSerializer(serializers.ModelSerializer):
             'database': database
         }
         cfg.update(REOMOTE_USER)
-        api = InceptionApi(cfg=cfg, sqls=attrs['contents'], rds_category=attrs['rds_category'])
-
-        # 检查goInception是否可以访问
-        status, msg = api.check_cnx()
-        if not status:
-            raise serializers.ValidationError(msg)
-
-        # # 禁止提交insert into ... select 语句
-        # 需要屏蔽insert into ... select 语句，取消注释
-        # if attrs['sql_type'] == 'DML':
-        #     if not api.check_insert_select():
-        #         raise serializers.ValidationError('禁止提交INSERT INTO ... SELECT ...语句')
+        api = GAuditApi(cfg=cfg, sqls=attrs['contents'], rds_category=attrs['rds_category'])
 
         # 判断导出工单提交的列是否重复
         if attrs['sql_type'] == 'EXPORT' and attrs['rds_category'] != 3:
@@ -216,22 +183,11 @@ class SqlOrdersCommitSerializer(serializers.ModelSerializer):
             if not status:
                 raise serializers.ValidationError(msg)
 
-        # 导出工单不检查语法，仅检测是否以SELECT开头
+        # 导出工单不检查语法
         if attrs['sql_type'] != 'EXPORT':
-            if not api.is_check_pass():
-                raise serializers.ValidationError('SQL语法存在异常，提交失败，请先检查SQL语法，请点击：[语法检查]')
-
-        # TiDB的ALTER语句需要单独的处理
-        if attrs['rds_category'] == 2:
-            if attrs['sql_type'] == 'DDL':
-                sc = re.compile(r'^ALTER([\s\S]+)([,])(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|CONVERT)([\s\S]+)', re.I)
-                for sql in sqlparse.split(attrs['contents']):
-                    try:
-                        m = sc.match(sql)
-                        if m.groups():
-                            raise serializers.ValidationError('TiDB下的同一个表的多个操作，请拆分成多个ALTER语句')
-                    except AttributeError:
-                        pass
+            status, _, _ = api.check()
+            if not status:
+                raise serializers.ValidationError('SQL语法检查不通过,提交失败;请点击【语法检查】检查语法')
 
         # 提交工单
         request = self.context['request']

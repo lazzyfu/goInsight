@@ -205,15 +205,20 @@
           :pagination="pagination"
           :loading="tableLoading"
           :rowClassName="setRowClass"
-          :rowKey="(record) => record.order_id"
+          :rowKey="(record, index) => index"
           @change="handleTableChange"
           size="middle"
         >
-          <span slot="error_level" slot-scope="text">
-            <span v-if="text === 0">成功</span>
-            <span v-else-if="text === 1">警告</span>
-            <span v-else>错误</span>
+          <span slot="level" slot-scope="text">
+            <a-tag v-if="text === 'INFO'" color="green">成功</a-tag>
+            <a-tag v-else-if="text === 'WARN'" color="orange">警告</a-tag>
+            <a-tag v-else color="red">错误</a-tag>
           </span>
+          <template slot="summary" slot-scope="text">
+            <ul style="margin: 4px" v-for="(item, index) of text" :key="index">
+              <li>{{ item }}</li>
+            </ul>
+          </template>
         </a-table>
       </a-row>
     </a-card>
@@ -456,7 +461,7 @@ export default {
       const formHeight = this.$refs.ruleForm.$el.offsetHeight - 30
       cm.setSize('height', `${formHeight}px`)
       cm.on('keypress', () => {
-        cm.showHint({completeSingle: false});
+        cm.showHint({ completeSingle: false })
       })
     },
     // 获取上线版本号
@@ -472,7 +477,10 @@ export default {
     },
     // 语法检查
     syntaxCheck() {
-      this.$message.info('正在执行语法检测，请稍等')
+      this.$notification['info']({
+        message: '语法检查',
+        description: '正在执行语法检查，请稍等...',
+      })
       const params = {
         rds_category: this.ruleForm.rds_category,
         database: this.ruleForm.database,
@@ -493,14 +501,23 @@ export default {
         .then((response) => {
           if (response.code === '0000') {
             if (response.data.data.status === 0) {
-              this.$message.success(response.message)
+              this.$notification['success']({
+                message: 'Success',
+                description: response.message,
+              })
             } else {
-              this.$message.error(response.message)
+              this.$notification['error']({
+                message: 'Error',
+                description: response.message,
+              })
             }
             this.table.data = response.data.data.data
             this.table.columns = response.data.columns
           } else {
-            this.$message.error(response.message)
+            this.$notification['error']({
+              message: 'Error',
+              description: response.message,
+            })
           }
           this.tableLoading = false
           this.checkBtnStatus = false
@@ -560,11 +577,6 @@ export default {
           if (valid) {
             // 简单判断输入是否为空
             const sqlContent = this.codemirror.getValue()
-            if (!sqlContent) {
-              this.$message.error('请输入要审核的SQL内容')
-              this.isDisabledCommit = false
-              return false
-            }
             const commitData = {
               sql_type: this.sqltype,
               contents: sqlContent,
@@ -576,11 +588,17 @@ export default {
                   this.$router.push('/sqlorders/list')
                 } else {
                   this.isDisabledCommit = false
-                  this.$message.error(response.message)
+                  this.$notification['error']({
+                    message: 'Error',
+                    description: response.message,
+                  })
                 }
               })
               .catch((error) => {
-                this.$message.error('提交失败，错误码: ' + error.response.status)
+                this.$notification['error']({
+                  message: 'Error',
+                  description: '提交失败，错误码: ' + error.response.status,
+                })
                 this.isDisabledCommit = false
               })
           } else {

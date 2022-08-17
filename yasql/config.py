@@ -24,7 +24,7 @@ DB = {
 }
 
 # 连接目标需要审计或执行工单的数据库的用户
-# 每个连接的目标数据库都需要创建，用于goInception、工单执行、备份、查询
+# 每个连接的目标数据库都需要创建，用于语法、工单执行、备份、查询
 # create user 'yasql_rw'@'%' identified by '1234.com'
 # grant all on *.* to 'yasql_rw'@'%';
 # 用户名和密码请进行自行修改，不要使用默认的
@@ -94,11 +94,8 @@ GH_OST_ARGS = ['--allow-on-master',
                '--chunk-size=800',
                '--hooks-path=/data/www/yasql/yasql/hook/']
 
-# GoInception
-INCEPTION = {
-    'host': '127.0.0.1',
-    'port': 4000
-}
+# gAudit
+GAUDIT_API = "http://127.0.0.1:8082/api/v1/audit"
 
 # 配置接收工单消息
 # 通知消息里面的url地址

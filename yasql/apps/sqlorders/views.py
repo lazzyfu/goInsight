@@ -46,25 +46,27 @@ class IncepSyntaxCheckView(APIView):
         serializer = serializers.IncepSyntaxCheckSerializer(data=request.data)
 
         if serializer.is_valid():
-            s, data = serializer.check()
+            status, data, msg = serializer.check()
+            
             render_columns = [
-                {'key': 'order_id', 'value': '序号'},
-                {'key': 'stage', 'value': '阶段'},
-                {'key': 'stage_status', 'value': '阶段状态'},
-                {'key': 'error_level', 'value': '错误级别'},
-                {'key': 'error_message', 'value': '错误信息', 'width': '35%'},
-                {'key': 'sql', 'value': 'SQL内容', 'width': '25%', 'ellipsis': True},
+                {'key': 'level', 'value': '级别'},
+                {'key': 'finger_id', 'value': '指纹'},
+                {'key': 'type', 'value': '类型'},
+                {'key': 'summary', 'value': '提示', 'width': '35%'},
+                {'key': 'query', 'value': 'SQL内容', 'width': '25%', 'ellipsis': True},
                 {'key': 'affected_rows', 'value': '影响/扫描行数'}
             ]
             columns = render_dynamic_columns(render_columns)
-            message = '语法检查未发现异常，可以提交'
-            if not s:
-                message = '语法检查发现异常，详情请查看输出，更正后在提交'
-            d = {
-                'status': 0 if s else 1,
-                'data': data
+            message = '语法检查不通过,请根据【提示】进行更正'
+            if status:
+                message = "语法检查通过,可以提交"
+            if status is False and data is None:
+                message = msg
+            innerd = {
+                'status': 0 if status else 1,
+                'data': data if ((status is False and msg is None) or (status is True)) else None,
             }
-            data = {'columns': columns, 'data': d}
+            data = {'columns': columns, 'data': innerd}
             return JsonResponseV1(data=data, message=message)
         return JsonResponseV1(message=serializer.errors, code='0001', flat=True)
 
