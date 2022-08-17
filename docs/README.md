@@ -1,5 +1,5 @@
 # Table of Contents
-
+使用的是django+drf+vue开发,部署有些复杂,请您做好预期~
 #### 介绍
 - [预览](preview.md)
 - [升级](upgrade.md)
@@ -10,7 +10,7 @@
 - [克隆项目](clone.md)
 - [部署前端](deploy_f.md)
 - [部署后端](deploy_b.md)
-- [集成goInception](goInception.md)
+- [集成gAudit](gaudit.md)
 - [集成gh-ost](gh-ost.md)
   
 #### 用户管理

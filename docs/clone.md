@@ -1,4 +1,6 @@
-# 克隆项目
+
+# 两种方式
+## 方式1: 克隆项目
 
 从git上拉取项目代码，命令如下：
 
@@ -6,6 +8,12 @@
 mkdir /data/www -p
 cd /data/www
 git clone https://github.com/lazzyfu/YaSQL.git yasql
+```
+
+## 方式2：下载压缩包
+> 请选择最新的发行版本
+```
+wget https://github.com/lazzyfu/YaSQL/archive/refs/tags/v1.0.1.zip
 ```
 
 ## 目录结构说明
