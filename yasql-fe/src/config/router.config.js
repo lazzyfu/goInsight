@@ -10,6 +10,7 @@ export const asyncRouterMap = [
   {
     path: '/',
     name: 'menu.home',
+    meta: { title: '首页' },
     component: BasicLayout,
     redirect: { name: 'view.dashboard' },
     children: [Account, Dashboard, SqlOrders, SqlQuery, RedisMS]

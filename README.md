@@ -1,21 +1,21 @@
-# YaSQL简介[[使用文档](https://github.com/lazzyfu/YaSQL/tree/master/docs)]
-YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范线上SQL执行流程。
-欢迎大家进行二次开发！！！
+# YaSQL简介
+![](https://img.shields.io/static/v1?label=Python&message=3.7&color=green&?style=flat-square)
+![](https://img.shields.io/static/v1?label=Vue&message=Ant_Design_Vue&color=green&?style=flat-square)
+![](https://img.shields.io/static/v1?label=Django&message=Djangorestframework&color=green&?style=flat-square)
+![](https://img.shields.io/static/v1?label=Jwt&message=Djangorestframework_jwt&color=green&?style=flat-square)
+![](https://img.shields.io/static/v1?label=Celery&message=4&color=green&?style=flat-square) 
+![License](https://img.shields.io/github/license/lazzyfu/YaSQL?style=flat-square)
+YaSQL是一款MySQL/TiDB的数据库审核执行平台，旨在降低DBA的运维成本，规范上线SQL执行流程。
 
-## 开发组件
-* ![](https://img.shields.io/static/v1?label=Python&message=3.7&color=green&?style=for-the-badge)
-* ![](https://img.shields.io/static/v1?label=Vue&message=Ant_Design_Vue&color=green&?style=for-the-badge)
-* ![](https://img.shields.io/static/v1?label=Django&message=Djangorestframework&color=green&?style=for-the-badge)
-* ![](https://img.shields.io/static/v1?label=Jwt&message=Djangorestframework_jwt&color=green&?style=for-the-badge)
-* ![](https://img.shields.io/static/v1?label=Celery&message=4&color=green&?style=for-the-badge) 
+## 文档
+[使用文档](https://github.com/lazzyfu/YaSQL/tree/master/docs)
+
+## 语法审核工具
+* [gAudit](https://github.com/lazzyfu/gAudit)
+
 
 ## 系统架构
-
 ![](https://github.com/lazzyfu/YaSQL/blob/master/docs/pic/architecture.png)
-
-## 仪表盘
-
-![](https://github.com/lazzyfu/YaSQL/blob/master/docs/pic/dashboard.png)
 
 ## 功能简介
 
@@ -31,7 +31,7 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
   * Mariadb（暂不支持Mariadb生成备份语句）
   * ClickHouse（暂不支持生成备份语句）
 * 语法规则
-  * 集成goInception，语法规则请参考：https://github.com/hanchuanchuan/goInception
+  * 集成[gAudit](https://github.com/lazzyfu/gAudit)
   * 前端支持语法高亮、格式化、注释、补全
 * 支持MySQL/TIDB/ClickHouse/Redis查询（类似DMS查询功能）
   * 支持库表级别授权
@@ -51,9 +51,11 @@ YaSQL是一款简单的MySQL/TiDB的数据库审核执行平台，旨在降低DB
   * 支持自定义用户角色、可为每个角色绑定不同的工单权限
   * 支持集成LDAP（若支持LDAP密码修改，请自行实现相关接口）
   * 支持后台创建用户、密码修改（非LDAP模式）、修改头像
-  
-## 文档地址
-[使用文档](https://github.com/lazzyfu/YaSQL/tree/master/docs)
 
-## QQ讨论群
-群号:1036608328
+## 预览
+![](./docs/pic/commit.png)
+![](./docs/pic/commit2.png)
+![](./docs/pic/detail.png)
+
+## 二次开发
+欢迎大家基于自己公司的业务场景进行二次开发\^_\^

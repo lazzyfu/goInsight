@@ -1,15 +1,15 @@
 const route = {
   name: 'view.sqlorders',
-  path: '/sqlorders',
+  path: 'sqlorders',
+  redirect: { name: 'view.sqlorders.list' },
   component: () => import('./index.vue'),
-  redirect: {name: 'view.sqlorders.list'},
   meta: { title: 'DB工单', keepAlive: true, icon: 'database' },
   children: [
     {
-      name: "view.sqlorders.commit.version",
-      path: "/sqlorders/version",
-      component: () => import("./version.vue"),
-      meta: { title: "上线版本", keepAlive: true, icon: 'fork' }
+      name: 'view.sqlorders.commit.version',
+      path: '/sqlorders/version',
+      component: () => import('./version.vue'),
+      meta: { title: '上线版本', keepAlive: true, icon: 'fork' }
     },
     {
       name: 'view.sqlorders.list',
@@ -43,26 +43,26 @@ const route = {
       meta: { title: '提交导出工单', keepAlive: true, icon: 'export' }
     },
     {
-      name: "view.sqlorders.tasks",
-      path: "/sqlorders/tasks/:task_id",
+      name: 'view.sqlorders.tasks',
+      path: '/sqlorders/tasks/:task_id',
       hidden: true,
-      component: () => import("./task.vue"),
-      meta: { title: "工单任务", hidden: true }
+      component: () => import('./task.vue'),
+      meta: { title: '工单任务', hidden: true }
     },
     {
-      name: "view.sqlorders.export.download",
-      path: "/sqlorders/export/download/:base64_filename",
+      name: 'view.sqlorders.export.download',
+      path: '/sqlorders/export/download/:base64_filename',
       hidden: true,
-      component: () => import("./download.vue"),
-      meta: { title: "下载导出文件", hidden: true }
+      component: () => import('./download.vue'),
+      meta: { title: '下载导出文件', hidden: true }
     },
     {
-      name: "view.sqlorders.version.view",
-      path: "/sqlorders/version/view/:version",
+      name: 'view.sqlorders.version.view',
+      path: '/sqlorders/version/view/:version',
       hidden: true,
-      component: () => import("./versionView.vue"),
-      meta: { title: "版本详情", hidden: true }
-    },
+      component: () => import('./versionView.vue'),
+      meta: { title: '版本详情', hidden: true }
+    }
   ]
 }
 
