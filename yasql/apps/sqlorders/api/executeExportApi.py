@@ -3,6 +3,7 @@
 import base64
 import csv
 import os
+import shlex
 import subprocess
 import time
 from decimal import Decimal
@@ -224,11 +225,21 @@ class ExecuteExport(object):
         # 压缩并加密，随机生成24位长度的字符串
         # 需要安装p7zip 7za a -tzip -p123.com b_stru.sql.zip b_stru.sql
         salt = get_random_string(24)
-        status, output = subprocess.getstatusoutput(f"7za a -tzip -p{salt} {self.tmp_zip_file} {self.tmp_file}")
-        self.pm.pull(msg=output)
-        self.execute_log.append(output)
+        # 下面写法有注入bug
+        # status, output = subprocess.getstatusoutput(f"7za a -tzip -p{salt} {self.tmp_zip_file} {self.tmp_file}")
+        # 使用shlex.split进行转义，防止越权注入执行shell
+        command = f"7za a -tzip -p{salt} {self.tmp_zip_file} {self.tmp_file}"
+        proc = subprocess.Popen(shlex.split(command), shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # 获取实时输出
+        proc.wait()
+        while True:
+            output = proc.stdout.readline().decode('utf8').strip()
+            if output == '' and proc.poll() is not None:
+                break
+            self.pm.pull(msg=output)
+            self.execute_log.append(output)
 
-        if status == 0:
+        if proc.returncode == 0:
             # 存储文件
             with open(self.tmp_zip_file, 'rb') as f:
                 myfile = File(f)
