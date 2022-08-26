@@ -15,7 +15,7 @@ logger = logging.getLogger('main')
 class GAuditApi(object):
     """语法检查接口"""
 
-    def __init__(self, cfg=None, sqls=None, rds_category=None, character=None, is_enable_character_check=None):
+    def __init__(self, cfg=None, sqls=None, rds_category=None):
         # 目标数据库连接串配置
         self.cfg = cfg
         # 传入的SQL
