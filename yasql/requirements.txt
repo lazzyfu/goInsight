@@ -44,7 +44,7 @@ mysql-replication==0.22
 mysqlclient==2.0.1
 Naked==0.1.31
 openpyxl==3.0.5
-Pillow==8.1.1
+Pillow==9.0.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.9.1
