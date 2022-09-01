@@ -65,7 +65,7 @@ service-identity==18.1.0
 shellescape==3.8.1
 simplejson==3.17.2
 six==1.15.0
-sqlparse==0.4.1
+sqlparse==0.4.2
 toml==0.10.2
 Twisted==20.3.0
 txaio==20.4.1
