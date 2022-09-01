@@ -9,6 +9,7 @@
 - [YaSQL配置gAudit地址](#yasql配置gaudit地址)
 - [启动gAudit服务](#启动gaudit服务)
 - [重启django服务](#重启django服务)
+- [自定义审核参数](#自定义审核参数-1)
 
 ### 介绍
 > gAudit是一个SQL语法审核工具，支持MySQL/TiDB，通过解析SQL语法树实现语法规则审核。
@@ -118,3 +119,49 @@ supervisorctl start gAudit
 
 ### 重启django服务
 `supervisorctl restart yasql-server`
+
+### 自定义审核参数
+登录django后台->SQL工单配置->DB主机配置，选择您需要配置的主机
+![](./pic/audit.png)
+
+**自定义审核参数**
+> 您希望该数据库主机的审核配置区别于其他的数据库
+
+
+```json
+// key 为库名，一般多库复用同一个实例时，通过指定库名可以进行限制；您可以指定多个库
+// value 是审核参数
+{
+  "test": {  // 这是库名
+    "TABLE_SUPPORT_CHARSET": [  // 审核参数
+      {
+        "charset": "utf8",
+        "recommend": "utf8_general_ci"
+      }
+    ],
+    "DISABLE_AUDIT_DDL_TABLES": [ // 审核参数
+      {
+        "DB": "test",
+        "Reason": "限制审核和提交,请联系xxx",
+        "Tables": [
+          "cluster",
+          "t2"
+        ]
+      }
+    ],
+    "DISABLE_AUDIT_DML_TABLES": [ // 审核参数
+      {
+        "DB": "test",
+        "Reason": "限制审核和提交,请联系xxx",
+        "Tables": [
+          "cluster",
+          "t2"
+        ]
+      }
+    ]
+  }
+}
+```
+
+**配置完成后，前台审核选择该库时，审核提示输出**
+![](./pic/audit1.png)
