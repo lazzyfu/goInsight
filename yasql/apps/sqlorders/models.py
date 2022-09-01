@@ -2,6 +2,7 @@
 # edit by xff
 import humanfriendly as humanfriendly
 from django.db import models
+from django_jsonfield_backport.models import JSONField
 
 # Create your models here.
 from sqlorders import utils
@@ -62,6 +63,7 @@ class DbConfig(models.Model):
     port = models.IntegerField(null=False, default=3306, verbose_name=u'数据库端口')
     character = models.CharField(max_length=32, null=False, choices=utils.characterChoice,
                                  default='utf8', verbose_name=u'表字符集')
+    custom_audit_parameters = JSONField(default=dict, blank=True, null=True, verbose_name='自定义审核参数')
     env = models.ForeignKey(DbEnvironment, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='环境')
     use_type = models.SmallIntegerField(choices=utils.useTypeChoice, default=0, verbose_name=u'用途')
     rds_type = models.SmallIntegerField(choices=utils.rdsTypeChoice, default=2, verbose_name=u'数据库的类型')

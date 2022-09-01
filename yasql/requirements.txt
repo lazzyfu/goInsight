@@ -5,6 +5,7 @@ async-timeout==3.0.1
 attrs==20.2.0
 autobahn==20.12.3
 Automat==20.2.0
+autopep8==1.7.0
 billiard==3.6.3.0
 celery==4.4.7
 certifi==2020.6.20
@@ -22,11 +23,13 @@ django-auth-ldap==2.2.0
 django-celery-beat==1.5.0
 django-celery-results==1.0.4
 django-filter==2.3.0
+django-json-widget==1.1.1
 django-redis==4.12.1
 django-timezone-field==4.0
 djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 et-xmlfile==1.0.1
+future==0.18.2
 hiredis==1.1.0
 humanfriendly==8.2
 hyperlink==20.0.1
@@ -44,6 +47,7 @@ openpyxl==3.0.5
 Pillow==8.1.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
+pycodestyle==2.9.1
 pycparser==2.20
 pycryptodome==3.9.9
 PyHamcrest==2.0.2
@@ -62,6 +66,7 @@ shellescape==3.8.1
 simplejson==3.17.2
 six==1.15.0
 sqlparse==0.4.1
+toml==0.10.2
 Twisted==20.3.0
 txaio==20.4.1
 tzlocal==2.1

@@ -2,11 +2,17 @@ from django.contrib import admin
 
 # Register your models here.
 from sqlorders import models
+from django_json_widget.widgets import JSONEditorWidget
 
 
 @admin.register(models.DbConfig)
 class DbConfigAdmin(admin.ModelAdmin):
-    list_display = ('host', 'port', 'character', 'env', 'use_type', 'rds_type', 'rds_category', 'comment')
+    formfield_overrides = {
+        # fields.JSONField: {'widget': JSONEditorWidget}, # if django < 3.1
+        models.JSONField: {'widget': JSONEditorWidget},
+    }
+    list_display = ('host', 'port', 'character', 'custom_audit_parameters',
+                    'env', 'use_type', 'rds_type', 'rds_category', 'comment')
     list_display_links = ('host',)
     list_filter = ('use_type', 'rds_type', 'rds_category')
     search_fields = ('host', 'port', 'env__name', 'comment')

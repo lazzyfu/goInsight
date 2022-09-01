@@ -30,7 +30,8 @@ class GAuditApi(object):
             "db_host": self.cfg['host'],
             "db_port": self.cfg['port'],
             "db": self.cfg['database'],
-            "timeout": 3000
+            "timeout": 3000,
+            "custom_audit_parameters": self.cfg['custom_audit_parameters']
         }
 
         jsond["sqltext"] = self.sqls

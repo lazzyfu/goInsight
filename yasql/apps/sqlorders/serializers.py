@@ -110,7 +110,8 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
         cfg = {
             'host': obj.host,
             'port': obj.port,
-            'database': database
+            'database': database,
+            'custom_audit_parameters': obj.custom_audit_parameters.get(database)
         }
         cfg.update(REOMOTE_USER)
         api = GAuditApi(cfg=cfg, sqls=vdata['sqls'], rds_category=vdata['rds_category'])
@@ -172,13 +173,15 @@ class SqlOrdersCommitSerializer(serializers.ModelSerializer):
         cfg = {
             'host': obj.host,
             'port': obj.port,
-            'database': database
+            'database': database,
+            'custom_audit_parameters': obj.custom_audit_parameters.get(database)
         }
         cfg.update(REOMOTE_USER)
         api = GAuditApi(cfg=cfg, sqls=attrs['contents'], rds_category=attrs['rds_category'])
 
         # 判断导出工单提交的列是否重复
         if attrs['sql_type'] == 'EXPORT' and attrs['rds_category'] != 3:
+            cfg.pop("custom_audit_parameters")
             status, msg = check_export_column_unique(config=cfg, sqls=attrs['contents'])
             if not status:
                 raise serializers.ValidationError(msg)
