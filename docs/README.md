@@ -28,6 +28,3 @@
 - [配置权限](querypriv.md)
 - [配置return rows](return_rows.md)
 - [配置查询超时](query_timeout.md)
-
-#### 个人博客
-https://lazzyfu.github.io/
