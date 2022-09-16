@@ -88,10 +88,14 @@ class GAuditApi(object):
 
         keys = ['affected_rows']
         affected_rows = [itemgetter(*keys)(row) for row in data]
-
+        
         # 如果此处需要分别对DML语句中的insert、update、delete做限制，在这里解析data分别处理即可
-        single_max_affected_rows = max(affected_rows)
-        sum_affected_rows = sum(affected_rows)
+        try:
+            single_max_affected_rows = max(affected_rows)
+            sum_affected_rows = sum(affected_rows)
+        except ValueError:
+            # 此处可能传递了空注释，并未传递实际语句
+            return False
 
         if single_max_affected_rows <= limits.get('single') and sum_affected_rows <= limits.get('sum'):
             return True

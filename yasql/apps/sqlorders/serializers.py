@@ -117,7 +117,9 @@ class IncepSyntaxCheckSerializer(serializers.Serializer):
         api = GAuditApi(cfg=cfg, sqls=vdata['sqls'], rds_category=vdata['rds_category'])
         return api.check()
 
+
 class SqlOrdersCommitSerializer(serializers.ModelSerializer):
+    title = serializers.CharField()
     env_id = serializers.IntegerField()
 
     class Meta:
@@ -161,6 +163,11 @@ class SqlOrdersCommitSerializer(serializers.ModelSerializer):
         return data
 
     def validate(self, attrs):
+        # 判断title字段的长度
+        # drf校验的是传入的数据长度，不是组合后的长度，eg: attrs['title'] = attrs['title'] + '_[' + datetime.now().strftime("%Y%m%d%H%M%S") + ']'
+        if len(attrs['title']) > 45:
+            raise serializers.ValidationError("标题不允许超过45个字符")
+
         # 判断提交的SQL是否符合SQL类型
         # 如：DML只能提交DML语句，DDL工单只能提交DDL语句
         status, msg = libs.verify_sql_type(sqls=attrs['contents'], sql_type=attrs['sql_type'])
@@ -552,7 +559,7 @@ class ExecuteMultiTasksSerializer(serializers.Serializer):
     def validate_task_id(self, data):
         # 检查任务是否被锁定，避免连击
         self.check_task_locked(data)
-        
+
         if not models.DbOrdersExecuteTasks.objects.filter(task_id=data).exists():
             raise serializers.ValidationError('查询的结果不存在')
 
