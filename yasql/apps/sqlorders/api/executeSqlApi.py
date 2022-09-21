@@ -372,7 +372,7 @@ class ExecuteSQL(object):
         """tidb直接连接数据库执行"""
         sqlcompile = re.compile(
             r'^('
-            r'CREATE\s+TABLE|CREATE\s+VIEW|'
+            r'CREATE\s+TABLE|CREATE\s+SEQUENCE|CREATE\s+INDEX|CREATE\s+OR|CREATE\s+VIEW|'
             r'DROP\s+TABLE|DROP\s+VIEW|DROP\s+TRIGGER|DROP\s+INDEX|'
             r'RENAME\s+TABLE|'
             r'TRUNCATE\s+TABLE|'
@@ -397,6 +397,11 @@ class ExecuteSQL(object):
                               f"错误信息：{str(err)}\n"
                 result = {'status': 'fail', 'execute_log': execute_log}
                 return result
+        else:
+            logger.error("函数: _op_tidb_ddl 原因: SQL语句未匹配正则sqlcompile")
+            execute_log = f"状态: Fail\n" \
+                f"错误信息：函数: _op_tidb_ddl 原因: SQL语句未匹配正则sqlcompile\n"
+            return {'status': 'fail', 'execute_log': execute_log}
 
     def _op_clickhouse_ddl(self, cnx):
         return self._op_clickhouse_dml(cnx)
