@@ -15,7 +15,7 @@ channels-redis==3.1.0
 chardet==3.0.4
 clickhouse-driver==0.2.0
 constantly==15.1.0
-cryptography==3.3.2
+cryptography==39.0.1
 daphne==2.5.0
 DingtalkChatbot==1.5.1
 Django==2.2.20
