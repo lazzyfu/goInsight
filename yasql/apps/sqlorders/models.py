@@ -110,7 +110,7 @@ class DbSchemas(models.Model):
 
 class DbOrders(models.Model):
     id = models.AutoField(primary_key=True, verbose_name=u'主键ID')
-    title = models.CharField(max_length=64, null=False, verbose_name=u'工单标题')
+    title = models.CharField(max_length=256, null=False, verbose_name=u'工单标题')
     order_id = models.CharField(max_length=128, null=False, blank=True, default='', verbose_name=u'工单号')
     demand = models.CharField(max_length=256, null=False, blank=True, verbose_name=u'需求描述')
     is_hide = models.CharField(max_length=10, null=False, blank=True, default='OFF', verbose_name=u'是否隐藏')
