@@ -146,6 +146,13 @@ class ExecuteSQL(object):
         t_cnx.setDaemon(True)
         t_cnx.start()
 
+    def _get_tidb_thread_id(self, cnx):
+        """获取tidb执行SQL的线程ID"""
+        with cnx.cursor() as cursor:
+            cursor.execute("SELECT CONNECTION_ID() AS value")
+            thread_id = cursor.fetchone()['value']
+        return thread_id
+
     def _execute_sql(self, cnx):
         """执行SQL语句"""
         start_time = time.time()
@@ -237,6 +244,10 @@ class ExecuteSQL(object):
             return result
 
     def _op_tidb_dml(self, cnx):
+        # TiDB 需要执行 SQL 获取 thread_id
+        thread_id = self._get_tidb_thread_id(cnx)
+        # 监控进程
+        self._get_processlist(thread_id)
         # 执行SQL
         try:
             affected_rows, consuming_time, execute_log, thread_id = self._execute_sql(cnx)
@@ -380,8 +391,10 @@ class ExecuteSQL(object):
             r')([\s\S]*)',
             re.I)
         if sqlcompile.match(self.sql) is not None:
+            # TiDB 需要执行 SQL 获取 thread_id
+            thread_id = self._get_tidb_thread_id(cnx)
             # 启动监控线程，监控被执行的SQL当前的会话状态
-            self._get_processlist(cnx.thread_id())
+            self._get_processlist(thread_id)
             try:
                 # 执行SQL
                 affected_rows, consuming_time, execute_log, _ = self._execute_sql(cnx)
