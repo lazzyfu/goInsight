@@ -191,7 +191,8 @@ def async_execute_single(id=None, username=None):
     # 监控当前任务是否执行完成,当执行完成后,执行修改父工单的状态
     # 否则方法update_dborders_progress_to_finish将先于任务执行完成
     # 此处的while不能引用obj,obj属于查询结果的对象,而不会每次查询数据,否则死的很惨...
-    while models.DbOrdersExecuteTasks.objects.get(pk=id).progress == 2:
+    # 工单处于处理中或暂停状态，需要等待
+    while models.DbOrdersExecuteTasks.objects.get(pk=id).progress in (2, 4):
         time.sleep(0.01)
         continue
     update_dborders_progress_to_finish(task_id=obj.task_id, username=username)
@@ -210,7 +211,7 @@ def async_execute_multi(task_id=None, username=None):
         # 执行
         async_execute_single.delay(id=row.id, username=username)
         # 监控当前任务是否执行完成,当执行完成后,继续执行下一个任务
-        while models.DbOrdersExecuteTasks.objects.get(id=row.id).progress == 2:
+        while models.DbOrdersExecuteTasks.objects.get(id=row.id).progress in (2, 4):
             time.sleep(0.01)
             continue
     update_dborders_progress_to_finish(task_id=task_id, username=username)
