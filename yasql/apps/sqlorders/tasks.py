@@ -214,7 +214,7 @@ def async_execute_multi(task_id=None, username=None):
         while models.DbOrdersExecuteTasks.objects.get(id=row.id).progress in (2, 4):
             time.sleep(0.01)
             continue
-    update_dborders_progress_to_finish(task_id=task_id, username=username)
+    # update_dborders_progress_to_finish(task_id=task_id, username=username)
 
 
 def dbms_sync_clickhouse_schema(row):
