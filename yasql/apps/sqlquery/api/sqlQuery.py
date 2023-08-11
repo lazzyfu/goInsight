@@ -211,7 +211,6 @@ class SqlQuery(object):
         if not status:
             return {'status': False, 'msg': _}
         # strip_comments防止下面SQL绕过limit
-        # select * from noah_cmdb_instances;--
         rule_sql = self._limit_rules(sqlparse.format(_, strip_comments=True))
 
         # 记录执行SQL
