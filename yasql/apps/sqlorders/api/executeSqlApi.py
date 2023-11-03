@@ -387,6 +387,7 @@ class ExecuteSQL(object):
             r'DROP\s+TABLE|DROP\s+VIEW|DROP\s+TRIGGER|DROP\s+INDEX|'
             r'RENAME\s+TABLE|'
             r'TRUNCATE\s+TABLE|'
+            r'ANALYZE\s+TABLE|'
             r'ALTER\s+TABLE'
             r')([\s\S]*)',
             re.I)
