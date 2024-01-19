@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceRoot}/cmd",
+            "cwd": "${workspaceRoot}",
+            "args": [
+                "-config",
+                "config.yaml"
+            ],
+            "env": {
+                "GOROOT": "/usr/local/Cellar/go/1.19.6/libexec"
+            }
+        }
+    ]
+}

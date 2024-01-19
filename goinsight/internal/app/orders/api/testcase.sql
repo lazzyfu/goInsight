@@ -1,0 +1,36 @@
+-- 创建表  
+CREATE TABLE DataTypeTest (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tinyint_col TINYINT,
+    smallint_col SMALLINT,
+    mediumint_col MEDIUMINT,
+    int_col INT,
+    bigint_col BIGINT,
+    float_col FLOAT,
+    double_col DOUBLE,
+    decimal_col DECIMAL(10, 2),
+    numeric_col NUMERIC(10, 2),
+    char_col CHAR(10),
+    varchar_col VARCHAR(50),
+    text_col TEXT,
+    tinytext_col TINYTEXT,
+    mediumtext_col MEDIUMTEXT,
+    longtext_col LONGTEXT,
+    binary_col BINARY(10),
+    varbinary_col VARBINARY(50),
+    blob_col BLOB,
+    tinyblob_col TINYBLOB,
+    mediumblob_col MEDIUMBLOB,
+    longblob_col LONGBLOB,
+    date_col DATE,
+    time_col TIME,
+    datetime_col DATETIME,
+    timestamp_col TIMESTAMP,
+    year_col YEAR,
+    enum_col ENUM('Value1', 'Value2', 'Value3'),
+    set_col
+    SET
+('Value1', 'Value2', 'Value3'),
+        json_col JSON,
+        boolean_col BOOLEAN
+);

@@ -1,0 +1,89 @@
+# 应用配置
+app:
+  listen_address: "localhost:8083" # 应用监听地址
+  environment: "prod" # 环境设置，可选值为dev/prod
+  secret_key: "m3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=pwqi1o$r_c^" # 应用密钥，建议更改
+
+# 日志配置
+log:
+  level: "info" # 日志级别
+  root_dir: "./logs" # 日志根目录
+
+# MySQL数据库配置，用于存储应用数据
+database:
+  driver: "mysql" # 数据库驱动
+  host: "127.0.0.1" # 数据库主机
+  port: 3306 # 数据库端口
+  database: "goInsight" # 数据库名称
+  username: "goInsight_rw" # 数据库用户名
+  password: "goInsight@1234.Com" # 数据库密码
+  charset: "utf8mb4" # 数据库字符集
+  max_idle_conns: 64 # 最大空闲连接数
+  max_open_conns: 64 # 最大打开连接数
+  conn_max_life_time: 3600 # 连接的最大存活时间
+  conn_max_idle_time: 3600 # 连接的最大空闲时间
+
+# Redis配置，用于缓存应用数据
+redis:
+  host: "127.0.0.1" # Redis主机
+  port: 6379 # Redis端口
+  password: "1234.com" # Redis密码
+  db: 0 
+
+# 远程实例DB账号，需要在目标数据库创建
+# 请确保通过该账号可以访问远程数据库，该账号用于工单审核、执行、数据查询、库表元信息采集等
+remotedb:
+  username: "goInsight_rw"
+  password: "goInsight@1234.Com"
+
+# 数据查询配置
+das:
+  max_execution_time: 600000 # 查询语句最大查询执行时间
+  default_return_rows: 100 # 查询默认返回行数
+  max_return_rows: 100 # 查询默认最大返回行数
+  allowed_useragents: [
+      "Chrome",
+      "Firefox",
+      "Safari",
+      "Trident",
+      "Presto",
+      "Postman",
+    ] # 允许的UA
+
+# 语法审核工具地址
+gaudit:
+  url: "http://127.0.0.1:8082/api/v1/audit"
+
+# GitHub's Online Schema-migration Tool for MySQL
+# https://github.com/github/gh-ost
+ghost:
+  path: "/usr/local/bin/gh-ost" # Gh-ost工具路径
+  args: # Gh-ost工具参数列表
+    [
+      "--allow-on-master",
+      "--assume-rbr",
+      "--initially-drop-ghost-table",
+      "--initially-drop-old-table",
+      "-initially-drop-socket-file",
+      "-exact-rowcount",
+      "--approve-renamed-columns",
+      "--concurrent-rowcount=false",
+      "--chunk-size=800",
+    ]
+
+# 消息通知配置，用于工单消息推送
+notify:
+  notice_url: "http://localhost:8083/"
+  wechat:
+    enable: true
+    webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=1234"
+  dingtalk:
+    enable: false
+    webhook: "https://oapi.dingtalk.com/robot/send?access_token=1234"
+    keywords: "goInsight"
+  mail:
+    enable: false
+    username: "xxx@163.com"
+    password: "1234.com"
+    host: "smtp.163.com"
+    port: 465

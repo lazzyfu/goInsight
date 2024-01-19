@@ -1,0 +1,28 @@
+{
+    "folders": [
+        {
+            "path": "/Users/zongfei.fu/Desktop/github/goInsight"
+        }
+    ],
+    "settings": {
+        "editor.fontFamily": "Input Mono Condensed,JetBrains Mono NL",
+        "editor.fontSize": 14,
+        "editor.lineHeight": 22,
+        "terminal.integrated.fontSize": 14,
+        "workbench.colorTheme": "Default High Contrast Light",
+        "go.inferGopath": true,
+        "go.formatTool": "gofmt",
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": [],
+        "go.coverOnSave": false,
+        "go.goroot": "/opt/homebrew/opt/go@1.20/libexec/",
+        "[go]": {
+            "editor.insertSpaces": false,
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": "explicit"
+            },
+            "editor.suggest.snippetsPreventQuickSuggestions": false
+        }
+    },
+}

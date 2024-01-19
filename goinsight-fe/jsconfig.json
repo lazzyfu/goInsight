@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*"],
+  "allowJs": true
+}

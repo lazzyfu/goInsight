@@ -1,0 +1,109 @@
+// package main
+
+// import (
+// 	"errors"
+// 	"fmt"
+// 	"goInsight/pkgs/utils"
+
+// 	"github.com/pingcap/tidb/parser"
+// 	"github.com/pingcap/tidb/parser/ast"
+// 	_ "github.com/pingcap/tidb/types/parser_driver"
+// )
+
+// type TiStmt struct {
+// 	Stmts []ast.StmtNode
+// }
+
+// // NewParse
+// func NewParse(sqltext, charset, collation string) (*TiStmt, []error, error) {
+// 	t := &TiStmt{}
+// 	// tidb parser 语法解析
+// 	var warns []error
+// 	var err error
+// 	t.Stmts, warns, err = parser.New().Parse(sqltext, charset, collation)
+// 	return t, warns, err
+// }
+
+// func Parse(sqltext string) (audit *TiStmt, err error) {
+// 	// 解析SQL
+// 	var warns []error
+// 	// 解析
+// 	audit, warns, err = NewParse(sqltext, "", "")
+// 	if len(warns) > 0 {
+// 		return audit, fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
+// 	}
+// 	if err != nil {
+// 		return audit, fmt.Errorf("SQL解析错误:%s", err.Error())
+// 	}
+// 	return audit, nil
+// }
+
+// // 返回语句类型, 用于工单执行DDL
+// func GetSqlType(sqltext string) (string, error) {
+// 	// 解析SQL，接收单条SQL语句
+// 	audit, err := Parse(sqltext)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	for _, stmt := range audit.Stmts {
+// 		switch stmt.(type) {
+// 		case *ast.AlterTableStmt:
+// 			return "AlterTable", nil
+// 		case *ast.CreateDatabaseStmt:
+// 			return "CreateDatabase", nil
+// 		case *ast.CreateIndexStmt:
+// 			return "CreateIndex", nil
+// 		case *ast.CreateTableStmt:
+// 			return "CreateTable", nil
+// 		case *ast.CreateViewStmt:
+// 			return "CreateView", nil
+// 		case *ast.DropIndexStmt:
+// 			return "DropIndex", nil
+// 		case *ast.DropTableStmt:
+// 			return "DropTable", nil
+// 		case *ast.RenameTableStmt:
+// 			return "RenameTable", nil
+// 		case *ast.TruncateTableStmt:
+// 			return "TruncateTable", nil
+// 		case *ast.DropDatabaseStmt:
+// 			return "DropDatabase", nil
+// 		}
+// 	}
+// 	return "", errors.New("当前SQL未匹配到规则，执行失败")
+// }
+
+// var sqls = []string{
+// 	"CREATE DATABASE `test`",
+// 	"CREATE TABLE `test`.`t1` (`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`))",
+// 	"Create view `test`.`v1` as select * from `test`.`t1`",
+// 	"create index `idx_t1_name` on `test`.`t1` (`name`)",
+// 	"create database `test1`",
+// 	"drop database `test1`",
+// 	"drop index `idx_t1_name` on t1",
+// 	"rename table `test`.`t1` to `test`.`t2`",
+// 	"truncate table `test`.`t1`",
+// 	"alter table `test`.`t1` add column `age` int(11) DEFAULT NULL",
+// 	"alter table `test`.`t1` drop column `age`",
+// 	"alter table `test`.`t1` change column `name` `name` varchar(255) DEFAULT NULL",
+// 	"alter table `test`.`t1` modify column `name` varchar(255) DEFAULT NULL",
+// 	"alter table `test`.`t1` drop primary key",
+// 	"alter table `test`.`t1` add primary key (`id`)",
+// 	"alter table `test`.`t1` drop index `idx_t1_name`",
+// 	"alter table `test`.`t1` add index `idx_t1_name` (`name`)",
+// 	"alter table `test`.`t1` drop foreign key `fk_t1_name`",
+// 	"alter table `test`.`t1` drop constraint `fk_t1_name`",
+// 	"alter table `test`.`t1` rename to `t3`",
+// 	"drop view v_t",
+// }
+
+// func main() {
+// 	for _, sql := range sqls {
+// 		fmt.Println(sql)
+// 		sqlType, err := GetSqlType(sql)
+// 		fmt.Println("SQL: ", sql)
+// 		fmt.Println("SQLType: ", sqlType)
+// 		fmt.Println("Error: ", err)
+// 		fmt.Println("")
+// 	}
+
+// }

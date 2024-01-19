@@ -1,0 +1,55 @@
+@import '../index';
+
+@numberInfo-prefix-cls: ~"@{ant-pro-prefix}-number-info";
+
+.@{numberInfo-prefix-cls} {
+  .ant-pro-number-info-subtitle {
+    height: 22px;
+    overflow: hidden;
+    font-size: @font-size-base;
+    line-height: 22px;
+    color: @text-color-secondary;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+  }
+
+  .number-info-value {
+    margin-top: 4px;
+    overflow: hidden;
+    font-size: 0;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+
+    & > span {
+      display: inline-block;
+      height: 32px;
+      margin-right: 32px;
+      font-size: 24px;
+      line-height: 32px;
+      color: @heading-color;
+    }
+
+    .sub-total {
+      margin-right: 0;
+      font-size: @font-size-lg;
+      color: @text-color-secondary;
+      vertical-align: top;
+
+      i {
+        margin-left: 4px;
+        font-size: 12px;
+        transform: scale(.82);
+      }
+      
+      .anticon-caret-up {
+        color: @red-6;
+      }
+
+      .anticon-caret-down {
+        color: @green-6;
+      }      
+    }
+  }
+}
