@@ -83,7 +83,7 @@
     "less": "^3.13.1",
     "less-loader": "^5.0.0",
     "lint-staged": "^12.5.0",
-    "postcss": "^8.3.5",
+    "postcss": "^8.4.31",
     "postcss-less": "^6.0.0",
     "regenerator-runtime": "^0.13.9",
     "stylelint": "^14.8.5",
