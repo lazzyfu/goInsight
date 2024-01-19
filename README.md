@@ -1,7 +1,6 @@
 # goInsight
 ![](https://img.shields.io/static/v1?label=Go&message=1.20&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=Vue&message=AntDesignVue&color=green&?style=flat-square)
-![License](https://img.shields.io/github/license/lazzyfu/goInsight?style=flat-square)
 
 goInsight是一个集数据库工单提交、审核、执行和数据查询的平台，旨在规范上线流程，解放DBA生产力。
 
