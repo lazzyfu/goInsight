@@ -2,12 +2,23 @@ module goInsight
 
 go 1.19
 
-require github.com/go-redis/redis/v8 v8.11.5
+require (
+	github.com/ClickHouse/clickhouse-go/v2 v2.13.3
+	github.com/dustin/go-humanize v1.0.1
+	github.com/gin-contrib/cors v1.5.0
+	github.com/go-mysql-org/go-mysql v1.7.0
+	github.com/gorilla/websocket v1.5.1
+	github.com/pingcap/tidb v1.1.0-beta.0.20230530104642-635a4362235e
+	github.com/pingcap/tidb/parser v0.0.0-20230530104642-635a4362235e
+	github.com/pquerna/otp v1.4.0
+	github.com/redis/go-redis/v9 v9.3.0
+	github.com/shopspring/decimal v1.3.1
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
+)
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/ClickHouse/ch-go v0.58.2 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.13.3 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -20,15 +31,11 @@ require (
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/danjacques/gofslock v0.0.0-20191023191349-0a45f885bc37 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/gin-contrib/cors v1.5.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
-	github.com/go-mysql-org/go-mysql v1.7.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -44,24 +51,19 @@ require (
 	github.com/pingcap/kvproto v0.0.0-20230426023724-d90a321b46be // indirect
 	github.com/pingcap/log v1.1.1-0.20230317032135-a0d097d16e22 // indirect
 	github.com/pingcap/sysutil v1.0.1-0.20230407040306-fb007c5aff21 // indirect
-	github.com/pingcap/tidb v1.1.0-beta.0.20230530104642-635a4362235e // indirect
-	github.com/pingcap/tidb/parser v0.0.0-20230530104642-635a4362235e // indirect
 	github.com/pingcap/tipb v0.0.0-20230310043643-5362260ee6f7 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
-	github.com/pquerna/otp v1.4.0 // indirect
 	github.com/prometheus/client_golang v1.15.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
-	github.com/redis/go-redis/v9 v9.3.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.3 // indirect
 	github.com/shoenig/go-m1cpu v0.1.5 // indirect
-	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/siddontang/go v0.0.0-20180604090527-bdc77568d726 // indirect
 	github.com/siddontang/go-log v0.0.0-20180807004314-8d05993dda07 // indirect
 	github.com/tikv/client-go/v2 v2.0.8-0.20230524032653-1b2876693630 // indirect
@@ -79,9 +81,8 @@ require (
 	golang.org/x/exp v0.0.0-20221023144134-a1e5550cf13e // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
-	google.golang.org/grpc v1.55.0 // indirect
+	google.golang.org/grpc v1.56.3 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
 
@@ -95,10 +96,10 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.16.0 // indirect
-	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
-	github.com/google/uuid v1.3.1 // indirect
+	github.com/google/uuid v1.3.1
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -112,7 +113,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
-	github.com/spf13/cast v1.5.1 // indirect
+	github.com/spf13/cast v1.5.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
