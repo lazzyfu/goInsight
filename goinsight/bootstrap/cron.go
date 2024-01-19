@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"fmt"
 	"goInsight/global"
 	commonTasks "goInsight/internal/app/common/tasks"
 	dasTasks "goInsight/internal/app/das/tasks"
@@ -14,8 +13,8 @@ func InitializeCron() {
 	global.App.Cron = cron.New()
 
 	go func() {
-		_, err := global.App.Cron.AddFunc("*/1 * * * *", func() {
-			fmt.Println("Run SyncDBMeta At:", time.Now())
+		_, err := global.App.Cron.AddFunc(global.App.Config.Crontab.SyncDBMetas, func() {
+			global.App.Log.Info("Run SyncDBMeta At:", time.Now())
 			commonTasks.SyncDBMeta()
 		})
 		if err != nil {
@@ -23,7 +22,7 @@ func InitializeCron() {
 		}
 
 		_, err = global.App.Cron.AddFunc("*/5 * * * *", func() {
-			fmt.Println("Run KillTiDBQuery At:", time.Now())
+			global.App.Log.Info("Run KillTiDBQuery At:", time.Now())
 			kill := dasTasks.KillTiDBQuery{}
 			kill.Run()
 		})

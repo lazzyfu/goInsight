@@ -4,6 +4,9 @@ app:
   environment: "prod" # 环境设置，可选值为dev/prod
   secret_key: "m3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=pwqi1o$r_c^" # 应用密钥，建议更改
 
+crontab:
+  sync_db_metas: "*/5 * * * *" # 每5分钟同步一次远程数据库库表元数据到本地数据库
+
 # 日志配置
 log:
   level: "info" # 日志级别

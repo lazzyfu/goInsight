@@ -11,6 +11,10 @@ type App struct {
 	SECRET_KEY    string `mapstructure:"secret_key" json:"secret_key" yaml:"secret_key"`
 }
 
+type Crontab struct {
+	SyncDBMetas string `mapstructure:"sync_db_metas" json:"sync_db_metas" yaml:"sync_db_metas"`
+}
+
 type Log struct {
 	Level   string `mapstructure:"level" json:"level" yaml:"level"`
 	RootDir string `mapstructure:"root_dir" json:"root_dir" yaml:"root_dir"`
@@ -80,6 +84,7 @@ type Notify struct {
 
 type Configuration struct {
 	App      App      `mapstructure:"app" json:"app" yaml:"app"`
+	Crontab  Crontab  `mapstructure:"crontab" json:"crontab" yaml:"crontab"`
 	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
 	Database Database `mapstructure:"database" json:"database" yaml:"database"`
 	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
