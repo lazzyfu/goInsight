@@ -3,12 +3,12 @@
 ![](https://img.shields.io/static/v1?label=Go&message=1.20&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=Vue&message=AntDesignVue&color=green&?style=flat-square)
 
-goInsight是一个集数据库工单提交、审核、执行和数据查询的平台，旨在规范上线流程数据查询方法，解放DBA生产力。
+goInsight是一个集数据库工单提交、审核、执行和数据查询的平台。
 
 ### 安装说明
 
 #### 一、下载二进制包
->
+
 > 下载前请更新为最新的发行版本
 
 ```
@@ -49,23 +49,8 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-lin
 - 支持语法审核，集成gAudit语法审核
 - 支持提交DML/DDL工单；支持MySQL5.7+/TiDB Version 4+；MySQL DDL自动集成gh-ost工具
 
-### 功能预览
+### [功能预览](https://github.com/lazzyfu/goInsight/wiki/预览)
 
-![用户](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/user.png)
-
-![数据查询](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/das.png)
-
-![提交DML工单](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/dml.png)
-
-![提交DDL工单](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/ddl.png)
-
-![工单列表](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/orders.png)
-
-![工单详情](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/order_detail.png)
-
-![工单消息通知](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/msg_commit.png)
-
-![工单消息通知](https://github.com/lazzyfu/goInsight/blob/master/docs/pics/msg_audit.png)
 
 ### 联系
 
