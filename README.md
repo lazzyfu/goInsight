@@ -2,8 +2,19 @@
 
 ![](https://img.shields.io/static/v1?label=Go&message=1.20&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=Vue&message=AntDesignVue&color=green&?style=flat-square)
+![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
 
-goInsight是一个集数据库工单提交、审核、执行和数据查询的平台。
+goInsight是一个集数据库工单提交、审核、执行和数据查询的平台，支持MySQL/TiDB。
+
+
+### 支持功能（[点击预览](https://github.com/lazzyfu/goInsight/wiki/预览)）
+
+- 支持用户管理功能，双因素身份认证、定义任意层级的组织功能
+- 支持工单审批流，基于组织级别的权限控制
+- 支持工单执行，工单执行记录、工单消息推送，支持钉钉/企业微信机器人/邮件推送
+- 支持数据查询功能，支持用户定义表级别数据查询权限
+- 支持语法审核，集成gAudit语法审核
+- 支持提交DML/DDL工单；支持MySQL5.7+/TiDB Version 4+；MySQL DDL自动集成gh-ost工具
 
 ### 安装说明
 
@@ -40,18 +51,7 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-lin
 - 默认管理员账号：admin
 - 默认管理员密码：1234.Com!
 
-### 支持功能
 
-- 支持用户管理功能，双因素身份认证、定义任意层级的组织功能
-- 支持工单审批流，基于组织级别的权限控制
-- 支持工单执行，工单执行记录、工单消息推送，支持钉钉/企业微信机器人/邮件推送
-- 支持数据查询功能，支持用户定义表级别数据查询权限
-- 支持语法审核，集成gAudit语法审核
-- 支持提交DML/DDL工单；支持MySQL5.7+/TiDB Version 4+；MySQL DDL自动集成gh-ost工具
-
-### [功能预览](https://github.com/lazzyfu/goInsight/wiki/预览)
-
-
-### 联系
+### 联系作者
 
 E-mail: `1126227133@qq.com`
