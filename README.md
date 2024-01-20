@@ -4,17 +4,16 @@
 ![](https://img.shields.io/static/v1?label=Vue&message=AntDesignVue&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
 
-goInsight是一个集数据库工单提交、审核、执行和数据查询的平台，支持MySQL/TiDB。
+:two_hearts:goInsight是一个集数据库工单提交、审核、执行和数据查询的平台，支持MySQL/TiDB。
 
 
-### 支持功能（[点击预览](https://github.com/lazzyfu/goInsight/wiki/预览)）
+:point_right:[功能预览](https://github.com/lazzyfu/goInsight/wiki/预览)
 
-- 支持用户管理功能，双因素身份认证、定义任意层级的组织功能
-- 支持工单审批流，基于组织级别的权限控制
-- 支持工单执行，工单执行记录、工单消息推送，支持钉钉/企业微信机器人/邮件推送
-- 支持数据查询功能，支持用户定义表级别数据查询权限
-- 支持语法审核，集成gAudit语法审核
-- 支持提交DML/DDL工单；支持MySQL5.7+/TiDB Version 4+；MySQL DDL自动集成gh-ost工具
+### 核心功能
+
+- 支持用户管理功能，角色、组织层级功能、双因素身份认证登录
+- 支持提交DDL/DML工单、语法审核、审批流、基于组织级别的权限控制，工单执行、回滚SQL、支持钉钉/企业微信机器人/邮件推送消息
+- 支持数据查询功能，支持给用户定义库表级别数据查询权限，支持黑名单，支持审计
 
 ### 安装说明
 
