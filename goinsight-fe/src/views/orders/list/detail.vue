@@ -422,7 +422,7 @@ export default {
         ConfirmBtnTips.okText = '执行完成'
         ConfirmBtnTips.cancelText = '执行中'
         ConfirmBtnTips.action = 'feedback'
-        return '反馈'
+        return '更新状态'
       } else if (progress === '已完成') {
         BtnStatus.btnDisabled = false
         BtnStatus.closeDisabled = true
