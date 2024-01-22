@@ -30,7 +30,9 @@
             >{{ orderDetail.hook_order_id }}</router-link
           >
         </a-descriptions-item>
-        <a-descriptions-item label="工单备注">{{ orderDetail.remark }}</a-descriptions-item>
+        <a-descriptions-item label="工单备注">
+          <span v-if="orderDetail.remark">{{ orderDetail.remark }}</span>
+          <span v-else>无</span></a-descriptions-item>
         <a-descriptions-item label="工单执行人">
           <span v-if="orderDetail.executor">
             <span v-for="k of orderDetail.executor" :key="k">

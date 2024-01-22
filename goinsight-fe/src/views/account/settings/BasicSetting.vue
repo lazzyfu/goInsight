@@ -43,14 +43,13 @@
               v-decorator="[
                 'mobile',
                 {
-                  rules: [{ required: true, min: 3, max: 32 }],
                   initialValue: this.$store.getters.userInfo.mobile,
                   validateTrigger: 'blur',
                 },
               ]"
             />
           </a-form-item>
-          <a-form-item label="角色">
+          <a-form-item label="角色" help="请联系系统管理员配置">
            <a-input
               v-decorator="[
                 'role',
@@ -61,7 +60,7 @@
               disabled
             />
           </a-form-item>
-          <a-form-item label="组织">
+          <a-form-item label="组织" help="请联系系统管理员配置">
             <a-input
               v-decorator="[
                 'organization',
