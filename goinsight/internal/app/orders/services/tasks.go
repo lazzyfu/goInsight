@@ -91,7 +91,6 @@ type GetTasksServices struct {
 }
 
 func (s *GetTasksServices) Run() (responseData interface{}, total int64, err error) {
-
 	var records []ordersModels.InsightOrderTasks
 	tx := global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", s.OrderID).Scan(&records)
 	if tx.RowsAffected == 0 {

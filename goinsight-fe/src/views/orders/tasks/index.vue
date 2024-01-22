@@ -220,7 +220,14 @@ export default {
     },
     // view result
     viewResult(data) {
-      this.$refs.TasksResultComponent.showModal(data.result)
+      if (['已完成', '已失败'].indexOf(data.progress) >= 0){
+        this.$refs.TasksResultComponent.showModal(data.result)
+      } else {
+        this.$notification.warning({
+        message: '警告',
+        description: '当前任务状态不为【未完成】或【已失败】',
+      })
+      }
     },
   },
   mounted() {

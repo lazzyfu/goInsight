@@ -108,9 +108,9 @@
                   </a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item label="审核人" help="工单审核人，一般为Leader" has-feedback>
+              <a-form-item label="审核人" help="请至少选择2位工单审核人" has-feedback>
                 <a-select
-                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人' }] }]"
+                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人'  ,validator: validatorApprover  }] }]"
                   placeholder="请选择工单审核人"
                   mode="multiple"
                   allowClear
@@ -126,7 +126,7 @@
                   </a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item label="执行人" help="指定工单执行人，一般为数据库管理员" has-feedback>
+              <a-form-item label="执行人" help="请选择工单执行人" has-feedback>
                 <a-select
                   v-decorator="['executor', { rules: [{ required: true, message: '请选择工单执行人' }] }]"
                   placeholder="请选择工单执行人"
@@ -144,9 +144,9 @@
                   </a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item label="复核人" help="工单执行完成后，对结果进行复核的人员" has-feedback>
+              <a-form-item label="复核人" help="请选择工单执行后结果的复核人" has-feedback>
                 <a-select
-                  v-decorator="['reviewer', { rules: [{ required: true, message: '请选择工单复核人' }] }]"
+                  v-decorator="['reviewer', { rules: [{ required: true, message: '请选择工单复核人'}] }]"
                   placeholder="请选择工单复核人"
                   mode="multiple"
                   allowClear
@@ -229,8 +229,6 @@ import 'codemirror/addon/edit/closebrackets'
 // 编辑器类型
 import 'codemirror/keymap/sublime'
 
-import notification from 'ant-design-vue/es/notification'
-
 // format
 import { format } from 'sql-formatter'
 import {
@@ -285,9 +283,24 @@ export default {
         showCursorWhenSelecting: true,
         keyMap: 'sublime', // 编辑器模式
       },
+      validatorApprover: (rule, value, callback) => {
+        if (value.length < 2) {
+          return callback("请至少选择2位工单审核人")
+        }
+        if (value.length >= 5) {
+          return callback("最大不允许超过5位工单审核人")
+        }
+        callback()
+      },
     }
   },
   methods: {
+    // handleApproverChange
+    handleApproverChange(value){
+      if (value.length < 2) {
+        return false
+      }
+    },
     // 获取SQL类型
     getSqlType() {
       var urlSuffix = this.$route.path.split('/').at([-1]).toUpperCase()
