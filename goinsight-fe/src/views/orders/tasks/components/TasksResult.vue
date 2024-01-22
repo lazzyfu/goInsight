@@ -3,31 +3,29 @@
     <template slot="footer">
       <a-button key="back" @click="handleCancel"> 关闭 </a-button>
     </template>
-    <div v-if="executeResult != null">
-      <a-card size="small">
-        <a-row :gutter="16">
-          <a-col :span="8">
-            <a-statistic title="执行耗时" :value="executeResult.execute_cost_time" class="demo-class"> </a-statistic>
-          </a-col>
-          <a-col :span="8">
-            <a-statistic title="备份耗时" :value="executeResult.backup_cost_time" class="demo-class"> </a-statistic>
-          </a-col>
-          <a-col :span="8">
-            <a-statistic title="影响行数" :value="executeResult.affected_rows" style="margin-right: 50px">
-            </a-statistic>
-          </a-col>
-        </a-row>
-      </a-card>
-      <a-card v-if="this.executeResult.error != null" size="small" title="错误信息" style="margin-top: 6px">
-        <codemirror ref="myCmErr" v-model="codeErr" :options="cmOptions" @ready="onCmReadyErr"></codemirror>
-      </a-card>
-      <a-card size="small" title="执行日志" style="margin-top: 6px">
-        <codemirror ref="myCmLog" v-model="codeLog" :options="cmOptions" @ready="onCmReadyLog"></codemirror>
-      </a-card>
-      <a-card size="small" title="回滚SQL" style="margin-top: 6px">
-        <codemirror ref="myCmRbsql" v-model="codeRbsql" :options="cmOptions" @ready="onCmReadyRbsql"></codemirror>
-      </a-card>
-    </div>
+
+    <a-card size="small">
+      <a-row :gutter="16">
+        <a-col :span="8">
+          <a-statistic title="执行耗时" :value="executeResult.execute_cost_time" class="demo-class"> </a-statistic>
+        </a-col>
+        <a-col :span="8">
+          <a-statistic title="备份耗时" :value="executeResult.backup_cost_time" class="demo-class"> </a-statistic>
+        </a-col>
+        <a-col :span="8">
+          <a-statistic title="影响行数" :value="executeResult.affected_rows" style="margin-right: 50px"> </a-statistic>
+        </a-col>
+      </a-row>
+    </a-card>
+    <a-card v-show="executeResult.error != ''" size="small" title="错误信息" style="margin-top: 6px">
+      <codemirror ref="myCmErr" v-model="codeErr" :options="cmOptions" @ready="onCmReadyErr"></codemirror>
+    </a-card>
+    <a-card v-show="executeResult.execute_log != ''" size="small" title="执行日志" style="margin-top: 6px">
+      <codemirror ref="myCmLog" v-model="codeLog" :options="cmOptions" @ready="onCmReadyLog"></codemirror>
+    </a-card>
+    <a-card v-show="executeResult.rollback_sql != ''" size="small" title="回滚SQL" style="margin-top: 6px">
+      <codemirror ref="myCmRbsql" v-model="codeRbsql" :options="cmOptions" @ready="onCmReadyRbsql"></codemirror>
+    </a-card>
   </a-modal>
 </template>
 
@@ -64,7 +62,7 @@ export default {
   },
   methods: {
     onCmReadyRbsql(cm) {
-      cm.setSize('height', `200px`)
+      cm.setSize('height', `250px`)
     },
     onCmReadyLog(cm) {
       cm.setSize('height', `200px`)
@@ -76,7 +74,6 @@ export default {
     showModal(data) {
       this.visible = true
       this.executeResult = data
-      console.log(data)
       if (data != null) {
         this.$nextTick(() => {
           this.codemirrorRbsql.setValue(data.rollback_sql)

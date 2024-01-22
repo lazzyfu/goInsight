@@ -87,7 +87,6 @@
         <router-link :to="{ name: 'view.orders.detail', params: { order_id: record.order_id } }">{{
           text
         }}</router-link>
-        {{ text }}
         <br />
         At: {{ record.created_at }}
       </span>
