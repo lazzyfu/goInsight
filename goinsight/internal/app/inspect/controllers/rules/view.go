@@ -28,5 +28,5 @@ func (r *Rule) RuleCreateViewIsExist(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateViewIsExist{}
 	(*tistmt).Accept(v)
 	v.Tables, _ = extract.ExtractTablesFromStatement(tistmt)
-	logics.LogicCreateViewIsExist(v, r)
+	logics.LogicCreateViewIsExist(v, r.RuleHint)
 }

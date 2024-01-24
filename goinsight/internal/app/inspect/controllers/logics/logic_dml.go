@@ -8,13 +8,16 @@ package logics
 
 import (
 	"fmt"
-	"sqlSyntaxAudit/common/utils"
+	"goInsight/internal/app/inspect/controllers"
+	"goInsight/internal/app/inspect/controllers/dao"
+	"goInsight/internal/app/inspect/controllers/process"
+	"goInsight/internal/app/inspect/controllers/traverses"
+	"goInsight/internal/pkg/utils"
 	"sqlSyntaxAudit/config"
-	"sqlSyntaxAudit/controllers/process"
 )
 
 // LogicDisableAuditDMLTables
-func LogicDisableAuditDMLTables(v *TraverseDisableAuditDMLTables, r *Rule) {
+func LogicDisableAuditDMLTables(v *traverses.TraverseDisableAuditDMLTables, r *controllers.RuleHint) {
 	// 禁止审核指定的表
 	if len(r.AuditConfig.DISABLE_AUDIT_DML_TABLES) > 0 {
 		for _, item := range r.AuditConfig.DISABLE_AUDIT_DML_TABLES {
@@ -28,7 +31,7 @@ func LogicDisableAuditDMLTables(v *TraverseDisableAuditDMLTables, r *Rule) {
 	}
 	// DML语句检查表是否存在
 	for _, table := range v.Tables {
-		if err, msg := DescTable(table, r.DB); err != nil {
+		if err, msg := dao.DescTable(table, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 			r.IsSkipNextStep = true
 		}
@@ -36,7 +39,7 @@ func LogicDisableAuditDMLTables(v *TraverseDisableAuditDMLTables, r *Rule) {
 }
 
 // LogicDMLInsertIntoSelect
-func LogicDMLInsertIntoSelect(v *TraverseDMLInsertIntoSelect, r *Rule) {
+func LogicDMLInsertIntoSelect(v *traverses.TraverseDMLInsertIntoSelect, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -51,7 +54,7 @@ func LogicDMLInsertIntoSelect(v *TraverseDMLInsertIntoSelect, r *Rule) {
 }
 
 // LogicDMLNoWhere
-func LogicDMLNoWhere(v *TraverseDMLNoWhere, r *Rule) {
+func LogicDMLNoWhere(v *traverses.TraverseDMLNoWhere, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -62,7 +65,7 @@ func LogicDMLNoWhere(v *TraverseDMLNoWhere, r *Rule) {
 }
 
 // LogicDMLInsertWithColumns
-func LogicDMLInsertWithColumns(v *TraverseDMLInsertWithColumns, r *Rule) {
+func LogicDMLInsertWithColumns(v *traverses.TraverseDMLInsertWithColumns, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -72,7 +75,7 @@ func LogicDMLInsertWithColumns(v *TraverseDMLInsertWithColumns, r *Rule) {
 		return
 	}
 	// 获取db表结构
-	audit, err := ShowCreateTable(v.Table, r.DB, r.KV)
+	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
 		r.Summary = append(r.Summary, err.Error())
 		return
@@ -101,7 +104,7 @@ func LogicDMLInsertWithColumns(v *TraverseDMLInsertWithColumns, r *Rule) {
 }
 
 // LogicDMLHasLimit
-func LogicDMLHasConstraint(v *TraverseDMLHasConstraint, r *Rule) {
+func LogicDMLHasConstraint(v *traverses.TraverseDMLHasConstraint, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -120,7 +123,7 @@ func LogicDMLHasConstraint(v *TraverseDMLHasConstraint, r *Rule) {
 }
 
 // LogicDMLJoinWithOn
-func LogicDMLJoinWithOn(v *TraverseDMLJoinWithOn, r *Rule) {
+func LogicDMLJoinWithOn(v *traverses.TraverseDMLJoinWithOn, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -131,7 +134,7 @@ func LogicDMLJoinWithOn(v *TraverseDMLJoinWithOn, r *Rule) {
 }
 
 // LogicDMLMaxUpdateRows
-func LogicDMLMaxUpdateRows(v *TraverseDMLMaxUpdateRows, r *Rule) {
+func LogicDMLMaxUpdateRows(v *traverses.TraverseDMLMaxUpdateRows, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -154,7 +157,7 @@ func LogicDMLMaxUpdateRows(v *TraverseDMLMaxUpdateRows, r *Rule) {
 }
 
 // LogicDMLMaxInsertRows
-func LogicDMLMaxInsertRows(v *TraverseDMLMaxInsertRows, r *Rule) {
+func LogicDMLMaxInsertRows(v *traverses.TraverseDMLMaxInsertRows, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}

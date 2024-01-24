@@ -8,22 +8,25 @@ package logics
 
 import (
 	"fmt"
-	"sqlSyntaxAudit/common/utils"
-	"sqlSyntaxAudit/controllers/process"
+	"goInsight/internal/app/inspect/controllers"
+	"goInsight/internal/app/inspect/controllers/dao"
+	"goInsight/internal/app/inspect/controllers/process"
+	"goInsight/internal/app/inspect/controllers/traverses"
+	"goInsight/internal/pkg/utils"
 	"strings"
 )
 
 // LogicCreateTableIsExist
-func LogicCreateTableIsExist(v *TraverseCreateTableIsExist, r *Rule) {
+func LogicCreateTableIsExist(v *traverses.TraverseCreateTableIsExist, r *controllers.RuleHint) {
 	// 检查表是否存在,如果表存在,skip下面的检查
-	if err, msg := DescTable(v.Table, r.DB); err == nil {
+	if err, msg := dao.DescTable(v.Table, r.DB); err == nil {
 		r.Summary = append(r.Summary, msg)
 		r.IsSkipNextStep = true
 	}
 }
 
 // LogicCreateTableAs
-func LogicCreateTableAs(v *TraverseCreateTableAs, r *Rule) {
+func LogicCreateTableAs(v *traverses.TraverseCreateTableAs, r *controllers.RuleHint) {
 	if v.IsCreateAs {
 		// 不深入检查AS后面的语法
 		if !r.AuditConfig.ENABLE_CREATE_TABLE_AS {
@@ -34,7 +37,7 @@ func LogicCreateTableAs(v *TraverseCreateTableAs, r *Rule) {
 }
 
 // LogicCreateTableLike
-func LogicCreateTableLike(v *TraverseCreateTableLike, r *Rule) {
+func LogicCreateTableLike(v *traverses.TraverseCreateTableLike, r *controllers.RuleHint) {
 	if v.IsCreateLike {
 		if !r.AuditConfig.ENABLE_CREATE_TABLE_LIKE {
 			r.Summary = append(r.Summary, fmt.Sprintf("不允许使用create table like语法[表`%s`]", v.Table))
@@ -44,7 +47,7 @@ func LogicCreateTableLike(v *TraverseCreateTableLike, r *Rule) {
 }
 
 // LogicCreateTableOptions
-func LogicCreateTableOptions(v *TraverseCreateTableOptions, r *Rule) {
+func LogicCreateTableOptions(v *traverses.TraverseCreateTableOptions, r *controllers.RuleHint) {
 	v.Type = "create"
 	v.TableOptions.AuditConfig = r.AuditConfig
 	fns := []func() error{
@@ -65,7 +68,7 @@ func LogicCreateTableOptions(v *TraverseCreateTableOptions, r *Rule) {
 }
 
 // LogicCreateTablePrimaryKey
-func LogicCreateTablePrimaryKey(v *TraverseCreateTablePrimaryKey, r *Rule) {
+func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *controllers.RuleHint) {
 	// 必须定义主键
 	if r.AuditConfig.CHECK_TABLE_PRIMARY_KEY {
 		if len(v.PrimaryKeys) == 0 {
@@ -94,7 +97,7 @@ func LogicCreateTablePrimaryKey(v *TraverseCreateTablePrimaryKey, r *Rule) {
 }
 
 // LogicCreateTableConstraint
-func LogicCreateTableConstraint(v *TraverseCreateTableConstraint, r *Rule) {
+func LogicCreateTableConstraint(v *traverses.TraverseCreateTableConstraint, r *controllers.RuleHint) {
 	if !r.AuditConfig.ENABLE_FOREIGN_KEY && v.IsForeignKey {
 		// 禁止使用外键
 		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`禁止定义外键", v.Table))
@@ -102,7 +105,7 @@ func LogicCreateTableConstraint(v *TraverseCreateTableConstraint, r *Rule) {
 }
 
 // LogicCreateTableAuditCols
-func LogicCreateTableAuditCols(v *TraverseCreateTableAuditCols, r *Rule) {
+func LogicCreateTableAuditCols(v *traverses.TraverseCreateTableAuditCols, r *controllers.RuleHint) {
 	if r.AuditConfig.CHECK_TABLE_AUDIT_TYPE_COLUMNS {
 		// 启用审计类型的字段, 必须定义2个审计字段, 字段名和注释名不做要求, 如:
 		// `UPDATED_AT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
@@ -123,7 +126,7 @@ func LogicCreateTableAuditCols(v *TraverseCreateTableAuditCols, r *Rule) {
 }
 
 // LogicCreateTableColsOptions
-func LogicCreateTableColsOptions(v *TraverseCreateTableColsOptions, r *Rule) {
+func LogicCreateTableColsOptions(v *traverses.TraverseCreateTableColsOptions, r *controllers.RuleHint) {
 	for _, col := range v.Cols {
 		col.AuditConfig = r.AuditConfig
 		fns := []func() error{
@@ -147,7 +150,7 @@ func LogicCreateTableColsOptions(v *TraverseCreateTableColsOptions, r *Rule) {
 }
 
 // LogicCreateTableColsRepeatDefine
-func LogicCreateTableColsRepeatDefine(v *TraverseCreateTableColsRepeatDefine, r *Rule) {
+func LogicCreateTableColsRepeatDefine(v *traverses.TraverseCreateTableColsRepeatDefine, r *controllers.RuleHint) {
 	// 查找重复的列名
 	if ok, data := utils.IsRepeat(v.Cols); ok {
 		r.Summary = append(r.Summary, fmt.Sprintf("发现重复的列名`%s`[表`%s`]", strings.Join(data, ","), v.Table))
@@ -155,7 +158,7 @@ func LogicCreateTableColsRepeatDefine(v *TraverseCreateTableColsRepeatDefine, r 
 }
 
 // LogicCreateTableColsCharset
-func LogicCreateTableColsCharset(v *TraverseCreateTableColsCharset, r *Rule) {
+func LogicCreateTableColsCharset(v *traverses.TraverseCreateTableColsCharset, r *controllers.RuleHint) {
 	// 列字符集检查
 	if r.AuditConfig.CHECK_COLUMN_CHARSET {
 		if len(v.Cols) > 0 {
@@ -167,7 +170,7 @@ func LogicCreateTableColsCharset(v *TraverseCreateTableColsCharset, r *Rule) {
 }
 
 // LogicCreateTableIndexesPrefix
-func LogicCreateTableIndexesPrefix(v *TraverseCreateTableIndexesPrefix, r *Rule) {
+func LogicCreateTableIndexesPrefix(v *traverses.TraverseCreateTableIndexesPrefix, r *controllers.RuleHint) {
 	// 检查唯一索引前缀、如唯一索引必须以uniq_为前缀
 	var indexPrefixCheck process.IndexPrefix = v.Prefix
 	indexPrefixCheck.AuditConfig = r.AuditConfig
@@ -191,7 +194,7 @@ func LogicCreateTableIndexesPrefix(v *TraverseCreateTableIndexesPrefix, r *Rule)
 }
 
 // LogicCreateTableIndexesCount
-func LogicCreateTableIndexesCount(v *TraverseCreateTableIndexesCount, r *Rule) {
+func LogicCreateTableIndexesCount(v *traverses.TraverseCreateTableIndexesCount, r *controllers.RuleHint) {
 	// 检查二级索引数量
 	var indexNumberCheck process.IndexNumber = v.Number
 	indexNumberCheck.AuditConfig = r.AuditConfig
@@ -204,7 +207,7 @@ func LogicCreateTableIndexesCount(v *TraverseCreateTableIndexesCount, r *Rule) {
 }
 
 // LogicCreateTableIndexesRepeatDefine
-func LogicCreateTableIndexesRepeatDefine(v *TraverseCreateTableIndexesRepeatDefine, r *Rule) {
+func LogicCreateTableIndexesRepeatDefine(v *traverses.TraverseCreateTableIndexesRepeatDefine, r *controllers.RuleHint) {
 	// 查找重复的索引
 	if ok, data := utils.IsRepeat(v.Indexes); ok {
 		r.Summary = append(r.Summary, fmt.Sprintf("发现重复的索引`%s`[表`%s`]", strings.Join(data, ","), v.Table))
@@ -212,7 +215,7 @@ func LogicCreateTableIndexesRepeatDefine(v *TraverseCreateTableIndexesRepeatDefi
 }
 
 // LogicCreateTableRedundantIndexes
-func LogicCreateTableRedundantIndexes(v *TraverseCreateTableRedundantIndexes, r *Rule) {
+func LogicCreateTableRedundantIndexes(v *traverses.TraverseCreateTableRedundantIndexes, r *controllers.RuleHint) {
 	// 检查索引,建索引时,指定的列必须存在、索引中的列,不能重复、索引名不能重复
 	// 不能有重复的索引,包括(索引名不同,字段相同；冗余索引,如(a),(a,b))
 	var redundantIndexCheck process.RedundantIndex = v.Redundant
@@ -228,7 +231,7 @@ func LogicCreateTableRedundantIndexes(v *TraverseCreateTableRedundantIndexes, r 
 }
 
 // LogicCreateTableDisabledIndexes
-func LogicCreateTableDisabledIndexes(v *TraverseCreateTableDisabledIndexes, r *Rule) {
+func LogicCreateTableDisabledIndexes(v *traverses.TraverseCreateTableDisabledIndexes, r *controllers.RuleHint) {
 	// BLOB/TEXT类型不能设置为索引
 	var indexTypesCheck process.DisabledIndexes = v.DisabledIndexes
 	if err := indexTypesCheck.Check(); err != nil {
@@ -237,7 +240,7 @@ func LogicCreateTableDisabledIndexes(v *TraverseCreateTableDisabledIndexes, r *R
 }
 
 // LogicCreateTableInnodbLargePrefix
-func LogicCreateTableInnodbLargePrefix(v *TraverseCreateTableInnodbLargePrefix, r *Rule) {
+func LogicCreateTableInnodbLargePrefix(v *traverses.TraverseCreateTableInnodbLargePrefix, r *controllers.RuleHint) {
 	var largePrefix process.LargePrefix = v.LargePrefix
 	if err := largePrefix.Check(r.KV); err != nil {
 		r.Summary = append(r.Summary, err.Error())
@@ -245,7 +248,7 @@ func LogicCreateTableInnodbLargePrefix(v *TraverseCreateTableInnodbLargePrefix, 
 }
 
 // LogicCreateTableRowSizeTooLarge
-func LogicCreateTableRowSizeTooLarge(v *TraverseCreateTableRowSizeTooLarge, r *Rule) {
+func LogicCreateTableRowSizeTooLarge(v *traverses.TraverseCreateTableRowSizeTooLarge, r *controllers.RuleHint) {
 	var rowSizeTooLarge process.RowSizeTooLarge = v.RowSizeTooLarge
 	if err := rowSizeTooLarge.Check(r.KV); err != nil {
 		r.Summary = append(r.Summary, err.Error())

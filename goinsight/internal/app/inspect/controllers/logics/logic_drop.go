@@ -8,11 +8,14 @@ package logics
 
 import (
 	"fmt"
-	"sqlSyntaxAudit/common/utils"
+	"goInsight/internal/app/inspect/controllers"
+	"goInsight/internal/app/inspect/controllers/dao"
+	"goInsight/internal/app/inspect/controllers/traverses"
+	"goInsight/internal/pkg/utils"
 )
 
 // LogicDropTable
-func LogicDropTable(v *TraverseDropTable, r *Rule) {
+func LogicDropTable(v *traverses.TraverseDropTable, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -33,7 +36,7 @@ func LogicDropTable(v *TraverseDropTable, r *Rule) {
 		}
 		// 检查表是否存在
 		for _, table := range v.Tables {
-			if err, msg := DescTable(table, r.DB); err != nil {
+			if err, msg := dao.DescTable(table, r.DB); err != nil {
 				r.Summary = append(r.Summary, msg)
 			}
 		}
@@ -41,7 +44,7 @@ func LogicDropTable(v *TraverseDropTable, r *Rule) {
 }
 
 // LogicTruncateTable
-func LogicTruncateTable(v *TraverseTruncateTable, r *Rule) {
+func LogicTruncateTable(v *traverses.TraverseTruncateTable, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -59,7 +62,7 @@ func LogicTruncateTable(v *TraverseTruncateTable, r *Rule) {
 			}
 		}
 		// 检查表是否存在
-		if err, msg := DescTable(v.Table, r.DB); err != nil {
+		if err, msg := dao.DescTable(v.Table, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 		}
 	}

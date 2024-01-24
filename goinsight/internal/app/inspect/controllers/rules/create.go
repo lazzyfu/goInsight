@@ -92,117 +92,117 @@ func CreateTableRules() []Rule {
 func (r *Rule) RuleCreateTableIsExist(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableIsExist{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableIsExist(v, r)
+	logics.LogicCreateTableIsExist(v, r.RuleHint)
 }
 
 // RuleCreateTableAs
 func (r *Rule) RuleCreateTableAs(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableAs{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableAs(v, r)
+	logics.LogicCreateTableAs(v, r.RuleHint)
 }
 
 // RuleCreateTableLike
 func (r *Rule) RuleCreateTableLike(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableLike{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableLike(v, r)
+	logics.LogicCreateTableLike(v, r.RuleHint)
 }
 
 // RuleCreateTableOptions
 func (r *Rule) RuleCreateTableOptions(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableOptions{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableOptions(v, r)
+	logics.LogicCreateTableOptions(v, r.RuleHint)
 }
 
 // RuleCreateTablePrimaryKey
 func (r *Rule) RuleCreateTablePrimaryKey(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTablePrimaryKey{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTablePrimaryKey(v, r)
+	logics.LogicCreateTablePrimaryKey(v, r.RuleHint)
 }
 
 // RuleCreateTableConstraint
 func (r *Rule) RuleCreateTableConstraint(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableConstraint{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableConstraint(v, r)
+	logics.LogicCreateTableConstraint(v, r.RuleHint)
 }
 
 // RuleCreateTableAuditCols
 func (r *Rule) RuleCreateTableAuditCols(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableAuditCols{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableAuditCols(v, r)
+	logics.LogicCreateTableAuditCols(v, r.RuleHint)
 }
 
 // RuleCreateTableColsOptions
 func (r *Rule) RuleCreateTableColsOptions(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableColsOptions{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableColsOptions(v, r)
+	logics.LogicCreateTableColsOptions(v, r.RuleHint)
 }
 
 // RuleCreateTableColsRepeatDefine
 func (r *Rule) RuleCreateTableColsRepeatDefine(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableColsRepeatDefine{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableColsRepeatDefine(v, r)
+	logics.LogicCreateTableColsRepeatDefine(v, r.RuleHint)
 }
 
 // RuleCreateTableColsCharset
 func (r *Rule) RuleCreateTableColsCharset(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableColsCharset{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableColsCharset(v, r)
+	logics.LogicCreateTableColsCharset(v, r.RuleHint)
 }
 
 // RuleCreateTableIndexesPrefix
 func (r *Rule) RuleCreateTableIndexesPrefix(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableIndexesPrefix{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableIndexesPrefix(v, r)
+	logics.LogicCreateTableIndexesPrefix(v, r.RuleHint)
 }
 
 // RuleCreateTableIndexesCount
 func (r *Rule) RuleCreateTableIndexesCount(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableIndexesCount{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableIndexesCount(v, r)
+	logics.LogicCreateTableIndexesCount(v, r.RuleHint)
 }
 
 // RuleCreateTableIndexesRepeatDefine
 func (r *Rule) RuleCreateTableIndexesRepeatDefine(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableIndexesRepeatDefine{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableIndexesRepeatDefine(v, r)
+	logics.LogicCreateTableIndexesRepeatDefine(v, r.RuleHint)
 }
 
 // RuleCreateTableRedundantIndexes
 func (r *Rule) RuleCreateTableRedundantIndexes(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableRedundantIndexes{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableRedundantIndexes(v, r)
+	logics.LogicCreateTableRedundantIndexes(v, r.RuleHint)
 }
 
 // RuleCreateTableDisabledIndexes
 func (r *Rule) RuleCreateTableDisabledIndexes(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableDisabledIndexes{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableDisabledIndexes(v, r)
+	logics.LogicCreateTableDisabledIndexes(v, r.RuleHint)
 }
 
 // RuleCreateTableInnodbLargePrefix
 func (r *Rule) RuleCreateTableInnodbLargePrefix(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableInnodbLargePrefix{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableInnodbLargePrefix(v, r)
+	logics.LogicCreateTableInnodbLargePrefix(v, r.RuleHint)
 }
 
 // RuleCreateTableRowSizeTooLarge
 func (r *Rule) RuleCreateTableRowSizeTooLarge(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableRowSizeTooLarge{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableRowSizeTooLarge(v, r)
+	logics.LogicCreateTableRowSizeTooLarge(v, r.RuleHint)
 }

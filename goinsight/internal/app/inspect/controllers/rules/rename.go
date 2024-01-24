@@ -26,5 +26,5 @@ func RenameTableRules() []Rule {
 func (r *Rule) RuleRenameTable(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseRenameTable{}
 	(*tistmt).Accept(v)
-	logics.LogicRenameTable(v, r)
+	logics.LogicRenameTable(v, r.RuleHint)
 }

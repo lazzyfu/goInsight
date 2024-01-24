@@ -55,54 +55,54 @@ func DMLRules() []Rule {
 func (r *Rule) RuleDisableAuditDMLTables(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDisableAuditDMLTables{}
 	v.Tables, _ = extract.ExtractTablesFromStatement(tistmt)
-	logics.LogicDisableAuditDMLTables(v, r)
+	logics.LogicDisableAuditDMLTables(v, r.RuleHint)
 }
 
 // RuleDMLInsertIntoSelect
 func (r *Rule) RuleDMLInsertIntoSelect(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLInsertIntoSelect{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLInsertIntoSelect(v, r)
+	logics.LogicDMLInsertIntoSelect(v, r.RuleHint)
 }
 
 // RuleDMLNoWhere
 func (r *Rule) RuleDMLNoWhere(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLNoWhere{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLNoWhere(v, r)
+	logics.LogicDMLNoWhere(v, r.RuleHint)
 }
 
 // RuleDMLInsertWithColumns
 func (r *Rule) RuleDMLInsertWithColumns(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLInsertWithColumns{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLInsertWithColumns(v, r)
+	logics.LogicDMLInsertWithColumns(v, r.RuleHint)
 }
 
 // RuleDMLHasConstraint
 func (r *Rule) RuleDMLHasConstraint(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLHasConstraint{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLHasConstraint(v, r)
+	logics.LogicDMLHasConstraint(v, r.RuleHint)
 }
 
 // RuleDMLJoinWithOn
 func (r *Rule) RuleDMLJoinWithOn(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLJoinWithOn{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLJoinWithOn(v, r)
+	logics.LogicDMLJoinWithOn(v, r.RuleHint)
 }
 
 // RuleDMLMaxUpdateRows
 func (r *Rule) RuleDMLMaxUpdateRows(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLMaxUpdateRows{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLMaxUpdateRows(v, r)
+	logics.LogicDMLMaxUpdateRows(v, r.RuleHint)
 }
 
 // RuleDMLMaxInsertRows
 func (r *Rule) RuleDMLMaxInsertRows(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDMLMaxInsertRows{}
 	(*tistmt).Accept(v)
-	logics.LogicDMLMaxInsertRows(v, r)
+	logics.LogicDMLMaxInsertRows(v, r.RuleHint)
 }

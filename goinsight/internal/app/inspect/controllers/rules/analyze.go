@@ -26,5 +26,5 @@ func AnalyzeTableRules() []Rule {
 func (r *Rule) RuleAnalyzeTable(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseAnalyzeTable{}
 	(*tistmt).Accept(v)
-	logics.LogicAnalyzeTable(v, r)
+	logics.LogicAnalyzeTable(v, r.RuleHint)
 }

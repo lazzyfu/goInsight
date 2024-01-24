@@ -30,12 +30,12 @@ func DropTableRules() []Rule {
 func (r *Rule) RuleDropTable(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseDropTable{}
 	(*tistmt).Accept(v)
-	logics.LogicDropTable(v, r)
+	logics.LogicDropTable(v, r.RuleHint)
 }
 
 // RuleTruncateTable
 func (r *Rule) RuleTruncateTable(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseTruncateTable{}
 	(*tistmt).Accept(v)
-	logics.LogicTruncateTable(v, r)
+	logics.LogicTruncateTable(v, r.RuleHint)
 }

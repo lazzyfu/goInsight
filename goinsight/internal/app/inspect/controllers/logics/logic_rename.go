@@ -8,11 +8,14 @@ package logics
 
 import (
 	"fmt"
-	"sqlSyntaxAudit/common/utils"
+	"goInsight/internal/app/inspect/controllers"
+	"goInsight/internal/app/inspect/controllers/dao"
+	"goInsight/internal/app/inspect/controllers/traverses"
+	"goInsight/internal/pkg/utils"
 )
 
 // LogicRenameTable
-func LogicRenameTable(v *TraverseRenameTable, r *Rule) {
+func LogicRenameTable(v *traverses.TraverseRenameTable, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
@@ -33,7 +36,7 @@ func LogicRenameTable(v *TraverseRenameTable, r *Rule) {
 	var oldTables []string
 	// 旧表必须存在
 	for _, t := range v.tables {
-		if err, msg := DescTable(t.OldTable, r.DB); err != nil {
+		if err, msg := dao.DescTable(t.OldTable, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 		} else {
 			oldTables = append(oldTables, t.OldTable)
@@ -44,7 +47,7 @@ func LogicRenameTable(v *TraverseRenameTable, r *Rule) {
 		if len(oldTables) > 0 && utils.IsContain(oldTables, t.NewTable) {
 			continue
 		}
-		if err, msg := DescTable(t.NewTable, r.DB); err == nil {
+		if err, msg := dao.DescTable(t.NewTable, r.DB); err == nil {
 			r.Summary = append(r.Summary, msg)
 		}
 	}

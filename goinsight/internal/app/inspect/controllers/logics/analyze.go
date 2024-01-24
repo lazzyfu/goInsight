@@ -9,12 +9,12 @@ package logics
 import (
 	"goInsight/internal/app/inspect/controllers"
 	"goInsight/internal/app/inspect/controllers/dao"
+	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/controllers/traverses"
-	"sqlSyntaxAudit/controllers/process"
 )
 
 // LogicRenameTable
-func LogicAnalyzeTable(v *traverses.TraverseAnalyzeTable, r *controllers.Rule) {
+func LogicAnalyzeTable(v *traverses.TraverseAnalyzeTable, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
