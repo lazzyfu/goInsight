@@ -120,6 +120,7 @@ func initializeAdminUser(db *gorm.DB) {
 		Email:       "admin@example.com",
 		NickName:    "管理员",
 		Mobile:      "",
+		AvatarFile:  "/static/avatar2.jpg",
 		IsSuperuser: true,
 		IsActive:    true,
 		IsStaff:     false,
