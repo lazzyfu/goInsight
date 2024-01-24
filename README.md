@@ -7,7 +7,7 @@
 :two_hearts:goInsight是一个集数据库工单提交、审核、执行和数据查询的平台，支持MySQL/TiDB。
 
 
-:point_right:[功能预览](https://github.com/lazzyfu/goInsight/wiki/预览)
+:point_right:[文档](https://github.com/lazzyfu/goInsight/wiki)
 
 ### 核心功能
 
@@ -23,7 +23,7 @@
 > 下载前请更新为最新的发行版本
 
 ```
-wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-linux-amd64-v1.0.0.tar.gz
+wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-linux-amd64-v1.0.2.tar.gz
 ```
 
 #### 二、集成语法审核工具
