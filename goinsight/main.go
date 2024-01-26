@@ -14,6 +14,7 @@ import (
 
 	commonRouter "goInsight/internal/app/common/router"
 	dasRouter "goInsight/internal/app/das/router"
+	inspectRouter "goInsight/internal/app/inspect/router"
 	ordersRouter "goInsight/internal/app/orders/router"
 	userRouter "goInsight/internal/app/users/router"
 
@@ -40,6 +41,7 @@ func RunServer() {
 
 	// 加载多个APP的路由配置
 	routers.Include(userRouter.Routers)
+	routers.Include(inspectRouter.Routers)
 	routers.Include(commonRouter.Routers)
 	routers.Include(dasRouter.Routers)
 	routers.Include(ordersRouter.Routers)

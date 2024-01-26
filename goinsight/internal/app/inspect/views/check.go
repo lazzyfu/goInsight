@@ -24,10 +24,11 @@ func SyntaxInspectView(c *gin.Context) {
 		C:        c,
 		Username: username,
 	}
-	if err := service.Run(); err != nil {
+	returnData, err := service.Run()
+	if err != nil {
 		response.Fail(c, err.Error())
 		return
 	}
 	// 成功响应
-	response.Success(c, nil, "success")
+	response.Success(c, returnData, "success")
 }

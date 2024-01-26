@@ -8,12 +8,12 @@ package logics
 
 import (
 	"fmt"
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/app/inspect/controllers"
 	"goInsight/internal/app/inspect/controllers/dao"
 	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/controllers/traverses"
 	"goInsight/internal/pkg/utils"
-	"sqlSyntaxAudit/config"
 )
 
 // LogicDisableAuditDMLTables
@@ -81,7 +81,7 @@ func LogicDMLInsertWithColumns(v *traverses.TraverseDMLInsertWithColumns, r *con
 		return
 	}
 	// 解析获取的db表结构
-	vAudit := &TraverseAlterTableShowCreateTableGetCols{}
+	vAudit := &traverses.TraverseAlterTableShowCreateTableGetCols{}
 	switch audit := audit.(type) {
 	case *config.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)

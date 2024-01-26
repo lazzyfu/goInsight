@@ -9,9 +9,9 @@ package process
 import (
 	"bytes"
 	"fmt"
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/utils"
-	"sqlSyntaxAudit/config"
 	"strconv"
 	"strings"
 	"unicode/utf8"

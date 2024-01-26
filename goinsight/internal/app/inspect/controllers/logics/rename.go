@@ -26,7 +26,7 @@ func LogicRenameTable(v *traverses.TraverseRenameTable, r *controllers.RuleHint)
 	// 禁止审核指定的表
 	if len(r.AuditConfig.DISABLE_AUDIT_DDL_TABLES) > 0 {
 		for _, item := range r.AuditConfig.DISABLE_AUDIT_DDL_TABLES {
-			for _, t := range v.tables {
+			for _, t := range v.Tables {
 				if item.DB == r.DB.Database && utils.IsContain(item.Tables, t.OldTable) {
 					r.Summary = append(r.Summary, fmt.Sprintf("表`%s`.`%s`被限制进行DDL语法审核，原因: %s", r.DB.Database, t.OldTable, item.Reason))
 				}
@@ -35,7 +35,7 @@ func LogicRenameTable(v *traverses.TraverseRenameTable, r *controllers.RuleHint)
 	}
 	var oldTables []string
 	// 旧表必须存在
-	for _, t := range v.tables {
+	for _, t := range v.Tables {
 		if err, msg := dao.DescTable(t.OldTable, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 		} else {
@@ -43,7 +43,7 @@ func LogicRenameTable(v *traverses.TraverseRenameTable, r *controllers.RuleHint)
 		}
 	}
 	// 新表不能存在
-	for _, t := range v.tables {
+	for _, t := range v.Tables {
 		if len(oldTables) > 0 && utils.IsContain(oldTables, t.NewTable) {
 			continue
 		}

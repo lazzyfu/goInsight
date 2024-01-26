@@ -7,8 +7,8 @@ package process
 
 import (
 	"fmt"
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/pkg/utils"
-	"sqlSyntaxAudit/config"
 	"strings"
 	"unicode/utf8"
 )

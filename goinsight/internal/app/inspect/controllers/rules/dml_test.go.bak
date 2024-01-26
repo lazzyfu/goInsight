@@ -21,7 +21,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
-	"sqlSyntaxAudit/config"
+	"goInsight/internal/app/inspect/config"
 	"sqlSyntaxAudit/forms"
 	"sqlSyntaxAudit/global"
 	logger "sqlSyntaxAudit/middleware/log"

@@ -2,11 +2,15 @@ package services
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"goInsight/global"
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/app/inspect/controllers/dao"
 	"goInsight/internal/app/inspect/controllers/parser"
 	"goInsight/internal/app/inspect/forms"
+	"goInsight/internal/app/inspect/models"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/query"
 	"goInsight/internal/pkg/utils"
@@ -31,13 +35,14 @@ type ReturnData struct {
 
 // 语法check
 type SyntaxInspectService struct {
-	Form      forms.SyntaxInspectForm
-	C         *gin.Context
-	Username  string
-	DB        *utils.DB
-	Charset   string
-	Collation string
-	Audit     *parser.Audit
+	Form        forms.SyntaxInspectForm
+	C           *gin.Context
+	Username    string
+	Charset     string
+	Collation   string
+	DB          *utils.DB
+	Audit       *parser.Audit
+	AuditConfig config.AuditConfiguration
 }
 
 // 初始化DB
@@ -52,6 +57,41 @@ func (s *SyntaxInspectService) initDB() {
 		Database: s.Form.DB,
 		Ctx:      ctx,
 	}
+}
+
+func (s *SyntaxInspectService) getAuditParams() error {
+	// 读取数据库参数
+	var rows []models.InsightInspectParams
+	tx := global.App.DB.Model(&models.InsightInspectParams{}).Scan(&rows)
+	if tx.RowsAffected == 0 {
+		return errors.New("获取审核参数失败，表insight_inspect_params未找到记录")
+	}
+
+	// 迭代参数，将参数转换为map
+	jsonParams := make(map[string]json.RawMessage)
+	for _, row := range rows {
+		var jsonParams map[string]interface{}
+		err := json.Unmarshal(row.Param, &jsonParams)
+		if err != nil {
+			return err
+		}
+		for key, value := range jsonParams {
+			jsonParams[key] = value
+		}
+	}
+	//
+	jsonData, err := json.Marshal(jsonParams)
+	if err != nil {
+		return fmt.Errorf("序列化JSON参数失败: %v", err)
+	}
+
+	var auditConfig config.AuditConfiguration
+	err = json.Unmarshal(jsonData, &auditConfig)
+	if err != nil {
+		return fmt.Errorf("反序列化JSON参数失败: %v", err)
+	}
+	fmt.Printf("%+v", auditConfig)
+	return nil
 }
 
 func (s *SyntaxInspectService) parser() error {
@@ -73,9 +113,15 @@ func (s *SyntaxInspectService) parser() error {
 	return nil
 }
 
-func (s *SyntaxInspectService) Run() (err error, returnData []ReturnData) {
+func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
+	// 初始化审核参数
+	err = s.getAuditParams()
+	if err != nil {
+		return nil, err
+	}
 	// 初始化DB
 	s.initDB()
+
 	// RequestID
 	requestID := requestid.Get(s.C)
 
@@ -87,10 +133,11 @@ func (s *SyntaxInspectService) Run() (err error, returnData []ReturnData) {
 
 	// 获取目标数据库变量
 	dbVars, err := dao.GetDBVars(s.DB)
+	fmt.Println("dbVars, err: ", dbVars, err)
 	if err != nil {
 		errMsg := fmt.Sprintf("获取DB变量失败：%s", err.Error())
 		global.App.Log.Error(errMsg)
-		return fmt.Errorf(errMsg), returnData
+		return returnData, fmt.Errorf(errMsg)
 	}
 	for k, v := range dbVars {
 		kv.Put(k, v)
@@ -101,7 +148,7 @@ func (s *SyntaxInspectService) Run() (err error, returnData []ReturnData) {
 	err = s.parser()
 	if err != nil {
 		global.App.Log.Error(err)
-		return err, returnData
+		return returnData, err
 	}
 
 	// 迭代stmt
@@ -146,4 +193,5 @@ func (s *SyntaxInspectService) Run() (err error, returnData []ReturnData) {
 			returnData = append(returnData, data)
 		}
 	}
+	return
 }

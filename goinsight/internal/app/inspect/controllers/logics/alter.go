@@ -8,12 +8,12 @@ package logics
 
 import (
 	"fmt"
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/app/inspect/controllers"
 	"goInsight/internal/app/inspect/controllers/dao"
 	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/controllers/traverses"
 	"goInsight/internal/pkg/utils"
-	"sqlSyntaxAudit/config"
 	"strings"
 )
 

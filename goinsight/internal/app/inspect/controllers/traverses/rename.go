@@ -18,14 +18,14 @@ type RenameTable struct {
 // TraverseRenameTable
 type TraverseRenameTable struct {
 	IsMatch int
-	tables  []RenameTable
+	Tables  []RenameTable
 }
 
 func (c *TraverseRenameTable) Enter(in ast.Node) (ast.Node, bool) {
 	if stmt, ok := in.(*ast.RenameTableStmt); ok {
 		c.IsMatch++
 		for _, t := range stmt.TableToTables {
-			c.tables = append(c.tables, RenameTable{
+			c.Tables = append(c.Tables, RenameTable{
 				OldTable: t.OldTable.Name.String(),
 				NewTable: t.NewTable.Name.String(),
 			})

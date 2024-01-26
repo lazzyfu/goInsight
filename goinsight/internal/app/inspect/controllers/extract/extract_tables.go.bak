@@ -9,8 +9,8 @@ package extract
 import (
 	_ "embed"
 	"fmt"
+	"goInsight/internal/app/inspect/config"
 	"sqlSyntaxAudit/common/utils"
-	"sqlSyntaxAudit/config"
 	"sqlSyntaxAudit/controllers/parser"
 	"sqlSyntaxAudit/forms"
 	logger "sqlSyntaxAudit/middleware/log"

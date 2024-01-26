@@ -8,7 +8,7 @@ package process
 
 import (
 	"fmt"
-	"sqlSyntaxAudit/config"
+	"goInsight/internal/app/inspect/config"
 
 	"github.com/pingcap/tidb/parser/mysql"
 )

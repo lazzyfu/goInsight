@@ -14,9 +14,8 @@ import (
 // 工单记录
 type InsightInspectParams struct {
 	*models.Model
-	Key    string         `gorm:"type:varchar(64);comment:key;uniqueIndex:uniq_key" json:"key"`
-	Value  datatypes.JSON `gorm:"type:json;null;default:null;comment:值" json:"value"`
-	Remark string         `gorm:"type:varchar(128);not null;default:'';comment:备注" json:"remark"`
+	Param  datatypes.JSON `gorm:"type:json;null;default:null;comment:值" json:"param"`
+	Remark string         `gorm:"type:varchar(128);null;default:null;uniqueIndex:uniq_remark;comment:备注" json:"remark"`
 }
 
 func (InsightInspectParams) TableName() string {

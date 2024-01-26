@@ -7,7 +7,7 @@
 package rules
 
 import (
-	"goInsight/internal/app/inspect/controllers/extract"
+	// "goInsight/internal/app/inspect/controllers/extract"
 	"goInsight/internal/app/inspect/controllers/logics"
 	"goInsight/internal/app/inspect/controllers/traverses"
 
@@ -27,6 +27,8 @@ func CreateViewRules() []Rule {
 func (r *Rule) RuleCreateViewIsExist(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateViewIsExist{}
 	(*tistmt).Accept(v)
-	v.Tables, _ = extract.ExtractTablesFromStatement(tistmt)
+	// v.Tables, _ = extract.ExtractTablesFromStatement(tistmt) todo
+	v.Tables = []string{"t1"}
+
 	logics.LogicCreateViewIsExist(v, r.RuleHint)
 }

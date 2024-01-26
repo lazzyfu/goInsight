@@ -6,6 +6,7 @@
 package controllers
 
 import (
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/utils"
 )
@@ -18,5 +19,5 @@ type RuleHint struct {
 	KV             *kv.KVCache
 	Query          string // 原始SQL
 	MergeAlter     string
-	// AuditConfig    *config.AuditConfiguration
+	AuditConfig    *config.AuditConfiguration
 }

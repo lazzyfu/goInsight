@@ -1,6 +1,7 @@
 package router
 
 import (
+	// "goInsight/global"
 	"goInsight/global"
 	"goInsight/internal/app/inspect/views"
 

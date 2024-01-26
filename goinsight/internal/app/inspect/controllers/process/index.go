@@ -9,9 +9,9 @@ package process
 import (
 	"fmt"
 	"goInsight/global"
+	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/utils"
-	"sqlSyntaxAudit/config"
 	"strings"
 
 	"github.com/jinzhu/copier"
