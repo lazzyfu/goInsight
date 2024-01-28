@@ -14,7 +14,7 @@ func Routers(r *gin.Engine) {
 	{
 		v1.GET("environments", views.GetEnvironmentsView)
 		v1.GET("instances", views.GetInstancesView)
-		v1.POST("syntax-check", views.SyntaxCheckView)
+		v1.POST("syntax-inspect", views.SyntaxInspectView)
 		v1.GET("schemas", views.GetSchemasView)
 		v1.GET("users", views.GetUsersView)
 		v1.POST("commit", views.CreateOrdersView)

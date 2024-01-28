@@ -1,7 +1,7 @@
 package services
 
 import (
-	"context"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,18 +9,17 @@ import (
 	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/app/inspect/controllers/dao"
 	"goInsight/internal/app/inspect/controllers/parser"
-	"goInsight/internal/app/inspect/forms"
 	"goInsight/internal/app/inspect/models"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/query"
 	"goInsight/internal/pkg/utils"
 	"strings"
-	"time"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/pingcap/tidb/parser/ast"
 	_ "github.com/pingcap/tidb/types/parser_driver"
+	"gorm.io/datatypes"
 )
 
 // 返回数据
@@ -35,31 +34,34 @@ type ReturnData struct {
 
 // 语法check
 type SyntaxInspectService struct {
-	Form        forms.SyntaxInspectForm
-	C           *gin.Context
-	Username    string
-	Charset     string
-	Collation   string
-	DB          *utils.DB
-	Audit       *parser.Audit
-	AuditConfig config.AuditConfiguration
+	C             *gin.Context
+	DbUser        string
+	DbPassword    string
+	DbHost        string
+	DbPort        int
+	DBSchema      string
+	DBParams      datatypes.JSON
+	SqlText       string
+	Username      string
+	Charset       string
+	Collation     string
+	DB            *dao.DB
+	Audit         *parser.Audit
+	InspectParams config.InspectParams
 }
 
 // 初始化DB
 func (s *SyntaxInspectService) initDB() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.Form.Timeout)*time.Millisecond)
-	defer cancel()
-	s.DB = &utils.DB{
-		User:     s.Form.DbUser,
-		Password: s.Form.DbPassword,
-		Host:     s.Form.DbHost,
-		Port:     s.Form.DbPort,
-		Database: s.Form.DB,
-		Ctx:      ctx,
+	s.DB = &dao.DB{
+		User:     s.DbUser,
+		Password: s.DbPassword,
+		Host:     s.DbHost,
+		Port:     s.DbPort,
+		Database: s.DBSchema,
 	}
 }
 
-func (s *SyntaxInspectService) getAuditParams() error {
+func (s *SyntaxInspectService) getDefaultInspectParams() error {
 	// 读取数据库参数
 	var rows []models.InsightInspectParams
 	tx := global.App.DB.Model(&models.InsightInspectParams{}).Scan(&rows)
@@ -70,27 +72,44 @@ func (s *SyntaxInspectService) getAuditParams() error {
 	// 迭代参数，将参数转换为map
 	jsonParams := make(map[string]json.RawMessage)
 	for _, row := range rows {
-		var jsonParams map[string]interface{}
-		err := json.Unmarshal(row.Param, &jsonParams)
+		var tmpJsonParam map[string]json.RawMessage
+		err := json.Unmarshal(row.Param, &tmpJsonParam)
 		if err != nil {
 			return err
 		}
-		for key, value := range jsonParams {
+		for key, value := range tmpJsonParam {
 			jsonParams[key] = value
 		}
 	}
-	//
+	// 序列号参数
 	jsonData, err := json.Marshal(jsonParams)
 	if err != nil {
 		return fmt.Errorf("序列化JSON参数失败: %v", err)
 	}
-
-	var auditConfig config.AuditConfiguration
-	err = json.Unmarshal(jsonData, &auditConfig)
+	// 转换为结构体
+	var ips config.InspectParams
+	err = json.Unmarshal(jsonData, &ips)
 	if err != nil {
 		return fmt.Errorf("反序列化JSON参数失败: %v", err)
 	}
-	fmt.Printf("%+v", auditConfig)
+	s.InspectParams = ips
+	return nil
+}
+
+func (s *SyntaxInspectService) getInstanceInspectParams() error {
+	// 序列化参数
+	jsonParams, err := json.Marshal(s.DBParams)
+	if err != nil {
+		return fmt.Errorf("序列化JSON参数失败: %v", err)
+	}
+	r := bytes.NewReader([]byte(jsonParams))
+	decoder := json.NewDecoder(r)
+
+	// 动态参数赋值给默认模板
+	// 优先级: post instance params > 内置默认参数
+	if err := decoder.Decode(&s.InspectParams); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -98,12 +117,8 @@ func (s *SyntaxInspectService) parser() error {
 	// 解析SQL
 	var warns []error
 	var err error
-	// 处理审核参数
-	// if err := s.CustomParams(); err != nil {
-	// 	return err
-	// }
 	// 解析
-	s.Audit, warns, err = parser.NewParse(s.Form.SqlText, s.Charset, s.Collation)
+	s.Audit, warns, err = parser.NewParse(s.SqlText, s.Charset, s.Collation)
 	if len(warns) > 0 {
 		return fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
 	}
@@ -114,23 +129,26 @@ func (s *SyntaxInspectService) parser() error {
 }
 
 func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
-	// 初始化审核参数
-	err = s.getAuditParams()
+	// 初始化系统默认审核参数
+	err = s.getDefaultInspectParams()
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("默认审核参数：", s.InspectParams)
+	// 获取实例定义的审核参数，覆盖默认审核参数，优先级>系统默认审核参数
+	err = s.getInstanceInspectParams()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("审核参数：", s.InspectParams)
 	// 初始化DB
 	s.initDB()
-
 	// RequestID
 	requestID := requestid.Get(s.C)
-
 	// 存放alter语句中的表名
 	var mergeAlters []string
-
 	// 每次请求基于RequestID初始化kv cache
 	kv := kv.NewKVCache(requestID)
-
 	// 获取目标数据库变量
 	dbVars, err := dao.GetDBVars(s.DB)
 	fmt.Println("dbVars, err: ", dbVars, err)
@@ -152,6 +170,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	}
 
 	// 迭代stmt
+	fmt.Println("s.Audit.TiStmt: ", s.Audit.TiStmt)
 	for _, stmt := range s.Audit.TiStmt {
 		// 移除SQL尾部的分号
 		sqlTrim := strings.TrimSuffix(stmt.Text(), ";")

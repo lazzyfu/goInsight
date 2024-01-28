@@ -6,22 +6,13 @@
 
 package config
 
-import (
-	"github.com/pingcap/tidb/parser/ast"
-)
-
-type Audit struct {
-	Query  string
-	TiStmt []ast.StmtNode // 通过TiDB解析出的抽象语法树
-}
-
 type DisableTablesAudit struct {
 	DB     string   // 库名
 	Tables []string // 表名
 	Reason string   // 原因
 }
 
-type AuditConfiguration struct {
+type InspectParams struct {
 	// TABLE
 	MAX_TABLE_NAME_LENGTH                int                 // 表名的长度
 	CHECK_TABLE_COMMENT                  bool                // 检查表是否有注释
@@ -97,20 +88,3 @@ type AuditConfiguration struct {
 	DISABLE_AUDIT_DML_TABLES []DisableTablesAudit // 禁止指定的表的DML语句进行审核
 	DISABLE_AUDIT_DDL_TABLES []DisableTablesAudit // 禁止指定的表的DDL语句进行审核
 }
-
-// func InitializeAuditConfig(configFile string) *AuditConfiguration {
-// 	var AuditConfig = newAuditConfiguration()
-
-// 	// 读取JSON配置文件
-// 	file, err := os.Open(configFile)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	decoder := json.NewDecoder(file)
-// 	// 将配置文件值赋值给初始化默认值的AuditConfig
-// 	err = decoder.Decode(AuditConfig)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return AuditConfig
-// }

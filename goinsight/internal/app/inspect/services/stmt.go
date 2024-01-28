@@ -6,6 +6,7 @@ import (
 	"goInsight/internal/pkg/utils"
 	"regexp"
 
+	"goInsight/internal/app/inspect/controllers"
 	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/controllers/rules"
 
@@ -23,7 +24,7 @@ func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 	for _, rule := range rules.CreateTableRules() {
 		rule.DB = s.DB
 		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
+		rule.InspectParams = &s.InspectParams
 		rule.CheckFunc(&rule, &stmt)
 		if len(rule.Summary) > 0 {
 			// 检查不通过
@@ -44,7 +45,7 @@ func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 	for _, rule := range rules.CreateViewRules() {
 		rule.DB = s.DB
 		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
+		rule.InspectParams = &s.InspectParams
 		rule.CheckFunc(&rule, &stmt)
 		if len(rule.Summary) > 0 {
 			// 检查不通过
@@ -74,7 +75,7 @@ func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 	for _, rule := range rules.AlterTableRules() {
 		rule.DB = s.DB
 		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
+		rule.InspectParams = &s.InspectParams
 		rule.CheckFunc(&rule, &stmt)
 		if len(rule.MergeAlter) > 0 && len(mergeAlter) == 0 {
 			mergeAlter = rule.MergeAlter
@@ -98,7 +99,7 @@ func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 	for _, rule := range rules.RenameTableRules() {
 		rule.DB = s.DB
 		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
+		rule.InspectParams = &s.InspectParams
 		rule.CheckFunc(&rule, &stmt)
 		if len(rule.Summary) > 0 {
 			// 检查不通过
@@ -116,17 +117,26 @@ func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
 	// analyze table语句
 	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL", Level: "INFO"}
+
 	for _, rule := range rules.AnalyzeTableRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			InspectParams: &s.InspectParams,
+		}
+
+		fmt.Printf("rule: %+v", rule)
+		// rule.DB = s.DB
+		// rule.KV = kv
+		// rule.InspectParams = &s.InspectParams
+		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
-		if len(rule.Summary) > 0 {
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
@@ -140,7 +150,7 @@ func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string)
 	for _, rule := range rules.DropTableRules() {
 		rule.DB = s.DB
 		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
+		rule.InspectParams = &s.InspectParams
 		rule.CheckFunc(&rule, &stmt)
 		if len(rule.Summary) > 0 {
 			// 检查不通过
@@ -170,18 +180,26 @@ func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) Retur
 		}
 	*/
 	for _, rule := range rules.DMLRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.AuditConfig = &s.AuditConfig
-		rule.Query = stmt.Text()
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			Query:         stmt.Text(),
+			InspectParams: &s.InspectParams,
+		}
+		// rule.DB = s.DB
+
+		// rule.KV = kv
+		// rule.InspectParams = &s.InspectParams
+		rule.RuleHint = ruleHint
+		// rule.Query = stmt.Text()
 		rule.CheckFunc(&rule, &stmt)
-		data.AffectedRows = rule.AffectedRows
-		if len(rule.Summary) > 0 {
+		data.AffectedRows = rule.RuleHint.AffectedRows
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
@@ -193,7 +211,7 @@ func (s *Stmt) MergeAlter(kv *kv.KVCache, mergeAlters []string) ReturnData {
 	// 检查mysql merge操作
 	var data ReturnData = ReturnData{Level: "INFO"}
 	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
-	if s.AuditConfig.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
+	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
 		if ok, val := utils.IsRepeat(mergeAlters); ok {
 			for _, v := range val {
 				data.Summary = append(data.Summary, fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v))

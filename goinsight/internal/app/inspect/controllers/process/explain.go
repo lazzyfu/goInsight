@@ -8,6 +8,7 @@ package process
 
 import (
 	"errors"
+	"goInsight/internal/app/inspect/controllers/dao"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/utils"
 	"strconv"
@@ -27,7 +28,7 @@ type ExplainOutput struct {
 }
 
 type Explain struct {
-	DB  *utils.DB
+	DB  *dao.DB
 	SQL string
 	KV  *kv.KVCache
 }

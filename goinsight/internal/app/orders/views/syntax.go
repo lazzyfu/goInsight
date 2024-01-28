@@ -10,15 +10,15 @@ import (
 )
 
 // 提交工单
-func SyntaxCheckView(c *gin.Context) {
+func SyntaxInspectView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.SyntaxCheckForm = &forms.SyntaxCheckForm{}
+	var form *forms.SyntaxInspectForm = &forms.SyntaxInspectForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.SyntaxCheckFormService{
-			SyntaxCheckForm: form,
-			C:               c,
-			Username:        username,
+		service := services.SyntaxInspectService{
+			SyntaxInspectForm: form,
+			C:                 c,
+			Username:          username,
 		}
 		returnData, err := service.Run()
 		if err != nil {

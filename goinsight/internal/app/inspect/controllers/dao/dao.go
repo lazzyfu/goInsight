@@ -19,7 +19,7 @@ import (
 )
 
 // ShowCreateTable
-func ShowCreateTable(table string, db *utils.DB, kv *kv.KVCache) (data interface{}, err error) {
+func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, err error) {
 	// 返回表结构
 	data = kv.Get(table)
 	if data != nil {
@@ -55,7 +55,7 @@ func ShowCreateTable(table string, db *utils.DB, kv *kv.KVCache) (data interface
 }
 
 // descTable
-func DescTable(table string, db *utils.DB) (error, string) {
+func DescTable(table string, db *DB) (error, string) {
 	// 检查表是否存在，适用于确认当前实例当前库的表
 	err := db.Execute(fmt.Sprintf("desc `%s`", table))
 	if me, ok := err.(*mysqlapi.MySQLError); ok {
@@ -70,7 +70,7 @@ func DescTable(table string, db *utils.DB) (error, string) {
 }
 
 // verifyTable
-func VerifyTable(table string, db *utils.DB) (error, string) {
+func VerifyTable(table string, db *DB) (error, string) {
 	// 通过information_schema.tables检查表是否存在，适用于确认当前实例跨库的表
 	result, err := db.Query(fmt.Sprintf("select count(*) as count from information_schema.tables where table_name='%s'", table))
 	if err != nil {
@@ -90,16 +90,18 @@ func VerifyTable(table string, db *utils.DB) (error, string) {
 }
 
 // 获取DB变量
-func GetDBVars(db *utils.DB) (map[string]string, error) {
+func GetDBVars(db *DB) (map[string]string, error) {
 	result, err := db.Query("show variables where Variable_name in  ('innodb_large_prefix','version','character_set_database')")
 	if err != nil {
 		return nil, err
 	}
+
 	var data map[string]string = map[string]string{
 		"dbVersion":   "",
 		"dbCharset":   "utf8",
 		"largePrefix": "OFF",
 	}
+
 	// [map[Value:utf8 Variable_name:character_set_database] map[Value:5.7.35-log Variable_name:version]]
 	for _, row := range *result {
 		if strings.EqualFold(row["Variable_name"].(string), "version") {

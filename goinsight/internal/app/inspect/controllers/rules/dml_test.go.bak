@@ -48,12 +48,12 @@ var (
 
 func init() {
 	// 初始化配置
-	global.App.AuditConfig = &config.AuditConfiguration{
+	global.App.InspectParams = &config.InspectParams{
 		LogFilePath: "../../logs",
 	}
 	logger.Setup()
 	// 初始化配置
-	global.App.AuditConfig = config.InitializeAuditConfig("../../template/config.json")
+	global.App.InspectParams = config.InitializeInspectParams("../../template/config.json")
 	// 初始化测试表
 	var err error
 	global.App.DB, err = models.InitDB(DbUser, DbPassword, DbHost, DbPort, DB)

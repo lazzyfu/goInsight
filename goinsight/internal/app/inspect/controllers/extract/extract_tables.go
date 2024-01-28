@@ -8,17 +8,10 @@ package extract
 
 import (
 	_ "embed"
-	"fmt"
-	"goInsight/internal/app/inspect/config"
-	"sqlSyntaxAudit/common/utils"
-	"sqlSyntaxAudit/controllers/parser"
-	"sqlSyntaxAudit/forms"
-	logger "sqlSyntaxAudit/middleware/log"
 	"sync"
 
 	"github.com/pingcap/tidb/parser/ast"
 	_ "github.com/pingcap/tidb/types/parser_driver"
-	"github.com/sirupsen/logrus"
 )
 
 // 移除重复的值
@@ -51,49 +44,49 @@ func removeElement(data, toBeRemoved []string) []string {
 	return result
 }
 
-// 返回数据
-type ReturnData struct {
-	Tables []string `json:"tables"` // 表名
-	Type   string   `json:"type"`   // 语句类型
-	Query  string   `json:"query"`  // 原始SQL
-}
+// // 返回数据
+// type ReturnData struct {
+// 	Tables []string `json:"tables"` // 表名
+// 	Type   string   `json:"type"`   // 语句类型
+// 	Query  string   `json:"query"`  // 原始SQL
+// }
 
-// 检查结构体
-type Checker struct {
-	Form  forms.ExtractTablesForm
-	Audit *config.Audit
-}
+// // 检查结构体
+// type Checker struct {
+// 	Form  forms.ExtractTablesForm
+// 	Audit *parser.Audit
+// }
 
-func (c *Checker) Extract(RequestID string) (error, []ReturnData) {
-	var returnData []ReturnData
-	err := c.Parse()
-	if err != nil {
-		logger.AppLog.WithFields(logrus.Fields{"request_id": RequestID}).Error(err)
-		return err, returnData
-	}
-	for _, stmt := range c.Audit.TiStmt {
-		var data ReturnData = ReturnData{Query: stmt.Text()}
-		data.Tables, data.Type = ExtractTablesFromStatement(&stmt)
-		returnData = append(returnData, data)
-	}
-	return nil, returnData
-}
+// func (c *Checker) Extract(RequestID string) (error, []ReturnData) {
+// 	var returnData []ReturnData
+// 	err := c.Parse()
+// 	if err != nil {
+// 		logger.AppLog.WithFields(logrus.Fields{"request_id": RequestID}).Error(err)
+// 		return err, returnData
+// 	}
+// 	for _, stmt := range c.Audit.TiStmt {
+// 		var data ReturnData = ReturnData{Query: stmt.Text()}
+// 		data.Tables, data.Type = ExtractTablesFromStatement(&stmt)
+// 		returnData = append(returnData, data)
+// 	}
+// 	return nil, returnData
+// }
 
-// 解析SQL语句
-func (c *Checker) Parse() error {
-	// 解析SQL
-	var warns []error
-	var err error
-	// 解析
-	c.Audit, warns, err = parser.NewParse(c.Form.SqlText, "", "")
-	if len(warns) > 0 {
-		return fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
-	}
-	if err != nil {
-		return fmt.Errorf("sql解析错误：%s", err.Error())
-	}
-	return nil
-}
+// // 解析SQL语句
+// func (c *Checker) Parse() error {
+// 	// 解析SQL
+// 	var warns []error
+// 	var err error
+// 	// 解析
+// 	c.Audit, warns, err = parser.NewParse(c.Form.SqlText, "", "")
+// 	if len(warns) > 0 {
+// 		return fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
+// 	}
+// 	if err != nil {
+// 		return fmt.Errorf("sql解析错误：%s", err.Error())
+// 	}
+// 	return nil
+// }
 
 // 提取表结构体
 type ExtractTables struct {

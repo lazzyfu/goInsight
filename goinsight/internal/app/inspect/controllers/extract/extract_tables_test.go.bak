@@ -13,7 +13,7 @@ import (
 
 func init() {
 	// 初始化配置
-	global.App.AuditConfig = &config.AuditConfiguration{
+	global.App.InspectParams = &config.InspectParams{
 		LogFilePath: "../../logs",
 	}
 	logger.Setup()

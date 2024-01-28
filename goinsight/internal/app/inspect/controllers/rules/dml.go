@@ -7,7 +7,7 @@
 package rules
 
 import (
-	// "goInsight/internal/app/inspect/controllers/extract"
+	"goInsight/internal/app/inspect/controllers/extract"
 	"goInsight/internal/app/inspect/controllers/logics"
 	"goInsight/internal/app/inspect/controllers/traverses"
 
@@ -16,10 +16,10 @@ import (
 
 func DMLRules() []Rule {
 	return []Rule{
-		// {
-		// 	Hint:      "DML#限制部分表进行语法审核",
-		// 	CheckFunc: (*Rule).RuleDisableAuditDMLTables,
-		// },
+		{
+			Hint:      "DML#限制部分表进行语法审核",
+			CheckFunc: (*Rule).RuleDisableAuditDMLTables,
+		},
 		{
 			Hint:      "DML#是否允许INSERT INTO SELECT语法",
 			CheckFunc: (*Rule).RuleDMLInsertIntoSelect,
@@ -52,11 +52,11 @@ func DMLRules() []Rule {
 }
 
 // RuleDisableAuditDMLTables
-// func (r *Rule) RuleDisableAuditDMLTables(tistmt *ast.StmtNode) {
-// 	v := &traverses.TraverseDisableAuditDMLTables{}
-// 	v.Tables, _ = extract.ExtractTablesFromStatement(tistmt)
-// 	logics.LogicDisableAuditDMLTables(v, r.RuleHint)
-// }
+func (r *Rule) RuleDisableAuditDMLTables(tistmt *ast.StmtNode) {
+	v := &traverses.TraverseDisableAuditDMLTables{}
+	v.Tables, _ = extract.ExtractTablesFromStatement(tistmt)
+	logics.LogicDisableAuditDMLTables(v, r.RuleHint)
+}
 
 // RuleDMLInsertIntoSelect
 func (r *Rule) RuleDMLInsertIntoSelect(tistmt *ast.StmtNode) {

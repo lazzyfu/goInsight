@@ -8,9 +8,9 @@ package logics
 
 import (
 	"fmt"
-	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/app/inspect/controllers"
 	"goInsight/internal/app/inspect/controllers/dao"
+	"goInsight/internal/app/inspect/controllers/parser"
 	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/controllers/traverses"
 	"goInsight/internal/pkg/utils"
@@ -26,8 +26,8 @@ func LogicAlterTableIsExist(v *traverses.TraverseAlterTableIsExist, r *controlle
 		r.IsSkipNextStep = true
 	}
 	// 禁止审核指定的表
-	if len(r.AuditConfig.DISABLE_AUDIT_DDL_TABLES) > 0 {
-		for _, item := range r.AuditConfig.DISABLE_AUDIT_DDL_TABLES {
+	if len(r.InspectParams.DISABLE_AUDIT_DDL_TABLES) > 0 {
+		for _, item := range r.InspectParams.DISABLE_AUDIT_DDL_TABLES {
 			if item.DB == r.DB.Database && utils.IsContain(item.Tables, v.Table) {
 				r.Summary = append(r.Summary, fmt.Sprintf("表`%s`.`%s`被限制进行DDL语法审核，原因：%s", r.DB.Database, v.Table, item.Reason))
 				r.IsSkipNextStep = true
@@ -40,7 +40,7 @@ func LogicAlterTableIsExist(v *traverses.TraverseAlterTableIsExist, r *controlle
 func LogicAlterTableTiDBMerge(v *traverses.TraverseAlterTiDBMerge, r *controllers.RuleHint) {
 	// 检查TiDBMergeAlter
 	dbVersionIns := process.DbVersion{Version: r.KV.Get("dbVersion").(string)}
-	if !r.AuditConfig.ENABLE_TIDB_MERGE_ALTER_TABLE && dbVersionIns.IsTiDB() {
+	if !r.InspectParams.ENABLE_TIDB_MERGE_ALTER_TABLE && dbVersionIns.IsTiDB() {
 		if v.SpecsLen > 1 {
 			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`的多个操作，请拆分为多条ALTER语句(TiDB不支持在单个ALTER TABLE语句中进行多个更改)", v.Table))
 		}
@@ -63,12 +63,12 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseAlterTableShowCreateTableGetCols{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 
 	if len(v.Cols) > 0 {
-		if !r.AuditConfig.ENABLE_DROP_COLS {
+		if !r.InspectParams.ENABLE_DROP_COLS {
 			// 不允许drop列
 			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`不允许DROP列", v.Table))
 		} else {
@@ -79,7 +79,7 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 				}
 			}
 		}
-		if !r.AuditConfig.ENABLE_DROP_PRIMARYKEY {
+		if !r.InspectParams.ENABLE_DROP_PRIMARYKEY {
 			// 不允许drop主键
 			for _, pri := range vAudit.PrimaryKeys {
 				if utils.IsContain(v.Cols, pri) {
@@ -89,7 +89,7 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 		}
 	}
 	if len(vAudit.Indexes) > 0 {
-		if !r.AuditConfig.ENABLE_DROP_INDEXES {
+		if !r.InspectParams.ENABLE_DROP_INDEXES {
 			// 不允许drop索引
 			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`不允许DROP索引", v.Table))
 		} else {
@@ -124,7 +124,7 @@ func LogicAlterTableDropTiDBColWithCoveredIndex(v *traverses.TraverseAlterTableD
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableRedundantIndexes{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 
@@ -147,7 +147,7 @@ func LogicAlterTableOptions(v *traverses.TraverseAlterTableOptions, r *controlle
 	}
 	r.MergeAlter = v.Table
 	v.Type = "alter"
-	v.TableOptions.AuditConfig = r.AuditConfig
+	v.TableOptions.InspectParams = r.InspectParams
 	fns := []func() error{v.CheckTableEngine, v.CheckTableComment, v.CheckTableCharset}
 	for _, fn := range fns {
 		if err := fn(); err != nil {
@@ -164,7 +164,7 @@ func LogicAlterTableColCharset(v *traverses.TraverseAlterTableColCharset, r *con
 	r.MergeAlter = v.Table
 
 	// 列字符集检查
-	if r.AuditConfig.CHECK_COLUMN_CHARSET {
+	if r.InspectParams.CHECK_COLUMN_CHARSET {
 		if len(v.Cols) > 0 {
 			if err := v.CheckColumn(); err != nil {
 				r.Summary = append(r.Summary, err.Error())
@@ -181,7 +181,7 @@ func LogicAlterTableAddColOptions(v *traverses.TraverseAlterTableAddColOptions, 
 	r.MergeAlter = v.Table
 
 	for _, col := range v.Cols {
-		col.AuditConfig = r.AuditConfig
+		col.InspectParams = r.InspectParams
 		fns := []func() error{
 			col.CheckColumnLength,
 			col.CheckColumnIdentifer,
@@ -218,7 +218,7 @@ func LogicAlterTableAddPrimaryKey(v *traverses.TraverseAlterTableAddPrimaryKey, 
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseAlterTableShowCreateTableGetCols{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 
@@ -248,7 +248,7 @@ func LogicAlterTableAddColRepeatDefine(v *traverses.TraverseAlterTableAddColRepe
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableColsRepeatDefine{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	v.Cols = append(v.Cols, vAudit.Cols...)
@@ -267,20 +267,20 @@ func LogicAlterTableAddIndexPrefix(v *traverses.TraverseAlterTableAddIndexPrefix
 
 	// 检查唯一索引前缀、如唯一索引必须以uniq_为前缀
 	var indexPrefixCheck process.IndexPrefix = v.Prefix
-	indexPrefixCheck.AuditConfig = r.AuditConfig
-	if r.AuditConfig.CHECK_UNIQ_INDEX_PREFIX {
+	indexPrefixCheck.InspectParams = r.InspectParams
+	if r.InspectParams.CHECK_UNIQ_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckUniquePrefix(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
 		}
 	}
 	// 检查二级索引前缀、如二级索引必须以idx_为前缀
-	if r.AuditConfig.CHECK_SECONDARY_INDEX_PREFIX {
+	if r.InspectParams.CHECK_SECONDARY_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckSecondaryPrefix(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
 		}
 	}
 	// 检查全文索引前缀、如全文索引必须以full_为前缀
-	if r.AuditConfig.CHECK_FULLTEXT_INDEX_PREFIX {
+	if r.InspectParams.CHECK_FULLTEXT_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckFulltextPrefix(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
 		}
@@ -303,13 +303,13 @@ func LogicAlterTableAddIndexCount(v *traverses.TraverseAlterTableAddIndexCount, 
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableIndexesCount{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	v.Number.Number += vAudit.Number.Number
 	// 检查二级索引数量
 	var indexNumberCheck process.IndexNumber = v.Number
-	indexNumberCheck.AuditConfig = r.AuditConfig
+	indexNumberCheck.InspectParams = r.InspectParams
 	if err := indexNumberCheck.CheckSecondaryIndexesNum(); err != nil {
 		r.Summary = append(r.Summary, err.Error())
 	}
@@ -324,7 +324,7 @@ func LogicAlterTableAddConstraint(v *traverses.TraverseAlterTableAddConstraint, 
 		return
 	}
 	r.MergeAlter = v.Table
-	if !r.AuditConfig.ENABLE_FOREIGN_KEY && v.IsForeignKey {
+	if !r.InspectParams.ENABLE_FOREIGN_KEY && v.IsForeignKey {
 		// 禁止使用外键
 		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`禁止定义外键", v.Table))
 	}
@@ -346,7 +346,7 @@ func LogicAlterTableAddIndexRepeatDefine(v *traverses.TraverseAlterTableAddIndex
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableIndexesRepeatDefine{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	v.Indexes = append(v.Indexes, vAudit.Indexes...)
@@ -373,7 +373,7 @@ func LogicAlterTableRedundantIndexes(v *traverses.TraverseAlterTableRedundantInd
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableRedundantIndexes{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	v.Redundant.Cols = vAudit.Redundant.Cols
@@ -411,7 +411,7 @@ func LogicAlterTableDisabledIndexes(v *traverses.TraverseAlterTableDisabledIndex
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableDisabledIndexes{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	v.DisabledIndexes.Cols = append(v.DisabledIndexes.Cols, vAudit.DisabledIndexes.Cols...)
@@ -440,7 +440,7 @@ func LogicAlterTableModifyColOptions(v *traverses.TraverseAlterTableModifyColOpt
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableColsOptions{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	var vCols []string
@@ -456,14 +456,14 @@ func LogicAlterTableModifyColOptions(v *traverses.TraverseAlterTableModifyColOpt
 	// 检查modify的列是否进行列类型变更
 	for _, col := range v.Cols {
 		for _, vCol := range vAudit.Cols {
-			if err := process.CheckColsTypeChanged(col, vCol, r.AuditConfig, r.KV, "modify", v.Table); err != nil {
+			if err := process.CheckColsTypeChanged(col, vCol, r.InspectParams, r.KV, "modify", v.Table); err != nil {
 				r.Summary = append(r.Summary, err.Error())
 			}
 		}
 	}
 	// 检查列
 	for _, col := range v.Cols {
-		col.AuditConfig = r.AuditConfig
+		col.InspectParams = r.InspectParams
 		fns := []func() error{
 			col.CheckColumnComment,
 			col.CheckColumnCharToVarchar,
@@ -502,7 +502,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableColsOptions{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	var vCols []string
@@ -513,7 +513,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 	for _, col := range v.Cols {
 		if col.Column != col.OldColumn {
 			// 不允许change列名操作
-			if !r.AuditConfig.ENABLE_COLUMN_CHANGE_COLUMN_NAME && len(v.Cols) > 0 {
+			if !r.InspectParams.ENABLE_COLUMN_CHANGE_COLUMN_NAME && len(v.Cols) > 0 {
 				r.Summary = append(r.Summary, fmt.Sprintf("禁止CHANGE修改列名操作(`%s` -> `%s`)[表`%s`]", col.OldColumn, col.Column, v.Table))
 				return
 			}
@@ -536,7 +536,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 	for _, col := range v.Cols {
 		for _, vCol := range vAudit.Cols {
 			if col.OldColumn == vCol.Column {
-				if err := process.CheckColsTypeChanged(col, vCol, r.AuditConfig, r.KV, "change", v.Table); err != nil {
+				if err := process.CheckColsTypeChanged(col, vCol, r.InspectParams, r.KV, "change", v.Table); err != nil {
 					r.Summary = append(r.Summary, err.Error())
 				}
 			}
@@ -545,7 +545,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 
 	// 检查列
 	for _, col := range v.Cols {
-		col.AuditConfig = r.AuditConfig
+		col.InspectParams = r.InspectParams
 		fns := []func() error{
 			col.CheckColumnComment,
 			col.CheckColumnCharToVarchar,
@@ -570,7 +570,7 @@ func LogicAlterTableRenameIndex(v *traverses.TraverseAlterTableRenameIndex, r *c
 	}
 	r.MergeAlter = v.Table
 
-	if !r.AuditConfig.ENABLE_INDEX_RENAME {
+	if !r.InspectParams.ENABLE_INDEX_RENAME {
 		r.Summary = append(r.Summary, fmt.Sprintf("不允许RENAME INDEX操作[表`%s`]", v.Table))
 		return
 	}
@@ -595,7 +595,7 @@ func LogicAlterTableRenameIndex(v *traverses.TraverseAlterTableRenameIndex, r *c
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseAlterTableShowCreateTableGetCols{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	// 判断表是否存在
@@ -612,7 +612,7 @@ func LogicAlterTableRenameIndex(v *traverses.TraverseAlterTableRenameIndex, r *c
 			r.Summary = append(r.Summary, fmt.Sprintf("新的索引`%s`已存在[表`%s`]", item.NewIndex, v.Table))
 		}
 		// 检查索引名合法性
-		if r.AuditConfig.CHECK_IDENTIFIER {
+		if r.InspectParams.CHECK_IDENTIFIER {
 			if ok := utils.IsMatchPattern(utils.NamePattern, item.NewIndex); !ok {
 				r.Summary = append(r.Summary, fmt.Sprintf("索引`%s`命名不符合要求，仅允许匹配正则`%s`[表`%s`]", item.NewIndex, utils.NamePattern, v.Table))
 			}
@@ -626,7 +626,7 @@ func LogicAlterTableRenameTblName(v *traverses.TraverseAlterTableRenameTblName, 
 		return
 	}
 	r.MergeAlter = v.Table
-	if !r.AuditConfig.ENABLE_RENAME_TABLE_NAME {
+	if !r.InspectParams.ENABLE_RENAME_TABLE_NAME {
 		r.Summary = append(r.Summary, fmt.Sprintf("不允许RENAME表名[表`%s`]", v.Table))
 		return
 	}
@@ -648,7 +648,7 @@ func LogicAlterTableInnodbLargePrefix(v *traverses.TraverseAlterTableInnodbLarge
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableColsTp{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	// 将提前到的字段类型复制给索引字段结构体
@@ -692,7 +692,7 @@ func LogicAlterTableRowSizeTooLarge(v *traverses.TraverseAlterTableRowSizeTooLar
 	// 解析获取的db表结构
 	vAudit := &traverses.TraverseCreateTableRowSizeTooLarge{}
 	switch audit := audit.(type) {
-	case *config.Audit:
+	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
 	// 拷贝，如果Column不存在append，Column存在，重新赋值

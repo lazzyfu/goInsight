@@ -25,6 +25,7 @@ type InsightDBConfig struct {
 	UseType          EnumType       `gorm:"type:ENUM('查询', '工单');default:工单;uniqueIndex:uniq_hostname;comment:用途" json:"use_type"`
 	DbType           EnumType       `gorm:"type:ENUM('MySQL', 'TiDB', 'ClickHouse');default:MySQL;comment:数据库类型" json:"db_type"`
 	Environment      int            `gorm:"type:int;null;default:null;comment:环境;index" json:"environment"`
+	InspectParams    datatypes.JSON `gorm:"type:json;null;default:null;comment:语法审核参数" json:"inspect_params"`
 	OrganizationKey  string         `gorm:"type:varchar(256);not null;index:organization_key;comment:搜索路径" json:"organization_key"`
 	OrganizationPath datatypes.JSON `gorm:"type:json;null;default:null;comment:绝对路径" json:"organization_path"`
 	Remark           string         `gorm:"type:varchar(256);not null;default:'';comment:备注" json:"remark"`

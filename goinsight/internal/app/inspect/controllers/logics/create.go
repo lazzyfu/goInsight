@@ -29,7 +29,7 @@ func LogicCreateTableIsExist(v *traverses.TraverseCreateTableIsExist, r *control
 func LogicCreateTableAs(v *traverses.TraverseCreateTableAs, r *controllers.RuleHint) {
 	if v.IsCreateAs {
 		// 不深入检查AS后面的语法
-		if !r.AuditConfig.ENABLE_CREATE_TABLE_AS {
+		if !r.InspectParams.ENABLE_CREATE_TABLE_AS {
 			r.Summary = append(r.Summary, fmt.Sprintf("不允许使用create table as语法[表`%s`]", v.Table))
 			r.IsSkipNextStep = true
 		}
@@ -39,7 +39,7 @@ func LogicCreateTableAs(v *traverses.TraverseCreateTableAs, r *controllers.RuleH
 // LogicCreateTableLike
 func LogicCreateTableLike(v *traverses.TraverseCreateTableLike, r *controllers.RuleHint) {
 	if v.IsCreateLike {
-		if !r.AuditConfig.ENABLE_CREATE_TABLE_LIKE {
+		if !r.InspectParams.ENABLE_CREATE_TABLE_LIKE {
 			r.Summary = append(r.Summary, fmt.Sprintf("不允许使用create table like语法[表`%s`]", v.Table))
 			r.IsSkipNextStep = true
 		}
@@ -49,7 +49,7 @@ func LogicCreateTableLike(v *traverses.TraverseCreateTableLike, r *controllers.R
 // LogicCreateTableOptions
 func LogicCreateTableOptions(v *traverses.TraverseCreateTableOptions, r *controllers.RuleHint) {
 	v.Type = "create"
-	v.TableOptions.AuditConfig = r.AuditConfig
+	v.TableOptions.InspectParams = r.InspectParams
 	fns := []func() error{
 		v.CheckTableLength,
 		v.CheckTableIdentifer,
@@ -70,7 +70,7 @@ func LogicCreateTableOptions(v *traverses.TraverseCreateTableOptions, r *control
 // LogicCreateTablePrimaryKey
 func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *controllers.RuleHint) {
 	// 必须定义主键
-	if r.AuditConfig.CHECK_TABLE_PRIMARY_KEY {
+	if r.InspectParams.CHECK_TABLE_PRIMARY_KEY {
 		if len(v.PrimaryKeys) == 0 {
 			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`必须定义主键", v.Table))
 		}
@@ -81,7 +81,7 @@ func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *c
 	// 检查主键是否为bigint类型
 	for _, item := range v.PrimaryKeys {
 		var p process.PrimaryKey = item
-		p.AuditConfig = r.AuditConfig
+		p.InspectParams = r.InspectParams
 		fns := []func() error{
 			p.CheckBigint,
 			p.CheckUnsigned,
@@ -98,7 +98,7 @@ func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *c
 
 // LogicCreateTableConstraint
 func LogicCreateTableConstraint(v *traverses.TraverseCreateTableConstraint, r *controllers.RuleHint) {
-	if !r.AuditConfig.ENABLE_FOREIGN_KEY && v.IsForeignKey {
+	if !r.InspectParams.ENABLE_FOREIGN_KEY && v.IsForeignKey {
 		// 禁止使用外键
 		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`禁止定义外键", v.Table))
 	}
@@ -106,7 +106,7 @@ func LogicCreateTableConstraint(v *traverses.TraverseCreateTableConstraint, r *c
 
 // LogicCreateTableAuditCols
 func LogicCreateTableAuditCols(v *traverses.TraverseCreateTableAuditCols, r *controllers.RuleHint) {
-	if r.AuditConfig.CHECK_TABLE_AUDIT_TYPE_COLUMNS {
+	if r.InspectParams.CHECK_TABLE_AUDIT_TYPE_COLUMNS {
 		// 启用审计类型的字段, 必须定义2个审计字段, 字段名和注释名不做要求, 如:
 		// `UPDATED_AT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 		// `CREATED_AT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
@@ -128,7 +128,7 @@ func LogicCreateTableAuditCols(v *traverses.TraverseCreateTableAuditCols, r *con
 // LogicCreateTableColsOptions
 func LogicCreateTableColsOptions(v *traverses.TraverseCreateTableColsOptions, r *controllers.RuleHint) {
 	for _, col := range v.Cols {
-		col.AuditConfig = r.AuditConfig
+		col.InspectParams = r.InspectParams
 		fns := []func() error{
 			col.CheckColumnLength,
 			col.CheckColumnIdentifer,
@@ -160,7 +160,7 @@ func LogicCreateTableColsRepeatDefine(v *traverses.TraverseCreateTableColsRepeat
 // LogicCreateTableColsCharset
 func LogicCreateTableColsCharset(v *traverses.TraverseCreateTableColsCharset, r *controllers.RuleHint) {
 	// 列字符集检查
-	if r.AuditConfig.CHECK_COLUMN_CHARSET {
+	if r.InspectParams.CHECK_COLUMN_CHARSET {
 		if len(v.Cols) > 0 {
 			if err := v.CheckColumn(); err != nil {
 				r.Summary = append(r.Summary, err.Error())
@@ -173,20 +173,20 @@ func LogicCreateTableColsCharset(v *traverses.TraverseCreateTableColsCharset, r 
 func LogicCreateTableIndexesPrefix(v *traverses.TraverseCreateTableIndexesPrefix, r *controllers.RuleHint) {
 	// 检查唯一索引前缀、如唯一索引必须以uniq_为前缀
 	var indexPrefixCheck process.IndexPrefix = v.Prefix
-	indexPrefixCheck.AuditConfig = r.AuditConfig
-	if r.AuditConfig.CHECK_UNIQ_INDEX_PREFIX {
+	indexPrefixCheck.InspectParams = r.InspectParams
+	if r.InspectParams.CHECK_UNIQ_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckUniquePrefix(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
 		}
 	}
 	// 检查二级索引前缀、如二级索引必须以idx_为前缀
-	if r.AuditConfig.CHECK_SECONDARY_INDEX_PREFIX {
+	if r.InspectParams.CHECK_SECONDARY_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckSecondaryPrefix(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
 		}
 	}
 	// 检查全文索引前缀、如全文索引必须以full_为前缀
-	if r.AuditConfig.CHECK_FULLTEXT_INDEX_PREFIX {
+	if r.InspectParams.CHECK_FULLTEXT_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckFulltextPrefix(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
 		}
@@ -197,7 +197,7 @@ func LogicCreateTableIndexesPrefix(v *traverses.TraverseCreateTableIndexesPrefix
 func LogicCreateTableIndexesCount(v *traverses.TraverseCreateTableIndexesCount, r *controllers.RuleHint) {
 	// 检查二级索引数量
 	var indexNumberCheck process.IndexNumber = v.Number
-	indexNumberCheck.AuditConfig = r.AuditConfig
+	indexNumberCheck.InspectParams = r.InspectParams
 	if err := indexNumberCheck.CheckSecondaryIndexesNum(); err != nil {
 		r.Summary = append(r.Summary, err.Error())
 	}
