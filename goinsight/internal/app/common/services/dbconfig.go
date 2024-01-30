@@ -32,7 +32,7 @@ func (s *AdminGetDBConfigServices) Run() (responseData interface{}, total int64,
 		OrganizationKey  string `json:"organization_key"`
 	}
 	var dbs []DBConfig
-	tx := global.App.DB.Select(`a.id,a.instance_id,a.hostname,a.port,a.use_type,a.db_type,a.organization_path,b.id as environment, 
+	tx := global.App.DB.Select(`a.id,a.instance_id,a.hostname,a.port,a.use_type,a.db_type,a.inspect_params,a.organization_path,b.id as environment, 
 							b.name as environment_name, a.remark, ifnull(
 								concat(
 									(

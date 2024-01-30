@@ -30,9 +30,8 @@ func (s *SyntaxInspectService) getInstanceConfig() (commonModels.InsightDBConfig
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
 	if tx.RowsAffected == 0 {
-		return config, fmt.Errorf("未找到DB实例为%s记录", s.InstanceID)
+		return config, fmt.Errorf("未找到实例ID为%s的记录", s.InstanceID)
 	}
-
 	return config, nil
 }
 

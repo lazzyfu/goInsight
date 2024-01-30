@@ -110,7 +110,7 @@
               </a-form-item>
               <a-form-item label="审核人" help="请至少选择2位工单审核人" has-feedback>
                 <a-select
-                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人'  ,validator: validatorApprover  }] }]"
+                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人', validator: validatorApprover  }] }]"
                   placeholder="请选择工单审核人"
                   mode="multiple"
                   allowClear
