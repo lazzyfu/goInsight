@@ -16,7 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// hook工单
 type SyntaxInspectService struct {
 	*forms.SyntaxInspectForm
 	C        *gin.Context
@@ -31,7 +30,7 @@ func (s *SyntaxInspectService) getInstanceConfig() (commonModels.InsightDBConfig
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
 	if tx.RowsAffected == 0 {
-		return config, fmt.Errorf("未找到实例为%s配置", s.InstanceID)
+		return config, fmt.Errorf("未找到DB实例为%s记录", s.InstanceID)
 	}
 
 	return config, nil

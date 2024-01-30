@@ -57,10 +57,6 @@ das:
       "Postman",
     ] # 允许的UA
 
-# 语法审核工具地址
-gaudit:
-  url: "http://127.0.0.1:8082/api/v1/audit"
-
 # GitHub's Online Schema-migration Tool for MySQL
 # https://github.com/github/gh-ost
 ghost:
