@@ -82,15 +82,23 @@ type AdminCreateDBConfigService struct {
 }
 
 func (s *AdminCreateDBConfigService) Run() error {
+	// 组织KEY
 	organizationKey, err := json.Marshal(s.OrganizationKey)
 	if err != nil {
 		return err
 	}
 	organizationKeyJson := datatypes.JSON(organizationKey)
 
+	// 审核参数
+	jsonInspectParams, err := json.Marshal(s.InspectParams)
+	if err != nil {
+		return err
+	}
+	// 新增记录
 	db := models.InsightDBConfig{
 		Hostname:         s.Hostname,
 		Port:             s.Port,
+		InspectParams:    datatypes.JSON(jsonInspectParams),
 		UseType:          s.UseType,
 		DbType:           s.DbType,
 		Environment:      s.Environment,
@@ -99,10 +107,9 @@ func (s *AdminCreateDBConfigService) Run() error {
 		Remark:           s.Remark,
 		InstanceID:       uuid.New(),
 	}
-
 	tx := global.App.DB.Model(&models.InsightDBConfig{})
-
 	result := tx.Create(&db)
+
 	if result.Error != nil {
 		mysqlErr := result.Error.(*mysql.MySQLError)
 		switch mysqlErr.Number {
@@ -121,15 +128,23 @@ type AdminUpdateDBConfigService struct {
 }
 
 func (s *AdminUpdateDBConfigService) Run() error {
+	// 组织KEY
 	organizationKey, err := json.Marshal(s.OrganizationKey)
 	if err != nil {
 		return err
 	}
 	organizationKeyJson := datatypes.JSON(organizationKey)
 
+	// 审核参数
+	jsonInspectParams, err := json.Marshal(s.InspectParams)
+	if err != nil {
+		return err
+	}
+	// 更新记录
 	result := global.App.DB.Model(&models.InsightDBConfig{}).Where("id=?", s.ID).Updates(map[string]interface{}{
 		"hostname":          s.Hostname,
 		"port":              s.Port,
+		"inspect_params":    datatypes.JSON(jsonInspectParams),
 		"use_type":          s.UseType,
 		"db_type":           s.DbType,
 		"environment":       s.Environment,

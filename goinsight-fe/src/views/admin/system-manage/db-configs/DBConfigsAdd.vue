@@ -60,6 +60,19 @@
         >
         </a-input>
       </a-form-item>
+      <a-form-item label="端口" has-feedback>
+        <a-input-number
+          v-decorator="[
+            'port',
+            {
+              type: 'number',
+              rules: [{ required: true, message: '请输入端口' }],
+              validateTrigger: 'blur',
+            },
+          ]"
+        >
+        </a-input-number>
+      </a-form-item>
       <a-form-item label="审核参数" help="格式要求为JSON类型" has-feedback>
         <a-textarea
           :auto-size="{ minRows: 3, maxRows: 5 }"
@@ -79,19 +92,6 @@
           ]"
         >
         </a-textarea>
-      </a-form-item>
-      <a-form-item label="端口" has-feedback>
-        <a-input-number
-          v-decorator="[
-            'port',
-            {
-              type: 'number',
-              rules: [{ required: true, message: '请输入端口' }],
-              validateTrigger: 'blur',
-            },
-          ]"
-        >
-        </a-input-number>
       </a-form-item>
       <a-form-item label="备注" has-feedback>
         <a-input
