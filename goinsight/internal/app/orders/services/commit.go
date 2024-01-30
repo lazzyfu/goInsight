@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"goInsight/global"
 	commonModels "goInsight/internal/app/common/models"
-	"goInsight/internal/app/orders/api"
+	"goInsight/internal/app/inspect/checker"
 	"goInsight/internal/app/orders/forms"
 	"goInsight/internal/app/orders/models"
 	usersModels "goInsight/internal/app/users/models"
@@ -99,7 +99,7 @@ func (s *GetUsersService) Run() (responseData interface{}, total int64, err erro
 
 // 提交工单
 type CreateOrdersService struct {
-	forms.CreateOrderForm
+	*forms.CreateOrderForm
 	C        *gin.Context
 	Username string
 	Audit    *parser.TiStmt
@@ -121,6 +121,23 @@ func (s *CreateOrdersService) toJson(values []string) (datatypes.JSON, error) {
 	return datatypes.JSON(data), nil
 }
 
+// 审核SQL
+func (s *CreateOrdersService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+	fmt.Println("sss: ", s.Content, s.Schema)
+	inspect := checker.SyntaxInspectService{
+		C:          s.C,
+		DbUser:     global.App.Config.RemoteDB.UserName,
+		DbPassword: global.App.Config.RemoteDB.Password,
+		DbHost:     config.Hostname,
+		DbPort:     config.Port,
+		DBParams:   config.InspectParams,
+		DBSchema:   s.Schema,
+		Username:   s.Username,
+		SqlText:    s.Content,
+	}
+	return inspect.Run()
+}
+
 func (s *CreateOrdersService) Run() error {
 	// 判断SQL类型是否匹配，DML工单仅允许提交DML语句，DDL工单仅允许提交DDL语句
 	err := parser.CheckSqlType(s.Content, string(s.SQLType))
@@ -138,23 +155,22 @@ func (s *CreateOrdersService) Run() error {
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
 	// DB参数
-	api := api.GAuditApi{
-		DbUser:            global.App.Config.RemoteDB.UserName,
-		DbPassword:        global.App.Config.RemoteDB.Password,
-		DbHost:            config.Hostname,
-		DbPort:            config.Port,
-		DB:                s.Schema,
-		Timeout:           3000,
-		CustomAuditParams: map[string]interface{}{},
-		SqlText:           s.Content,
-	}
-	// 检查语法
-	data, err := api.Check()
+
+	// 检查语法检查是否通过
+	returnData, err := s.inspectSQL(config)
 	if err != nil {
 		return err
 	}
-	if data.Status == 0 {
-		return fmt.Errorf("SQL语法检查不通过，提交失败，请先更正语法")
+	// status: 0表示语法检查通过，1表示语法检查不通过
+	status := 0
+	for _, row := range returnData {
+		if row.Level != "INFO" {
+			status = 1
+			break
+		}
+	}
+	if status == 1 {
+		return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
 	}
 	// 解析UUID
 	instance_id, err := utils.ParserUUID(s.InstanceID)

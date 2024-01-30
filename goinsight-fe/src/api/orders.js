@@ -35,7 +35,7 @@ export const getUsersApi = (params) =>
 // 语法检查
 export const syntaxCheckApi = (data) =>
   axios.request({
-    url: `/api/v1/orders/syntax-check`,
+    url: `/api/v1/orders/syntax-inspect`,
     method: 'post',
     data: data,
   })

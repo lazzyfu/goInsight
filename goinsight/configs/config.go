@@ -53,10 +53,6 @@ type Das struct {
 	AllowedUserAgents []string `mapstructure:"allowed_useragents" json:"allowed_useragents" yaml:"allowed_useragents"`
 }
 
-type GAudit struct {
-	Url string `mapstructure:"url" json:"url" yaml:"url"`
-}
-
 type Ghost struct {
 	Path string   `mapstructure:"path" json:"path" yaml:"path"`
 	Args []string `mapstructure:"args" json:"args" yaml:"args"`
@@ -90,7 +86,6 @@ type Configuration struct {
 	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
 	RemoteDB RemoteDB `mapstructure:"remotedb" json:"remotedb" yaml:"remotedb"`
 	Das      Das      `mapstructure:"das" json:"das" yaml:"das"`
-	GAudit   GAudit   `mapstructure:"gaudit" json:"gaudit" yaml:"gaudit"`
 	Ghost    Ghost    `mapstructure:"ghost" json:"ghost" yaml:"ghost"`
 	Notify   Notify   `mapstructure:"notify" json:"notify" yaml:"notify"`
 }

@@ -1,4 +1,4 @@
-package services
+package checker
 
 import (
 	"bytes"
@@ -24,12 +24,12 @@ import (
 
 // 返回数据
 type ReturnData struct {
-	Summary      []string `json:"summary"` // 规则摘要
-	Level        string   `json:"level"`   // 提醒级别,INFO/WARN/ERROR
-	AffectedRows int      `json:"affected_rows"`
-	Type         string   `json:"type"`
-	FingerId     string   `json:"finger_id"`
-	Query        string   `json:"query"` // 原始SQL
+	Summary      []string `json:"summary"`       // 摘要
+	Level        string   `json:"level"`         // 级别,INFO/WARN/ERROR
+	AffectedRows int      `json:"affected_rows"` // 影响行数
+	Type         string   `json:"type"`          // SQL类型
+	FingerId     string   `json:"finger_id"`     // 指纹
+	Query        string   `json:"query"`         // 原始SQL
 }
 
 // 语法check
@@ -61,27 +61,23 @@ func (s *SyntaxInspectService) initDB() {
 	}
 }
 
-func (s *SyntaxInspectService) getDefaultInspectParams() error {
+// 初始化默认审核参数
+func (s *SyntaxInspectService) initDefaultInspectParams() error {
 	// 读取数据库参数
 	var rows []models.InsightInspectParams
 	tx := global.App.DB.Model(&models.InsightInspectParams{}).Scan(&rows)
 	if tx.RowsAffected == 0 {
 		return errors.New("获取审核参数失败，表insight_inspect_params未找到记录")
 	}
-
-	// 迭代参数，将参数转换为map
+	// 初始化map存储参数
 	jsonParams := make(map[string]json.RawMessage)
 	for _, row := range rows {
-		var tmpJsonParam map[string]json.RawMessage
-		err := json.Unmarshal(row.Param, &tmpJsonParam)
+		err := json.Unmarshal(row.Param, &jsonParams)
 		if err != nil {
-			return err
-		}
-		for key, value := range tmpJsonParam {
-			jsonParams[key] = value
+			return fmt.Errorf("解析 JSON 参数失败: %v", err)
 		}
 	}
-	// 序列号参数
+	// 序列化参数
 	jsonData, err := json.Marshal(jsonParams)
 	if err != nil {
 		return fmt.Errorf("序列化JSON参数失败: %v", err)
@@ -96,7 +92,8 @@ func (s *SyntaxInspectService) getDefaultInspectParams() error {
 	return nil
 }
 
-func (s *SyntaxInspectService) getInstanceInspectParams() error {
+// 初始化DB审核参数
+func (s *SyntaxInspectService) initDBInspectParams() error {
 	// 序列化参数
 	jsonParams, err := json.Marshal(s.DBParams)
 	if err != nil {
@@ -104,7 +101,6 @@ func (s *SyntaxInspectService) getInstanceInspectParams() error {
 	}
 	r := bytes.NewReader([]byte(jsonParams))
 	decoder := json.NewDecoder(r)
-
 	// 动态参数赋值给默认模板
 	// 优先级: post instance params > 内置默认参数
 	if err := decoder.Decode(&s.InspectParams); err != nil {
@@ -130,17 +126,15 @@ func (s *SyntaxInspectService) parser() error {
 
 func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	// 初始化系统默认审核参数
-	err = s.getDefaultInspectParams()
+	err = s.initDefaultInspectParams()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("默认审核参数：", s.InspectParams)
-	// 获取实例定义的审核参数，覆盖默认审核参数，优先级>系统默认审核参数
-	err = s.getInstanceInspectParams()
+	// 获取DB定义的审核参数，优先级>系统默认审核参数
+	err = s.initDBInspectParams()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("审核参数：", s.InspectParams)
 	// 初始化DB
 	s.initDB()
 	// RequestID
@@ -151,26 +145,19 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	kv := kv.NewKVCache(requestID)
 	// 获取目标数据库变量
 	dbVars, err := dao.GetDBVars(s.DB)
-	fmt.Println("dbVars, err: ", dbVars, err)
 	if err != nil {
-		errMsg := fmt.Sprintf("获取DB变量失败：%s", err.Error())
-		global.App.Log.Error(errMsg)
-		return returnData, fmt.Errorf(errMsg)
+		return returnData, fmt.Errorf("获取DB变量失败：%s", err.Error())
 	}
 	for k, v := range dbVars {
 		kv.Put(k, v)
 	}
 	s.Charset = dbVars["dbCharset"]
-
 	// 解析SQL
 	err = s.parser()
 	if err != nil {
-		global.App.Log.Error(err)
 		return returnData, err
 	}
-
 	// 迭代stmt
-	fmt.Println("s.Audit.TiStmt: ", s.Audit.TiStmt)
 	for _, stmt := range s.Audit.TiStmt {
 		// 移除SQL尾部的分号
 		sqlTrim := strings.TrimSuffix(stmt.Text(), ";")

@@ -12,7 +12,7 @@ import (
 )
 
 type RuleHint struct {
-	Summary        []string `json:"summary"` // 规则摘要
+	Summary        []string `json:"summary"` // 摘要
 	AffectedRows   int      `json:"affected_rows"`
 	IsSkipNextStep bool     // 是否跳过接下来的检查步骤
 	DB             *dao.DB

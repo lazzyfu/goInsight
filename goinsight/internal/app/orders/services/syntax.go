@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"goInsight/global"
 	commonModels "goInsight/internal/app/common/models"
-	inspectServices "goInsight/internal/app/inspect/services"
+	"goInsight/internal/app/inspect/checker"
 	"goInsight/internal/app/orders/forms"
 	"goInsight/internal/pkg/parser"
 
@@ -21,6 +21,36 @@ type SyntaxInspectService struct {
 	*forms.SyntaxInspectForm
 	C        *gin.Context
 	Username string
+}
+
+// 获取实例配置
+func (s *SyntaxInspectService) getInstanceConfig() (commonModels.InsightDBConfig, error) {
+	// 获取实例配置
+	var config commonModels.InsightDBConfig
+	tx := global.App.DB.Table("`insight_db_config`").
+		Where("instance_id=?", s.InstanceID).
+		First(&config)
+	if tx.RowsAffected == 0 {
+		return config, fmt.Errorf("未找到实例为%s配置", s.InstanceID)
+	}
+
+	return config, nil
+}
+
+// 审核SQL
+func (s *SyntaxInspectService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+	inspect := checker.SyntaxInspectService{
+		C:          s.C,
+		DbUser:     global.App.Config.RemoteDB.UserName,
+		DbPassword: global.App.Config.RemoteDB.Password,
+		DbHost:     config.Hostname,
+		DbPort:     config.Port,
+		DBParams:   config.InspectParams,
+		DBSchema:   s.Schema,
+		Username:   s.Username,
+		SqlText:    s.Content,
+	}
+	return inspect.Run()
 }
 
 func (s *SyntaxInspectService) Run() (interface{}, error) {
@@ -37,26 +67,28 @@ func (s *SyntaxInspectService) Run() (interface{}, error) {
 	if s.DBType == "ClickHouse" {
 		return nil, nil
 	}
+
 	// 获取实例配置
-	var config commonModels.InsightDBConfig
-	tx := global.App.DB.Table("`insight_db_config`").
-		Where("instance_id=?", s.InstanceID).
-		First(&config)
-	if tx.RowsAffected == 0 {
-		return nil, fmt.Errorf("未找到实例为%s配置", s.InstanceID)
+	config, err := s.getInstanceConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	// 审核
-	inspect := inspectServices.SyntaxInspectService{
-		C:          s.C,
-		DbUser:     global.App.Config.RemoteDB.UserName,
-		DbPassword: global.App.Config.RemoteDB.Password,
-		DbHost:     config.Hostname,
-		DbPort:     config.Port,
-		DBParams:   config.InspectParams,
-		DBSchema:   s.Schema,
-		Username:   s.Username,
-		SqlText:    s.Content,
+	returnData, err := s.inspectSQL(config)
+	if err != nil {
+		return nil, err
 	}
-	return inspect.Run()
+
+	// 检查语法检查是否通过
+	// status: 0表示语法检查通过，1表示语法检查不通过
+	status := 0
+	for _, row := range returnData {
+		if row.Level != "INFO" {
+			status = 1
+			break
+		}
+	}
+	// return
+	return map[string]interface{}{"status": status, "data": returnData}, nil
 }

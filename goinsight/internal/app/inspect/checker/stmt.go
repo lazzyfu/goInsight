@@ -1,4 +1,4 @@
-package services
+package checker
 
 import (
 	"fmt"
@@ -22,20 +22,24 @@ func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 	// 建表语句
 	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL", Level: "INFO"}
 	for _, rule := range rules.CreateTableRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.InspectParams = &s.InspectParams
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			InspectParams: &s.InspectParams,
+		}
+		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
-		if len(rule.Summary) > 0 {
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
 	}
+	fmt.Println("data: ", data)
 	return data
 }
 
@@ -43,16 +47,19 @@ func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 	// 建视图语句
 	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL", Level: "INFO"}
 	for _, rule := range rules.CreateViewRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.InspectParams = &s.InspectParams
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			InspectParams: &s.InspectParams,
+		}
+		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
-		if len(rule.Summary) > 0 {
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
@@ -73,19 +80,22 @@ func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 		return data, mergeAlter
 	}
 	for _, rule := range rules.AlterTableRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.InspectParams = &s.InspectParams
-		rule.CheckFunc(&rule, &stmt)
-		if len(rule.MergeAlter) > 0 && len(mergeAlter) == 0 {
-			mergeAlter = rule.MergeAlter
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			InspectParams: &s.InspectParams,
 		}
-		if len(rule.Summary) > 0 {
+		rule.RuleHint = ruleHint
+		rule.CheckFunc(&rule, &stmt)
+		if len(rule.RuleHint.MergeAlter) > 0 && len(mergeAlter) == 0 {
+			mergeAlter = rule.RuleHint.MergeAlter
+		}
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
@@ -97,16 +107,19 @@ func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 	// rename table语句
 	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL", Level: "INFO"}
 	for _, rule := range rules.RenameTableRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.InspectParams = &s.InspectParams
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			InspectParams: &s.InspectParams,
+		}
+		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
-		if len(rule.Summary) > 0 {
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
@@ -125,10 +138,6 @@ func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId stri
 			InspectParams: &s.InspectParams,
 		}
 
-		fmt.Printf("rule: %+v", rule)
-		// rule.DB = s.DB
-		// rule.KV = kv
-		// rule.InspectParams = &s.InspectParams
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 		if len(rule.RuleHint.Summary) > 0 {
@@ -148,16 +157,20 @@ func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string)
 	// drop/truncate语句
 	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL", Level: "INFO"}
 	for _, rule := range rules.DropTableRules() {
-		rule.DB = s.DB
-		rule.KV = kv
-		rule.InspectParams = &s.InspectParams
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			Query:         stmt.Text(),
+			InspectParams: &s.InspectParams,
+		}
+		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
-		if len(rule.Summary) > 0 {
+		if len(rule.RuleHint.Summary) > 0 {
 			// 检查不通过
 			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.Summary...)
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
 		}
-		if rule.IsSkipNextStep {
+		if rule.RuleHint.IsSkipNextStep {
 			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
 			break
 		}
@@ -186,12 +199,7 @@ func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) Retur
 			Query:         stmt.Text(),
 			InspectParams: &s.InspectParams,
 		}
-		// rule.DB = s.DB
-
-		// rule.KV = kv
-		// rule.InspectParams = &s.InspectParams
 		rule.RuleHint = ruleHint
-		// rule.Query = stmt.Text()
 		rule.CheckFunc(&rule, &stmt)
 		data.AffectedRows = rule.RuleHint.AffectedRows
 		if len(rule.RuleHint.Summary) > 0 {

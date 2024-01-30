@@ -466,9 +466,9 @@ export default {
                 if (res.code === '0000') {
                   this.$router.push('/orders/list')
                 } else {
-                  this.$notification.error({
-                    message: '错误',
-                    description: '提交的SQL内容不能为空',
+                  this.$notification.warning({
+                    message: '警告',
+                    description: res.message,
                   })
                 }
               })

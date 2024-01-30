@@ -90,7 +90,7 @@ func CreateOrdersView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
 	// 解析表单数据
-	var form forms.CreateOrderForm
+	var form *forms.CreateOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
 		return

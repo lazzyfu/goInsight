@@ -42,7 +42,7 @@ func (i *IndexPrefix) CheckUniquePrefix() error {
 		}
 	}
 	if len(unMatchKeys) > 0 {
-		return fmt.Errorf("唯一索引前缀不符合要求，必须以`%s`开头(不区分大小写)[表`%s`]", i.InspectParams.UNQI_INDEX_PREFIX, i.Table)
+		return fmt.Errorf("唯一索引前缀不符合要求，必须以`%s`开头（不区分大小写）[表`%s`]", i.InspectParams.UNQI_INDEX_PREFIX, i.Table)
 	}
 	return nil
 }
@@ -63,7 +63,7 @@ func (i *IndexPrefix) CheckSecondaryPrefix() error {
 		}
 	}
 	if len(unMatchKeys) > 0 {
-		return fmt.Errorf("二级索引前缀不符合要求，必须以`%s`开头(不区分大小写)[表`%s`]", i.InspectParams.SECONDARY_INDEX_PREFIX, i.Table)
+		return fmt.Errorf("二级索引前缀不符合要求，必须以`%s`开头（不区分大小写）[表`%s`]", i.InspectParams.SECONDARY_INDEX_PREFIX, i.Table)
 	}
 	return nil
 }
@@ -84,7 +84,7 @@ func (i *IndexPrefix) CheckFulltextPrefix() error {
 		}
 	}
 	if len(unMatchKeys) > 0 {
-		return fmt.Errorf("全文索引前缀不符合要求，必须以`%s`开头(不区分大小写)[表`%s`]", i.InspectParams.FULLTEXT_INDEX_PREFIX, i.Table)
+		return fmt.Errorf("全文索引前缀不符合要求，必须以`%s`开头（不区分大小写）[表`%s`]", i.InspectParams.FULLTEXT_INDEX_PREFIX, i.Table)
 	}
 	return nil
 }

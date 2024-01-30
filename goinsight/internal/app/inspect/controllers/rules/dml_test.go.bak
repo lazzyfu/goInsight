@@ -4,7 +4,7 @@
 @Desc    :   None
 
 # 测试
- ~/Desktop/github/gAudit/controllers/inspect/ [main*] go test -v
+ ~/Desktop [main*] go test -v
 === RUN   TestRuleDML
 === RUN   TestRuleDML/限制部分表进行语法审核
 === RUN   TestRuleDML/是否允许INSERT_INTO_SELECT语法
@@ -20,8 +20,8 @@ package rules
 import (
 	"crypto/rand"
 	"fmt"
-	"log"
 	"goInsight/internal/app/inspect/config"
+	"log"
 	"sqlSyntaxAudit/forms"
 	"sqlSyntaxAudit/global"
 	logger "sqlSyntaxAudit/middleware/log"

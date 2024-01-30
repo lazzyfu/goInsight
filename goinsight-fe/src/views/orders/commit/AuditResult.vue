@@ -11,7 +11,11 @@
       size="middle"
     >
       <template slot="summary" slot-scope="text">
-        <ul style="list-style-type: square;padding: 0 0 0 16px;margin: 2px;" v-for="(item, index) of text" :key="index">
+        <ul
+          style="list-style-type: square; padding: 0 0 0 16px; margin: 2px"
+          v-for="(item, index) of text"
+          :key="index"
+        >
           <li>{{ item }}</li>
         </ul>
       </template>
@@ -98,21 +102,17 @@ export default {
       }
     },
     renderData(res) {
-      if (res.code === '0001') {
-        this.$message.error(res.message)
-        return
-      }
       if (res.status === 0) {
-        this.$notification.error({
-              message: '错误',
-              description: '语法检查未通过，请根据下面输出提示进行更正，(ㄒoㄒ)',
-            })
+        this.$notification.success({
+          message: '成功',
+          description: '语法检查通过，您可以提交工单了，O(∩_∩)O',
+        })
       }
       if (res.status === 1) {
-        this.$notification.success({
-              message: '成功',
-              description: '语法检查通过，您可以提交工单了，O(∩_∩)O',
-            })
+        this.$notification.warning({
+          message: '警告',
+          description: '语法检查未通过，请根据下面输出提示进行更正，(ㄒoㄒ)',
+        })
       }
       this.tableData = res.data
     },
