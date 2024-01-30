@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"math/rand"
 	"regexp"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -158,4 +160,17 @@ func IsMatchPattern(pattern string, str string) bool {
 		}
 	}
 	return true
+}
+
+func GenerateRandomString(length int) string {
+	const charset = "0123456789ABCDEF"
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
+	result := make([]byte, length)
+	for i := range result {
+		result[i] = charset[rng.Intn(len(charset))]
+	}
+
+	return string(result)
 }

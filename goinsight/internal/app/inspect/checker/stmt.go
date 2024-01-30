@@ -1,14 +1,11 @@
 package checker
 
 import (
-	"fmt"
-	"goInsight/internal/pkg/kv"
-	"goInsight/internal/pkg/utils"
 	"regexp"
 
 	"goInsight/internal/app/inspect/controllers"
-	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/controllers/rules"
+	"goInsight/internal/pkg/kv"
 
 	"github.com/pingcap/tidb/parser/ast"
 	_ "github.com/pingcap/tidb/types/parser_driver"
@@ -44,23 +41,23 @@ func (s *Stmt) commonCheck(stmt ast.StmtNode, kv *kv.KVCache, fingerId string, s
 }
 
 func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL_CREATE_TABLE", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/CreateTable", rules.CreateTableRules)
 }
 
 func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL_CREATE_VIEW", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/CreateView", rules.CreateTableRules)
 }
 
 func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL_RENAME_TABLE", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/RenameTable", rules.CreateTableRules)
 }
 
 func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL_ANALYZE_TABLE", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/AnalyzeTable", rules.CreateTableRules)
 }
 
 func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL_DROP_TABLE", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/DropTable", rules.CreateTableRules)
 }
 
 func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
@@ -80,7 +77,7 @@ func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) Retur
 }
 
 func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) (ReturnData, string) {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL_ALTER_TABLE", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DDL/AlterTable", Level: "INFO"}
 	var mergeAlter string
 	// 禁止使用ALTER TABLE...ADD CONSTRAINT...语法
 	tmpCompile := regexp.MustCompile(`(?is:.*alter.*table.*add.*constraint.*)`)
@@ -113,21 +110,4 @@ func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 		}
 	}
 	return data, mergeAlter
-}
-
-func (s *Stmt) MergeAlter(kv *kv.KVCache, mergeAlters []string) ReturnData {
-	// 检查mysql merge操作
-	var data ReturnData = ReturnData{Level: "INFO"}
-	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
-	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
-		if ok, val := utils.IsRepeat(mergeAlters); ok {
-			for _, v := range val {
-				data.Summary = append(data.Summary, fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v))
-			}
-		}
-	}
-	if len(data.Summary) > 0 {
-		data.Level = "WARN"
-	}
-	return data
 }

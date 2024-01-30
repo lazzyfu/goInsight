@@ -44,7 +44,7 @@ const tableColumns = [
     },
   },
   {
-    title: '查询',
+    title: '语句',
     dataIndex: 'query',
     key: 'query',
     width: '25%',

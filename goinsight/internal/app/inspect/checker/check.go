@@ -9,6 +9,7 @@ import (
 	"goInsight/internal/app/inspect/config"
 	"goInsight/internal/app/inspect/controllers/dao"
 	"goInsight/internal/app/inspect/controllers/parser"
+	"goInsight/internal/app/inspect/controllers/process"
 	"goInsight/internal/app/inspect/models"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/query"
@@ -124,6 +125,23 @@ func (s *SyntaxInspectService) parser() error {
 	return nil
 }
 
+// 判断多条alter语句是否需要合并
+func (s *SyntaxInspectService) mergeAlters(kv *kv.KVCache, mergeAlters []string) ReturnData {
+	var data ReturnData = ReturnData{FingerId: utils.GenerateRandomString(16), Level: "INFO"}
+	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
+	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
+		if ok, val := utils.IsRepeat(mergeAlters); ok {
+			for _, v := range val {
+				data.Summary = append(data.Summary, fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v))
+			}
+		}
+	}
+	if len(data.Summary) > 0 {
+		data.Level = "WARN"
+	}
+	return data
+}
+
 func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	// 初始化系统默认审核参数
 	err = s.initDefaultInspectParams()
@@ -161,13 +179,10 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	for _, stmt := range s.Audit.TiStmt {
 		// 移除SQL尾部的分号
 		sqlTrim := strings.TrimSuffix(stmt.Text(), ";")
-
 		// 生成指纹ID
 		fingerId := query.Id(query.Fingerprint(sqlTrim))
-
 		// 存储指纹ID
 		kv.Put(fingerId, true)
-
 		// 迭代
 		st := Stmt{s}
 		switch stmt.(type) {
@@ -198,6 +213,17 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 			data.Summary = append(data.Summary, "不被允许的审核语句，请联系数据库管理员")
 			returnData = append(returnData, data)
 		}
+	}
+	// 判断多条alter语句是否需要合并
+	if len(mergeAlters) > 1 {
+		mergeData := s.mergeAlters(kv, mergeAlters)
+		if len(mergeData.Summary) > 0 {
+			returnData = append(returnData, mergeData)
+		}
+	}
+	// 比如只传递了注释,如:#
+	if len(s.Audit.TiStmt) == 0 {
+		return
 	}
 	return
 }
