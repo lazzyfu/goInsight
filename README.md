@@ -20,7 +20,7 @@
 
 ### 安装说明
 
-#### 一、下载二进制包
+#### 1.下载二进制包
 
 > 下载前请更新为最新的发行版本
 
@@ -29,11 +29,11 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-lin
 ```
 
 
-#### 三、安装gh-ost工具
+#### 2.安装gh-ost工具
 
 请下载安装：<https://github.com/github/gh-ost>
 
-#### 四、启动服务
+#### 3.启动服务
 
 > 请先调整配置文件，否则可能因访问不到数据库而无法启动
 
@@ -41,7 +41,7 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-lin
 ./goInsight -config config.yaml
 ```
 
-#### 五、访问Web
+#### 4.访问Web界面
 
 访问地址：<http://ip:port>
 
