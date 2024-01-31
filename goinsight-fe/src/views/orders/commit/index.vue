@@ -110,7 +110,7 @@
               </a-form-item>
               <a-form-item label="审核人" help="请至少选择2位工单审核人" has-feedback>
                 <a-select
-                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人'  ,validator: validatorApprover  }] }]"
+                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人', validator: validatorApprover  }] }]"
                   placeholder="请选择工单审核人"
                   mode="multiple"
                   allowClear
@@ -466,9 +466,9 @@ export default {
                 if (res.code === '0000') {
                   this.$router.push('/orders/list')
                 } else {
-                  this.$notification.error({
-                    message: '错误',
-                    description: '提交的SQL内容不能为空',
+                  this.$notification.warning({
+                    message: '警告',
+                    description: res.message,
                   })
                 }
               })

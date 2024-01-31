@@ -8,7 +8,7 @@ package middleware
 import (
 	"errors"
 	"goInsight/global"
-	userModels "goInsight/internal/app/users/models"
+	userModels "goInsight/internal/apps/users/models"
 
 	"goInsight/internal/pkg/response"
 

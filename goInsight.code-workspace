@@ -5,9 +5,9 @@
         }
     ],
     "settings": {
-        "editor.fontFamily": "Input Mono Condensed,JetBrains Mono NL",
-        "editor.fontSize": 14,
-        "editor.lineHeight": 22,
+        "editor.fontFamily": "Droid Sans Mono for powerline,Input Mono Condensed,JetBrains Mono NL",
+        "editor.fontSize": 13.6,
+        "editor.lineHeight": 21,
         "terminal.integrated.fontSize": 14,
         "workbench.colorTheme": "Default High Contrast Light",
         "go.inferGopath": true,

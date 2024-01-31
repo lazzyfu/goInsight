@@ -64,6 +64,9 @@
           <a type="dashed" @click="DeleteConfirm(record.id)"><span style="color: #409eff">删除</span></a>
         </div>
       </span>
+      <span slot="expandedRowRender" slot-scope="record">
+        <pre>{{ JSON.stringify(record.inspect_params, null, 2) }}</pre>
+      </span>
     </a-table>
     <DBConfigsAddComponent ref="DBConfigsAddComponent" @refreshTable="getDBConfig"></DBConfigsAddComponent>
     <DBConfigsEditComponent ref="DBConfigsEditComponent" @refreshTable="getDBConfig"></DBConfigsEditComponent>
@@ -194,11 +197,11 @@ export default {
         this.$message.error('Failed to fetch environments:', error)
       }
     },
-    async getOrganizations(){
+    async getOrganizations() {
       try {
         const res = await getOrganizationsApi({ is_page: false })
         this.organizations = res.data
-      } catch (error){
+      } catch (error) {
         this.$message.error('Failed to fetch organizations:', error)
       }
     },

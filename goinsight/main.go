@@ -12,10 +12,11 @@ import (
 	"net/http"
 	"strings"
 
-	commonRouter "goInsight/internal/app/common/router"
-	dasRouter "goInsight/internal/app/das/router"
-	ordersRouter "goInsight/internal/app/orders/router"
-	userRouter "goInsight/internal/app/users/router"
+	commonRouter "goInsight/internal/apps/common/router"
+	dasRouter "goInsight/internal/apps/das/router"
+	inspectRouter "goInsight/internal/apps/inspect/router"
+	ordersRouter "goInsight/internal/apps/orders/router"
+	userRouter "goInsight/internal/apps/users/router"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,6 +42,7 @@ func RunServer() {
 	// 加载多个APP的路由配置
 	routers.Include(userRouter.Routers)
 	routers.Include(commonRouter.Routers)
+	routers.Include(inspectRouter.Routers)
 	routers.Include(dasRouter.Routers)
 	routers.Include(ordersRouter.Routers)
 

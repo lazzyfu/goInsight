@@ -73,6 +73,26 @@
         >
         </a-input-number>
       </a-form-item>
+      <a-form-item label="审核参数" help="格式要求为JSON类型" has-feedback>
+        <a-textarea
+          :auto-size="{ minRows: 3, maxRows: 5 }"
+          placeholder="请输入自定义审核参数，默认为{}"
+          v-decorator="[
+            'inspect_params',
+            {
+              initialValue: '{}',
+              rules: [
+                {
+                  required: true,
+                  message: '请输入自定义审核参数，默认为{}',
+                  validator: validatorInspectParams,
+                },
+              ],
+            },
+          ]"
+        >
+        </a-textarea>
+      </a-form-item>
       <a-form-item label="备注" has-feedback>
         <a-input
           v-decorator="[
@@ -101,6 +121,14 @@ export default {
       environments: [],
       organizations: [],
       form: this.$form.createForm(this, { name: 'dbconfigAdd' }),
+      validatorInspectParams: (rule, value, callback) => {
+        try {
+          JSON.parse(value)
+        } catch (error) {
+          return callback('请输入正确的JSON格式')
+        }
+        callback()
+      },
     }
   },
   methods: {
@@ -119,11 +147,11 @@ export default {
         this.$message.error('Failed to fetch environments:', error)
       }
     },
-    async getOrganizations(){
+    async getOrganizations() {
       try {
         const res = await getOrganizationsApi({ is_page: false })
         this.organizations = res.data
-      } catch (error){
+      } catch (error) {
         this.$message.error('Failed to fetch organizations:', error)
       }
     },
@@ -149,6 +177,8 @@ export default {
           values['port'] = parseInt(values['port'], 10)
           // 确保转换成功后再进行后续操作
           if (!isNaN(values['port'])) {
+            // 将 values['inspect_params'] 转换为 JSON 对象
+            values['inspect_params'] = JSON.parse(values['inspect_params'])
             this.createDBConfig(values)
           }
         }
