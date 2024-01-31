@@ -123,7 +123,6 @@ func (s *CreateOrdersService) toJson(values []string) (datatypes.JSON, error) {
 
 // 审核SQL
 func (s *CreateOrdersService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
-	fmt.Println("sss: ", s.Content, s.Schema)
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
 		DbUser:     global.App.Config.RemoteDB.UserName,
