@@ -6,6 +6,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"goInsight/global"
 	"goInsight/internal/app/inspect/forms"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
+	"gorm.io/datatypes"
 )
 
 type AdminInspectParamsServices struct {
@@ -39,9 +41,24 @@ type AdminUpdateInspectParamsService struct {
 }
 
 func (s *AdminUpdateInspectParamsService) Run() error {
+	// 拦截，避免客户端将KEY修改了
+	for key := range s.Params {
+		var num int64
+		global.App.DB.Model(&models.InsightInspectParams{}).Select("json_contains_path(params, 'one', ?)", "$."+key).Where("id=?", s.ID).Scan(&num)
+		if num == 0 {
+			return fmt.Errorf("修改失败，禁止修改KEY：%s", key)
+		}
+	}
+
+	// 审核参数
+	jsonParams, err := json.Marshal(s.Params)
+	if err != nil {
+		return err
+	}
+
 	// 更新记录
 	result := global.App.DB.Model(&models.InsightInspectParams{}).Where("id=?", s.ID).Updates(map[string]interface{}{
-		"param":  s.Params,
+		"params": datatypes.JSON(jsonParams),
 		"remark": s.Remark,
 	})
 	if result.Error != nil {

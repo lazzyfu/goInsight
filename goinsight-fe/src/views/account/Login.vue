@@ -138,7 +138,7 @@ export default {
     loginSuccess(res) {
       if (res.code === 200) {
         this.$router.push({
-          path: '/',
+          name: 'menu.home',
         })
         // 延迟 1 秒显示欢迎信息
         setTimeout(() => {

@@ -26,79 +26,26 @@
           <a @click="() => editRow(record)"><span style="color: #409eff">编辑</span></a>
         </div>
       </span>
+      <span slot="expandedRowRender" slot-scope="record">
+        <pre>{{ JSON.stringify(record.params, null, 2) }}</pre>
+      </span>
     </a-table>
-    <!-- <DBConfigsEditComponent ref="DBConfigsEditComponent" @refreshTable="GetInspectParams"></DBConfigsEditComponent> -->
+    <InspectEditComponent ref="InspectEditComponent" @refreshTable="GetInspectParams"></InspectEditComponent>
   </a-card>
 </template>
 
 <script>
 import { adminGetInspectParamsApi  } from '@/api/inspect'
 
-// import DBConfigsEditComponent from './DBConfigsEdit'
+import InspectEditComponent from './InspectEdit'
 
 const tableColumns = [
-  {
-    title: '用途',
-    dataIndex: 'use_type',
-    key: 'use_type',
-    scopedSlots: {
-      customRender: 'use_type',
-    },
-  },
-  {
-    title: '环境',
-    dataIndex: 'environment_name',
-    key: 'environment_name',
-    scopedSlots: {
-      customRender: 'environment_name',
-    },
-  },
-  {
-    title: '类型',
-    dataIndex: 'db_type',
-    key: 'db_type',
-    scopedSlots: {
-      customRender: 'db_type',
-    },
-  },
-  {
-    title: '组织',
-    dataIndex: 'organization_name',
-    key: 'organization_name',
-    scopedSlots: {
-      customRender: 'organization_name',
-    },
-  },
-  {
-    title: '主机名',
-    dataIndex: 'hostname',
-    key: 'hostname',
-    scopedSlots: {
-      customRender: 'hostname',
-    },
-  },
-  {
-    title: '端口',
-    dataIndex: 'port',
-    key: 'port',
-    scopedSlots: {
-      customRender: 'port',
-    },
-  },
   {
     title: '备注',
     dataIndex: 'remark',
     key: 'remark',
     scopedSlots: {
       customRender: 'remark',
-    },
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'created_at',
-    key: 'created_at',
-    scopedSlots: {
-      customRender: 'created_at',
     },
   },
   {
@@ -120,9 +67,9 @@ const tableColumns = [
 ]
 
 export default {
-  // components: {
-  //   DBConfigsEditComponent,
-  // },
+  components: {
+    InspectEditComponent,
+  },
   data() {
     return {
       loading: false,
@@ -162,7 +109,7 @@ export default {
         })
     },
     editRow(row) {
-      // this.$refs.DBConfigsEditComponent.showModal(row)
+      this.$refs.InspectEditComponent.showModal(row)
     },
     handleTableChange(pager) {
       this.pagination.current = pager.current
