@@ -45,19 +45,19 @@ func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 }
 
 func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL/CreateView", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/CreateView", rules.CreateViewRules)
 }
 
 func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL/RenameTable", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/RenameTable", rules.RenameTableRules)
 }
 
 func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL/AnalyzeTable", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/AnalyzeTable", rules.AnalyzeTableRules)
 }
 
 func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	return s.commonCheck(stmt, kv, fingerId, "DDL/DropTable", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DDL/DropTable", rules.DropTableRules)
 }
 
 func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
@@ -73,7 +73,7 @@ func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) Retur
 			IsSkipAudit = true
 		}
 	*/
-	return s.commonCheck(stmt, kv, fingerId, "DML", rules.CreateTableRules)
+	return s.commonCheck(stmt, kv, fingerId, "DML", rules.DMLRules)
 }
 
 func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) (ReturnData, string) {
