@@ -4,10 +4,10 @@
 ![](https://img.shields.io/static/v1?label=Vue&message=AntDesignVue&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
 
-:two_hearts:goInsight是一个集语法审核、工单执行回滚和数据查询的平台。
+:two_hearts:goInsight是一个集语法审核、工单提交、审批、执行和数据查询的平台，旨在规范上线流程、减少风险、解放DBA生产力。
 
 
-:point_right:[文档](https://github.com/lazzyfu/goInsight/wiki)
+:point_right:[点击查看预览图和文档](https://github.com/lazzyfu/goInsight/wiki)
 
 ### 核心功能
 
@@ -17,7 +17,7 @@
 - 支持工单执行、执行结果、执行日志、DML生成回滚SQL语句
 - 支持数据查询功能、支持为用户配置库表级别数据查询权限、支持黑名单、支持查询审计
 - 支持钉钉/企业微信机器人/邮件推送消息
-- 支持MySQL5.6+/TiDB4+，计划支持Clickhouse
+- 支持MySQL5.6+/TiDB4+
 
 ### 安装说明
 
