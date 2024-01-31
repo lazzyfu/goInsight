@@ -4,7 +4,7 @@
 ![](https://img.shields.io/static/v1?label=Vue&message=AntDesignVue&color=green&?style=flat-square)
 ![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
 
-:two_hearts:goInsight是一个集语法审核、工单提交、审批、执行和数据查询的平台，旨在规范上线流程、减少风险、解放DBA生产力。
+:two_hearts:goInsight是一个集语法审核、工单提交/审批/执行和数据查询的平台，旨在规范上线流程、减少风险、解放DBA生产力。
 
 
 :point_right:[点击查看预览图和文档](https://github.com/lazzyfu/goInsight/wiki)
