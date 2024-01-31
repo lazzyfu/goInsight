@@ -386,6 +386,10 @@ export default {
   line-height: 20px;
 }
 
+/deep/.ant-tree li {
+  padding: 2px 0;
+}
+
 .table-page-search-wrapper {
   .ant-form-inline {
     .ant-form-item {

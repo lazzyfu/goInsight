@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"goInsight/global"
-	"goInsight/internal/app/users/models"
+	"goInsight/internal/apps/users/models"
 	"goInsight/internal/pkg/utils"
 	"net/http"
 

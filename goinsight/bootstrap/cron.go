@@ -2,8 +2,8 @@ package bootstrap
 
 import (
 	"goInsight/global"
-	commonTasks "goInsight/internal/app/common/tasks"
-	dasTasks "goInsight/internal/app/das/tasks"
+	commonTasks "goInsight/internal/apps/common/tasks"
+	dasTasks "goInsight/internal/apps/das/tasks"
 	"time"
 
 	"github.com/robfig/cron/v3"

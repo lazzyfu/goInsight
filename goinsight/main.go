@@ -12,11 +12,11 @@ import (
 	"net/http"
 	"strings"
 
-	commonRouter "goInsight/internal/app/common/router"
-	dasRouter "goInsight/internal/app/das/router"
-	inspectRouter "goInsight/internal/app/inspect/router"
-	ordersRouter "goInsight/internal/app/orders/router"
-	userRouter "goInsight/internal/app/users/router"
+	commonRouter "goInsight/internal/apps/common/router"
+	dasRouter "goInsight/internal/apps/das/router"
+	inspectRouter "goInsight/internal/apps/inspect/router"
+	ordersRouter "goInsight/internal/apps/orders/router"
+	userRouter "goInsight/internal/apps/users/router"
 
 	"github.com/gin-gonic/gin"
 )
