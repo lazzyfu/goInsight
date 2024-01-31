@@ -4,7 +4,10 @@
       <a-tab-pane key="1" tab="系统环境配置">
         <SystemEnvironmentsComponent></SystemEnvironmentsComponent>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="数据库实例配置">
+      <a-tab-pane key="2" tab="审核参数配置">
+        <InspectComponent></InspectComponent>
+      </a-tab-pane>
+      <a-tab-pane key="3" tab="数据库实例配置">
         <DBConfigsComponent></DBConfigsComponent>
       </a-tab-pane>
       <a-tab-pane key="4" tab="数据查询权限配置">
@@ -17,12 +20,14 @@
 <script>
 // 导入子组件
 import DBConfigsComponent from './db-configs'
+import InspectComponent from './inspect'
 import SystemEnvironmentsComponent from './system-environments'
 import DasComponent from './das'
 
 export default {
   components: {
     DBConfigsComponent,
+    InspectComponent,
     SystemEnvironmentsComponent,
     DasComponent,
   },

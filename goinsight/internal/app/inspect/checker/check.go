@@ -73,7 +73,7 @@ func (s *SyntaxInspectService) initDefaultInspectParams() error {
 	// 初始化map存储参数
 	jsonParams := make(map[string]json.RawMessage)
 	for _, row := range rows {
-		err := json.Unmarshal(row.Param, &jsonParams)
+		err := json.Unmarshal(row.Params, &jsonParams)
 		if err != nil {
 			return fmt.Errorf("解析 JSON 参数失败: %v", err)
 		}

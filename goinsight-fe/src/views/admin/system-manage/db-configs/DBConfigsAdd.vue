@@ -177,6 +177,8 @@ export default {
           values['port'] = parseInt(values['port'], 10)
           // 确保转换成功后再进行后续操作
           if (!isNaN(values['port'])) {
+            // 将 values['inspect_params'] 转换为 JSON 对象
+            values['inspect_params'] = JSON.parse(values['inspect_params'])
             this.createDBConfig(values)
           }
         }
