@@ -53,13 +53,24 @@ export default {
           checkbox: true,
         },
       ]
+      // 后端返回的field包含state关键字
+      var field_with_state = false
       for (const [i, v] of columns.entries()) {
+        if (v === 'state') {
+          field_with_state = true
+        }
         cols.push({
           field: v,
           title: v,
           escape: true,
         })
       }
+      // 当后端返回的field包含state关键字时，移除checkbox，不支持copy和checkbox功能，在不改动后端的情况下，暂时没想到好的办法
+      if (field_with_state) {
+        var newCols = cols.slice(1)
+        return newCols
+      }
+      // 没有发现关键字，正常返回
       return cols
     },
     // 渲染表格

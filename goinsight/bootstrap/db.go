@@ -308,8 +308,8 @@ func initializeInspectParams(db *gorm.DB) {
 			panic(err)
 		}
 		_ = db.FirstOrCreate(&inspectParams, inspectModels.InsightInspectParams{
-			Params: jsonParams,
 			Remark: i["remark"].(string),
+			Params: jsonParams,
 		})
 	}
 }
