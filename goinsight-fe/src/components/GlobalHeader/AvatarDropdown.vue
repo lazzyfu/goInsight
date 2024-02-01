@@ -51,11 +51,8 @@ export default {
         title: '提示',
         content: '您确定退出登录?',
         onOk: () => {
-          // return new Promise((resolve, reject) => {
-          //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-          // }).catch(() => console.log('Oops errors!'))
           return this.$store.dispatch('Logout').then(() => {
-            this.$router.push({ path: '/user/login' })
+            this.$router.go(0)
           })
         },
         onCancel() {},
