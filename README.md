@@ -4,7 +4,7 @@
 ![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
-goInsight是一个集成数据库工单和数据检索的平台，提供语法审核、工单流、数据库表查询能力，旨在规范流程、降低风险、解放DBA生产力。
+goInsight是一个集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力，旨在规范流程、降低风险、解放DBA生产力。
 
 ## 文档
 :point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
