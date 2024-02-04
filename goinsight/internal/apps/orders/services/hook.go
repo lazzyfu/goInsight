@@ -67,21 +67,22 @@ func (s *HookOrdersService) Run() error {
 	}
 	// 目标环境不允许为原始工单所在的环境
 	if !s.isExist(record.Title) {
-		return errors.New("HOOK失败，目标环境已存在当前工单")
+		return errors.New("hook操作失败，目标环境已存在当前工单，同一个环境不允许重复hook")
 	}
 	// 判断进度
 	approver := record.Approver
-	reviewer := record.Reviewer
+	// 重置审核状态
 	if s.Progress == "待审核" {
 		var err error
 		approver, err = s.resetStatus(record.Approver)
 		if err != nil {
 			return err
 		}
-		reviewer, err = s.resetStatus(record.Reviewer)
-		if err != nil {
-			return err
-		}
+	}
+	// 重置复核状态
+	reviewer, err := s.resetStatus(record.Reviewer)
+	if err != nil {
+		return err
 	}
 	// 生成新的工单ID
 	orderID := uuid.New()
@@ -96,8 +97,9 @@ func (s *HookOrdersService) Run() error {
 		Environment:      s.Environment,
 		InstanceID:       record.InstanceID,
 		Schema:           s.Schema,
-		Applicant:        s.Username, // 谁执行的hook，申请人改为谁
+		Applicant:        s.Username, // warn：谁执行的hook，申请人改为谁
 		Approver:         approver,
+		Executor:         record.Executor,
 		Reviewer:         reviewer,
 		CC:               record.CC,
 		Content:          record.Content,

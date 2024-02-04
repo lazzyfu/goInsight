@@ -204,7 +204,7 @@ func (s *CreateOrdersService) Run() error {
 		Title:            title,
 		OrderID:          orderID,
 		Remark:           s.Remark,
-		IsRestrictAccess: s.IsRestrictAccess,
+		IsRestrictAccess: *s.IsRestrictAccess,
 		SQLType:          s.SQLType,
 		DBType:           s.DBType,
 		Environment:      s.Environment,
