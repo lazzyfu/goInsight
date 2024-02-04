@@ -23,7 +23,7 @@ type GetUsersForm struct {
 type CreateOrderForm struct {
 	Title            string          `form:"title" json:"title" binding:"required,min=5,max=96"`
 	Remark           string          `form:"remark" json:"remark" binding:"max=1024"`
-	IsRestrictAccess bool            `form:"is_restrict_access" json:"is_restrict_access" validate:"boolean" binding:"required"`
+	IsRestrictAccess *bool           `form:"is_restrict_access" json:"is_restrict_access" validate:"boolean" binding:"required"`
 	DBType           models.EnumType `form:"db_type" json:"db_type" binding:"required,oneof=MySQL TiDB ClickHouse"`
 	SQLType          models.EnumType `form:"sql_type" json:"sql_type" binding:"required,oneof=DML DDL EXPORT"`
 	Environment      int             `form:"environment" json:"environment" binding:"required"`

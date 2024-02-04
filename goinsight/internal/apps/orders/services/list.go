@@ -124,7 +124,7 @@ func (s *GetOpLogsServices) Run() (responseData interface{}, err error) {
 	var records []ordersModels.InsightOrderOpLogs
 	tx := global.App.DB.Table("insight_order_oplogs").
 		Where("order_id=?", s.OrderID).
-		Order("created_at desc").Scan(&records)
+		Scan(&records)
 	if tx.RowsAffected == 0 {
 		return records, fmt.Errorf("记录`%s`不存在", s.OrderID)
 	}

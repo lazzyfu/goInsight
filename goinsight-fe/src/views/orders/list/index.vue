@@ -65,7 +65,7 @@
           {{ text }}
         </a-tag>
       </span>
-      <span slot="applicant" slot-scope="text, record">
+      <span slot="applicant" slot-scope="text, record" style="display: flex; align-items: center; margin-right: 4px;">
         <a-tooltip>
           <template slot="title">
             <span v-if="record.is_restrict_access"
@@ -77,9 +77,10 @@
             type="lock"
             theme="twoTone"
             two-tone-color="#eb2f96"
+            style="margin-right: 2px"
             v-if="record.is_restrict_access"
           />
-          <a-icon type="unlock" v-else />
+          <a-icon type="unlock" style="margin-right: 2px" v-else />
         </a-tooltip>
         {{ text }}
       </span>
