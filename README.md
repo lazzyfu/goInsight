@@ -2,9 +2,12 @@
 
 ![](https://img.shields.io/github/languages/top/lazzyfu/goInsight)
 ![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
+[![downloads](https://img.shields.io/github/downloads/lazzyfu/goInsight/total.svg)](https://github.com/lazzyfu/goInsight/releases)
+[![release](https://img.shields.io/github/v/release/lazzyfu/goInsight.svg)](https://github.com/lazzyfu/goInsight/releases)
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
-goInsight是一个集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力，旨在规范流程、降低风险、解放DBA生产力。
+
+goInsight是一个集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力。
 
 ## 文档
 :point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
@@ -19,8 +22,8 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
   - 支持钉钉/企业微信机器人/邮件推送消息。
   
 ## 限制 
-  - **工单** - 目前仅支持MySQL5.6+、TiDB数据库提交DML/DDL语句，单个工单最大限制2048条SQL语句。
-  - **查询** - 目前仅支持MySQL、TiDB、ClickHouse数据库，默认返回100条记录（可调整），仅支持只读操作，变更请使用工单。
+  - **工单** - 支持MySQL/TiDB数据库，支持提交DML/DDL语句，单个工单最大支持提交2048条SQL语句。
+  - **查询** - 支持MySQL/TiDB/ClickHouse数据库，默认返回100条记录（可调整），仅支持只读操作，变更请使用`工单`。
 
 
 ## 安装
@@ -30,7 +33,7 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
 下载前请更新下载链接中的`版本号`为最新的`发行版本`。
 
 ```
-wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-linux-amd64-v1.0.2.tar.gz
+wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-linux-amd64-v1.1.0.tar.gz
 ```
 
 ### 安装gh-ost工具
