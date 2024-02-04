@@ -11,4 +11,5 @@ type HookOrdersForm struct {
 	Environment int             `form:"environment" json:"environment" binding:"required"`
 	InstanceID  string          `form:"instance_id" json:"instance_id" binding:"required,uuid"`
 	Schema      string          `form:"schema" json:"schema" binding:"max=1024"`
+	NewSchema   string          `form:"new_schema" json:"new_schema" binding:"max=1024"`
 }

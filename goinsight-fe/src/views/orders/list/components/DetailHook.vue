@@ -50,7 +50,7 @@
       </a-form-item>
       <a-form-item label="库名" has-feedback>
         <a-select
-          v-decorator="['schema', { rules: [{ required: true, message: '请选择数据库' }] }]"
+          v-decorator="['new_schema', { rules: [{ required: true, message: '请选择数据库' }] }]"
           placeholder="请选择数据库"
           allowClear
           show-search
@@ -119,7 +119,7 @@ export default {
     // Change环境
     changeEnvs(value) {
       // Change环境时清空指定的字段
-      this.form.resetFields(['instance_id', 'schema'])
+      this.form.resetFields(['instance_id', 'new_schema'])
       // 获取指定环境的实例
       var params = {
         id: value,
@@ -135,7 +135,7 @@ export default {
     // Change实例
     changeIns(value) {
       // Change实例时清空指定的字段
-      this.form.resetFields(['schema'])
+      this.form.resetFields(['new_schema'])
       // 获取指定实例的Schemas
       var params = {
         instance_id: value,
