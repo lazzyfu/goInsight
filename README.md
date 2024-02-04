@@ -61,3 +61,5 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.0.0/goInsight-lin
 ## 联系作者
 
 E-mail: `1126227133@qq.com`
+
+QQ群号：`1036608328`
