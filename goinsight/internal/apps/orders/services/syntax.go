@@ -58,7 +58,7 @@ func (s *SyntaxInspectService) Run() (interface{}, error) {
 		return nil, err
 	}
 	if s.SQLType == "EXPORT" {
-		// 导出工单仅检查语法是否有效，不审核
+		// 导出工单仅检查语法是否有效，不审核，CheckSqlType已经判断类型为SELECT了
 		return nil, nil
 	}
 	// clickhouse不审核

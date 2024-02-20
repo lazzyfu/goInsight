@@ -38,12 +38,12 @@ const route = [
         component: () => import('@/views/orders/commit/index.vue'),
         meta: { title: 'DML工单' },
       },
-      // {
-      //   path: 'export',
-      //   name: `view.orders.commit.export`,
-      //   component: () => import('@/views/orders/commit/index.vue'),
-      //   meta: { title: '导出工单' },
-      // },
+      {
+        path: 'export',
+        name: `view.orders.commit.export`,
+        component: () => import('@/views/orders/commit/index.vue'),
+        meta: { title: '导出工单' },
+      },
     ],
   },
 ]

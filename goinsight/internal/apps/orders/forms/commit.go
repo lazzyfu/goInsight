@@ -34,4 +34,5 @@ type CreateOrderForm struct {
 	Reviewer         []string        `form:"reviewer" json:"reviewer" binding:"required"`
 	CC               []string        `form:"cc" json:"cc"`
 	Content          string          `form:"content" json:"content" binding:"required"`
+	ExportFileFormat models.EnumType `form:"export_file_format" json:"export_file_format" binding:"required,oneof=XLSX CSV"`
 }
