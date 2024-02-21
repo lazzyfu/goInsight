@@ -19,7 +19,7 @@
     "@popperjs/core": "^2.11.8",
     "@types/node": "^20.5.6",
     "ant-design-vue": "^1.7.8",
-    "axios": "^0.26.1",
+    "axios": "^0.28.0",
     "babel-loader": "8",
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.11.1",
