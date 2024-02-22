@@ -21,7 +21,7 @@ type ExecuteExportMySQLData struct {
 	*DBConfig
 }
 
-// 流式写入
+// 通过游标读取数据流式写入到文件，避免海量数据打爆内存
 func (e *ExecuteExportMySQLData) toExcel(db *sql.DB, query string) (file ExportFile, err error) {
 	// Execute the SQL query
 	rows, err := db.Query(query)
