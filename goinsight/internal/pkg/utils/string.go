@@ -163,7 +163,7 @@ func IsMatchPattern(pattern string, str string) bool {
 }
 
 func GenerateRandomString(length int) string {
-	const charset = "0123456789ABCDEF"
+	const charset = "0123456789ABCDEF!@#$%&*+=-<>[]{}"
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
 

@@ -224,6 +224,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 		SQLType:  record.SQLType,
 		SQL:      task.SQL,
 		OrderID:  task.OrderID.String(),
+		TaskID:   task.TaskID.String(),
 	}
 	// 执行工单
 	executor := api.NewExecuteSQLAPI(&config)

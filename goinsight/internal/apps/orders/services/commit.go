@@ -250,8 +250,6 @@ func (s *CreateOrdersService) Run() error {
 		receiver = append(receiver, s.Reviewer...)
 		receiver = append(receiver, s.CC...)
 
-		// msg := fmt.Sprintf("您好，用户%s提交了工单\n>工单标题：%s\n>备注：%s\n>审核人：%s\n>复核人：%s\n执行人：%s\n>抄送：%s\n>环境：%s\n>DB类型：%s\n>SQL类型：%s\n>库名：%s",
-		// 	s.Username, title, s.Remark, strings.Join(s.Approver, ","), strings.Join(s.Reviewer, ","), strings.Join(s.Executor, ","), strings.Join(s.CC, ","), env.Name, s.DBType, s.SQLType, s.Schema)
 		msg := fmt.Sprintf(
 			"您好，用户%s提交了工单，(*￣︶￣)\n"+
 				">工单标题：%s\n"+
@@ -261,8 +259,8 @@ func (s *CreateOrdersService) Run() error {
 				">执行人：%s\n"+
 				">抄送：%s\n"+
 				">环境：%s\n"+
-				">DB类型：%s\n"+
-				">SQL类型：%s\n"+
+				">数据库类型：%s\n"+
+				">工单类型：%s\n"+
 				">库名：%s",
 			s.Username, title, s.Remark,
 			strings.Join(s.Approver, ","), strings.Join(s.Reviewer, ","), strings.Join(s.Executor, ","), strings.Join(s.CC, ","),
