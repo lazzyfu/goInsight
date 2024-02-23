@@ -31,5 +31,6 @@ func Routers(r *gin.Engine) {
 		v1.GET("tasks/preview", views.PreviewTasksView)
 		v1.POST("tasks/execute-single", views.ExecuteSingleTaskView)
 		v1.POST("tasks/execute-all", views.ExecuteAllTaskView)
+		v1.GET("download/exportfile/:task_id", views.DownloadExportFileView)
 	}
 }

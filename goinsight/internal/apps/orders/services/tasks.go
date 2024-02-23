@@ -8,6 +8,7 @@ import (
 	"goInsight/internal/apps/orders/api"
 	"goInsight/internal/apps/orders/forms"
 	ordersModels "goInsight/internal/apps/orders/models"
+	"goInsight/internal/pkg/notifier"
 	"goInsight/internal/pkg/pagination"
 	"goInsight/internal/pkg/parser"
 	"goInsight/internal/pkg/utils"
@@ -132,18 +133,32 @@ func (s *PreviewTasksServices) Run() (responseData interface{}, err error) {
 
 // 检查工单所有任务是否完成，如果所有子任务已完成，更新工单状态为已完成
 func updateOrderStatusToFinish(order_id string) {
-	type Record struct {
+	// 判断所有任务是否都完成
+	type TaskCount struct {
 		Count int64
 	}
-	var record Record
+	var taskCount TaskCount
 	global.App.DB.Table("`insight_order_tasks`").
 		Select("count(*) as count").
 		Where("order_id=? and progress != '已完成'", order_id).
-		Scan(&record)
-	if record.Count == 0 {
+		Scan(&taskCount)
+	if taskCount.Count == 0 {
+		// 更新工单为已完成
 		global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
 			Where("order_id=?", order_id).
 			Update("progress", "已完成")
+
+		// 发送通知消息
+		var record ordersModels.InsightOrderRecords
+		global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
+			Where("order_id=?", order_id).Scan(&record)
+		receiver := []string{record.Applicant}
+		msg := fmt.Sprintf(
+			"您好，工单已经执行完成，请悉知，(*￣︶￣)\n"+
+				">工单标题：%s",
+			record.Title,
+		)
+		notifier.SendMessage(record.Title, order_id, receiver, msg)
 	}
 }
 
@@ -192,6 +207,52 @@ func checkOrderStatus(order_id string, username string) error {
 		return nil
 	}
 	return fmt.Errorf("执行失败，当前工单状态为：%s", string(record.Progress))
+}
+
+func sendExportFileInfoToApplicant(task_id uuid.UUID) {
+	var task ordersModels.InsightOrderTasks
+	global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
+		Where("task_id=?", task_id).Scan(&task)
+
+	var record ordersModels.InsightOrderRecords
+	global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
+		Where("order_id=?", task.OrderID).Scan(&record)
+
+	if record.SQLType != "EXPORT" {
+		return
+	}
+
+	type exportFile struct {
+		FileName      string `json:"file_name"`
+		FileSize      int64  `json:"file_size"`
+		FilePath      string `json:"file_path"`
+		ContentType   string `json:"content_type"`
+		EncryptionKey string `json:"encryption_key"`
+		ExportRows    int64  `json:"export_rows"`
+	}
+	var file exportFile
+	_ = json.Unmarshal([]byte(task.Result), &file)
+
+	receiver := []string{record.Applicant}
+	msg := fmt.Sprintf(
+		"您好，导出文件信息如下，请查收，(*￣︶￣)\n"+
+			">工单标题：%s\n"+
+			">任务ID：%s\n"+
+			">文件名：%s\n"+
+			">文件大小：%d字节\n"+
+			">数据行数：%d\n"+
+			">文件解密密码：%s\n"+
+			">文件格式：%s\n"+
+			">文件下载路径：%s",
+		record.Title, task_id.String(),
+		file.FileName,
+		file.FileSize,
+		file.ExportRows,
+		file.EncryptionKey,
+		file.ContentType,
+		fmt.Sprintf("%s/orders/download/exportfile/%s", global.App.Config.Notify.NoticeURL, file.FileName),
+	)
+	notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 }
 
 // 执行任务
@@ -297,6 +358,10 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 	global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 		Where("id=? and order_id=?", s.ID, s.OrderID).
 		Updates(map[string]interface{}{"progress": "已完成", "result": data})
+
+	// 导出工单需要发送导出文件信息给申请人、抄送人
+	go sendExportFileInfoToApplicant(task.TaskID)
+
 	// 更新工单状态为已完成
 	updateOrderStatusToFinish(s.OrderID)
 	return nil
@@ -345,6 +410,9 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 			global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 				Where("task_id=?", task.TaskID).
 				Updates(map[string]interface{}{"progress": "已完成", "result": data})
+
+			// 导出工单需要发送导出文件信息给申请人、抄送人
+			go sendExportFileInfoToApplicant(task.TaskID)
 		}
 	}
 	// 更新工单状态为已完成

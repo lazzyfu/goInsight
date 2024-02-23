@@ -176,7 +176,7 @@ func GenerateSimpleRandomString(length int) string {
 }
 
 func GenerateRandomString(length int) string {
-	const charset = "0123456789ABCDEF!@#$^&*()_+-=[]{}|;:',.<>?"
+	const charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_=+[]{};:,.<>?`~"
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
 

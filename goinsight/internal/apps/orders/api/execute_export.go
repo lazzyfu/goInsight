@@ -103,7 +103,7 @@ func (e *ExecuteExportMySQLData) toExcel(db *sql.DB, query string) (file ExportF
 	}
 	// 保存Excel文件
 	fileName := fmt.Sprintf("%s.xlsx", e.TaskID)
-	filePath := "./media/export/"
+	filePath := "./media/"
 	if err = f.SaveAs(filePath + fileName); err != nil {
 		global.App.Log.Error("Error saving excel file", err.Error())
 		return
