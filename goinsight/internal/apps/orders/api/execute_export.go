@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"goInsight/global"
 	"goInsight/internal/pkg/utils"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -116,6 +117,11 @@ func (e *ExecuteExportMySQLData) toExcel(db *sql.DB, query string) (file ExportF
 	if err != nil {
 		global.App.Log.Error("Error encrypting and zipping file", err.Error())
 		return
+	}
+	// 删除原文件
+	err = os.Remove(filePath + fileName)
+	if err != nil {
+		global.App.Log.Error("Error deleting original file", err.Error())
 	}
 	// 保存信息
 	file.EncryptionKey = string(key)
