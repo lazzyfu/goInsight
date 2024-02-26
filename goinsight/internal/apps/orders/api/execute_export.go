@@ -11,6 +11,7 @@ import (
 	"goInsight/global"
 	"goInsight/internal/pkg/utils"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/xuri/excelize/v2"
@@ -123,6 +124,7 @@ func (e *ExecuteExportMySQLData) toExcel(db *sql.DB, query string) (file ExportF
 	file.ContentType = "xlsx"
 	file.FileSize, _ = utils.GetFileSize(file.FilePath)
 	file.ExportRows = rowIndex - 2
+	file.DownloadUrl = fmt.Sprintf("%s/orders/download/exportfile/%s", global.App.Config.Notify.NoticeURL, file.FileName)
 	return
 }
 
@@ -132,22 +134,36 @@ func (e *ExecuteExportMySQLData) encryptAndZipFile(inputFile, outputFile, filePa
 }
 
 func (e *ExecuteExportMySQLData) Run() (data ReturnData, err error) {
+	var executeLog []string
+	var msg string
+
 	// Create a new database connection
 	db, err := NewMySQLCnx(e.DBConfig)
 	if err != nil {
+		data.ExecuteLog = fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error())
 		return data, err
 	}
 	defer db.Close()
+	msg = fmt.Sprintf("[%s] 访问数据库(%s:%d)成功", time.Now().Format("2006-01-02 15:04:05"), e.DBConfig.Hostname, e.DBConfig.Port)
+	executeLog = append(executeLog, msg)
+	PublishMsg(e.OrderID, msg, "")
 
 	// 执行
 	startTime := time.Now()
 	file, err := e.toExcel(db, e.SQL)
 	if err != nil {
+		data.ExecuteLog = fmt.Sprintf("SQL执行失败，错误：%s", err.Error())
 		return data, err
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
+
+	msg = fmt.Sprintf("[%s] SQL执行成功，影响行数%d，执行耗时：%s", time.Now().Format("2006-01-02 15:04:05"), file.ExportRows, executeCostTime)
+	executeLog = append(executeLog, msg)
+	PublishMsg(e.OrderID, msg, "")
+
 	// 存储返回数据
+	data.ExecuteLog = strings.Join(executeLog, "\n")
 	data.ExecuteCostTime = executeCostTime
 	data.ExportFile = file
 	return

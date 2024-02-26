@@ -153,7 +153,7 @@ export const executeAllTaskApi = (data) =>
   })
 
 // 下载导出文件
-export const downloadExportFile = (params) =>
+export const downloadExportFileApi = (params) =>
   axios.request({
     url: `/api/v1/orders/download/exportfile/${params}`,
     method: 'get',

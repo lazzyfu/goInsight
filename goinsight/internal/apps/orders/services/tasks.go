@@ -154,7 +154,7 @@ func updateOrderStatusToFinish(order_id string) {
 			Where("order_id=?", order_id).Scan(&record)
 		receiver := []string{record.Applicant}
 		msg := fmt.Sprintf(
-			"您好，工单已经执行完成，请悉知，(*￣︶￣)\n"+
+			"您好，工单已经执行完成，请悉知\n"+
 				">工单标题：%s",
 			record.Title,
 		)
@@ -222,20 +222,12 @@ func sendExportFileInfoToApplicant(task_id uuid.UUID) {
 		return
 	}
 
-	type exportFile struct {
-		FileName      string `json:"file_name"`
-		FileSize      int64  `json:"file_size"`
-		FilePath      string `json:"file_path"`
-		ContentType   string `json:"content_type"`
-		EncryptionKey string `json:"encryption_key"`
-		ExportRows    int64  `json:"export_rows"`
-	}
-	var file exportFile
+	var file api.ExportFile
 	_ = json.Unmarshal([]byte(task.Result), &file)
 
 	receiver := []string{record.Applicant}
 	msg := fmt.Sprintf(
-		"您好，导出文件信息如下，请查收，(*￣︶￣)\n"+
+		"您好，导出文件信息如下，请查收\n"+
 			">工单标题：%s\n"+
 			">任务ID：%s\n"+
 			">文件名：%s\n"+
@@ -250,7 +242,7 @@ func sendExportFileInfoToApplicant(task_id uuid.UUID) {
 		file.ExportRows,
 		file.EncryptionKey,
 		file.ContentType,
-		fmt.Sprintf("%s/orders/download/exportfile/%s", global.App.Config.Notify.NoticeURL, file.FileName),
+		file.DownloadUrl,
 	)
 	notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 }
@@ -290,6 +282,9 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	// 执行工单
 	executor := api.NewExecuteSQLAPI(&config)
 	returnData, err := executor.Run()
+	if err != nil {
+		api.PublishMsg(task.OrderID.String(), err, "")
+	}
 	// 转换为json
 	data, _ := json.Marshal(returnData)
 	return string(data), err

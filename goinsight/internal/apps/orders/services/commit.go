@@ -251,7 +251,7 @@ func (s *CreateOrdersService) Run() error {
 		receiver = append(receiver, s.CC...)
 
 		msg := fmt.Sprintf(
-			"您好，用户%s提交了工单，(*￣︶￣)\n"+
+			"您好，用户%s提交了工单\n"+
 				">工单标题：%s\n"+
 				">备注：%s\n"+
 				">审核人：%s\n"+

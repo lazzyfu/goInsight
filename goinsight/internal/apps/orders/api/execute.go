@@ -17,6 +17,7 @@ type ExportFile struct {
 	ContentType   string `json:"content_type"`
 	EncryptionKey string `json:"encryption_key"`
 	ExportRows    int64  `json:"export_rows"`
+	DownloadUrl   string `json:"download_url"`
 }
 type ReturnData struct {
 	RollbackSQL     string `json:"rollback_sql"`
