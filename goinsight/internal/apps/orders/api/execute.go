@@ -30,17 +30,18 @@ type ReturnData struct {
 }
 
 type DBConfig struct {
-	Hostname string
-	Port     uint16
-	Charaset string
-	UserName string
-	Password string
-	Schema   string
-	DBType   string
-	SQLType  string
-	SQL      string
-	OrderID  string
-	TaskID   string
+	Hostname         string
+	Port             uint16
+	Charaset         string
+	UserName         string
+	Password         string
+	Schema           string
+	DBType           string
+	SQLType          string
+	SQL              string
+	OrderID          string
+	TaskID           string
+	ExportFileFormat string
 }
 
 type Executor interface {

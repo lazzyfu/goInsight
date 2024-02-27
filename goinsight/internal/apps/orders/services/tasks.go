@@ -250,34 +250,36 @@ func sendExportFileInfoToApplicant(task_id uuid.UUID) {
 // 执行任务
 func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	// 获取DB配置信息
-	type db struct {
-		Hostname string
-		Port     uint16
-		Schema   string
-		DBType   string
-		SQLType  string
+	type Record struct {
+		Hostname         string
+		Port             uint16
+		Schema           string
+		DBType           string
+		SQLType          string
+		ExportFileFormat string
 	}
-	var record db
-	result := global.App.DB.Table("`insight_order_records` a").
-		Select("a.db_type,a.sql_type,a.schema,b.hostname,b.port").
+	var record Record
+	tx := global.App.DB.Table("`insight_order_records` a").
+		Select("a.db_type,a.sql_type,a.schema,a.export_file_format,b.hostname,b.port").
 		Joins("join `insight_db_config` b on a.instance_id=b.instance_id").
 		Where("a.order_id=?", task.OrderID).Take(&record)
-	if result.RowsAffected == 0 {
+	if tx.RowsAffected == 0 {
 		returnData := api.ReturnData{Error: "执行失败，没有发现工单关联的数据库信息"}
 		data, _ := json.Marshal(returnData)
 		return string(data), errors.New("执行失败，没有发现工单关联的数据库信息")
 	}
 	config := api.DBConfig{
-		Hostname: record.Hostname,
-		Port:     record.Port,
-		UserName: global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
-		Schema:   record.Schema,
-		DBType:   record.DBType,
-		SQLType:  record.SQLType,
-		SQL:      task.SQL,
-		OrderID:  task.OrderID.String(),
-		TaskID:   task.TaskID.String(),
+		Hostname:         record.Hostname,
+		Port:             record.Port,
+		UserName:         global.App.Config.RemoteDB.UserName,
+		Password:         global.App.Config.RemoteDB.Password,
+		Schema:           record.Schema,
+		DBType:           record.DBType,
+		SQLType:          record.SQLType,
+		ExportFileFormat: record.ExportFileFormat,
+		SQL:              task.SQL,
+		OrderID:          task.OrderID.String(),
+		TaskID:           task.TaskID.String(),
 	}
 	// 执行工单
 	executor := api.NewExecuteSQLAPI(&config)
