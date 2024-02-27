@@ -285,7 +285,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	executor := api.NewExecuteSQLAPI(&config)
 	returnData, err := executor.Run()
 	if err != nil {
-		api.PublishMsg(task.OrderID.String(), err, "")
+		api.PublishMsg(task.OrderID.String(), err.Error(), "")
 	}
 	// 转换为json
 	data, _ := json.Marshal(returnData)
