@@ -33,7 +33,7 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
 下载前请更新下载链接中的`版本号`为最新的`发行版本`。
 
 ```
-wget https://github.com/lazzyfu/goInsight/releases/download/v1.2.0/goInsight-linux-amd64-v1.2.0.tar.gz
+wget https://github.com/lazzyfu/goInsight/releases/download/v1.2.0/goinsight-linux-amd64-v1.2.0.tar.gz
 ```
 
 ### 安装gh-ost工具
