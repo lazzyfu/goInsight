@@ -153,23 +153,24 @@ func (s *CreateOrdersService) Run() error {
 	global.App.DB.Table("`insight_db_config`").
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
-	// DB参数
-
-	// 检查语法检查是否通过
-	returnData, err := s.inspectSQL(config)
-	if err != nil {
-		return err
-	}
-	// status: 0表示语法检查通过，1表示语法检查不通过
-	status := 0
-	for _, row := range returnData {
-		if row.Level != "INFO" {
-			status = 1
-			break
+	// 检查DDL/DML工单语法检查是否通过
+	// 不对EXPORT工单进行语法检查，CheckSqlType已经要求EXPORT工单只能为SELECT语句
+	if s.SQLType != "EXPORT" {
+		returnData, err := s.inspectSQL(config)
+		if err != nil {
+			return err
 		}
-	}
-	if status == 1 {
-		return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
+		// status: 0表示语法检查通过，1表示语法检查不通过
+		status := 0
+		for _, row := range returnData {
+			if row.Level != "INFO" {
+				status = 1
+				break
+			}
+		}
+		if status == 1 {
+			return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
+		}
 	}
 	// 解析UUID
 	instance_id, err := utils.ParserUUID(s.InstanceID)
@@ -216,6 +217,7 @@ func (s *CreateOrdersService) Run() error {
 		Executor:         executor,
 		CC:               cc,
 		Content:          s.Content,
+		ExportFileFormat: s.ExportFileFormat,
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightOrderRecords{}).Create(&record).Error; err != nil {
@@ -248,10 +250,8 @@ func (s *CreateOrdersService) Run() error {
 		receiver = append(receiver, s.Reviewer...)
 		receiver = append(receiver, s.CC...)
 
-		// msg := fmt.Sprintf("您好，用户%s提交了工单\n>工单标题：%s\n>备注：%s\n>审核人：%s\n>复核人：%s\n执行人：%s\n>抄送：%s\n>环境：%s\n>DB类型：%s\n>SQL类型：%s\n>库名：%s",
-		// 	s.Username, title, s.Remark, strings.Join(s.Approver, ","), strings.Join(s.Reviewer, ","), strings.Join(s.Executor, ","), strings.Join(s.CC, ","), env.Name, s.DBType, s.SQLType, s.Schema)
 		msg := fmt.Sprintf(
-			"您好，用户%s提交了工单，(*￣︶￣)\n"+
+			"您好，用户%s提交了工单\n"+
 				">工单标题：%s\n"+
 				">备注：%s\n"+
 				">审核人：%s\n"+
@@ -259,8 +259,8 @@ func (s *CreateOrdersService) Run() error {
 				">执行人：%s\n"+
 				">抄送：%s\n"+
 				">环境：%s\n"+
-				">DB类型：%s\n"+
-				">SQL类型：%s\n"+
+				">数据库类型：%s\n"+
+				">工单类型：%s\n"+
 				">库名：%s",
 			s.Username, title, s.Remark,
 			strings.Join(s.Approver, ","), strings.Join(s.Reviewer, ","), strings.Join(s.Executor, ","), strings.Join(s.CC, ","),

@@ -75,7 +75,7 @@ func (s *SyntaxInspectService) initDefaultInspectParams() error {
 	for _, row := range rows {
 		err := json.Unmarshal(row.Params, &jsonParams)
 		if err != nil {
-			return fmt.Errorf("解析 JSON 参数失败: %v", err)
+			return fmt.Errorf("解析JSON参数失败: %v，错误参数：%v", err, row)
 		}
 	}
 	// 序列化参数
@@ -127,7 +127,7 @@ func (s *SyntaxInspectService) parser() error {
 
 // 判断多条alter语句是否需要合并
 func (s *SyntaxInspectService) mergeAlters(kv *kv.KVCache, mergeAlters []string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: utils.GenerateRandomString(16), Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: utils.GenerateSimpleRandomString(16), Level: "INFO"}
 	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
 	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
 		if ok, val := utils.IsRepeat(mergeAlters); ok {

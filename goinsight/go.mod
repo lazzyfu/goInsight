@@ -8,6 +8,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/ClickHouse/ch-go v0.58.2 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.13.3 // indirect
+	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -35,6 +36,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20230326075908-cb1d2100619a // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/opentracing/basictracer-go v1.0.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/paulmach/orb v0.10.0 // indirect
@@ -57,6 +59,8 @@ require (
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/redis/go-redis/v9 v9.3.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
+	github.com/richardlehane/mscfb v1.0.4 // indirect
+	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.3 // indirect
@@ -70,6 +74,9 @@ require (
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/uber/jaeger-client-go v2.22.1+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
+	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
+	github.com/xuri/excelize/v2 v2.8.0 // indirect
+	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
@@ -119,9 +126,9 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.6.0 // indirect
-	golang.org/x/crypto v0.16.0
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/crypto v0.19.0
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

@@ -108,9 +108,24 @@
                   </a-select-option>
                 </a-select>
               </a-form-item>
+              <a-form-item v-show="isExportOrder" label="文件格式" has-feedback>
+                <a-select
+                  v-decorator="['export_file_format', { initialValue: 'XLSX', rules: [{ required: true, message: '请选择导出文件类型' }] }]"
+                  placeholder="请选择导出文件类型"
+                  allowClear
+                  show-search
+                >
+                  <a-select-option v-for="(item, index) in exportFileFormats" :key="index" :label="item" :value="item">
+                    {{ item }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
               <a-form-item label="审核人" help="请至少选择2位工单审核人" has-feedback>
                 <a-select
-                  v-decorator="['approver', { rules: [{ required: true, message: '请选择工单审核人', validator: validatorApprover  }] }]"
+                  v-decorator="[
+                    'approver',
+                    { rules: [{ required: true, message: '请选择工单审核人', validator: validatorApprover }] },
+                  ]"
                   placeholder="请选择工单审核人"
                   mode="multiple"
                   allowClear
@@ -146,7 +161,7 @@
               </a-form-item>
               <a-form-item label="复核人" help="请选择工单执行后结果的复核人" has-feedback>
                 <a-select
-                  v-decorator="['reviewer', { rules: [{ required: true, message: '请选择工单复核人'}] }]"
+                  v-decorator="['reviewer', { rules: [{ required: true, message: '请选择工单复核人' }] }]"
                   placeholder="请选择工单复核人"
                   mode="multiple"
                   allowClear
@@ -243,6 +258,8 @@ import {
 import AuditResultComponent from './AuditResult.vue'
 
 const dbTypes = ['MySQL', 'TiDB']
+const exportFileFormats = ['XLSX', 'CSV']
+
 export default {
   components: {
     AuditResultComponent,
@@ -250,6 +267,9 @@ export default {
   computed: {
     codemirror() {
       return this.$refs.myCm.codemirror
+    },
+    isExportOrder() {
+      return this.sqlType.toLowerCase() === 'export'
     },
   },
   data() {
@@ -260,6 +280,7 @@ export default {
       sqlType: '',
       cardTitle: '',
       dbTypes,
+      exportFileFormats,
       environments: [],
       instances: [],
       schemas: [],
@@ -285,10 +306,10 @@ export default {
       },
       validatorApprover: (rule, value, callback) => {
         if (value.length < 2) {
-          return callback("请至少选择2位工单审核人")
+          return callback('请至少选择2位工单审核人')
         }
         if (value.length >= 5) {
-          return callback("最大不允许超过5位工单审核人")
+          return callback('最大不允许超过5位工单审核人')
         }
         callback()
       },
@@ -296,12 +317,12 @@ export default {
   },
   methods: {
     // handleApproverChange
-    handleApproverChange(value){
+    handleApproverChange(value) {
       if (value.length < 2) {
         return false
       }
     },
-    // 获取SQL类型
+    // 从URL后缀获取工单类型
     getSqlType() {
       var urlSuffix = this.$route.path.split('/').at([-1]).toUpperCase()
       this.sqlType = urlSuffix
@@ -482,6 +503,11 @@ export default {
               description: '提交的SQL内容不能为空',
             })
           }
+        } else {
+          this.$notification.error({
+              message: '错误',
+              description: err,
+            })
         }
       })
       this.loading = false

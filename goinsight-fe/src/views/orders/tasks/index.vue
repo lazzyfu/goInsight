@@ -221,7 +221,7 @@ export default {
     // view result
     viewResult(data) {
       if (['已完成', '已失败'].indexOf(data.progress) >= 0){
-        this.$refs.TasksResultComponent.showModal(data.result)
+        this.$refs.TasksResultComponent.showModal(data)
       } else {
         this.$notification.warning({
         message: '警告',

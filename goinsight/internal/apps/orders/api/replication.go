@@ -207,7 +207,9 @@ func (b *Binlog) generateUpdateSql(e *replication.RowsEvent, stmt *ast.CreateTab
 	var sets []string
 	var sql string
 
+	// e.Rows:  [[2 dasdas6 MySQL 2] [2 dasdas7 MySQL 2] [3 dasdas6 MySQL 3] [3 dasdas7 MySQL 3]]
 	for i, rows := range e.Rows {
+		// rows：[2 dasdas6 MySQL 2]
 		var columns []string
 		if i%2 == 0 {
 			// old values
@@ -259,6 +261,8 @@ func (b *Binlog) generateUpdateSql(e *replication.RowsEvent, stmt *ast.CreateTab
 							fmt.Sprintf(" `%s`=?", col.Name.Name.O))
 					}
 				}
+				// 重置
+				sets = []string{}
 			}
 			newSql = strings.Join([]string{sql, strings.Join(columns, " AND")}, "")
 			newValues = append(newValues, oldValues...)

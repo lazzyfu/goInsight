@@ -34,10 +34,7 @@ func isUnsigned(flag uint) bool {
 func interpolateParams(query string, args []driver.Value, hexBlob bool) ([]byte, error) {
 	// Number of ? should be same to len(args)
 	if strings.Count(query, "?") != len(args) {
-		fmt.Println("sql", query, "需要参数", strings.Count(query, "?"),
-			"提供参数", len(args), "sql的参数个数不匹配")
-
-		return nil, errors.New("driver: skip fast-path; continue as if unimplemented")
+		return nil, fmt.Errorf("生成回滚sql的参数个数不匹配：查询：%s，需要参数数量：%d，提供参数：%d", query, strings.Count(query, "?"), len(args))
 	}
 
 	var buf []byte
@@ -173,18 +170,15 @@ func interpolateParams(query string, args []driver.Value, hexBlob bool) ([]byte,
 				buf = append(buf, '\'')
 			}
 		default:
-			fmt.Println("解析错误")
 			return nil, errors.New("driver: skip fast-path; continue as if unimplemented")
 		}
 
 		// 4 << 20 , 4MB
 		if len(buf)+4 > 4<<20 {
-			fmt.Println("解析错误")
 			return nil, errors.New("driver: skip fast-path; continue as if unimplemented")
 		}
 	}
 	if argPos != len(args) {
-		fmt.Println("解析错误")
 		return nil, errors.New("driver: skip fast-path; continue as if unimplemented")
 	}
 	return buf, nil

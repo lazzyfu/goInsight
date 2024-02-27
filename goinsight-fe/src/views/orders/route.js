@@ -20,6 +20,13 @@ const route = [
     hidden: true,
   },
   {
+    name: 'view.orders.export-file.download',
+    path: '/orders/download/exportfile/:filename',
+    component: () => import('@/views/orders/download.vue'),
+    meta: { title: '下载导出文件', keepAlive: true },
+    hidden: true,
+  },
+  {
     name: 'view.orders.commit',
     path: '/orders/commit',
     component: () => import('@/views/orders/index.vue'),
@@ -38,12 +45,12 @@ const route = [
         component: () => import('@/views/orders/commit/index.vue'),
         meta: { title: 'DML工单' },
       },
-      // {
-      //   path: 'export',
-      //   name: `view.orders.commit.export`,
-      //   component: () => import('@/views/orders/commit/index.vue'),
-      //   meta: { title: '导出工单' },
-      // },
+      {
+        path: 'export',
+        name: `view.orders.commit.export`,
+        component: () => import('@/views/orders/commit/index.vue'),
+        meta: { title: '导出工单' },
+      },
     ],
   },
 ]

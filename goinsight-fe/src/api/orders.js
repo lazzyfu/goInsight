@@ -151,3 +151,11 @@ export const executeAllTaskApi = (data) =>
     method: 'post',
     data: data,
   })
+
+// 下载导出文件
+export const downloadExportFileApi = (params) =>
+  axios.request({
+    url: `/api/v1/orders/download/exportfile/${params}`,
+    method: 'get',
+    responseType: 'blob',
+  })

@@ -19,17 +19,30 @@ import (
 
 // 执行Online DDL语句
 func ExecuteOnlineDDL(dc *DBConfig) (data ReturnData, err error) {
+	var executeLog []string
+	var msg string
+
 	// Create a new database connection
 	db, err := NewMySQLCnx(dc)
 	if err != nil {
+		data.ExecuteLog = fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", dc.Hostname, dc.Port, err.Error())
 		return data, err
 	}
 	defer db.Close()
+	msg = fmt.Sprintf("[%s] 访问数据库(%s:%d)成功", time.Now().Format("2006-01-02 15:04:05"), dc.Hostname, dc.Port)
+	executeLog = append(executeLog, msg)
+	PublishMsg(dc.OrderID, msg, "")
+
 	// get connection id
 	ConnectionID, err := DaoGetConnectionID(db)
 	if err != nil {
+		data.ExecuteLog = fmt.Sprintf("获取数据库Connection ID失败，错误：%s", err.Error())
 		return data, err
 	}
+	msg = fmt.Sprintf("[%s] 数据库Connection ID：%d", time.Now().Format("2006-01-02 15:04:05"), ConnectionID)
+	executeLog = append(executeLog, msg)
+	PublishMsg(dc.OrderID, msg, "")
+
 	// show process
 	ch1 := make(chan int64)
 	go DaoGetProcesslist(dc, dc.OrderID, ConnectionID, ch1)
@@ -38,11 +51,17 @@ func ExecuteOnlineDDL(dc *DBConfig) (data ReturnData, err error) {
 	startTime := time.Now()
 	affectedRows, err := DaoMySQLExecute(db, dc.SQL, ch1)
 	if err != nil {
+		data.ExecuteLog = fmt.Sprintf("SQL执行失败，错误：%s", err.Error())
 		return data, err
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
+
+	msg = fmt.Sprintf("[%s] SQL执行成功，影响行数%d，执行耗时：%s", time.Now().Format("2006-01-02 15:04:05"), affectedRows, executeCostTime)
+	executeLog = append(executeLog, msg)
+	PublishMsg(dc.OrderID, msg, "")
 	// 返回数据
+	data.ExecuteLog = strings.Join(executeLog, "\n")
 	data.AffectedRows = affectedRows
 	data.ExecuteCostTime = executeCostTime
 	return

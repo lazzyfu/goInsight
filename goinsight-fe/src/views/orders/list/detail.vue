@@ -7,11 +7,12 @@
           <span style="color: red">{{ orderDetail.environment }}</span>
         </a-descriptions-item>
         <a-descriptions-item label="DB类型">{{ orderDetail.db_type }}</a-descriptions-item>
-        <a-descriptions-item label="SQL类型">{{ orderDetail.sql_type }}</a-descriptions-item>
+        <a-descriptions-item label="工单类型">{{ orderDetail.sql_type }}</a-descriptions-item>
         <a-descriptions-item label="DB实例">{{ orderDetail.instance }}</a-descriptions-item>
         <a-descriptions-item label="库名">
           <span style="color: blue">{{ orderDetail.schema }}</span>
         </a-descriptions-item>
+        <a-descriptions-item v-if="orderDetail.sql_type==='EXPORT'" label="文件格式">{{ orderDetail.export_file_format }}</a-descriptions-item>
         <a-descriptions-item label="创建时间">{{ orderDetail.created_at }}</a-descriptions-item>
         <a-descriptions-item label="更新时间">{{ orderDetail.updated_at }}</a-descriptions-item>
       </a-descriptions>

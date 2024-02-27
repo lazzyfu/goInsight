@@ -5,26 +5,43 @@
 
 package api
 
+import (
+	"errors"
+	"fmt"
+)
+
+type ExportFile struct {
+	FileName      string `json:"file_name"`
+	FileSize      int64  `json:"file_size"`
+	FilePath      string `json:"file_path"`
+	ContentType   string `json:"content_type"`
+	EncryptionKey string `json:"encryption_key"`
+	ExportRows    int64  `json:"export_rows"`
+	DownloadUrl   string `json:"download_url"`
+}
 type ReturnData struct {
 	RollbackSQL     string `json:"rollback_sql"`
 	AffectedRows    int64  `json:"affected_rows"`
 	ExecuteCostTime string `json:"execute_cost_time"`
 	BackupCostTime  string `json:"backup_cost_time"`
 	ExecuteLog      string `json:"execute_log"`
-	Error           string `json:"error"`
+	ExportFile
+	Error string `json:"error"`
 }
 
 type DBConfig struct {
-	Hostname string
-	Port     uint16
-	Charaset string
-	UserName string
-	Password string
-	Schema   string
-	DBType   string
-	SQLType  string
-	SQL      string
-	OrderID  string
+	Hostname         string
+	Port             uint16
+	Charaset         string
+	UserName         string
+	Password         string
+	Schema           string
+	DBType           string
+	SQLType          string
+	SQL              string
+	OrderID          string
+	TaskID           string
+	ExportFileFormat string
 }
 
 type Executor interface {
@@ -72,8 +89,12 @@ func (m *MySQLExecutor) Run() (data ReturnData, err error) {
 	case "DDL":
 		execute := ExecuteMySQLDDL{m.DBConfig}
 		return execute.Run()
+	case "EXPORT":
+		execute := ExecuteExportMySQLData{m.DBConfig}
+		return execute.Run()
 	default:
-		data.Error = "unknown SQLType"
+		data.Error = fmt.Sprintf("不支持的SQL类型：%s", m.SQLType)
+		err = errors.New(data.Error)
 		return
 	}
 }
@@ -87,17 +108,18 @@ type TiDBExecutor struct {
 // Run 方法根据 SQL 类型执行 TiDB 操作并返回结果和错误信息
 func (m *TiDBExecutor) Run() (data ReturnData, err error) {
 	switch m.SQLType {
-	// 当 SQL 类型为 DML 时，使用 ExecuteTiDBDML 结构体执行操作
 	case "DML":
 		execute := ExecuteTiDBDML{m.DBConfig}
 		return execute.Run()
-	// 当 SQL 类型为 DDL 时，使用 ExecuteTiDBDDL 结构体执行操作
 	case "DDL":
 		execute := ExecuteTiDBDDL{m.DBConfig}
 		return execute.Run()
-	// 当SQL类型未知时，设置错误信息并返回
+	case "EXPORT":
+		execute := ExecuteExportMySQLData{m.DBConfig}
+		return execute.Run()
 	default:
-		data.Error = "unknown SQLType"
+		data.Error = fmt.Sprintf("不支持的SQL类型：%s", m.SQLType)
+		err = errors.New(data.Error)
 		return
 	}
 }
