@@ -13,16 +13,16 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
 :point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
 
 ## 功能
-- **SQL审计** — 支持对工单SQL进行语法审核，内置自研语法审核器[gAudit](https://github.com/lazzyfu/gAudit)，支持多达68种语法审核规则。支持动态调整审核参数，除全局审核参数外，可在DB实例级别定义自定义的审核参数，实现每个DB不同的审核规则。
+- **SQL审计** - 支持对工单SQL进行语法审核，内置自研语法审核器[gAudit](https://github.com/lazzyfu/gAudit)，支持多达68种语法审核规则。支持动态调整审核参数，除全局审核参数外，可在DB实例级别定义自定义的审核参数，实现每个DB不同的审核规则。
 - **数据检索** - 内置库表数据检索引擎，支持为用户配置库表级别数据只读查询权限。支持多达65种只读查询语句类型，如SELECT、EXPLAIN、SHOW等，支持查询记录审计，支持MySQL（含分支、云RDS）、TiDB、ClickHouse。
+- **工单流** - 支持DDL、DML、数据导出（CSV/XLSX格式）工单，支持审批、执行、Hook功能，单个工单最大支持提交2048条SQL语句。
 - **组织管理** - 支持用户组织层级管理，可以为每个DB实例绑定组织，实现用户只访问当前组织的数据库，支持用户角色管理。
 - **其他功能**
   - 支持双因素身份认证登录、支持日志审计。
-  - 支持提交DDL/DML工单提交、审批、执行、钩子等功能。
   - 支持钉钉/企业微信机器人/邮件推送消息。
   
 ## 限制 
-  - **工单** - 支持MySQL/TiDB数据库，支持提交DML/DDL语句，单个工单最大支持提交2048条SQL语句。
+  - **工单** - 支持MySQL/TiDB数据库，类MySQL数据库，如云MySQL，AWS Aurora等。
   - **查询** - 支持MySQL/TiDB/ClickHouse数据库，默认返回100条记录（可调整），仅支持只读操作，变更请使用`工单`。
 
 
@@ -33,7 +33,7 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
 下载前请更新下载链接中的`版本号`为最新的`发行版本`。
 
 ```
-wget https://github.com/lazzyfu/goInsight/releases/download/v1.1.1/goInsight-linux-amd64-v1.1.1.tar.gz
+wget https://github.com/lazzyfu/goInsight/releases/download/v1.2.0/goInsight-linux-amd64-v1.2.0.tar.gz
 ```
 
 ### 安装gh-ost工具
