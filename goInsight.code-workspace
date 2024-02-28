@@ -5,7 +5,7 @@
         }
     ],
     "settings": {
-        "editor.fontFamily": "Droid Sans Mono for powerline,Input Mono Condensed,JetBrains Mono NL",
+        "editor.fontFamily": "JetBrains Mono NL",
         "editor.fontSize": 13.6,
         "editor.lineHeight": 21,
         "terminal.integrated.fontSize": 14,

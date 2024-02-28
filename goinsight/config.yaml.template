@@ -35,7 +35,7 @@ redis:
 
 # 远程实例DB账号，需要在目标数据库创建
 # 请确保通过该账号可以访问远程数据库，该账号用于工单审核、执行、数据查询、库表元信息采集等
-# 注意：请保管好此账号，不要泄露n，否则可能会导致安全风险
+# 注意：请保管好此账号，不要泄露，否则可能会导致安全风险
 # create user 'goInsight_rw'@'%' identified by '复杂的密码';
 # grant select,insert,update,delete,Alter,Create,Create view,Drop,Index,Replication slave on *.* to 'goInsight_rw'@'%';
 # flush privileges;
