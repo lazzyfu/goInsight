@@ -22,7 +22,7 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
   - 支持钉钉/企业微信机器人/邮件推送消息。
   
 ## 限制 
- - 目前仅支持MySQL、TiDB、ClickHouse数据库。
+目前仅支持MySQL、TiDB、ClickHouse数据库。
 
 ## 安装
 > [使用Supervisord管理服务](https://github.com/lazzyfu/goInsight/wiki/Service-Deployment)
