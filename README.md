@@ -7,7 +7,7 @@
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
 
-goInsight是集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力，支持MySQL/TiDB/ClickHouse。旨在降低数据库管理员、研发人员、测试人员等使用成本，支持本地快速部署，注重隐私。
+goInsight是集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力，支持MySQL/TiDB/ClickHouse。旨在降低数据库管理员、研发测试等人员使用成本，支持本地快速部署，注重隐私。
 
 ## 文档
 :point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
