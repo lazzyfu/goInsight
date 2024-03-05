@@ -7,7 +7,7 @@
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
 
-goInsight是一个集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力。
+goInsight是集数据库工单和数据检索的平台，提供语法审核、工单流、库表数据查询能力，支持MySQL/TiDB/ClickHouse。旨在降低数据库管理员、研发人员、测试人员等使用成本，支持本地快速部署，注重隐私。
 
 ## 文档
 :point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
@@ -24,9 +24,9 @@ goInsight是一个集数据库工单和数据检索的平台，提供语法审�
 ## 支持数据库
 | 数据库                               | 版本   | 功能                                                                                                                          |
 | ------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| MySQL/华为云RDS/阿里云RDS/AWS Aurora等 | > 5.6  | &#9745; DDL工单 <br> &#9745; DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9745; DML回滚 <br> &#9745; gh-ost     |
-| TiDB                                 | > 4.0  | &#9745; DDL工单 <br> &#9745; DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9744; DML回滚 <br> &#9745; Online DDL |
-| Clickhouse                           | > 18.1 | &#9744; DDL工单 <br> &#9744; DML工单 <br> &#9744; 导出工单 <br> &#9745; 数据查询                                              |
+| MySQL/华为云RDS/阿里云RDS/AWS Aurora等 | > 5.6  | &#9745; DDL/DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9745; DML回滚 <br> &#9745; gh-ost     |
+| TiDB                                 | > 4.0  | &#9745; DDL/DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9744; DML回滚 <br> &#9745; Online DDL（TiDB原生支持） |
+| Clickhouse                           | > 18.1 | &#9744; DDL/DML工单 <br> &#9744; 导出工单 <br> &#9745; 数据查询                                              |
 
 ## 安装
 > [使用Supervisor管理服务](https://github.com/lazzyfu/goInsight/wiki/Service-Deployment)
