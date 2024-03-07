@@ -13,6 +13,7 @@ import (
 	commonModels "goInsight/internal/apps/common/models"
 	"goInsight/internal/apps/orders/forms"
 	"goInsight/internal/apps/orders/models"
+	"goInsight/internal/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -84,6 +85,11 @@ func (s *HookOrdersService) Run() error {
 	if err != nil {
 		return err
 	}
+	// 解析UUID
+	instance_id, err := utils.ParserUUID(s.InstanceID)
+	if err != nil {
+		return err
+	}
 	// 生成新的工单ID
 	orderID := uuid.New()
 	hookRecord := models.InsightOrderRecords{
@@ -94,8 +100,9 @@ func (s *HookOrdersService) Run() error {
 		Remark:           record.Remark,
 		IsRestrictAccess: record.IsRestrictAccess,
 		DBType:           s.DBType,
+		SQLType:          record.SQLType,
 		Environment:      s.Environment,
-		InstanceID:       record.InstanceID,
+		InstanceID:       instance_id,
 		Schema:           s.NewSchema,
 		Applicant:        s.Username, // warn：谁执行的hook，申请人改为谁
 		Organization:     record.Organization,
