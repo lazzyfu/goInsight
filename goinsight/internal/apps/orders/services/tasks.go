@@ -20,7 +20,7 @@ import (
 )
 
 type GenerateTasksService struct {
-	forms.GenerateTasksForm
+	*forms.GenerateTasksForm
 	C        *gin.Context
 	Username string
 }
@@ -294,7 +294,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 
 // 执行单个任务
 type ExecuteSingleTaskService struct {
-	forms.ExecuteSingleTaskForm
+	*forms.ExecuteSingleTaskForm
 	C        *gin.Context
 	Username string
 }

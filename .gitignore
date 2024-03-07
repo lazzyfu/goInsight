@@ -30,3 +30,4 @@ goInsight/media/
 goInsight/goinsight/dist
 .DS_Store
 goinsight/bin/
+goInsight.code-workspace

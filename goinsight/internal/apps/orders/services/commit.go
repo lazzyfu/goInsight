@@ -137,6 +137,49 @@ func (s *CreateOrdersService) inspectSQL(config commonModels.InsightDBConfig) ([
 	return inspect.Run()
 }
 
+// 获取用户组织，没有返回空值
+func (s *CreateOrdersService) getUserOrg() (organization string) {
+	type org struct {
+		Organization string
+	}
+	var record org
+	tx := global.App.DB.Table("insight_users a").Select(`
+			a.username,
+			ifnull(
+				concat(
+					(
+						SELECT
+							GROUP_CONCAT(
+								ia.name
+								ORDER BY
+									ia.name ASC SEPARATOR '/'
+							) AS concatenated_names
+						FROM
+							insight_organizations ia
+						WHERE
+							EXISTS (
+								SELECT
+									1
+								FROM
+									insight_organizations
+								WHERE
+									JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
+							)
+					),
+					'/',
+					c.name
+				),
+				c.name
+			) as organization`).
+		Joins("left join insight_organizations_users b on a.uid = b.uid").
+		Joins("left join insight_organizations c on b.organization_key = c.key").
+		Where("a.username = ?", s.Username).Take(&record)
+	if tx.Error != nil || tx.RowsAffected == 0 {
+		return
+	}
+	return record.Organization
+}
+
 func (s *CreateOrdersService) Run() error {
 	// 判断SQL类型是否匹配，DML工单仅允许提交DML语句，DDL工单仅允许提交DDL语句
 	err := parser.CheckSqlType(s.Content, string(s.SQLType))
@@ -212,6 +255,7 @@ func (s *CreateOrdersService) Run() error {
 		InstanceID:       instance_id,
 		Schema:           s.Schema,
 		Applicant:        s.Username,
+		Organization:     s.getUserOrg(),
 		Approver:         approver,
 		Reviewer:         reviewer,
 		Executor:         executor,

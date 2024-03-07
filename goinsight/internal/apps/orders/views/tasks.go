@@ -20,24 +20,22 @@ import (
 func GenerateTasksView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	// 解析表单数据
-	var form forms.GenerateTasksForm
-	if err := c.ShouldBind(&form); err != nil {
+	var form *forms.GenerateTasksForm = &forms.GenerateTasksForm{}
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.GenerateTasksService{
+			GenerateTasksForm: form,
+			C:                 c,
+			Username:          username,
+		}
+		if err := service.Run(); err != nil {
+			response.Fail(c, err.Error())
+			return
+		}
+		response.Success(c, nil, "success")
+	} else {
 		response.ValidateFail(c, err.Error())
-		return
 	}
-	// 执行
-	service := services.GenerateTasksService{
-		GenerateTasksForm: form,
-		C:                 c,
-		Username:          username,
-	}
-	if err := service.Run(); err != nil {
-		response.Fail(c, err.Error())
-		return
-	}
-	// 成功响应
-	response.Success(c, nil, "success")
+
 }
 
 // 获取任务列表
@@ -55,9 +53,9 @@ func GetTasksView(c *gin.Context) {
 		returnData, total, err := service.Run()
 		if err != nil {
 			response.Fail(c, err.Error())
-		} else {
-			response.PaginationSuccess(c, total, returnData)
+			return
 		}
+		response.PaginationSuccess(c, total, returnData)
 	} else {
 		response.ValidateFail(c, err.Error())
 	}
@@ -74,9 +72,9 @@ func PreviewTasksView(c *gin.Context) {
 		returnData, err := service.Run()
 		if err != nil {
 			response.Fail(c, err.Error())
-		} else {
-			response.Success(c, returnData, "success")
+			return
 		}
+		response.Success(c, returnData, "success")
 	} else {
 		response.ValidateFail(c, err.Error())
 	}
@@ -86,24 +84,22 @@ func PreviewTasksView(c *gin.Context) {
 func ExecuteSingleTaskView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	// 解析表单数据
-	var form forms.ExecuteSingleTaskForm
-	if err := c.ShouldBind(&form); err != nil {
+	var form *forms.ExecuteSingleTaskForm = &forms.ExecuteSingleTaskForm{}
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.ExecuteSingleTaskService{
+			ExecuteSingleTaskForm: form,
+			C:                     c,
+			Username:              username,
+		}
+		if err := service.Run(); err != nil {
+			response.Fail(c, err.Error())
+			return
+		}
+		response.Success(c, nil, "success")
+	} else {
 		response.ValidateFail(c, err.Error())
-		return
 	}
-	// 执行
-	service := services.ExecuteSingleTaskService{
-		ExecuteSingleTaskForm: form,
-		C:                     c,
-		Username:              username,
-	}
-	if err := service.Run(); err != nil {
-		response.Fail(c, err.Error())
-		return
-	}
-	// 成功响应
-	response.Success(c, nil, "success")
+
 }
 
 // 批量执行任务
@@ -117,12 +113,11 @@ func ExecuteAllTaskView(c *gin.Context) {
 			C:                  c,
 			Username:           username,
 		}
-		err := service.Run()
-		if err != nil {
+		if err := service.Run(); err != nil {
 			response.Fail(c, err.Error())
-		} else {
-			response.Success(c, nil, "执行完成")
+			return
 		}
+		response.Success(c, nil, "执行完成")
 	} else {
 		response.ValidateFail(c, err.Error())
 	}

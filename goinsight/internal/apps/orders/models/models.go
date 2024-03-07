@@ -24,6 +24,7 @@ type InsightOrderRecords struct {
 	SQLType          models.EnumType `gorm:"type:ENUM('DML', 'DDL', 'EXPORT');default:'DML';comment:SQL类型" json:"sql_type"`
 	Environment      int             `gorm:"type:int;null;default:null;comment:环境;index" json:"environment"`
 	Applicant        string          `gorm:"type:varchar(32);not null;default:'';comment:申请人;index" json:"applicant"`
+	Organization     string          `gorm:"type:varchar(256);not null;default:'';index;comment:组织" json:"organization"`
 	Approver         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单审核人" json:"approver"`
 	Executor         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单执行人" json:"executor"`
 	Reviewer         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单复核人" json:"reviewer"`
