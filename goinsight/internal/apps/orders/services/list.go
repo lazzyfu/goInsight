@@ -33,6 +33,7 @@ func (s *GetListServices) Run() (responseData interface{}, total int64, err erro
 		Progress         string           `json:"progress"`
 		IsRestrictAccess bool             `json:"is_restrict_access"`
 		Applicant        string           `json:"applicant"`
+		Organization     string           `json:"organization"`
 		Environment      string           `json:"environment"`
 		SqlType          string           `json:"sql_type"`
 		Instance         string           `json:"instance"`
@@ -44,7 +45,21 @@ func (s *GetListServices) Run() (responseData interface{}, total int64, err erro
 	}
 	var records []record
 	tx := global.App.DB.Table("insight_order_records a").
-		Select("a.progress, a.title as order_title, a.applicant, a.is_restrict_access, b.name as environment, concat(c.hostname, ':', c.port) as instance, a.schema, a.sql_type, a.approver, a.reviewer, a.order_id, a.created_at").
+		Select(`
+			a.progress, 
+			a.title as order_title, 
+			a.applicant, 
+			if(length(a.organization)=0, "N/A", a.organization) as organization,
+			a.is_restrict_access,
+			b.name as environment,
+			concat(c.hostname, ':', c.port) as instance, 
+			a.schema, 
+			a.sql_type, 
+			a.approver, 
+			a.reviewer, 
+			a.order_id, 
+			a.created_at
+		`).
 		Joins("left join insight_db_environments b on a.environment=b.id").
 		Joins("left join insight_db_config c on a.instance_id = c.instance_id").
 		Order("a.created_at desc")

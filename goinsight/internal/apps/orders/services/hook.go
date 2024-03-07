@@ -98,6 +98,7 @@ func (s *HookOrdersService) Run() error {
 		InstanceID:       record.InstanceID,
 		Schema:           s.NewSchema,
 		Applicant:        s.Username, // warn：谁执行的hook，申请人改为谁
+		Organization:     record.Organization,
 		Approver:         approver,
 		Executor:         record.Executor,
 		Reviewer:         reviewer,

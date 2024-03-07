@@ -65,7 +65,7 @@
           {{ text }}
         </a-tag>
       </span>
-      <span slot="applicant" slot-scope="text, record" style="display: flex; align-items: center; margin-right: 4px;">
+      <span slot="applicant" slot-scope="text, record" style="display: flex; align-items: center; margin-right: 4px">
         <a-tooltip>
           <template slot="title">
             <span v-if="record.is_restrict_access"
@@ -85,9 +85,14 @@
         {{ text }}
       </span>
       <span slot="order_title" slot-scope="text, record">
-        <router-link :to="{ name: 'view.orders.detail', params: { order_id: record.order_id } }">{{
-          text
-        }}</router-link>
+        <router-link :to="{ name: 'view.orders.detail', params: { order_id: record.order_id } }">
+          <a-tooltip>
+            <template slot="title">
+              {{ text }}
+            </template>
+            {{ text }}
+          </a-tooltip>
+        </router-link>
         <br />
         At: {{ record.created_at }}
       </span>
@@ -151,6 +156,15 @@ const tableColumns = [
     slots: { title: 'customApplicant' },
     scopedSlots: {
       customRender: 'applicant',
+    },
+  },
+  {
+    title: '组织',
+    dataIndex: 'organization',
+    key: 'organization',
+    ellipsis: true,
+    scopedSlots: {
+      customRender: 'organization',
     },
   },
   {

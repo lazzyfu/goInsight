@@ -89,22 +89,19 @@ func GetUsersView(c *gin.Context) {
 func CreateOrdersView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	// 解析表单数据
 	var form *forms.CreateOrderForm
-	if err := c.ShouldBind(&form); err != nil {
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.CreateOrdersService{
+			CreateOrderForm: form,
+			C:               c,
+			Username:        username,
+		}
+		if err := service.Run(); err != nil {
+			response.Fail(c, err.Error())
+			return
+		}
+		response.Success(c, nil, "success")
+	} else {
 		response.ValidateFail(c, err.Error())
-		return
 	}
-	// 执行创建
-	service := services.CreateOrdersService{
-		CreateOrderForm: form,
-		C:               c,
-		Username:        username,
-	}
-	if err := service.Run(); err != nil {
-		response.Fail(c, err.Error())
-		return
-	}
-	// 成功响应
-	response.Success(c, nil, "success")
 }
