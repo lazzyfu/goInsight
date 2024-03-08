@@ -68,13 +68,11 @@ func InitAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			if len(username) == 0 {
 				return nil, jwt.ErrMissingLoginValues
 			}
-
 			// 获取用户信息
 			var user userModels.InsightUsers
 			global.App.DB.Table("insight_users u").
 				Where("u.username=?", username).
 				Scan(&user)
-
 			// 验证otp_code
 			loginNeedsOTP := c.GetString("loginNeedsOTP")
 			if loginNeedsOTP == "YES" {
@@ -86,7 +84,6 @@ func InitAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 					return nil, errors.New("otp code error")
 				}
 			}
-
 			// 更新登录时间
 			global.App.DB.Table("insight_users u").
 				Where("u.username=?", username).
