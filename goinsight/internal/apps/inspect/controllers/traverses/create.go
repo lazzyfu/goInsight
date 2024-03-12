@@ -583,23 +583,41 @@ func (c *TraverseCreateTableInnodbLargePrefix) Leave(in ast.Node) (ast.Node, boo
 	return in, true
 }
 
-// TraverseCreateTableRowSizeTooLarge
-type TraverseCreateTableRowSizeTooLarge struct {
-	RowSizeTooLarge process.RowSizeTooLarge
+// TraverseCreateTableInnoDBRowSize
+type TraverseCreateTableInnoDBRowSize struct {
+	process.InnoDBRowSize
 }
 
-func (c *TraverseCreateTableRowSizeTooLarge) Enter(in ast.Node) (ast.Node, bool) {
+func (c *TraverseCreateTableInnoDBRowSize) Enter(in ast.Node) (ast.Node, bool) {
 	if stmt, ok := in.(*ast.CreateTableStmt); ok {
-		c.RowSizeTooLarge.Table = stmt.Table.Name.String()
+		c.Table = stmt.Table.Name.String()
+		c.RowFormat = "DEFAULT"
 		for _, node := range stmt.Options {
 			switch node.Tp {
 			case ast.TableOptionCharset:
-				c.RowSizeTooLarge.Charset = node.StrValue
+				c.Charset = node.StrValue
+			case ast.TableOptionEngine:
+				c.Engine = node.StrValue
+			case ast.TableOptionRowFormat:
+				switch node.UintValue {
+				case ast.RowFormatDefault:
+					c.RowFormat = "DEFAULT"
+				case ast.RowFormatDynamic:
+					c.RowFormat = "DYNAMIC"
+				case ast.RowFormatCompressed:
+					c.RowFormat = "COMPRESSED"
+				case ast.RowFormatRedundant:
+					c.RowFormat = "REDUNDANT"
+				case ast.RowFormatCompact:
+					c.RowFormat = "COMPACT"
+				default:
+					c.RowFormat = "UNSUPPORTED"
+				}
 			}
 		}
 		for _, col := range stmt.Cols {
-			c.RowSizeTooLarge.RowSizeTooLargeColsMaps = append(c.RowSizeTooLarge.RowSizeTooLargeColsMaps,
-				process.RowSizeTooLargePartSpecification{
+			c.ColsMaps = append(c.ColsMaps,
+				process.PartSpecification{
 					Column:  col.Name.Name.L,
 					Tp:      col.Tp.GetType(),
 					Flen:    col.Tp.GetFlen(),
@@ -612,7 +630,7 @@ func (c *TraverseCreateTableRowSizeTooLarge) Enter(in ast.Node) (ast.Node, bool)
 	return in, false
 }
 
-func (c *TraverseCreateTableRowSizeTooLarge) Leave(in ast.Node) (ast.Node, bool) {
+func (c *TraverseCreateTableInnoDBRowSize) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 

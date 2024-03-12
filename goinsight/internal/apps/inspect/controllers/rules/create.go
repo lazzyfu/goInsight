@@ -82,8 +82,8 @@ func CreateTableRules() []Rule {
 			CheckFunc: (*Rule).RuleCreateTableInnodbLargePrefix,
 		},
 		{
-			Hint:      "CreateTable#检查表定义的行是否超过65535",
-			CheckFunc: (*Rule).RuleCreateTableRowSizeTooLarge,
+			Hint:      "CreateTable#检查InnoDB表定义的行大小",
+			CheckFunc: (*Rule).RuleCreateTableInnoDBRowSize,
 		},
 	}
 }
@@ -200,9 +200,9 @@ func (r *Rule) RuleCreateTableInnodbLargePrefix(tistmt *ast.StmtNode) {
 	logics.LogicCreateTableInnodbLargePrefix(v, r.RuleHint)
 }
 
-// RuleCreateTableRowSizeTooLarge
-func (r *Rule) RuleCreateTableRowSizeTooLarge(tistmt *ast.StmtNode) {
-	v := &traverses.TraverseCreateTableRowSizeTooLarge{}
+// RuleCreateTableInnoDBRowSize
+func (r *Rule) RuleCreateTableInnoDBRowSize(tistmt *ast.StmtNode) {
+	v := &traverses.TraverseCreateTableInnoDBRowSize{}
 	(*tistmt).Accept(v)
-	logics.LogicCreateTableRowSizeTooLarge(v, r.RuleHint)
+	logics.LogicCreateTableInnoDBRowSize(v, r.RuleHint)
 }

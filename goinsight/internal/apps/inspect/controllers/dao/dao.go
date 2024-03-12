@@ -91,15 +91,16 @@ func VerifyTable(table string, db *DB) (error, string) {
 
 // 获取DB变量
 func GetDBVars(db *DB) (map[string]string, error) {
-	result, err := db.Query("show variables where Variable_name in  ('innodb_large_prefix','version','character_set_database')")
+	result, err := db.Query("show variables where Variable_name in  ('innodb_large_prefix','version','character_set_database','innodb_default_row_format')")
 	if err != nil {
 		return nil, err
 	}
 
 	var data map[string]string = map[string]string{
-		"dbVersion":   "",
-		"dbCharset":   "utf8",
-		"largePrefix": "OFF",
+		"dbVersion":              "",
+		"dbCharset":              "utf8",
+		"largePrefix":            "OFF",
+		"innodbDefaultRowFormat": "dynamic",
 	}
 
 	// [map[Value:utf8 Variable_name:character_set_database] map[Value:5.7.35-log Variable_name:version]]
@@ -119,6 +120,9 @@ func GetDBVars(db *DB) (map[string]string, error) {
 			default:
 				data["largePrefix"] = strings.ToUpper(row["Value"].(string))
 			}
+		}
+		if strings.EqualFold(row["Variable_name"].(string), "innodb_default_row_format") {
+			data["innodbDefaultRowFormat"] = row["Value"].(string)
 		}
 	}
 	return data, nil

@@ -247,10 +247,10 @@ func LogicCreateTableInnodbLargePrefix(v *traverses.TraverseCreateTableInnodbLar
 	}
 }
 
-// LogicCreateTableRowSizeTooLarge
-func LogicCreateTableRowSizeTooLarge(v *traverses.TraverseCreateTableRowSizeTooLarge, r *controllers.RuleHint) {
-	var rowSizeTooLarge process.RowSizeTooLarge = v.RowSizeTooLarge
-	if err := rowSizeTooLarge.Check(r.KV); err != nil {
+// LogicCreateTableInnoDBRowSize
+func LogicCreateTableInnoDBRowSize(v *traverses.TraverseCreateTableInnoDBRowSize, r *controllers.RuleHint) {
+	var rowSize process.InnoDBRowSize = v.InnoDBRowSize
+	if err := rowSize.Check(r.KV); err != nil {
 		r.Summary = append(r.Summary, err.Error())
 	}
 }
