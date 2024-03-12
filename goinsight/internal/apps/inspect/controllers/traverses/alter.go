@@ -765,23 +765,28 @@ func (c *TraverseAlterTableInnodbLargePrefix) Leave(in ast.Node) (ast.Node, bool
 	return in, true
 }
 
-// TraverseAlterTableRowSizeTooLarge
-type TraverseAlterTableRowSizeTooLarge struct {
-	Table           string // 表名
-	IsMatch         int    // 是否匹配当前规则
-	RowSizeColsMaps []process.RowSizeTooLargePartSpecification
+// TraverseAlterTableInnoDBRowSize
+type TraverseAlterTableInnoDBRowSize struct {
+	IsMatch int // 是否匹配当前规则
+	process.InnoDBRowSize
 }
 
-func (c *TraverseAlterTableRowSizeTooLarge) Enter(in ast.Node) (ast.Node, bool) {
+func (c *TraverseAlterTableInnoDBRowSize) Enter(in ast.Node) (ast.Node, bool) {
 	if stmt, ok := in.(*ast.AlterTableStmt); ok {
 		c.Table = stmt.Table.Name.String()
 		for _, spec := range stmt.Specs {
+			for _, node := range spec.Options {
+				switch node.Tp {
+				case ast.TableOptionCharset:
+					c.Charset = node.StrValue
+				}
+			}
 			switch spec.Tp {
 			case ast.AlterTableAddColumns, ast.AlterTableModifyColumn, ast.AlterTableChangeColumn:
 				c.IsMatch++
 				for _, col := range spec.NewColumns {
-					c.RowSizeColsMaps = append(c.RowSizeColsMaps,
-						process.RowSizeTooLargePartSpecification{
+					c.ColsMaps = append(c.ColsMaps,
+						process.PartSpecification{
 							Column:  col.Name.Name.L,
 							Tp:      col.Tp.GetType(),
 							Flen:    col.Tp.GetFlen(),
@@ -796,6 +801,6 @@ func (c *TraverseAlterTableRowSizeTooLarge) Enter(in ast.Node) (ast.Node, bool) 
 	return in, false
 }
 
-func (c *TraverseAlterTableRowSizeTooLarge) Leave(in ast.Node) (ast.Node, bool) {
+func (c *TraverseAlterTableInnoDBRowSize) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }

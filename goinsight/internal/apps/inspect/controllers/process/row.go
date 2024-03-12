@@ -2,14 +2,26 @@ package process
 
 import (
 	"fmt"
-	"goInsight/global"
 	"goInsight/internal/pkg/kv"
+	"strings"
 
 	"github.com/jinzhu/copier"
 )
 
+// getRowFormatMaxSize
+func getRowFormatMaxSize(rowFormat string) int {
+	rowFormatMap := map[string]int{
+		"REDUNDANT":  8000,
+		"DYNAMIC":    65535,
+		"COMPRESSED": 15360,
+		"COMPACT":    8126,
+	}
+
+	return rowFormatMap[strings.ToUpper(rowFormat)]
+}
+
 // RowSizeTooLarge
-type RowSizeTooLargePartSpecification struct {
+type PartSpecification struct {
 	Column  string
 	Tp      byte
 	Elems   []string // Elems is the element list for enum and set type.
@@ -17,19 +29,36 @@ type RowSizeTooLargePartSpecification struct {
 	Decimal int      // decimal字段专用,decimal(12,2)中的2
 	Charset string   // 列字符集
 }
-type RowSizeTooLarge struct {
-	Table                   string // 表名
-	Charset                 string // 表字符集
-	RowSizeTooLargeColsMaps []RowSizeTooLargePartSpecification
+type InnoDBRowSize struct {
+	Table     string // 表名
+	Engine    string // 表引擎
+	Charset   string // 表字符集
+	RowFormat string // 行格式
+	ColsMaps  []PartSpecification
 }
 
-func (l *RowSizeTooLarge) Check(kv *kv.KVCache) error {
-	maxRowSize := 65535
+// https://dev.mysql.com/doc/refman/8.3/en/innodb-row-format.html
+func (l *InnoDBRowSize) Check(kv *kv.KVCache) error {
+	if l.Engine != "InnoDB" {
+		return nil
+	}
+	// 判断行格式
+	var rowFormat string = l.RowFormat
+	if l.RowFormat == "DEFAULT" {
+		rowFormat = kv.Get("innodbDefaultRowFormat").(string)
+	}
+	maxRowSize := getRowFormatMaxSize(rowFormat)
+
+	// version
 	versionIns := DbVersion{kv.Get("dbVersion").(string)}
-	var maxSumLength int
-	for _, i := range l.RowSizeTooLargeColsMaps {
+
+	// 计算列长度
+	var maxSumRowsLength int
+
+	// 判断字符集，当列字符集为空，使用表的字符集
+	for _, i := range l.ColsMaps {
 		// &{{riskcontrol_derived_variable_conf1 utf8mb4 [{i_id 3 [] 11 -1 } {ch_code 15 [] 200 -1 }]}}
-		// 判断字符集，当列字符集为空，使用表的字符集
+		// 处理字符集为空的情况
 		if len(i.Charset) == 0 {
 			i.Charset = l.Charset
 		}
@@ -39,11 +68,12 @@ func (l *RowSizeTooLarge) Check(kv *kv.KVCache) error {
 		if err != nil {
 			return err
 		}
-		maxSumLength += instDataBytes.Get(versionIns.Int())
+		maxSumRowsLength += instDataBytes.Get(versionIns.Int())
 	}
-	global.App.Log.Debug(fmt.Sprintf("maxSumLength:%d, maxRowSize:%d", maxSumLength, maxRowSize))
-	if maxSumLength > maxRowSize {
-		return fmt.Errorf("表`%s`触发了Row Size Limit,The maximum row size is 65535，当前为%d字节，您可以将一些列更改为TEXT类型(参考:https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html)", l.Table, maxSumLength)
+	// 判断是否触发了行大小限制
+	if maxSumRowsLength > maxRowSize {
+		return fmt.Errorf("表`%s`触发了Row Size Limit，最大行大小为%d，当前为%d（表存储引擎为%s，行格式为%s）", l.Table, maxRowSize, maxSumRowsLength, l.Engine, rowFormat)
 	}
+
 	return nil
 }

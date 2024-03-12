@@ -91,34 +91,46 @@ func VerifyTable(table string, db *DB) (error, string) {
 
 // 获取DB变量
 func GetDBVars(db *DB) (map[string]string, error) {
-	result, err := db.Query("show variables where Variable_name in  ('innodb_large_prefix','version','character_set_database')")
+	result, err := db.Query(`show variables where Variable_name in ('innodb_large_prefix','version','character_set_database','innodb_default_row_format')`)
 	if err != nil {
 		return nil, err
 	}
 
 	var data map[string]string = map[string]string{
-		"dbVersion":   "",
-		"dbCharset":   "utf8",
-		"largePrefix": "OFF",
+		"dbVersion":              "",
+		"dbCharset":              "utf8",
+		"largePrefix":            "OFF",
+		"innodbDefaultRowFormat": "dynamic",
 	}
 
 	// [map[Value:utf8 Variable_name:character_set_database] map[Value:5.7.35-log Variable_name:version]]
 	for _, row := range *result {
-		if strings.EqualFold(row["Variable_name"].(string), "version") {
-			data["dbVersion"] = row["Value"].(string)
+		variableName, ok := row["Variable_name"].(string)
+		if !ok {
+			return nil, fmt.Errorf("unexpected type for Variable_name")
 		}
-		if strings.EqualFold(row["Variable_name"].(string), "character_set_database") {
-			data["dbCharset"] = row["Value"].(string)
+
+		value, ok := row["Value"].(string)
+		if !ok {
+			return nil, fmt.Errorf("unexpected type for Value in row")
 		}
-		if strings.EqualFold(row["Variable_name"].(string), "innodb_large_prefix") {
-			switch row["Value"].(string) {
+
+		switch variableName {
+		case "version":
+			data["dbVersion"] = value
+		case "character_set_database":
+			data["dbCharset"] = value
+		case "innodb_large_prefix":
+			switch value {
 			case "0":
 				data["largePrefix"] = "OFF"
 			case "1":
 				data["largePrefix"] = "ON"
 			default:
-				data["largePrefix"] = strings.ToUpper(row["Value"].(string))
+				data["largePrefix"] = strings.ToUpper(value)
 			}
+		case "innodb_default_row_format":
+			data["innodbDefaultRowFormat"] = value
 		}
 	}
 	return data, nil

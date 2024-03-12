@@ -96,8 +96,8 @@ func AlterTableRules() []Rule {
 			CheckFunc: (*Rule).RuleAlterTableInnodbLargePrefix,
 		},
 		{
-			Hint:      "AlterTable#检查表定义的行是否超过65535",
-			CheckFunc: (*Rule).RuleAlterTableRowSizeTooLarge,
+			Hint:      "AlterTable#检查InnoDB表定义的行大小",
+			CheckFunc: (*Rule).RuleAlterTableInnoDBRowSize,
 		},
 	}
 }
@@ -242,9 +242,9 @@ func (r *Rule) RuleAlterTableInnodbLargePrefix(tistmt *ast.StmtNode) {
 	logics.LogicAlterTableInnodbLargePrefix(v, r.RuleHint)
 }
 
-// RuleAlterTableRowSizeTooLarge
-func (r *Rule) RuleAlterTableRowSizeTooLarge(tistmt *ast.StmtNode) {
-	v := &traverses.TraverseAlterTableRowSizeTooLarge{}
+// RuleAlterTableInnoDBRowSize
+func (r *Rule) RuleAlterTableInnoDBRowSize(tistmt *ast.StmtNode) {
+	v := &traverses.TraverseAlterTableInnoDBRowSize{}
 	(*tistmt).Accept(v)
-	logics.LogicAlterTableRowSizeTooLarge(v, r.RuleHint)
+	logics.LogicAlterTableInnoDBRowSize(v, r.RuleHint)
 }
