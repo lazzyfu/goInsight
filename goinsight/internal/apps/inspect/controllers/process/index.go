@@ -8,7 +8,6 @@ package process
 
 import (
 	"fmt"
-	"goInsight/global"
 	"goInsight/internal/apps/inspect/config"
 	"goInsight/internal/pkg/kv"
 	"goInsight/internal/pkg/utils"
@@ -351,24 +350,22 @@ type LargePrefix struct {
 }
 
 func (l *LargePrefix) Check(kv *kv.KVCache) error {
-	indexMaxLength := 767
+	const defaultLargePrefixLimit = 767
+	const LargePrefixLimit = 3072
 
 	dbVersion := kv.Get("dbVersion").(string)
 	versionIns := DbVersion{dbVersion}
-	if versionIns.IsTiDB() {
-		indexMaxLength = 3072
-	} else {
-		if versionIns.Int() > 80000 {
-			indexMaxLength = 3072
-		}
-		if versionIns.Int() > 50700 && kv.Get("largePrefix").(string) == "ON" {
-			indexMaxLength = 3072
-		}
+
+	indexMaxLength := defaultLargePrefixLimit
+
+	if versionIns.IsTiDB() || (versionIns.Int() > 80000) || (versionIns.Int() > 50700 && kv.Get("largePrefix").(string) == "ON") {
+		indexMaxLength = LargePrefixLimit
 	}
-	for _, i := range l.LargePrefixIndexColsMaps {
+
+	for _, indexMap := range l.LargePrefixIndexColsMaps {
 		// &{meta_cluster utf8 [{idx_datacenter [{datacenter 254 -1 128 } {cluster_domain 15 32 128 }]}]}
 		var maxSumLength int
-		for _, key := range i.Keys {
+		for _, key := range indexMap.Keys {
 			// 判断字符集，当列字符集为空，使用表的字符集
 			if len(key.Charset) == 0 {
 				key.Charset = l.Charset
@@ -381,9 +378,8 @@ func (l *LargePrefix) Check(kv *kv.KVCache) error {
 			maxSumLength += instDataBytes.Get(versionIns.Int())
 		}
 
-		global.App.Log.Debug(fmt.Sprintf("maxSumLength:%d, indexMaxLength:%d", maxSumLength, indexMaxLength))
 		if maxSumLength > indexMaxLength {
-			return fmt.Errorf("表`%s`的索引`%s`超出了innodb-large-prefix限制，当前索引长度为%d字节，最大限制为%d字节【例如可使用前缀索引，如：Field(length)】", l.Table, i.Name, maxSumLength, indexMaxLength)
+			return fmt.Errorf("表`%s`的索引`%s`超出了innodb-large-prefix限制，当前索引长度为%d字节，最大限制为%d字节【您可使用前缀索引，如：Column(length)】", l.Table, indexMap.Name, maxSumLength, indexMaxLength)
 		}
 	}
 	return nil

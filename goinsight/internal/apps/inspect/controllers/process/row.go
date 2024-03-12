@@ -2,7 +2,6 @@ package process
 
 import (
 	"fmt"
-	"goInsight/global"
 	"goInsight/internal/pkg/kv"
 	"strings"
 
@@ -72,11 +71,8 @@ func (l *InnoDBRowSize) Check(kv *kv.KVCache) error {
 		maxSumRowsLength += instDataBytes.Get(versionIns.Int())
 	}
 	// 判断是否触发了行大小限制
-	msg := fmt.Sprintf("表`%s`触发了Row Size Limit，最大行大小为%d，当前为%d（表存储引擎为%s，行格式为%s）", l.Table, maxRowSize, maxSumRowsLength, l.Engine, rowFormat)
-	global.App.Log.Info(msg)
-
 	if maxSumRowsLength > maxRowSize {
-		return fmt.Errorf(msg)
+		return fmt.Errorf("表`%s`触发了Row Size Limit，最大行大小为%d，当前为%d（表存储引擎为%s，行格式为%s）", l.Table, maxRowSize, maxSumRowsLength, l.Engine, rowFormat)
 	}
 
 	return nil

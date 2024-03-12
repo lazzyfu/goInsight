@@ -529,16 +529,16 @@ func (c *TraverseCreateTableDisabledIndexes) Leave(in ast.Node) (ast.Node, bool)
 
 // TraverseCreateTableInnodbLargePrefix
 type TraverseCreateTableInnodbLargePrefix struct {
-	LargePrefix process.LargePrefix
+	process.LargePrefix
 }
 
 func (c *TraverseCreateTableInnodbLargePrefix) Enter(in ast.Node) (ast.Node, bool) {
 	if stmt, ok := in.(*ast.CreateTableStmt); ok {
-		c.LargePrefix.Table = stmt.Table.Name.String()
+		c.Table = stmt.Table.Name.String()
 		for _, node := range stmt.Options {
 			switch node.Tp {
 			case ast.TableOptionCharset:
-				c.LargePrefix.Charset = node.StrValue
+				c.Charset = node.StrValue
 			}
 		}
 		var LargePrefixIndexColsMaps []process.LargePrefixIndexColsMap
@@ -573,7 +573,7 @@ func (c *TraverseCreateTableInnodbLargePrefix) Enter(in ast.Node) (ast.Node, boo
 					}
 				}
 			}
-			c.LargePrefix.LargePrefixIndexColsMaps = append(c.LargePrefix.LargePrefixIndexColsMaps, tmpLargePrefixIndexColsMap)
+			c.LargePrefixIndexColsMaps = append(c.LargePrefixIndexColsMaps, tmpLargePrefixIndexColsMap)
 		}
 	}
 	return in, false
