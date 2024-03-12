@@ -1,5 +1,5 @@
 <template>
-  <a-drawer :title="dbtitle" width="65%" :closable="false" :visible="visible" @close="onClose">
+  <a-drawer :title="dbtitle" width="75%" :closable="false" :visible="visible" @close="onClose">
     <a-spin tip="Loading..." :spinning="loading">
       <div class="spin-content">
         <div>
@@ -101,7 +101,7 @@ export default {
         })
 
         dictData_row += `
-              <table class="table table-sm table-hover table-bordered" style='font-size: 8px; margin-top: 12px;padding-top: 5px;margin-bottom: 5px;'>
+              <table class="table table-sm table-hover table-bordered" style='font-size: 12px; margin-top: 12px;padding-top: 5px;margin-bottom: 5px;'>
                 <thead>
                   <tr style='background: #e4dede;'>
                     <th>序列</th>
@@ -118,7 +118,7 @@ export default {
                   ${table_tr_html}
                 </tbody>
               </table>
-              <table class="table table-sm table-hover table-bordered" style='font-size: 8px; margin-top: 20px;padding-top: 5px'>
+              <table class="table table-sm table-hover table-bordered" style='font-size: 12px; margin-top: 20px;padding-top: 5px'>
                 <thead>
                   <tr style='background: #e4dede;'>
                     <th>序列</th>
