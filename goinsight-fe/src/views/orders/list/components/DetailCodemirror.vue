@@ -16,7 +16,7 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/mode/overlay'
 
 // 定义高亮的关键字
-let keyword = new RegExp('drop|unique|truncate|change|modify|rename|^update |^delete |^insert into', 'i')
+let keyword = new RegExp('^create |^drop |^truncate |^update |^delete |^insert into|on update|unique|change|modify|rename', 'i')
 CodeMirror.defineMode('highlightText', function (config, parserConfig) {
   let searchOverlay = {
     token: function (stream, state) {

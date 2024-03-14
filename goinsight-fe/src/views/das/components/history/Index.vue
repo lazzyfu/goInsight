@@ -28,7 +28,7 @@
       <span slot="expandedRowRender" slot-scope="record">
         <ul>
           <li>
-            原始SQL
+            用户输入SQL
             <pre class="codeStyle"><code>{{ record.sqltext }}</code></pre>
           </li>
           <li>
@@ -44,7 +44,7 @@
       <span slot="action" slot-scope="text, record">
         <div class="editable-row-operations">
           <a type="button" v-clipboard:copy="record.sqltext" v-clipboard:success="onCopy" v-clipboard:error="onError">
-            <span style="color: #409eff">原始SQL</span>
+            <span style="color: #409eff">用户输入SQL</span>
           </a>
         </div>
       </span>
@@ -90,7 +90,7 @@ const tableColumns = [
     },
   },
   {
-    title: '原始SQL',
+    title: '用户输入SQL',
     dataIndex: 'sqltext',
     key: 'sqltext',
     scopedSlots: {
@@ -250,12 +250,12 @@ export default {
   tab-size: 4;
   background: #183055;
   color: #e6ecf1;
-  padding: 4px;
+  padding: 8px;
   direction: ltr;
   text-align: left;
   border: 1px solid #d1d1d1;
   border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
   max-width: 100%;
   overflow: auto;
   word-break: normal;

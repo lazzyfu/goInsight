@@ -49,7 +49,7 @@ export const getUserGrantsApi = (params) =>
   })
 
 // 获取数据字典
-export const getDBDict = (params) =>
+export const getDBDictApi = (params) =>
   axios.request({
     url: '/api/v1/das/dbdict',
     method: 'get',
