@@ -14,8 +14,6 @@ Vue.use(Router)
 const createRouter = () =>
   new Router({
     mode: 'history',
-    linkActiveClass: 'is-active',
-    scrollBehavior: (to, from, savedPosition) => savedPosition || {},
     routes: constantRouterMap,
   })
 
