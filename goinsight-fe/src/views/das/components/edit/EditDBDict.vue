@@ -17,7 +17,7 @@
 
 <script>
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { getDBDict } from '@/api/das'
+import { getDBDictApi } from '@/api/das'
 
 export default {
   data() {
@@ -41,7 +41,7 @@ export default {
     },
 
     fetchData(data) {
-      getDBDict(data).then((response) => {
+      getDBDictApi(data).then((response) => {
         if (response.code === '0000') {
           let curDate = new Date()
           let dbtime = curDate.toLocaleDateString().split('/').join('-')
@@ -49,7 +49,8 @@ export default {
           this.format(response.data)
           this.loading = false
         } else {
-          this.$message.error('加载数据字典失败')
+          this.onClose()
+          this.$message.error(response.message)
           this.loading = false
         }
       })
