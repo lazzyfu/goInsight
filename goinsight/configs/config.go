@@ -6,6 +6,7 @@
 package config
 
 type App struct {
+	Title         string `mapstructure:"title" json:"title" yaml:"title"`
 	ListenAddress string `mapstructure:"listen_address" json:"listen_address" yaml:"listen_address"`
 	Environment   string `mapstructure:"environment" json:"environment" yaml:"environment"`
 	SECRET_KEY    string `mapstructure:"secret_key" json:"secret_key" yaml:"secret_key"`

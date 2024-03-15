@@ -1,5 +1,6 @@
 # 应用配置
 app:
+  title: "GoInsight" # 网站Title
   listen_address: "localhost:8083" # 应用监听地址
   environment: "prod" # 环境设置，可选值为dev/prod
   secret_key: "m3cfrcrlbikc16h+u8c4!gru$h8@4k)@m^p4$f=pwqi1o$r_c^" # 应用密钥，建议更改
