@@ -12,7 +12,7 @@
     <template v-slot:menuHeaderRender>
       <div>
         <img src="@/assets/logo.svg" />
-        <h1>{{ title }}</h1>
+        <h1>{{ appTitle }}</h1>
       </div>
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
@@ -21,11 +21,7 @@
     <template v-slot:headerContentRender>
       <div>
         <a-tooltip title="刷新页面">
-          <a-icon
-            type="reload"
-            style="font-size: 18px; cursor: pointer"
-            @click="refresh()"
-          />
+          <a-icon type="reload" style="font-size: 18px; cursor: pointer" @click="refresh()" />
         </a-tooltip>
       </div>
     </template>
@@ -51,6 +47,8 @@ import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
 // import GlobalFooter from '@/components/GlobalFooter'
 
+import { getAppTitleApi } from '@/api/app'
+
 export default {
   name: 'BasicLayout',
   components: {
@@ -60,6 +58,8 @@ export default {
   },
   data() {
     return {
+      // 网站title
+      appTitle: '',
       // preview.pro.antdv.com only use.
       isProPreviewSite: process.env.VUE_APP_PREVIEW === 'true' && process.env.NODE_ENV !== 'development',
       // end
@@ -69,7 +69,6 @@ export default {
       menus: [],
       // 侧栏收起状态
       collapsed: false,
-      title: defaultSettings.title,
       settings: {
         // 布局类型
         layout: defaultSettings.layout, // 'sidemenu', 'topmenu'
@@ -120,6 +119,11 @@ export default {
         }, 16)
       })
     }
+    
+    // 获取网站title
+    getAppTitleApi().then((response) => {
+      this.appTitle = response.data
+    })
 
     // first update color
     // TIPS: THEME COLOR HANDLER!! PLEASE CHECK THAT!!
@@ -162,9 +166,9 @@ export default {
           break
       }
     },
-    refresh(){
+    refresh() {
       location.reload()
-    }
+    },
   },
 }
 </script>

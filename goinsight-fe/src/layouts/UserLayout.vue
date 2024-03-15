@@ -1,5 +1,4 @@
 <template>
-
   <div id="userLayout" :class="['user-layout-wrapper', isMobile && 'mobile']">
     <div class="container">
       <div class="user-layout-lang">
@@ -9,8 +8,8 @@
         <div class="top">
           <div class="header">
             <a href="/">
-              <img src="~@/assets/logo.svg" class="logo" alt="logo">
-              <span class="title">goInsight</span>
+              <img src="~@/assets/logo.svg" class="logo" alt="logo" />
+              <span class="title">{{ appTitle }}</span>
             </a>
           </div>
           <div class="desc">
@@ -26,9 +25,7 @@
             <a href="_self">隐私</a>
             <a href="_self">条款</a>
           </div>
-          <div class="copyright">
-            Copyright &copy; 2018 vueComponent
-          </div>
+          <div class="copyright">Copyright &copy; 2018 vueComponent</div>
         </div>
       </div>
     </div>
@@ -38,19 +35,33 @@
 <script>
 import { deviceMixin } from '@/store/device-mixin'
 import SelectLang from '@/components/SelectLang'
+import { getAppTitleApi } from '@/api/app'
 
 export default {
   name: 'UserLayout',
   components: {
-    SelectLang
+    SelectLang,
   },
   mixins: [deviceMixin],
-  mounted () {
-    document.body.classList.add('userLayout')
+  data() {
+    return {
+      appTitle: '',
+    }
   },
-  beforeDestroy () {
+  methods: {
+    getAppTitle() {
+      getAppTitleApi().then((response) => {
+        this.appTitle = response.data
+      })
+    },
+  },
+  mounted() {
+    document.body.classList.add('userLayout')
+    this.getAppTitle()
+  },
+  beforeDestroy() {
     document.body.classList.remove('userLayout')
-  }
+  },
 }
 </script>
 
@@ -122,7 +133,7 @@ export default {
 
           .title {
             font-size: 33px;
-            color: rgba(0, 0, 0, .85);
+            color: rgba(0, 0, 0, 0.85);
             font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             font-weight: 600;
             position: relative;
@@ -172,7 +183,6 @@ export default {
     a {
       text-decoration: none;
     }
-
   }
 }
 </style>
