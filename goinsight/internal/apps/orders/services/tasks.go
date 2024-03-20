@@ -125,7 +125,7 @@ func (s *PreviewTasksServices) Run() (responseData interface{}, err error) {
 	}
 	var records record
 	global.App.DB.Table("`insight_order_tasks`").
-		Select("COUNT(*) as total, SUM(if(progress='未执行',1,0)) as unexecuted, SUM(if(progress='执行中',1,0)) as processing,SUM(if(progress='已完成',1,0)) as completed,SUM(if(progress='已完成/生成回滚SQL失败',1,0)) as completed_with_rollback_failure,SUM(if(progress='已失败',1,0)) as failed,SUM(if(progress='已暂停',1,0)) as paused").
+		Select("COUNT(*) as total, SUM(if(progress='未执行',1,0)) as unexecuted, SUM(if(progress='执行中',1,0)) as processing, SUM(if(progress='已完成',1,0)) as completed, SUM(if(progress='已失败',1,0)) as failed,SUM(if(progress='已暂停',1,0)) as paused").
 		Where("order_id=?", s.OrderID).
 		Take(&records)
 
@@ -141,7 +141,7 @@ func updateOrderStatusToFinish(order_id string) {
 	var taskCount TaskCount
 	global.App.DB.Table("`insight_order_tasks`").
 		Select("count(*) as count").
-		Where("order_id=? and progress not in ('已完成', '已完成/生成回滚SQL失败')", order_id).
+		Where("order_id=? and progress not in ('已完成')", order_id).
 		Scan(&taskCount)
 	if taskCount.Count == 0 {
 		// 更新工单为已完成
@@ -312,7 +312,7 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		return fmt.Errorf("任务ID为`%d`的记录不存在", s.ID)
 	}
 	// 跳过已完成的任务
-	if task.Progress == "已完成" || task.Progress == "已完成/生成回滚SQL失败" {
+	if task.Progress == "已完成" {
 		return errors.New("当前任务已完成，请勿重复执行")
 	}
 	// 跳过执行中的任务
@@ -343,9 +343,9 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 	}(); err != nil {
 		return err
 	}
+
 	// 执行任务
 	data, err := executeTask(task)
-	fmt.Println("data, err: ", data, err)
 
 	// 返回错误，更新任务状态
 	if err != nil {
@@ -355,7 +355,7 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		case api.SQLExecuteError:
 			taskProgress = "已失败"
 		case api.RollbackSQLError:
-			taskProgress = "已完成/生成回滚SQL失败"
+			taskProgress = "已完成"
 		default:
 			taskProgress = "已失败"
 		}
@@ -407,7 +407,7 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 	// 执行任务
 	for _, task := range tasks {
 		// 跳过已完成的任务
-		if task.Progress == "已完成" || task.Progress == "已完成/生成回滚SQL失败" {
+		if task.Progress == "已完成" {
 			continue
 		}
 		// 执行任务
@@ -421,7 +421,7 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 			case api.SQLExecuteError:
 				taskProgress = "已失败"
 			case api.RollbackSQLError:
-				taskProgress = "已完成/生成回滚SQL失败"
+				taskProgress = "已完成"
 			default:
 				taskProgress = "已失败"
 			}

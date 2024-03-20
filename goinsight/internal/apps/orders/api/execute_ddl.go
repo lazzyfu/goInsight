@@ -89,7 +89,8 @@ func (e *ExecuteMySQLDDL) ExecuteCommand(command string) (data []string, err err
 				break
 			}
 			data = append(data, v)
-			if err := utils.Publish(context.Background(), e.OrderID, v, "ghost"); err != nil {
+			err = utils.Publish(context.Background(), e.OrderID, v, "ghost")
+			if err != nil {
 				global.App.Log.Error(err)
 			}
 		}
@@ -159,14 +160,16 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data ReturnData, err 
 			fmt.Sprintf("--alter=\"%s\" --execute", vv),
 		}, " ")
 	startTime := time.Now()
-
+	// 打印命令，已掩码password
+	re = regexp.MustCompile(`--password="([^"]*)"`)
+	printGhostCMD := re.ReplaceAllString(ghostCMD, `--password="..."`)
+	logAndPublish(fmt.Sprintf("执行gh-ost命令：%s", printGhostCMD))
 	// 执行ghost命令
-	logAndPublish("开始执行gh-ost命令")
 	log, err := e.ExecuteCommand(ghostCMD)
-	if err != nil {
-		return logErrorAndReturn(SQLExecuteError{Err: err}, fmt.Sprintf("SQL执行失败，错误：%s", err.Error()))
-	}
 	executeLog = append(executeLog, log...)
+	if err != nil {
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "执行失败，错误：")
+	}
 	logAndPublish("gh-ost命令执行成功")
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))

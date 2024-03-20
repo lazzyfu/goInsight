@@ -12,7 +12,9 @@
         <a-descriptions-item label="库名">
           <span style="color: blue">{{ orderDetail.schema }}</span>
         </a-descriptions-item>
-        <a-descriptions-item v-if="orderDetail.sql_type==='EXPORT'" label="文件格式">{{ orderDetail.export_file_format }}</a-descriptions-item>
+        <a-descriptions-item v-if="orderDetail.sql_type === 'EXPORT'" label="文件格式">{{
+          orderDetail.export_file_format
+        }}</a-descriptions-item>
         <a-descriptions-item label="创建时间">{{ orderDetail.created_at }}</a-descriptions-item>
         <a-descriptions-item label="更新时间">{{ orderDetail.updated_at }}</a-descriptions-item>
       </a-descriptions>
@@ -33,7 +35,8 @@
         </a-descriptions-item>
         <a-descriptions-item label="工单备注">
           <span v-if="orderDetail.remark">{{ orderDetail.remark }}</span>
-          <span v-else>无</span></a-descriptions-item>
+          <span v-else>无</span></a-descriptions-item
+        >
         <a-descriptions-item label="工单执行人">
           <span v-if="orderDetail.executor">
             <span v-for="k of orderDetail.executor" :key="k">
@@ -126,13 +129,6 @@
             </template>
           </a-statistic>
         </a-col>
-          <a-col :span="3">
-          <a-statistic title="已完成/生成回滚SQL失败" :value="this.statistics.completed_with_rollback_failure" class="demo-class">
-            <template #suffix>
-              <a-icon type="flag" />
-            </template>
-          </a-statistic>
-        </a-col>
         <a-col :span="3">
           <a-statistic title="未执行" :value="this.statistics.unexecuted" class="demo-class">
             <template #suffix>
@@ -147,7 +143,6 @@
             </template>
           </a-statistic>
         </a-col>
-
         <a-col :span="3">
           <a-statistic title="执行中" :value="this.statistics.processing" class="demo-class">
             <template #suffix>
