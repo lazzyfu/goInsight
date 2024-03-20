@@ -271,18 +271,29 @@ func (e *ExecuteExportMySQLData) encryptAndZipFile(inputFile, outputFile, filePa
 
 func (e *ExecuteExportMySQLData) Run() (data ReturnData, err error) {
 	var executeLog []string
-	var msg string
 
-	// Create a new database connection
-	db, err := NewMySQLCnx(e.DBConfig)
-	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error())
+	// Function to log messages and publish
+	logAndPublish := func(msg string) {
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		executeLog = append(executeLog, formattedMsg)
+		PublishMsg(e.OrderID, formattedMsg, "")
+	}
+
+	// Logging function for errors
+	logErrorAndReturn := func(err error, errMsg string) (ReturnData, error) {
+		logAndPublish(errMsg + err.Error())
+		data.ExecuteLog = strings.Join(executeLog, "\n")
 		return data, err
 	}
+
+	// CREATE A NEW DATABASE CONNECTION
+	db, err := NewMySQLCnx(e.DBConfig)
+	if err != nil {
+		return logErrorAndReturn(SQLExecuteError{Err: err}, fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error()))
+	}
 	defer db.Close()
-	msg = fmt.Sprintf("[%s] 访问数据库(%s:%d)成功", time.Now().Format("2006-01-02 15:04:05"), e.DBConfig.Hostname, e.DBConfig.Port)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("访问数据库(%s:%d)成功", e.DBConfig.Hostname, e.DBConfig.Port))
 
 	// 执行
 	startTime := time.Now()
@@ -294,15 +305,12 @@ func (e *ExecuteExportMySQLData) Run() (data ReturnData, err error) {
 		file, err = e.toCSV(db, e.SQL)
 	}
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("SQL执行失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "SQL执行失败，错误：")
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
 
-	msg = fmt.Sprintf("[%s] SQL执行成功，影响行数%d，执行耗时：%s", time.Now().Format("2006-01-02 15:04:05"), file.ExportRows, executeCostTime)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", file.ExportRows, executeCostTime))
 
 	// 存储返回数据
 	data.ExecuteLog = strings.Join(executeLog, "\n")

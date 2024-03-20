@@ -112,28 +112,35 @@
     <!-- 任务进度 -->
     <a-card :bordered="false" v-show="statistics.total != 0" title="任务进度" style="margin-top: 12px">
       <a-row :gutter="16">
-        <a-col :span="4">
+        <a-col :span="3">
           <a-statistic title="任务数" :value="this.statistics.total" style="margin-right: 50px">
             <template #suffix>
               <a-icon type="flag" />
             </template>
           </a-statistic>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="3">
           <a-statistic title="已完成" :value="this.statistics.completed" class="demo-class">
             <template #suffix>
               <a-icon type="flag" />
             </template>
           </a-statistic>
         </a-col>
-        <a-col :span="4">
+          <a-col :span="3">
+          <a-statistic title="已完成/生成回滚SQL失败" :value="this.statistics.completed_with_rollback_failure" class="demo-class">
+            <template #suffix>
+              <a-icon type="flag" />
+            </template>
+          </a-statistic>
+        </a-col>
+        <a-col :span="3">
           <a-statistic title="未执行" :value="this.statistics.unexecuted" class="demo-class">
             <template #suffix>
               <a-icon type="flag" />
             </template>
           </a-statistic>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="3">
           <a-statistic title="已失败" :value="this.statistics.failed" class="demo-class">
             <template #suffix>
               <a-icon type="flag" />
@@ -141,14 +148,14 @@
           </a-statistic>
         </a-col>
 
-        <a-col :span="4">
+        <a-col :span="3">
           <a-statistic title="执行中" :value="this.statistics.processing" class="demo-class">
             <template #suffix>
               <a-icon type="flag" />
             </template>
           </a-statistic>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="3">
           <a-statistic title="已暂停" :value="this.statistics.paused" class="demo-class">
             <template #suffix>
               <a-icon type="flag" />

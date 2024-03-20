@@ -120,7 +120,7 @@ func DaoGetConnectionID(db *sql.DB) (connectionID int64, err error) {
 	}
 	// Check if no data was retrieved
 	if len(*data) == 0 {
-		return connectionID, errors.New("failed to get connection ID: no valid row found")
+		return connectionID, errors.New("Failed to get connection ID: no valid row found")
 	}
 	// Expect only one row to be returned
 	row := (*data)[0]
@@ -129,7 +129,7 @@ func DaoGetConnectionID(db *sql.DB) (connectionID int64, err error) {
 	// Attempt to parse the string value as a 64-bit integer
 	connectionID, err = strconv.ParseInt(connectionIDStr, 10, 64)
 	if err != nil {
-		return connectionID, errors.New("failed to get connection ID: parsing error")
+		return connectionID, errors.New("Failed to get connection ID: parsing error")
 	}
 	// Return the retrieved connection ID and nil error
 	return
@@ -163,11 +163,11 @@ func DaoGetProcesslist(dbconfig *DBConfig, order_id string, connection_id int64,
 		// Execute the SQL query
 		data, err := DaoMySQLQuery(db, sql)
 		if err != nil {
-			global.App.Log.Error("failed to get processlist: ", err.Error())
+			global.App.Log.Error("Failed to get processlist: ", err.Error())
 			break // Exit the loop
 		}
 		if len(*data) == 0 { // If no rows are returned
-			global.App.Log.Error("failed to get processlist: no valid row found")
+			global.App.Log.Error("Failed to get processlist: no valid row found")
 			break // Exit the loop
 		}
 		// Expect only one row of data
@@ -186,7 +186,7 @@ func DaoGetMySQLPos(db *sql.DB) (file string, position int64, err error) {
 	}
 	// Check if data is empty
 	if len(*data) == 0 {
-		return file, position, errors.New("failed to get MySQL position: no valid row found")
+		return file, position, errors.New("Failed to get MySQL position: no valid row found，请检查MySQL是否开启了binlog")
 	}
 	// Expect to return one row of data
 	row := (*data)[0]
@@ -194,7 +194,7 @@ func DaoGetMySQLPos(db *sql.DB) (file string, position int64, err error) {
 	file = row["File"].(string)
 	position, err = strconv.ParseInt(row["Position"].(string), 10, 64)
 	if err != nil {
-		return file, position, errors.New("failed to get MySQL position: position parsing error")
+		return file, position, errors.New("Failed to get MySQL position: position parsing error")
 	}
 	return file, position, nil
 }

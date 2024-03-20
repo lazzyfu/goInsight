@@ -220,12 +220,12 @@ export default {
     },
     // view result
     viewResult(data) {
-      if (['已完成', '已失败'].indexOf(data.progress) >= 0){
+      if (['已完成', '已完成/生成回滚SQL失败', '已失败'].indexOf(data.progress) >= 0){
         this.$refs.TasksResultComponent.showModal(data)
       } else {
         this.$notification.warning({
         message: '警告',
-        description: '当前任务状态不为【未完成】或【已失败】',
+        description: '当前任务状态不为【已完成】、【已完成/生成回滚SQL失败】或【已失败】',
       })
       }
     },

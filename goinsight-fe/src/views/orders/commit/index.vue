@@ -459,6 +459,7 @@ export default {
               })
             }
           } else {
+            this.visibleAuditResult = false
             this.$notification.error({
               message: '错误',
               description: res.message,
