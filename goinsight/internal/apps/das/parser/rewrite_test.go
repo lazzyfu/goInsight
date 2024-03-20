@@ -12,7 +12,7 @@ import (
 	"goInsight/internal/pkg/utils"
 	"testing"
 
-	"github.com/pingcap/tidb/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/ast"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,7 +1,7 @@
 /*
 @Time    :   2022/06/28 10:25:18
 @Author  :   zongfei.fu
-@Desc    :   遍历语法树,语法参考pingcap文档：https://github.com/pingcap/parser/blob/master/docs/quickstart.md
+@Desc    :   遍历语法树
 */
 package traverses
 
@@ -9,8 +9,8 @@ import (
 	"goInsight/internal/apps/inspect/controllers/process"
 	"goInsight/internal/pkg/utils"
 
-	"github.com/pingcap/tidb/parser/ast"
-	driver "github.com/pingcap/tidb/types/parser_driver"
+	"github.com/pingcap/tidb/pkg/parser/ast"
+	driver "github.com/pingcap/tidb/pkg/types/parser_driver"
 )
 
 // TraverseAlterTableIsExist

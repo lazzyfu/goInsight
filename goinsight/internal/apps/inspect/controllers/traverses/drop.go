@@ -1,13 +1,13 @@
 /*
 @Time    :   2022/06/24 13:12:20
 @Author  :   zongfei.fu
-@Desc    :   遍历语法树,语法参考pingcap文档：https://github.com/pingcap/parser/blob/master/docs/quickstart.md
+@Desc    :   遍历语法树
 */
 
 package traverses
 
 import (
-	"github.com/pingcap/tidb/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/ast"
 )
 
 // TraverseDropTable

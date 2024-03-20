@@ -1,7 +1,7 @@
 /*
 @Time    :   2023/03/17 09:53:21
 @Author  :   zongfei.fu
-@Desc    :   同步库表
+@Desc    :   从用户定义的远程数据库实例同步库信息
 */
 
 package tasks
@@ -15,42 +15,20 @@ import (
 	"goInsight/internal/pkg/utils"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-// 忽略的库
+// 忽略下面的库
 var ignoredSchemas []string = []string{
 	"'PERFORMANCE_SCHEMA'",
 	"'INFORMATION_SCHEMA'",
-	"'MYSQL'",
-	"'SYS'",
-	"'SYSTEM'",
-	"'PERCONA'",
-	"'DM_META'",
-	"'DM_HEARTBEAT'",
-	"'MYSQL_MONITOR'",
-	"'METRICS_SCHEMA'",
-	"'TIDB_BINLOG'",
-	"'TIDB_LOADER'",
-	"'_TEMPORARY_AND_EXTERNAL_TABLES'",
-	"'DEFAULT'",
 	"'performance_schema'",
 	"'information_schema'",
+	"'MYSQL'",
 	"'mysql'",
-	"'sys'",
-	"'system'",
-	"'percona'",
-	"'dbms_monitor'",
-	"'dm_meta'",
-	"'dm_heartbeat'",
-	"'mysql_monitor'",
-	"'metrics_schema'",
-	"'tidb_binlog'",
-	"'tidb_loader'",
-	"'_temporary_and_external_tables'",
-	"'default'",
 }
 
 // 空库将不会被同步 && 不采集ghost表
@@ -119,9 +97,9 @@ func CheckSourceSchemasIsDeleted(instanceID uuid.UUID, data *[]map[string]interf
 	}
 }
 
-// 同步库表信息
+// 从用户定义的远程数据库实例同步库信息
 func SyncDBMeta() {
-	// 获取配置的数据库
+	// 获取数据库配置
 	type Result struct {
 		InstanceID uuid.UUID
 		Hostname   string
@@ -136,53 +114,59 @@ func SyncDBMeta() {
 	for _, row := range results {
 		ch <- struct{}{}
 		wg.Add(1)
-		// 获取目标数据库的库表信息
+		// 获取目标数据库的库信息
 		go func(row Result) {
-			defer wg.Done()
+			defer func() {
+				<-ch
+				wg.Done()
+			}()
+
 			var (
 				data *[]map[string]interface{}
 				err  error
 			)
-			if strings.EqualFold(row.DbType, "mysql") || strings.EqualFold(row.DbType, "tidb") {
+
+			// 执行SQL超时
+			ctx, cancel := context.WithTimeout(context.Background(), 10000*time.Millisecond)
+			defer cancel()
+			switch strings.ToLower(row.DbType) {
+			case "mysql", "tidb":
 				db := dao.DB{
 					User:     global.App.Config.RemoteDB.UserName,
 					Password: global.App.Config.RemoteDB.Password,
 					Host:     row.Hostname,
 					Port:     row.Port,
 					Params:   map[string]string{"group_concat_max_len": "67108864"},
-					Ctx:      context.Background(),
+					Ctx:      ctx,
 				}
 				_, data, err = db.Query(mysqlQuery)
-				if err != nil {
-					global.App.Log.Error(err.Error())
-					return
-				}
-				for _, d := range *data {
-					CreateSchemaRecord(row.InstanceID, d)
-				}
-				// 判断源库表是否被删除
-				CheckSourceSchemasIsDeleted(row.InstanceID, data)
-			}
-			if strings.EqualFold(row.DbType, "clickhouse") {
+			case "clickhouse":
 				db := dao.ClickhouseDB{
 					User:     global.App.Config.RemoteDB.UserName,
 					Password: global.App.Config.RemoteDB.Password,
 					Host:     row.Hostname,
 					Port:     row.Port,
-					Ctx:      context.Background(),
+					Ctx:      ctx,
 				}
 				_, data, err = db.Query(clickhouseQuery)
-				if err != nil {
-					global.App.Log.Error(err.Error())
-					return
-				}
-				for _, d := range *data {
-					CreateSchemaRecord(row.InstanceID, d)
-				}
-				// 判断源库表是否被删除
-				CheckSourceSchemasIsDeleted(row.InstanceID, data)
+			default:
+				global.App.Log.Warn(fmt.Sprintf("不支持的数据库类型：%s", row.DbType))
+				return
 			}
-			<-ch
+			if err != nil {
+				global.App.Log.Error(fmt.Sprintf("从主机%s:%d同步元数据失败，错误信息：%s", row.Hostname, row.Port, err.Error()))
+				return
+			}
+			if len(*data) == 0 {
+				global.App.Log.Warn(fmt.Sprintf("从主机%s:%d同步元数据失败，未发现库记录，请检查账号%s是否有SELECT权限", row.Hostname, row.Port, global.App.Config.RemoteDB.UserName))
+			}
+			// 创建元数据记录
+			for _, d := range *data {
+				global.App.Log.Debug(fmt.Sprintf("从主机%s:%d同步元数据成功，主机实例ID：%s 库：%s", row.Hostname, row.Port, row.InstanceID.String(), d["TABLE_SCHEMA"]))
+				CreateSchemaRecord(row.InstanceID, d)
+			}
+			// 判断源库是否被删除
+			CheckSourceSchemasIsDeleted(row.InstanceID, data)
 		}(row)
 	}
 	wg.Wait()

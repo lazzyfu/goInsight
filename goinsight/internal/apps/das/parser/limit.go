@@ -9,8 +9,8 @@ package parser
 import (
 	"sync"
 
-	"github.com/pingcap/tidb/parser/ast"
-	driver "github.com/pingcap/tidb/types/parser_driver"
+	"github.com/pingcap/tidb/pkg/parser/ast"
+	driver "github.com/pingcap/tidb/pkg/types/parser_driver"
 )
 
 type Limit struct {

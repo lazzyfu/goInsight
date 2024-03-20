@@ -7,8 +7,8 @@ import (
 	"goInsight/internal/apps/inspect/controllers/rules"
 	"goInsight/internal/pkg/kv"
 
-	"github.com/pingcap/tidb/parser/ast"
-	_ "github.com/pingcap/tidb/types/parser_driver"
+	"github.com/pingcap/tidb/pkg/parser/ast"
+	_ "github.com/pingcap/tidb/pkg/types/parser_driver"
 )
 
 type Stmt struct {
