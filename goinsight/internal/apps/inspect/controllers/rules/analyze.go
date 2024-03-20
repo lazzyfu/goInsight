@@ -10,7 +10,7 @@ import (
 	"goInsight/internal/apps/inspect/controllers/logics"
 	"goInsight/internal/apps/inspect/controllers/traverses"
 
-	"github.com/pingcap/tidb/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/ast"
 )
 
 func AnalyzeTableRules() []Rule {

@@ -47,7 +47,7 @@ const tableColumns = [
     title: '语句',
     dataIndex: 'query',
     key: 'query',
-    width: '25%',
+    width: '30%',
     ellipsis: true,
     scopedSlots: {
       customRender: 'query',
@@ -57,7 +57,7 @@ const tableColumns = [
     title: '提示',
     dataIndex: 'summary',
     key: 'summary',
-    width: '50%',
+    width: '40%',
     scopedSlots: {
       customRender: 'summary',
     },

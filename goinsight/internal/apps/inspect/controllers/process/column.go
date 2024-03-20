@@ -16,7 +16,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/pingcap/tidb/parser/mysql"
+	"github.com/pingcap/tidb/pkg/parser/mysql"
 )
 
 // 检查列的属性
@@ -90,7 +90,7 @@ func (c *ColOptions) CheckColumnMaxVarcharLength() error {
 func (c *ColOptions) CheckColumnFloatDouble() error {
 	if c.InspectParams.CHECK_COLUMN_FLOAT_DOUBLE {
 		if c.Tp == mysql.TypeFloat || c.Tp == mysql.TypeDouble {
-			return fmt.Errorf("列`%s`的类型为float或double，建议转换为int/bigint/decimal类型[表`%s`]", c.Column, c.Table)
+			return fmt.Errorf("列`%s`的类型为float或double，请使用int/bigint/decimal类型[表`%s`]", c.Column, c.Table)
 		}
 	}
 	return nil

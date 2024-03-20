@@ -11,10 +11,10 @@ import (
 	"goInsight/global"
 	"strings"
 
-	"github.com/pingcap/tidb/parser/ast"
-	"github.com/pingcap/tidb/parser/model"
-	driver "github.com/pingcap/tidb/types/parser_driver"
-	utilparser "github.com/pingcap/tidb/util/parser"
+	"github.com/pingcap/tidb/pkg/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/model"
+	driver "github.com/pingcap/tidb/pkg/types/parser_driver"
+	utilparser "github.com/pingcap/tidb/pkg/util/parser"
 )
 
 type Rewrite struct {

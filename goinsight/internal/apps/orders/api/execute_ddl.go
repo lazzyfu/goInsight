@@ -1,6 +1,6 @@
 /*
 @Author  :   lazzyfu
-@Desc    :   执行DML
+@Desc    :   执行DDL
 */
 
 package api
@@ -20,46 +20,51 @@ import (
 // 执行Online DDL语句
 func ExecuteOnlineDDL(dc *DBConfig) (data ReturnData, err error) {
 	var executeLog []string
-	var msg string
 
-	// Create a new database connection
+	// Function to log messages and publish
+	logAndPublish := func(msg string) {
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		executeLog = append(executeLog, formattedMsg)
+		PublishMsg(dc.OrderID, formattedMsg, "")
+	}
+
+	// Logging function for errors
+	logErrorAndReturn := func(err error, errMsg string) (ReturnData, error) {
+		logAndPublish(errMsg + err.Error())
+		data.ExecuteLog = strings.Join(executeLog, "\n")
+		return data, err
+	}
+
+	// CREATE A NEW DATABASE CONNECTION
 	db, err := NewMySQLCnx(dc)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", dc.Hostname, dc.Port, err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", dc.Hostname, dc.Port, err.Error()))
 	}
 	defer db.Close()
-	msg = fmt.Sprintf("[%s] 访问数据库(%s:%d)成功", time.Now().Format("2006-01-02 15:04:05"), dc.Hostname, dc.Port)
-	executeLog = append(executeLog, msg)
-	PublishMsg(dc.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("访问数据库(%s:%d)成功", dc.Hostname, dc.Port))
 
-	// get connection id
-	ConnectionID, err := DaoGetConnectionID(db)
+	// GET CONNECTION ID
+	connectionID, err := DaoGetConnectionID(db)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("获取数据库Connection ID失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "获取数据库Connection ID失败，错误：")
 	}
-	msg = fmt.Sprintf("[%s] 数据库Connection ID：%d", time.Now().Format("2006-01-02 15:04:05"), ConnectionID)
-	executeLog = append(executeLog, msg)
-	PublishMsg(dc.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("数据库Connection ID：%d", connectionID))
 
-	// show process
+	// SHOW PROCESS
 	ch1 := make(chan int64)
-	go DaoGetProcesslist(dc, dc.OrderID, ConnectionID, ch1)
+	go DaoGetProcesslist(dc, dc.OrderID, connectionID, ch1)
 
 	// 执行SQL
 	startTime := time.Now()
 	affectedRows, err := DaoMySQLExecute(db, dc.SQL, ch1)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("SQL执行失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "SQL执行失败，错误：")
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
+	logAndPublish(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
 
-	msg = fmt.Sprintf("[%s] SQL执行成功，影响行数%d，执行耗时：%s", time.Now().Format("2006-01-02 15:04:05"), affectedRows, executeCostTime)
-	executeLog = append(executeLog, msg)
-	PublishMsg(dc.OrderID, msg, "")
 	// 返回数据
 	data.ExecuteLog = strings.Join(executeLog, "\n")
 	data.AffectedRows = affectedRows
@@ -67,7 +72,7 @@ func ExecuteOnlineDDL(dc *DBConfig) (data ReturnData, err error) {
 	return
 }
 
-// MySQL
+// MySQL DDL
 type ExecuteMySQLDDL struct {
 	*DBConfig
 }
@@ -99,26 +104,52 @@ func (e *ExecuteMySQLDDL) ExecuteCommand(command string) (data []string, err err
 
 // 执行ghost封装后的DDL
 func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data ReturnData, err error) {
+	var executeLog []string
+
+	// Function to log messages and publish
+	logAndPublish := func(msg string) {
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		executeLog = append(executeLog, formattedMsg)
+		PublishMsg(e.OrderID, formattedMsg, "")
+	}
+
+	// Logging function for errors
+	logErrorAndReturn := func(err error, errMsg string) (ReturnData, error) {
+		logAndPublish(errMsg + err.Error())
+		data.ExecuteLog = strings.Join(executeLog, "\n")
+		return data, err
+	}
+
 	// 移除字符串前后的所有空白字符，包括空格、制表符、换行符等
 	newSQL := strings.TrimSpace(sql)
+	logAndPublish("移除SQL语句前后的所有空白字符，包括空格、制表符、换行符等")
+
 	// 获取表名
 	tableName, err := parser.GetTableNameFromAlterStatement(sql)
 	if err != nil {
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "解析SQL提取表名失败")
 	}
+	logAndPublish("从SQL语句中提取表名成功")
+
 	// 正则匹配
 	syntax := `(?i)^ALTER(\s+)TABLE(\s+)([\S]*)(\s+)(ADD|CHANGE|RENAME|MODIFY|DROP|ENGINE|CONVERT)(\s*)([\S\s]*)`
 	re, err := regexp.Compile(syntax)
 	if err != nil {
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "正则匹配SQL语句失败")
 	}
 	match := re.FindStringSubmatch(newSQL)
 	if len(match) < 5 {
-		return data, errors.New("当前SQL正则匹配失败")
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "正则匹配SQL语句失败")
 	}
+	logAndPublish("正则匹配SQL语句成功")
+
 	//  将反引号处理为空，将双引号处理成单引号
 	vv := strings.Replace(strings.Replace(strings.Join(match[5:], ""), "`", "", -1), "\"", "'", -1)
+	logAndPublish("将反引号处理为空，将双引号处理成单引号")
+
 	// 生成ghost命令
+	logAndPublish("生成gh-ost执行命令")
 	ghostCMD := strings.Join(
 		[]string{
 			global.App.Config.Ghost.Path,
@@ -129,19 +160,23 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data ReturnData, err 
 			fmt.Sprintf("--alter=\"%s\" --execute", vv),
 		}, " ")
 	startTime := time.Now()
+	// 打印命令，已掩码password
+	re = regexp.MustCompile(`--password="([^"]*)"`)
+	printGhostCMD := re.ReplaceAllString(ghostCMD, `--password="..."`)
+	logAndPublish(fmt.Sprintf("执行gh-ost命令：%s", printGhostCMD))
 	// 执行ghost命令
-	executeLog, err := e.ExecuteCommand(ghostCMD)
+	log, err := e.ExecuteCommand(ghostCMD)
+	executeLog = append(executeLog, log...)
+	if err != nil {
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "执行失败，错误：")
+	}
+	logAndPublish("gh-ost命令执行成功")
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
+
 	// 返回数据
 	data.ExecuteLog = strings.Join(executeLog, "")
 	data.ExecuteCostTime = executeCostTime
-	if err != nil {
-		data.Error = err.Error()
-	}
-	if err != nil {
-		return
-	}
 	return
 }
 
@@ -151,6 +186,7 @@ func (e *ExecuteMySQLDDL) Run() (data ReturnData, err error) {
 	if err != nil {
 		return
 	}
+
 	switch sqlType {
 	case "CreateDatabase", "CreateTable", "CreateView":
 		return ExecuteOnlineDDL(e.DBConfig)
@@ -159,9 +195,9 @@ func (e *ExecuteMySQLDDL) Run() (data ReturnData, err error) {
 	case "TruncateTable":
 		return ExecuteOnlineDDL(e.DBConfig)
 	case "RenameTable":
-		return data, errors.New("请更正语法为alter table ... rename")
+		return data, errors.New("请更正为alter table ... rename语法")
 	case "CreateIndex":
-		return data, errors.New("请更正语法为alter table ... add")
+		return data, errors.New("请更正为alter table ... add语法")
 	case "DropDatabase":
 		return data, errors.New("【风险】禁止执行drop database操作")
 	case "AlterTable":
@@ -171,7 +207,7 @@ func (e *ExecuteMySQLDDL) Run() (data ReturnData, err error) {
 	}
 }
 
-// TiDB
+// TiDB DDL
 type ExecuteTiDBDDL struct {
 	*DBConfig
 }
@@ -182,6 +218,7 @@ func (e *ExecuteTiDBDDL) Run() (data ReturnData, err error) {
 	if err != nil {
 		return
 	}
+
 	switch sqlType {
 	case "CreateDatabase", "CreateTable", "CreateView":
 		return ExecuteOnlineDDL(e.DBConfig)

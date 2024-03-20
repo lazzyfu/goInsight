@@ -225,7 +225,7 @@ export default {
       } else {
         this.$notification.warning({
         message: '警告',
-        description: '当前任务状态不为【未完成】或【已失败】',
+        description: '当前任务状态不为【已完成】或【已失败】',
       })
       }
     },

@@ -12,103 +12,97 @@ import (
 	"time"
 )
 
-// MySQL
+// MySQL DML
 type ExecuteMySQLDML struct {
 	*DBConfig
 }
 
+// 执行MySQL DML语句
 func (e *ExecuteMySQLDML) Run() (data ReturnData, err error) {
+	// Slice for executeLog
 	var executeLog []string
-	var msg string
 
-	// Create a new database connection
+	// Function to log messages and publish
+	logAndPublish := func(msg string) {
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		executeLog = append(executeLog, formattedMsg)
+		PublishMsg(e.OrderID, formattedMsg, "")
+	}
+
+	// Logging function for errors
+	logErrorAndReturn := func(err error, errMsg string) (ReturnData, error) {
+		logAndPublish(errMsg + err.Error())
+		data.ExecuteLog = strings.Join(executeLog, "\n")
+		return data, err
+	}
+
+	// CREATE A NEW DATABASE CONNECTION
 	db, err := NewMySQLCnx(e.DBConfig)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error()))
 	}
 	defer db.Close()
-	msg = fmt.Sprintf("[%s] 访问数据库(%s:%d)成功", time.Now().Format("2006-01-02 15:04:05"), e.DBConfig.Hostname, e.DBConfig.Port)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("访问数据库(%s:%d)成功", e.DBConfig.Hostname, e.DBConfig.Port))
 
-	// get connection id
-	ConnectionID, err := DaoGetConnectionID(db)
+	// GET CONNECTION ID
+	connectionID, err := DaoGetConnectionID(db)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("获取数据库Connection ID失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "获取数据库Connection ID失败，错误：")
 	}
-	msg = fmt.Sprintf("[%s] 数据库Connection ID：%d", time.Now().Format("2006-01-02 15:04:05"), ConnectionID)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("数据库Connection ID：%d", connectionID))
 
-	// show process
+	// SHOW PROCESS
 	ch1 := make(chan int64)
-	go DaoGetProcesslist(e.DBConfig, e.OrderID, ConnectionID, ch1)
+	go DaoGetProcesslist(e.DBConfig, e.OrderID, connectionID, ch1)
 
-	// 获取position
+	// 获取执行开始前的binlog position
 	startFile, startPosition, err := DaoGetMySQLPos(db)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("获取Start Binlog File和Position失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "获取Start Binlog File和Position失败，错误：")
 	}
-	msg = fmt.Sprintf("[%s] Start Binlog File：%s，Position：%d", time.Now().Format("2006-01-02 15:04:05"), startFile, startPosition)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("Start Binlog File：%s，Position：%d", startFile, startPosition))
 
-	// 开始执行SQL
+	// 执行SQL
 	startTime := time.Now()
 	affectedRows, err := DaoMySQLExecute(db, e.SQL, ch1)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("SQL执行失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "SQL执行失败，错误：")
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
-	msg = fmt.Sprintf("[%s] SQL执行成功，影响行数%d，执行耗时：%s", time.Now().Format("2006-01-02 15:04:05"), affectedRows, executeCostTime)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
 
 	data.AffectedRows = affectedRows
 	data.ExecuteCostTime = executeCostTime
 
-	// 获取position
+	// 获取执行后的binlog position
 	endFile, endPosition, err := DaoGetMySQLPos(db)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("获取End Binlog File和Position失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(RollbackSQLError{Err: err}, "获取End Binlog File和Position失败，错误：")
 	}
-	msg = fmt.Sprintf("[%s] End Binlog File：%s，Position：%d", time.Now().Format("2006-01-02 15:04:05"), endFile, endPosition)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
-
-	// 回滚SQL
-	msg = fmt.Sprintf("[%s] 开始生成回滚SQL，解析Binlog", time.Now().Format("2006-01-02 15:04:05"))
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("End Binlog File：%s，Position：%d", endFile, endPosition))
 
 	var rollbackSQL, backupCostTime string
+	// 影响行数大于0，才执行生成回滚SQL操作
 	if affectedRows > 0 {
-		// 获取回滚SQL
+		// 生成回滚SQL
+		logAndPublish("开始解析Binlog生成回滚SQL")
 		startTime = time.Now()
 		binlog := Binlog{DBConfig: e.DBConfig,
-			ConnectionID:  ConnectionID,
+			ConnectionID:  connectionID,
 			StartFile:     startFile,
 			StartPosition: startPosition,
 			EndFile:       endFile,
 			EndPosition:   endPosition}
 		rollbackSQL, err = binlog.Run()
 		if err != nil {
-			data.ExecuteLog = fmt.Sprintf("回滚SQL生成失败，错误：%s", err.Error())
-			return data, err
+			return logErrorAndReturn(RollbackSQLError{Err: err}, "生成回滚SQL失败，错误：")
 		}
 
 		endTime = time.Now()
 		backupCostTime = utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
-
-		msg = fmt.Sprintf("[%s] 回滚SQL生成成功，耗时：%s", time.Now().Format("2006-01-02 15:04:05"), backupCostTime)
-		executeLog = append(executeLog, msg)
-		PublishMsg(e.OrderID, msg, "")
+		logAndPublish(fmt.Sprintf("生成回滚SQL成功，耗时：%s", backupCostTime))
 	}
 	// 返回数据
 	data.ExecuteLog = strings.Join(executeLog, "\n")
@@ -117,58 +111,62 @@ func (e *ExecuteMySQLDML) Run() (data ReturnData, err error) {
 	return
 }
 
-// TiDB
+// TiDB DML
 type ExecuteTiDBDML struct {
 	*DBConfig
 }
 
+// 执行TiDB DML
 func (e *ExecuteTiDBDML) Run() (data ReturnData, err error) {
 	var executeLog []string
-	var msg string
 
-	// Create a new database connection
+	// Function to log messages and publish
+	logAndPublish := func(msg string) {
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		executeLog = append(executeLog, formattedMsg)
+		PublishMsg(e.OrderID, formattedMsg, "")
+	}
+
+	// Logging function for errors
+	logErrorAndReturn := func(err error, errMsg string) (ReturnData, error) {
+		logAndPublish(errMsg + err.Error())
+		data.ExecuteLog = strings.Join(executeLog, "\n")
+		return data, err
+	}
+
+	// CREATE A NEW DATABASE CONNECTION
 	db, err := NewMySQLCnx(e.DBConfig)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err},
+			fmt.Sprintf("访问数据库(%s:%d)失败，错误：", e.DBConfig.Hostname, e.DBConfig.Port))
 	}
 	defer db.Close()
-	msg = fmt.Sprintf("[%s] 访问数据库(%s:%d)成功", time.Now().Format("2006-01-02 15:04:05"), e.DBConfig.Hostname, e.DBConfig.Port)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("访问数据库(%s:%d)成功", e.DBConfig.Hostname, e.DBConfig.Port))
 
-	// get connection id
-	ConnectionID, err := DaoGetConnectionID(db)
+	// GET CONNECTION ID
+	connectionID, err := DaoGetConnectionID(db)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("获取数据库Connection ID失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "获取数据库Connection ID失败，错误：")
 	}
-	msg = fmt.Sprintf("[%s] 数据库Connection ID：%d", time.Now().Format("2006-01-02 15:04:05"), ConnectionID)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("数据库Connection ID：%d", connectionID))
 
-	// show process
+	// SHOW PROCESS
 	ch1 := make(chan int64)
-	go DaoGetProcesslist(e.DBConfig, e.OrderID, ConnectionID, ch1)
+	go DaoGetProcesslist(e.DBConfig, e.OrderID, connectionID, ch1)
 
 	// 执行SQL
 	startTime := time.Now()
 	affectedRows, err := DaoMySQLExecute(db, e.SQL, ch1)
 	if err != nil {
-		data.ExecuteLog = fmt.Sprintf("SQL执行失败，错误：%s", err.Error())
-		return data, err
+		return logErrorAndReturn(SQLExecuteError{Err: err}, "SQL执行失败，错误：")
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
-
-	msg = fmt.Sprintf("[%s] SQL执行成功，影响行数%d，执行耗时：%s", time.Now().Format("2006-01-02 15:04:05"), affectedRows, executeCostTime)
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
 
 	// TiDB不支持生成回滚SQL
-	msg = fmt.Sprintf("[%s] TiDB不支持生成回滚SQL", time.Now().Format("2006-01-02 15:04:05"))
-	executeLog = append(executeLog, msg)
-	PublishMsg(e.OrderID, msg, "")
+	logAndPublish("TiDB不支持生成回滚SQL")
 
 	// 返回数据
 	data.ExecuteLog = strings.Join(executeLog, "\n")

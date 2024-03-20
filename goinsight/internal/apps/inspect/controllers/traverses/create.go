@@ -11,9 +11,9 @@ import (
 	"goInsight/internal/pkg/utils"
 	"strings"
 
-	"github.com/pingcap/tidb/parser/ast"
-	"github.com/pingcap/tidb/parser/mysql"
-	driver "github.com/pingcap/tidb/types/parser_driver"
+	"github.com/pingcap/tidb/pkg/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/mysql"
+	driver "github.com/pingcap/tidb/pkg/types/parser_driver"
 )
 
 // TraverseCreateTableIsExist

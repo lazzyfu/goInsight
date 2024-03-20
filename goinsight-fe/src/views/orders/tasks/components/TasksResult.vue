@@ -87,7 +87,7 @@ export default {
       cm.setSize('height', `250px`)
     },
     onCmReadyLog(cm) {
-      cm.setSize('height', `200px`)
+      cm.setSize('height', `300px`)
     },
     onCmReadyErr(cm) {
       cm.setSize('height', `100px`)

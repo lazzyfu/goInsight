@@ -8,7 +8,7 @@ package rules
 import (
 	"goInsight/internal/apps/inspect/controllers"
 
-	"github.com/pingcap/tidb/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/ast"
 )
 
 type Rule struct {

@@ -7,7 +7,7 @@
 package process
 
 import (
-	"github.com/pingcap/tidb/parser/ast"
+	"github.com/pingcap/tidb/pkg/parser/ast"
 )
 
 // 迭代子查询
