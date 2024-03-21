@@ -6,7 +6,7 @@
 [![release](https://img.shields.io/github/v/release/lazzyfu/goInsight.svg)](https://github.com/lazzyfu/goInsight/releases)
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
-goInsight是集数据库工单和数据查询的平台，提供语法审核、工单审批执行、数据查询能力，支持MySQL/TiDB/ClickHouse。旨在降低数据库管理员、研发测试等人员使用成本。注重用户隐私保护，并支持本地快速部署，使用简单。
+goInsight是集数据库工单和数据查询的平台，提供语法审核、工单审批执行、数据查询能力，支持MySQL/TiDB/ClickHouse。旨在规范上线流程、降低数据库管理员、研发测试等人员使用成本。注重用户隐私保护，支持本地快速部署，使用简单。
 
 ## 文档
 :point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
@@ -33,7 +33,6 @@ goInsight是集数据库工单和数据查询的平台，提供语法审核、�
 > [建议使用Supervisor管理服务](https://github.com/lazzyfu/goInsight/wiki/Service-Deployment)
 
 #### 1.下载二进制包
-> [!NOTE]
 > 下载前请更新下载链接中的`版本号`为最新的`发行版本`
 
 ```
@@ -41,7 +40,6 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.3.1/goinsight-lin
 ```
 
 #### 2.安装gh-ost工具
-> [!IMPORTANT]
 > gh-ost提供MySQL ONLINE DDL功能
 
 `MySQL DDL`改表工单自动集成`gh-ost`工具，请安装[gh-ost](https://github.com/github/gh-ost)。
