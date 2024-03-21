@@ -34,7 +34,6 @@ func NewMySQLCnx(cfg *DBConfig) (*sql.DB, error) {
 	}
 	// Limit the maximum number of open connections to 1
 	db.SetMaxOpenConns(1)
-	db.SetMaxIdleConns(0)
 	// Return the database connection and nil error
 	return db, nil
 }

@@ -40,7 +40,6 @@ func (d *DB) Open() (*sql.DB, error) {
 	DSN := config.FormatDSN()
 	db, err := sql.Open("mysql", DSN)
 	db.SetMaxOpenConns(1)
-	db.SetMaxIdleConns(0)
 	return db, err
 }
 

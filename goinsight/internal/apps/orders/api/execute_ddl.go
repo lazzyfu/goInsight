@@ -24,9 +24,9 @@ func ExecuteOnlineDDL(dc *DBConfig) (data ReturnData, err error) {
 	// Function to log messages and publish
 	logAndPublish := func(msg string) {
 		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		formattedMsg := fmt.Sprintf("[%s] %s\n", timestamp, msg)
+		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
 		executeLog = append(executeLog, formattedMsg)
-		PublishMsg(dc.OrderID, formattedMsg, "ghost")
+		PublishMsg(dc.OrderID, formattedMsg, "")
 	}
 
 	// Logging function for errors

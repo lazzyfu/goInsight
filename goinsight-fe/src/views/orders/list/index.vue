@@ -24,7 +24,7 @@
         </a-select>
       </a-form-item>
       <a-form-item>
-        <a-input-search allowClear style="width: 300px" placeholder="输入要查询工单标题内容" v-decorator="['search']" />
+        <a-input-search allowClear style="width: 300px" placeholder="输入要查询工单标题" v-decorator="['search']" />
       </a-form-item>
       <a-form-item>
         <span class="table-page-search-submitButtons">
