@@ -398,6 +398,13 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 	if !checkTasksProgressIsPause(s.OrderID) {
 		return errors.New("当前有任务正在执行中，请先等待执行完成")
 	}
+	// 更新当前工单进度为执行中
+	if err := global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
+		Where("order_id=?", s.OrderID).
+		Update("progress", "执行中").Error; err != nil {
+		global.App.Log.Error(err)
+		return err
+	}
 	// 获取工单所有的任务
 	var tasks []ordersModels.InsightOrderTasks
 	tx := global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", s.OrderID).Scan(&tasks)
@@ -410,6 +417,15 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 		if task.Progress == "已完成" {
 			continue
 		}
+
+		// 更新当前任务进度为执行中
+		if err := tx.Model(&ordersModels.InsightOrderTasks{}).
+			Where("task_id=?", task.TaskID).
+			Update("progress", "执行中").Error; err != nil {
+			global.App.Log.Error(err)
+			return err
+		}
+
 		// 执行任务
 		data, err := executeTask(task)
 
