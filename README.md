@@ -44,7 +44,7 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.3.1/goinsight-lin
 
 #### 3.访问服务
 
-现在您可以通过http://ip:port访问服务（请确保防火墙放通了您启动服务时指定的port端口）。然后输入系统默认的管理员账号密码，管理员默认未开启双因素身份认证，登录后请及时修改密码。
+现在您可以通过<http://ip:port>访问服务（请确保防火墙放通了您启动服务时指定的port端口）。然后输入系统默认的管理员账号密码，管理员默认未开启双因素身份认证，登录后请及时修改密码。
 
 ```
 默认管理员账号：admin
