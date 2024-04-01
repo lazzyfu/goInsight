@@ -1,15 +1,13 @@
 # goInsight
 
-![](https://img.shields.io/github/languages/top/lazzyfu/goInsight)
 ![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
 [![downloads](https://img.shields.io/github/downloads/lazzyfu/goInsight/total.svg)](https://github.com/lazzyfu/goInsight/releases)
 [![release](https://img.shields.io/github/v/release/lazzyfu/goInsight.svg)](https://github.com/lazzyfu/goInsight/releases)
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
-goInsight是集数据库工单和数据查询的平台，提供语法审核、工单审批执行、数据查询能力，支持MySQL/TiDB/ClickHouse。旨在规范上线流程、降低数据库管理员、研发测试等人员使用成本。注重用户隐私保护，支持本地快速部署，使用简单。
+goInsight是集**数据库工单**和**数据查询**的平台，提供`语法审核`、`工单审批执行`、`数据查询`能力，支持MySQL/TiDB/ClickHouse。旨在规范变更流程、降低数据库管理员、研发测试等人员使用成本。支持本地快速部署，使用简单，注重用户隐私保护。
 
-## 文档
-:point_right: [goInsight文档](https://github.com/lazzyfu/goInsight/wiki)
+:point_right: [文档](https://github.com/lazzyfu/goInsight/wiki)
 
 ## 主要功能
 - **SQL审计** - 支持对工单SQL进行语法审核，内置自研语法审核器[gAudit](https://github.com/lazzyfu/gAudit)，支持多达68种语法审核规则。支持动态调整审核参数，除全局审核参数外，可在DB实例级别定义自定义的审核参数，实现每个DB不同的审核规则。
@@ -24,7 +22,7 @@ goInsight是集数据库工单和数据查询的平台，提供语法审核、�
 ## 支持数据库
 | 数据库                               | 版本   | 功能                                                                                                                          |
 | ------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| MySQL/华为云RDS/阿里云RDS/AWS Aurora等 | >= 5.7  | &#9745; DDL/DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9745; DML回滚 <br> &#9745; gh-ost     |
+| MySQL/华为云RDS/阿里云RDS/AWS Aurora等 | >= 5.7  | &#9745; DDL/DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9745; DML回滚 <br> &#9745; Online DDL（集成gh-ost工具）     |
 | TiDB                                 | >= 4.0  | &#9745; DDL/DML工单 <br> &#9745; 导出工单 <br> &#9745; 数据查询 <br> &#9744; DML回滚 <br> &#9745; Online DDL（TiDB原生支持） |
 | Clickhouse                           | >= 18.1 | &#9744; DDL/DML工单 <br> &#9744; 导出工单 <br> &#9745; 数据查询                                              |
 
@@ -40,7 +38,7 @@ wget https://github.com/lazzyfu/goInsight/releases/download/v1.3.1/goinsight-lin
 ```
 
 #### 2.安装gh-ost工具
-> gh-ost提供MySQL ONLINE DDL功能
+> gh-ost提供MySQL ONLINE DDL功能和MySQL8.0 ALGORITHM=INSTANT功能，请参考文档！
 
 `MySQL DDL`改表工单自动集成`gh-ost`工具，请安装[gh-ost](https://github.com/github/gh-ost)。
 
