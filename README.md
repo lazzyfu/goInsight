@@ -6,7 +6,9 @@
 
 goInsight是集`数据库工单`和`数据查询`的平台，提供`语法审核`、`工单审批执行`、`数据查询`能力，支持`MySQL/TiDB/ClickHouse`。旨在规范变更流程、降低数据库管理员、研发测试等人员使用成本。支持本地快速部署，使用简单，注重用户隐私保护。
 
-:point_right: [文档](https://github.com/lazzyfu/goInsight/wiki)
+## 文档
+- [功能预览](https://github.com/lazzyfu/goInsight/wiki/Feature-Preview)
+- [使用文档](https://github.com/lazzyfu/goInsight/wiki)
 
 ## 主要功能
 - **SQL审计** - 支持对工单SQL进行语法审核，内置自研语法审核器[gAudit](https://github.com/lazzyfu/gAudit)，支持多达68种语法审核规则。支持动态调整审核参数，除全局审核参数外，可在DB实例级别定义自定义的审核参数，实现每个DB不同的审核规则。
