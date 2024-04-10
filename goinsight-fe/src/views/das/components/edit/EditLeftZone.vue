@@ -109,7 +109,12 @@
         </a-form-item>
       </a-form>
     </div>
-    <a-input-search v-if="showSearch" style="margin-bottom: 8px" placeholder="输入要搜索的表名，然后点击回车" @search="onSearch" />
+    <a-input-search
+      v-if="showSearch"
+      style="margin-bottom: 8px"
+      placeholder="输入要搜索的表名，然后点击回车"
+      @search="onSearch"
+    />
     <a-spin :spinning="treeLoading" tip="Loading...">
       <div class="tree-container">
         <div class="block">
@@ -218,7 +223,7 @@ export default {
       getSchemasApi()
         .then((response) => {
           if (response.code === '0001') {
-            this.$notify.error({
+            this.$notification.error({
               title: '加载失败',
               message: response.message,
             })
@@ -251,21 +256,23 @@ export default {
         instance_id: vals[0],
         schema: vals[1],
       }
-      getTablesApi(params).then((response) => {
-        if (response.code === '0000') {
-          this.getGrants(this.selectedSchema).then((val) => {
-            this.renderTree(val, response.data)
-            this.treeLoading = false
-          })
-        } else {
-          this.$notify.error({
-            title: '加载失败',
-            message: response.message,
-          })
+      getTablesApi(params)
+        .then((response) => {
+          if (response.code === '0000') {
+            this.getGrants(this.selectedSchema).then((val) => {
+              this.renderTree(val, response.data)
+            })
+          } else {
+            this.$notification.error({
+              title: '加载失败',
+              message: response.message,
+            })
+            return false
+          }
+        })
+        .finally(() => {
           this.treeLoading = false
-          return false
-        }
-      })
+        })
     },
     // 渲染tree
     renderTree(grants, data) {
