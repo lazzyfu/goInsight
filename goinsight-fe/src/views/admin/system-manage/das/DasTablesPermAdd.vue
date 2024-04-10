@@ -70,7 +70,7 @@ export default {
       adminGetTablesListApi(params)
         .then((res) => {
           if (res.code === '0001') {
-            this.$notify.error({
+            this.$notification.error({
               title: '加载表失败，请稍后重试',
               message: res.message,
             })
