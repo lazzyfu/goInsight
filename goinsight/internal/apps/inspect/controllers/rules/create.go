@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/07/06 10:12:42
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   None
 */
 
@@ -82,8 +82,12 @@ func CreateTableRules() []Rule {
 			CheckFunc: (*Rule).RuleCreateTableInnodbLargePrefix,
 		},
 		{
-			Hint:      "CreateTable#检查InnoDB表定义的行大小",
+			Hint:      "CreateTable#检查InnoDB表定义的RowSize",
 			CheckFunc: (*Rule).RuleCreateTableInnoDBRowSize,
+		},
+		{
+			Hint:      "CreateTable#检查InnoDB表RowFormat",
+			CheckFunc: (*Rule).RuleCreateTableInnoDBRowFormat,
 		},
 	}
 }
@@ -205,4 +209,11 @@ func (r *Rule) RuleCreateTableInnoDBRowSize(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseCreateTableInnoDBRowSize{}
 	(*tistmt).Accept(v)
 	logics.LogicCreateTableInnoDBRowSize(v, r.RuleHint)
+}
+
+// RuleCreateTableInnoDBRowFormat
+func (r *Rule) RuleCreateTableInnoDBRowFormat(tistmt *ast.StmtNode) {
+	v := &traverses.TraverseCreateTableOptions{}
+	(*tistmt).Accept(v)
+	logics.LogicCreateTableInnoDBRowFormat(v, r.RuleHint)
 }

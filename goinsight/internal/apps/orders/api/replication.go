@@ -1,5 +1,5 @@
 /*
-@Author  :   lazzyfu
+@Author  :   xff
 @Desc    :   生成MySQL回滚语句
 */
 

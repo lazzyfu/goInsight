@@ -1,6 +1,6 @@
 /*
 @Time    :   2023/08/14 15:53:53
-@Author  :   lazzyfu
+@Author  :   xff
 */
 
 package bootstrap
@@ -238,12 +238,13 @@ func initializeInspectParams(db *gorm.DB) {
 		{"params": map[string]bool{"ENABLE_FOREIGN_KEY": false}, "remark": "是否启用外键"},
 		{"params": map[string]bool{"CHECK_TABLE_AUTOINCREMENT_INIT_VALUE": true}, "remark": "检查建表是自增列初始值是否为1"},
 		{"params": map[string]bool{"ENABLE_CREATE_VIEW": true}, "remark": "是否支持创建和使用视图"},
+		{"params": map[string]interface{}{"INNODB_ROW_FORMAT": []string{"DYNAMIC"}}, "remark": "InnoDB表支持的行格式"},
 		// COLUMN
 		{"params": map[string]int{"MAX_COLUMN_NAME_LENGTH": 64}, "remark": "列名的长度"},
 		{"params": map[string]bool{"CHECK_COLUMN_CHARSET": true}, "remark": "是否检查列的字符集"},
 		{"params": map[string]bool{"CHECK_COLUMN_COMMENT": true}, "remark": "是否检查列的注释"},
 		{"params": map[string]int{"COLUMN_MAX_CHAR_LENGTH": 64}, "remark": "char长度大于N的时候需要改为varchar"},
-		{"params": map[string]int{"MAX_VARCHAR_LENGTH": 65535}, "remark": "最大允许定义的varchar长度"},
+		{"params": map[string]int{"MAX_VARCHAR_LENGTH": 16383}, "remark": "最大允许定义的varchar长度"},
 		{"params": map[string]bool{"ENABLE_COLUMN_BLOB_TYPE": true}, "remark": "是否允许列的类型为BLOB/TEXT"},
 		{"params": map[string]bool{"ENABLE_COLUMN_JSON_TYPE": true}, "remark": "是否允许列的类型为JSON"},
 		{"params": map[string]bool{"ENABLE_COLUMN_BIT_TYPE": true}, "remark": "是否允许列的类型为BIT"},
@@ -269,6 +270,7 @@ func initializeInspectParams(db *gorm.DB) {
 		{"params": map[string]int{"PRIMARYKEY_MAX_KEY_PARTS": 1}, "remark": "组成主键索引的列数不能超过指定的个数"},
 		{"params": map[string]int{"MAX_INDEX_KEYS": 12}, "remark": "最多有N个索引，包括唯一索引/二级索引"},
 		{"params": map[string]bool{"ENABLE_INDEX_RENAME": false}, "remark": "是否允许rename索引名"},
+		{"params": map[string]bool{"ENABLE_REDUNDANT_INDEX": false}, "remark": "是否允许冗余索引"},
 		// ALTER
 		{"params": map[string]bool{"ENABLE_DROP_COLS": true}, "remark": "是否允许DROP列"},
 		{"params": map[string]bool{"ENABLE_DROP_INDEXES": true}, "remark": "是否允许DROP索引"},

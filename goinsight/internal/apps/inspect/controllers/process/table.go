@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/06/24 13:12:20
-@Author  :   zongfei.fu
+@Author  :   xff
 */
 
 package process
@@ -65,6 +65,14 @@ func (t *TableOptions) CheckTableEngine() error {
 		if !utils.IsContain(t.InspectParams.TABLE_SUPPORT_ENGINE, t.Engine) {
 			return fmt.Errorf("表`%s`指定的存储引擎`%s`不符合要求，支持的存储引擎为`%s`", t.Table, t.Engine, t.InspectParams.TABLE_SUPPORT_ENGINE)
 		}
+	}
+	return nil
+}
+
+// 检查表行格式
+func (t *TableOptions) CheckInnoDBRowFormat() error {
+	if !utils.IsContain(t.InspectParams.INNODB_ROW_FORMAT, t.RowFormat) {
+		return fmt.Errorf("表`%s`允许设置的行格式为%s，当前ROW_FORMAT=%s", t.Table, strings.Join(t.InspectParams.INNODB_ROW_FORMAT, ","), t.RowFormat)
 	}
 	return nil
 }

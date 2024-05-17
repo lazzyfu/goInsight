@@ -1,6 +1,6 @@
 /*
 @Time    :   2023/04/11 11:27:36
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   如果clickhouse版本大于22.3，请使用高版本的clickhouse-go
 			 参考：https://github.com/ClickHouse/clickhouse-go/blob/v2.8.3/resources/meta.yml
 */

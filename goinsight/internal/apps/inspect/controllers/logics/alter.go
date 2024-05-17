@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/07/06 10:12:00
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   None
 */
 
@@ -148,7 +148,15 @@ func LogicAlterTableOptions(v *traverses.TraverseAlterTableOptions, r *controlle
 	r.MergeAlter = v.Table
 	v.Type = "alter"
 	v.TableOptions.InspectParams = r.InspectParams
-	fns := []func() error{v.CheckTableEngine, v.CheckTableComment, v.CheckTableCharset}
+
+	// 行格式
+	var rowFormat string = v.RowFormat
+	if v.RowFormat == "DEFAULT" {
+		rowFormat = r.KV.Get("innodbDefaultRowFormat").(string)
+	}
+	v.TableOptions.RowFormat = rowFormat
+
+	fns := []func() error{v.CheckTableEngine, v.CheckTableComment, v.CheckTableCharset, v.CheckInnoDBRowFormat}
 	for _, fn := range fns {
 		if err := fn(); err != nil {
 			r.Summary = append(r.Summary, err.Error())
@@ -360,6 +368,11 @@ func LogicAlterTableRedundantIndexes(v *traverses.TraverseAlterTableRedundantInd
 	if v.IsMatch == 0 {
 		return
 	}
+
+	if r.InspectParams.ENABLE_REDUNDANT_INDEX {
+		return
+	}
+
 	r.MergeAlter = v.Table
 
 	// 检查索引,建索引时,指定的列必须存在、索引中的列,不能重复、索引名不能重复

@@ -1,6 +1,6 @@
 /*
 @Time    :   2023/05/10 17:03:25
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    : 	 获取表的元信息
 */
 

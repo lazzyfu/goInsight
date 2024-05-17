@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/07/06 10:12:48
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   None
 */
 
@@ -32,6 +32,7 @@ type InspectParams struct {
 	ENABLE_FOREIGN_KEY                   bool                // 是否启用外键
 	CHECK_TABLE_AUTOINCREMENT_INIT_VALUE bool                // 检查建表是自增列初始值是否为1
 	ENABLE_CREATE_VIEW                   bool                // 是否支持创建和使用视图
+	INNODB_ROW_FORMAT                    []string            // InnoDB表支持的行格式
 	// COLUMN
 	MAX_COLUMN_NAME_LENGTH               int  // 列名的长度
 	CHECK_COLUMN_CHARSET                 bool // 是否检查列的字符集
@@ -63,6 +64,7 @@ type InspectParams struct {
 	PRIMARYKEY_MAX_KEY_PARTS      int    // 组成主键索引的列数不能超过指定的个数
 	MAX_INDEX_KEYS                int    // 最多有N个索引,包括唯一索引/二级索引
 	ENABLE_INDEX_RENAME           bool   // 是否允许rename索引名
+	ENABLE_REDUNDANT_INDEX        bool   // 是否允许冗余索引
 	// ALTER
 	ENABLE_DROP_COLS               bool // 是否允许DROP列
 	ENABLE_DROP_INDEXES            bool // 是否允许DROP索引

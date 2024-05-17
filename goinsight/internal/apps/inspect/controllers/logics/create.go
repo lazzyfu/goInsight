@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/07/06 10:12:14
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   None
 */
 
@@ -216,6 +216,9 @@ func LogicCreateTableIndexesRepeatDefine(v *traverses.TraverseCreateTableIndexes
 
 // LogicCreateTableRedundantIndexes
 func LogicCreateTableRedundantIndexes(v *traverses.TraverseCreateTableRedundantIndexes, r *controllers.RuleHint) {
+	if r.InspectParams.ENABLE_REDUNDANT_INDEX {
+		return
+	}
 	// 检查索引,建索引时,指定的列必须存在、索引中的列,不能重复、索引名不能重复
 	// 不能有重复的索引,包括(索引名不同,字段相同；冗余索引,如(a),(a,b))
 	var redundantIndexCheck process.RedundantIndex = v.Redundant
@@ -252,5 +255,17 @@ func LogicCreateTableInnoDBRowSize(v *traverses.TraverseCreateTableInnoDBRowSize
 	var rowSize process.InnoDBRowSize = v.InnoDBRowSize
 	if err := rowSize.Check(r.KV); err != nil {
 		r.Summary = append(r.Summary, err.Error())
+	}
+}
+
+// LogicCreateTableInnoDBRowFormat
+func LogicCreateTableInnoDBRowFormat(v *traverses.TraverseCreateTableOptions, r *controllers.RuleHint) {
+	// 判断行格式
+	var rowFormat string = v.RowFormat
+	if v.RowFormat == "DEFAULT" {
+		rowFormat = r.KV.Get("innodbDefaultRowFormat").(string)
+	}
+	if !utils.IsContain(r.InspectParams.INNODB_ROW_FORMAT, rowFormat) {
+		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`允许设置的行格式为%s，当前ROW_FORMAT=%s", v.Table, strings.Join(r.InspectParams.INNODB_ROW_FORMAT, ","), rowFormat))
 	}
 }

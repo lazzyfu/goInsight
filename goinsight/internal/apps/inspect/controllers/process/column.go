@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/07/06 10:12:48
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   None
 */
 
@@ -81,7 +81,7 @@ func (c *ColOptions) CheckColumnCharToVarchar() error {
 // 最大允许定义的varchar长度
 func (c *ColOptions) CheckColumnMaxVarcharLength() error {
 	if c.InspectParams.MAX_VARCHAR_LENGTH < c.Flen && c.Tp == mysql.TypeVarchar {
-		return fmt.Errorf("列`%s`最大允许定义的varchar长度为%d，当前varchar长度为%d[表`%s`]", c.Column, c.InspectParams.MAX_VARCHAR_LENGTH, c.Flen, c.Table)
+		return fmt.Errorf("列`%s`长度太大（max = %d），当前varchar长度为%d，请使用BLOB或TEXT类型替代[表`%s`]", c.Column, c.InspectParams.MAX_VARCHAR_LENGTH, c.Flen, c.Table)
 	}
 	return nil
 }

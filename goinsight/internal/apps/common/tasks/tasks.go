@@ -1,6 +1,6 @@
 /*
 @Time    :   2023/03/17 09:53:21
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   从用户定义的远程数据库实例同步库信息
 */
 

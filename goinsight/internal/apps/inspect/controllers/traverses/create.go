@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/06/24 13:12:20
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   遍历语法树,语法参考pingcap文档：https://github.com/pingcap/parser/blob/master/docs/quickstart.md
 */
 
@@ -80,27 +80,39 @@ type TraverseCreateTableOptions struct {
 
 func (c *TraverseCreateTableOptions) Enter(in ast.Node) (ast.Node, bool) {
 	if stmt, ok := in.(*ast.CreateTableStmt); ok {
-		c.TableOptions.Table = stmt.Table.Name.String()
+		c.Table = stmt.Table.Name.String()
+		c.RowFormat = "DEFAULT"
 		for _, node := range stmt.Options {
 			switch node.Tp {
 			case ast.TableOptionEngine:
-				c.TableOptions.Engine = node.StrValue
+				c.Engine = node.StrValue
 			case ast.TableOptionCharset:
-				c.TableOptions.Charset = node.StrValue
+				c.Charset = node.StrValue
 			case ast.TableOptionCollate:
-				c.TableOptions.Collate = node.StrValue
+				c.Collate = node.StrValue
 			case ast.TableOptionAutoIncrement:
-				c.TableOptions.AutoIncrement = node.UintValue
+				c.AutoIncrement = node.UintValue
 			case ast.TableOptionRowFormat:
-				c.TableOptions.RowFormat = node.StrValue
+				switch node.UintValue {
+				case ast.RowFormatDefault:
+					c.RowFormat = "DEFAULT"
+				case ast.RowFormatDynamic:
+					c.RowFormat = "DYNAMIC"
+				case ast.RowFormatCompressed:
+					c.RowFormat = "COMPRESSED"
+				case ast.RowFormatRedundant:
+					c.RowFormat = "REDUNDANT"
+				case ast.RowFormatCompact:
+					c.RowFormat = "COMPACT"
+				}
 			case ast.TableOptionComment:
-				c.TableOptions.HasComment = true       // 表示有注释，代表不了注释为空
-				c.TableOptions.Comment = node.StrValue // 获取注释的值
+				c.HasComment = true       // 表示有注释，代表不了注释为空
+				c.Comment = node.StrValue // 获取注释的值
 			}
 		}
 		if stmt.Partition != nil {
-			c.TableOptions.PartitionType = stmt.Partition.PartitionMethod.Tp.String()
-			c.TableOptions.IsPartition = true
+			c.PartitionType = stmt.Partition.PartitionMethod.Tp.String()
+			c.IsPartition = true
 		}
 	}
 	return in, false
@@ -357,8 +369,8 @@ func (c *TraverseCreateTableColsCharset) Enter(in ast.Node) (ast.Node, bool) {
 			}
 			// 设置了字符集和排序规则
 			if colCharset != "" || colCollate != "" {
-				c.Charset.Cols = append(
-					c.Charset.Cols,
+				c.Cols = append(
+					c.Cols,
 					process.ColumnCharset{
 						Table:   stmt.Table.Name.String(),
 						Column:  col.Name.Name.O,
@@ -591,7 +603,7 @@ type TraverseCreateTableInnoDBRowSize struct {
 func (c *TraverseCreateTableInnoDBRowSize) Enter(in ast.Node) (ast.Node, bool) {
 	if stmt, ok := in.(*ast.CreateTableStmt); ok {
 		c.Table = stmt.Table.Name.String()
-		c.RowFormat = "DEFAULT"
+
 		for _, node := range stmt.Options {
 			switch node.Tp {
 			case ast.TableOptionCharset:
@@ -610,11 +622,10 @@ func (c *TraverseCreateTableInnoDBRowSize) Enter(in ast.Node) (ast.Node, bool) {
 					c.RowFormat = "REDUNDANT"
 				case ast.RowFormatCompact:
 					c.RowFormat = "COMPACT"
-				default:
-					c.RowFormat = "UNSUPPORTED"
 				}
 			}
 		}
+
 		for _, col := range stmt.Cols {
 			c.ColsMaps = append(c.ColsMaps,
 				process.PartSpecification{

@@ -1,6 +1,6 @@
 /*
 @Time    :   2022/06/28 10:21:41
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   alter规则逻辑，Level初始化为INFO
 */
 
@@ -96,7 +96,7 @@ func AlterTableRules() []Rule {
 			CheckFunc: (*Rule).RuleAlterTableInnodbLargePrefix,
 		},
 		{
-			Hint:      "AlterTable#检查InnoDB表定义的行大小",
+			Hint:      "AlterTable#检查表定义的行是否超过65535",
 			CheckFunc: (*Rule).RuleAlterTableInnoDBRowSize,
 		},
 	}

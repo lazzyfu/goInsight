@@ -1,6 +1,6 @@
 /*
 @Time    :   2023/04/26 10:12:19
-@Author  :   zongfei.fu
+@Author  :   xff
 @Desc    :   检查TiDB异常的连接是否被释放，如果没有，触发kill操作。
 			 原因是TiDB不支持DB接口上下文超时自动结束会话
 			 已测试不支持版本：TiDB5.x/TiDB6.x

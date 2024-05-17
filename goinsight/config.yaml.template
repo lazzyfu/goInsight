@@ -18,9 +18,9 @@ database:
   driver: "mysql" # 数据库驱动
   host: "127.0.0.1" # 数据库主机
   port: 3306 # 数据库端口
-  database: "goInsight" # 数据库名称
-  username: "goInsight_rw" # 数据库用户名
-  password: "goInsight@1234.Com" # 数据库密码
+  database: "goinsight" # 数据库名称
+  username: "goinsight_rw" # 数据库用户名
+  password: "goinsight@1234.Com" # 数据库密码
   charset: "utf8mb4" # 数据库字符集
   max_idle_conns: 64 # 最大空闲连接数
   max_open_conns: 64 # 最大打开连接数
@@ -37,12 +37,12 @@ redis:
 # 远程实例DB账号，需要在目标数据库创建
 # 请确保通过该账号可以访问远程数据库，该账号用于工单审核、执行、数据查询、库表元信息采集等
 # 注意：请保管好此账号，不要泄露，否则可能会导致安全风险
-# create user 'goInsight_rw'@'%' identified by '复杂的密码';
-# grant select,insert,update,delete,Alter,Create,Create view,Drop,Index,Replication slave on *.* to 'goInsight_rw'@'%';
+# create user 'goinsight_admin'@'%' identified by '复杂的密码';
+# grant select,insert,update,delete,Alter,Create,Create view,Drop,Index,Replication slave on *.* to 'goinsight_admin'@'%';
 # flush privileges;
 remotedb:
-  username: "goInsight_rw"
-  password: "goInsight@1234.Com"  # 建议更换为复杂的密码
+  username: "goinsight_admin"
+  password: "goinsight@1234.Com"  # 建议更换为复杂的密码
 
 # 数据查询配置
 das:
@@ -84,7 +84,7 @@ notify:
   dingtalk:
     enable: false
     webhook: "https://oapi.dingtalk.com/robot/send?access_token=1234"
-    keywords: "goInsight"
+    keywords: "goinsight"
   mail:
     enable: false
     username: "xxx@163.com"
