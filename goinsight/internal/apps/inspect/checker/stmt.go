@@ -28,6 +28,11 @@ func (s *Stmt) commonCheck(stmt ast.StmtNode, kv *kv.KVCache, fingerId string, s
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
+		// 当为DML语句时，赋值AffectedRows
+		if sqlType == "DML" {
+			data.AffectedRows = rule.RuleHint.AffectedRows
+		}
+
 		if len(rule.RuleHint.Summary) > 0 {
 			data.Level = "WARN"
 			data.Summary = append(data.Summary, rule.RuleHint.Summary...)

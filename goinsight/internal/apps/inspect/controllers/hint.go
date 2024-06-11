@@ -12,8 +12,8 @@ import (
 )
 
 type RuleHint struct {
-	Summary        []string `json:"summary"` // 摘要
-	AffectedRows   int      `json:"affected_rows"`
+	Summary        []string `json:"summary"`       // 摘要
+	AffectedRows   int      `json:"affected_rows"` // 默认为0
 	IsSkipNextStep bool     // 是否跳过接下来的检查步骤
 	DB             *dao.DB
 	KV             *kv.KVCache
