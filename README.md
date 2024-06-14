@@ -4,7 +4,7 @@
 [![release](https://img.shields.io/github/v/release/lazzyfu/goInsight.svg)](https://github.com/lazzyfu/goInsight/releases)
 <img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
 
-`GoInsight`是一个基于`Gin`和`Vue`的前后端分离Web平台，支持MySQL、TiDB 和 ClickHouse 数据库，提供`工单管理`和`数据查询`功能。
+`GoInsight`是一个基于`Gin`和`Vue`开发的前后端分离Web平台，支持MySQL/TiDB/ClickHouse数据库，提供**工单管理**和**数据查询**功能。
 
 ## 文档
 - [功能预览](https://github.com/lazzyfu/goInsight/wiki/Feature-Preview)
@@ -13,13 +13,13 @@
 ## 主要功能
 - **工单管理**
   - 提交DDL、DML、数据导出（CSV/XLSX格式）工单
-  - 支持审批、执行、HOOK功能
+  - 支持审批、执行、回滚、HOOK功能
   - 单个工单最大支持提交2048条SQL语句
   - 支持钉钉/企业微信机器人/邮件推送消息
 
 - **SQL审计**
   - 内置[gAudit](https://github.com/lazzyfu/gAudit)语法审核器
-  - 支持多达68种语法审核规则
+  - 支持多达70种语法审核规则
   - 除全局审核参数外，可在DB实例级别自定义审核参数
 
 - **数据查询**
@@ -32,11 +32,11 @@
   - 可DB 实例绑定组织，实现用户访问权限控制
 
 - **自定义工单环境**
-  - 支持定义多个工单环境（如研发、预发布、测试、生产环境）
+  - 支持定义多个工单环境（如研发、预发布、测试、生产环境等）
   - 不同环境绑定不同数据库实例
 
 - **数据库实例管理** 
-  - 统一管理数据实例
+  - 统一管理数据库实例
 
 - **安全**
   - 双因素身份认证登录
