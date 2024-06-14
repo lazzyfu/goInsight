@@ -12,11 +12,11 @@ import (
 	"net/http"
 	"strings"
 
-	commonRouter "goInsight/internal/apps/common/router"
-	dasRouter "goInsight/internal/apps/das/router"
-	inspectRouter "goInsight/internal/apps/inspect/router"
-	ordersRouter "goInsight/internal/apps/orders/router"
-	userRouter "goInsight/internal/apps/users/router"
+	commonRouter "goInsight/internal/common/router"
+	dasRouter "goInsight/internal/das/router"
+	inspectRouter "goInsight/internal/inspect/router"
+	ordersRouter "goInsight/internal/orders/router"
+	userRouter "goInsight/internal/users/router"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +37,12 @@ func RunServer() {
 	}
 
 	// 初始化认证中间件
-	global.App.JWT, _ = middleware.InitAuthMiddleware()
+	var err error
+	global.App.JWT, err = middleware.InitAuthMiddleware()
+	if err != nil {
+		fmt.Println("Failed to initialize authentication middleware:", err)
+		return
+	}
 
 	// 加载多个APP的路由配置
 	routers.Include(userRouter.Routers)
@@ -94,7 +99,7 @@ func RunServer() {
 
 	// 启动
 	if err := r.Run(global.App.Config.App.ListenAddress); err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("Failed to start server: ", err.Error())
 	}
 }
 
@@ -108,13 +113,17 @@ func main() {
 	flag.Parse()
 
 	// 初始化配置
-	bootstrap.InitializeConfig(*ConfigFile)
+	if err := bootstrap.InitializeConfig(*ConfigFile); err != nil {
+		fmt.Println("Failed to initialize config: ", err)
+	}
 
 	// 初始化日志
 	bootstrap.InitializeLog()
 
 	// 初始化数据库
 	global.App.DB = bootstrap.InitializeDB()
+
+	// 初始化Redis
 	global.App.Redis = bootstrap.InitializeRedis()
 
 	// 程序关闭前，释放数据库连接

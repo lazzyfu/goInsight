@@ -8,7 +8,7 @@ package middleware
 import (
 	"errors"
 	"goInsight/global"
-	userModels "goInsight/internal/apps/users/models"
+	userModels "goInsight/internal/users/models"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"

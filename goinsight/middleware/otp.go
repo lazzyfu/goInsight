@@ -8,9 +8,9 @@ package middleware
 import (
 	"errors"
 	"goInsight/global"
-	userModels "goInsight/internal/apps/users/models"
+	userModels "goInsight/internal/users/models"
 
-	"goInsight/internal/pkg/response"
+	"goInsight/pkg/response"
 
 	"github.com/gin-contrib/requestid"
 

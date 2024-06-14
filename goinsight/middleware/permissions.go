@@ -7,7 +7,7 @@ package middleware
 
 import (
 	"goInsight/global"
-	userModels "goInsight/internal/apps/users/models"
+	userModels "goInsight/internal/users/models"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"

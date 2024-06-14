@@ -6,7 +6,7 @@
 package global
 
 import (
-	configs "goInsight/configs"
+	config "goInsight/config"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/redis/go-redis/v9"
@@ -18,7 +18,7 @@ import (
 
 type Application struct {
 	ConfigViper *viper.Viper
-	Config      configs.Configuration
+	Config      config.Configuration
 	JWT         *jwt.GinJWTMiddleware
 	Log         *logrus.Logger
 	DB          *gorm.DB
