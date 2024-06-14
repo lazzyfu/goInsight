@@ -12,11 +12,11 @@ import (
 	"net/http"
 	"strings"
 
-	commonRouter "goInsight/internal/common/router"
-	dasRouter "goInsight/internal/das/router"
-	inspectRouter "goInsight/internal/inspect/router"
-	ordersRouter "goInsight/internal/orders/router"
-	userRouter "goInsight/internal/users/router"
+	commonRouter "goInsight/internal/common/routers"
+	dasRouter "goInsight/internal/das/routers"
+	inspectRouter "goInsight/internal/inspect/routers"
+	ordersRouter "goInsight/internal/orders/routers"
+	userRouter "goInsight/internal/users/routers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -113,9 +113,7 @@ func main() {
 	flag.Parse()
 
 	// 初始化配置
-	if err := bootstrap.InitializeConfig(*ConfigFile); err != nil {
-		fmt.Println("Failed to initialize config: ", err)
-	}
+	bootstrap.InitializeConfig(*ConfigFile)
 
 	// 初始化日志
 	bootstrap.InitializeLog()
