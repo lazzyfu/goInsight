@@ -161,6 +161,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	var mergeAlters []string
 	// 每次请求基于RequestID初始化kv cache
 	kv := kv.NewKVCache(requestID)
+	defer kv.Delete(requestID)
 	// 获取目标数据库变量
 	dbVars, err := dao.GetDBVars(s.DB)
 	if err != nil {
@@ -210,7 +211,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 		default:
 			// 不允许的其他语句，有需求可以扩展
 			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "", Level: "WARN"}
-			data.Summary = append(data.Summary, "不被允许的审核语句，请联系数据库管理员")
+			data.Summary = append(data.Summary, "未识别或禁止的审核语句，请联系数据库管理员")
 			returnData = append(returnData, data)
 		}
 	}
