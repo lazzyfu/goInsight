@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -17,7 +18,7 @@ func GetFileSize(filePath string) (int64, error) {
 
 func EncryptAndTarGzFiles(inputFile, outputFile, filePath, key string) error {
 	// 创建zip文件
-	fzip, err := os.Create(filePath + outputFile)
+	fzip, err := os.Create(fmt.Sprintf("%s/%s", filePath, outputFile))
 	if err != nil {
 		return err
 	}
@@ -25,7 +26,7 @@ func EncryptAndTarGzFiles(inputFile, outputFile, filePath, key string) error {
 	defer zipw.Close()
 
 	// 打开待压缩的文件
-	f, err := os.Open(filePath + inputFile)
+	f, err := os.Open(fmt.Sprintf("%s/%s", filePath, inputFile))
 	if err != nil {
 		return err
 	}
