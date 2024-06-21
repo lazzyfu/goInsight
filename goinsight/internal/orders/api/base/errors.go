@@ -1,4 +1,4 @@
-package api
+package base
 
 // SQL执行失败
 type SQLExecuteError struct {

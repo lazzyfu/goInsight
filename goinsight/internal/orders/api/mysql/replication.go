@@ -1,14 +1,10 @@
-/*
-@Author  :   xff
-@Desc    :   生成MySQL回滚语句
-*/
-
-package api
+package mysql
 
 import (
 	"context"
 	"database/sql/driver"
 	"fmt"
+	"goInsight/internal/orders/api/base"
 	"goInsight/pkg/parser"
 	"goInsight/pkg/utils"
 	"strings"
@@ -21,7 +17,7 @@ import (
 )
 
 type Binlog struct {
-	*DBConfig
+	*base.DBConfig
 	ConnectionID  int64
 	StartFile     string
 	StartPosition int64

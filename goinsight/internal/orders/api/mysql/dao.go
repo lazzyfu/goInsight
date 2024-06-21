@@ -1,19 +1,18 @@
-package api
+package mysql
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"goInsight/global"
-	"goInsight/pkg/utils"
+	"goInsight/internal/orders/api/base"
 	"strconv"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
 )
 
-func NewMySQLCnx(cfg *DBConfig) (*sql.DB, error) {
+func NewMySQLCnx(cfg *base.DBConfig) (*sql.DB, error) {
 	// Configure database connection
 	config := mysql.Config{
 		User:                 cfg.UserName,
@@ -110,7 +109,7 @@ func DaoMySQLExecute(db *sql.DB, sql string, ch chan<- int64) (int64, error) {
 }
 
 // 获取MySQL类数据库的连接ID
-func DaoGetConnectionID(db *sql.DB) (connectionID int64, err error) {
+func DaoMySQLGetConnectionID(db *sql.DB) (connectionID int64, err error) {
 	// Define the SQL query to retrieve the connection ID
 	sql := "SELECT CONNECTION_ID() as CONNECTION_ID"
 	// Execute the query and capture any errors
@@ -136,7 +135,7 @@ func DaoGetConnectionID(db *sql.DB) (connectionID int64, err error) {
 }
 
 // 获取MySQL类数据库的Processlist
-func DaoGetProcesslist(dbconfig *DBConfig, order_id string, connection_id int64, ch <-chan int64) {
+func DaoMySQLGetProcesslist(dbconfig *base.DBConfig, order_id string, connection_id int64, ch <-chan int64) {
 	// Create a new database connection
 	db, err := NewMySQLCnx(dbconfig)
 	if err != nil {
@@ -173,12 +172,12 @@ func DaoGetProcesslist(dbconfig *DBConfig, order_id string, connection_id int64,
 		// Expect only one row of data
 		row := (*data)[0]
 		// Publish the process information
-		PublishMsg(order_id, row, "processlist")
+		base.PublishMessageToChannel(order_id, row, "processlist")
 	}
 }
 
 // 获取MySQL数据库的Position
-func DaoGetMySQLPos(db *sql.DB) (file string, position int64, err error) {
+func DaoMySQLGetBinlogPos(db *sql.DB) (file string, position int64, err error) {
 	// Query the database for the master status
 	data, err := DaoMySQLQuery(db, "SHOW MASTER STATUS")
 	if err != nil {
@@ -197,12 +196,4 @@ func DaoGetMySQLPos(db *sql.DB) (file string, position int64, err error) {
 		return file, position, errors.New("Failed to get MySQL position: position parsing error")
 	}
 	return file, position, nil
-}
-
-func PublishMsg(channel string, data interface{}, renderType string) {
-	// 发送消息
-	err := utils.Publish(context.Background(), channel, data, renderType)
-	if err != nil {
-		global.App.Log.Error(err)
-	}
 }

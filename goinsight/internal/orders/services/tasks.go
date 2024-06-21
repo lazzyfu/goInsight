@@ -5,7 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"goInsight/global"
-	"goInsight/internal/orders/api"
+	"goInsight/internal/orders/api/base"
+	"goInsight/internal/orders/api/execute"
 	"goInsight/internal/orders/forms"
 	ordersModels "goInsight/internal/orders/models"
 	"goInsight/pkg/notifier"
@@ -223,7 +224,7 @@ func sendExportFileInfoToApplicant(task_id uuid.UUID) {
 		return
 	}
 
-	var file api.ExportFile
+	var file base.ExportFile
 	_ = json.Unmarshal([]byte(task.Result), &file)
 
 	receiver := []string{record.Applicant}
@@ -265,11 +266,11 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 		Joins("join `insight_db_config` b on a.instance_id=b.instance_id").
 		Where("a.order_id=?", task.OrderID).Take(&record)
 	if tx.RowsAffected == 0 {
-		returnData := api.ReturnData{Error: "执行失败，没有发现工单关联的数据库信息"}
+		returnData := base.ReturnData{Error: "执行失败，没有发现工单关联的数据库信息"}
 		data, _ := json.Marshal(returnData)
 		return string(data), errors.New("执行失败，没有发现工单关联的数据库信息")
 	}
-	config := api.DBConfig{
+	config := base.DBConfig{
 		Hostname:         record.Hostname,
 		Port:             record.Port,
 		UserName:         global.App.Config.RemoteDB.UserName,
@@ -283,10 +284,10 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 		TaskID:           task.TaskID.String(),
 	}
 	// 执行工单
-	executor := api.NewExecuteSQLAPI(&config)
+	executor := execute.NewExecuteSQLAPI(&config)
 	returnData, err := executor.Run()
 	if err != nil {
-		api.PublishMsg(task.OrderID.String(), err.Error(), "")
+		base.PublishMessageToChannel(task.OrderID.String(), err.Error(), "")
 	}
 	// 转换为json
 	data, _ := json.Marshal(returnData)
@@ -352,9 +353,9 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		var taskProgress string
 		// 错误类型断言，可以添加更多状态
 		switch err.(type) {
-		case api.SQLExecuteError:
+		case base.SQLExecuteError:
 			taskProgress = "已失败"
-		case api.RollbackSQLError:
+		case base.RollbackSQLError:
 			taskProgress = "已完成"
 		default:
 			taskProgress = "已失败"
@@ -434,9 +435,9 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 			var taskProgress string
 			// 错误类型断言，可以添加更多状态
 			switch err.(type) {
-			case api.SQLExecuteError:
+			case base.SQLExecuteError:
 				taskProgress = "已失败"
-			case api.RollbackSQLError:
+			case base.RollbackSQLError:
 				taskProgress = "已完成"
 			default:
 				taskProgress = "已失败"
