@@ -9,8 +9,9 @@ import (
 	"goInsight/pkg/utils"
 	"os"
 	"strings"
-	"sync"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type ExecuteExportToFile struct {
@@ -20,7 +21,8 @@ type ExecuteExportToFile struct {
 var filePath string = "./media"
 
 func (e *ExecuteExportToFile) processRowsAndExport(rows *sql.Rows, columns []string) (int64, string, string, error) {
-	var wg sync.WaitGroup
+	g := new(errgroup.Group)
+
 	vals := make([]interface{}, len(columns))
 	for i := range columns {
 		vals[i] = new(sql.RawBytes)
@@ -33,19 +35,15 @@ func (e *ExecuteExportToFile) processRowsAndExport(rows *sql.Rows, columns []str
 	case "CSV":
 		fileName = fmt.Sprintf("%s.csv", e.TaskID)
 		fullFileName = fmt.Sprintf("%s/%s", filePath, fileName)
-		wg.Add(1)
-		go func(fullFileName string) {
-			defer wg.Done()
-			file.ToCSV(columns, ch, fullFileName)
-		}(fullFileName)
+		g.Go(func() error {
+			return file.ToCSV(columns, ch, fullFileName)
+		})
 	case "XLSX":
 		fileName = fmt.Sprintf("%s.xlsx", e.TaskID)
 		fullFileName = fmt.Sprintf("%s/%s", filePath, fileName)
-		wg.Add(1)
-		go func(fullFileName string) {
-			defer wg.Done()
-			file.ToExcel(columns, ch, fullFileName)
-		}(fullFileName)
+		g.Go(func() error {
+			return file.ToExcel(columns, ch, fullFileName)
+		})
 	}
 
 	// Read and process rows
@@ -56,7 +54,11 @@ func (e *ExecuteExportToFile) processRowsAndExport(rows *sql.Rows, columns []str
 
 	// Close channel and wait for export to finish
 	close(ch)
-	wg.Wait()
+
+	// Wait to complete
+	if err := g.Wait(); err != nil {
+		return 0, "", "", err
+	}
 
 	return rowCount, fileName, fullFileName, nil
 }
@@ -97,15 +99,14 @@ func (e *ExecuteExportToFile) Run() (data base.ReturnData, err error) {
 
 	// Function to log messages and publish
 	logAndPublish := func(msg string) {
-		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		formattedMsg := fmt.Sprintf("[%s] %s", time.Now().Format("2006-01-02 15:04:05"), msg)
 		executeLog = append(executeLog, formattedMsg)
 		base.PublishMessageToChannel(e.OrderID, formattedMsg, "")
 	}
 
 	// Logging function for errors
 	logErrorAndReturn := func(err error, errMsg string) (base.ReturnData, error) {
-		logAndPublish(errMsg + err.Error())
+		logAndPublish(fmt.Sprintf("%s: %s", errMsg, err.Error()))
 		data.ExecuteLog = strings.Join(executeLog, "\n")
 		return data, err
 	}
