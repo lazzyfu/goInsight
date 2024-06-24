@@ -54,7 +54,7 @@ func (m *MySQLExecutor) Run() (data base.ReturnData, err error) {
 		execute := mysql.ExecuteMySQLDDL{DBConfig: m.DBConfig}
 		return execute.Run()
 	case "EXPORT":
-		execute := mysql.ExecuteExportToFile{DBConfig: m.DBConfig}
+		execute := mysql.ExecuteMySQLExportToFile{DBConfig: m.DBConfig}
 		return execute.Run()
 	default:
 		data.Error = fmt.Sprintf("不支持的SQL类型：%s", m.SQLType)
@@ -78,9 +78,9 @@ func (m *TiDBExecutor) Run() (data base.ReturnData, err error) {
 	case "DDL":
 		execute := tidb.ExecuteTiDBDDL{DBConfig: m.DBConfig}
 		return execute.Run()
-	// case "EXPORT":
-	// 	execute := ExecuteExportMySQLData{m.DBConfig}
-	// 	return execute.Run()
+	case "EXPORT":
+		execute := tidb.ExecuteTiDBExportToFile{DBConfig: m.DBConfig}
+		return execute.Run()
 	default:
 		data.Error = fmt.Sprintf("不支持的SQL类型：%s", m.SQLType)
 		err = errors.New(data.Error)

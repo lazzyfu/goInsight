@@ -1,4 +1,4 @@
-package mysql
+package tidb
 
 import (
 	"database/sql"
@@ -14,13 +14,13 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type ExecuteMySQLExportToFile struct {
+type ExecuteTiDBExportToFile struct {
 	*base.DBConfig
 }
 
 var filePath string = "./media"
 
-func (e *ExecuteMySQLExportToFile) processRowsAndExport(rows *sql.Rows, columns []string) (int64, string, string, error) {
+func (e *ExecuteTiDBExportToFile) processRowsAndExport(rows *sql.Rows, columns []string) (int64, string, string, error) {
 	g := new(errgroup.Group)
 
 	vals := make([]interface{}, len(columns))
@@ -63,7 +63,7 @@ func (e *ExecuteMySQLExportToFile) processRowsAndExport(rows *sql.Rows, columns 
 	return rowCount, fileName, fullFileName, nil
 }
 
-func (e *ExecuteMySQLExportToFile) readAndProcessRows(rows *sql.Rows, vals []interface{}, ch chan []interface{}) (int64, error) {
+func (e *ExecuteTiDBExportToFile) readAndProcessRows(rows *sql.Rows, vals []interface{}, ch chan []interface{}) (int64, error) {
 	var rowCount int64
 	for rows.Next() {
 		if err := rows.Scan(vals...); err != nil {
@@ -76,7 +76,7 @@ func (e *ExecuteMySQLExportToFile) readAndProcessRows(rows *sql.Rows, vals []int
 	return rowCount, nil
 }
 
-func (e *ExecuteMySQLExportToFile) processRowData(vals []interface{}) []interface{} {
+func (e *ExecuteTiDBExportToFile) processRowData(vals []interface{}) []interface{} {
 	vmap := make([]interface{}, len(vals))
 	for i, c := range vals {
 		switch v := c.(type) {
@@ -91,7 +91,7 @@ func (e *ExecuteMySQLExportToFile) processRowData(vals []interface{}) []interfac
 	return vmap
 }
 
-func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
+func (e *ExecuteTiDBExportToFile) Run() (data base.ReturnData, err error) {
 	var (
 		executeLog []string
 		startTime  = time.Now()
@@ -112,7 +112,7 @@ func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
 	}
 
 	// Establish database connection
-	db, err := NewMySQLCnx(e.DBConfig)
+	db, err := NewTiDBCnx(e.DBConfig)
 	if err != nil {
 		return logErrorAndReturn(base.SQLExecuteError{Err: err}, fmt.Sprintf("Failed to access database (%s:%d)", e.DBConfig.Hostname, e.DBConfig.Port))
 	}

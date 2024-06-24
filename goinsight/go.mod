@@ -9,11 +9,15 @@ require (
 	github.com/gin-contrib/cors v1.5.0
 	github.com/go-mysql-org/go-mysql v1.7.0
 	github.com/gorilla/websocket v1.5.1
+	github.com/pingcap/tidb v1.1.0-beta.0.20240605094755-3c02c2aa1339
+	github.com/pingcap/tidb/pkg/parser v0.0.0-20240605094755-3c02c2aa1339
 	github.com/pquerna/otp v1.4.0
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/xuri/excelize/v2 v2.8.0
+	golang.org/x/sync v0.6.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
@@ -52,13 +56,12 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/paulmach/orb v0.10.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
-	github.com/pingcap/errors v0.11.5-0.20231212100244-799fae176cfb // indirect
+	github.com/pingcap/errors v0.11.5-0.20240318064555-6bd07397691f // indirect
 	github.com/pingcap/failpoint v0.0.0-20220801062533-2eaa32854a6c // indirect
-	github.com/pingcap/kvproto v0.0.0-20231226064240-4f28b82c7860 // indirect
+	github.com/pingcap/kvproto v0.0.0-20240208102409-a554af8ee11f // indirect
 	github.com/pingcap/log v1.1.1-0.20230317032135-a0d097d16e22 // indirect
 	github.com/pingcap/sysutil v1.0.1-0.20230407040306-fb007c5aff21 // indirect
-	github.com/pingcap/tidb v1.1.0-beta.0.20240122141050-52794d985ba6 // indirect
-	github.com/pingcap/tidb/pkg/parser v0.0.0-20240122141050-52794d985ba6 // indirect
+	github.com/pingcap/tipb v0.0.0-20240507090649-2bf6bb0cb996 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
@@ -76,8 +79,8 @@ require (
 	github.com/siddontang/go v0.0.0-20180604090527-bdc77568d726 // indirect
 	github.com/siddontang/go-log v0.0.0-20180807004314-8d05993dda07 // indirect
 	github.com/tiancaiamao/gp v0.0.0-20221230034425-4025bc8a4d4a // indirect
-	github.com/tikv/client-go/v2 v2.0.8-0.20240219030752-98ed21b132fa // indirect
-	github.com/tikv/pd/client v0.0.0-20240210135946-3488a653ddd9 // indirect
+	github.com/tikv/client-go/v2 v2.0.8-0.20240531122021-7a74511a5241 // indirect
+	github.com/tikv/pd/client v0.0.0-20240528122050-634e05a87ee0 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
@@ -95,13 +98,12 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81 // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/tools v0.19.0 // indirect
 	google.golang.org/genproto v0.0.0-20231211222908-989df2bf70f3 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231120223509-83a465c0220f // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
 	google.golang.org/grpc v1.60.1 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
 
 require (
@@ -138,9 +140,9 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.6.0 // indirect
-	golang.org/x/crypto v0.19.0
-	golang.org/x/net v0.21.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/crypto v0.21.0
+	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
