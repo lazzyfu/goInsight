@@ -1,0 +1,116 @@
+package base
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+// 测试 Rewrite 方法
+func TestRewrite(t *testing.T) {
+	tests := []struct {
+		inputSQL    string
+		expectedSQL string
+	}{
+		{
+			inputSQL:    "INSERT INTO test1 (id, order_no, created_time, updated_time) VALUES (14, 'Order014', '2024-06-25 12:00:00', '2024-06-25 12:00:00');",
+			expectedSQL: "select 1 from DUAL",
+		},
+		{
+			inputSQL:    "insert into t2 select * from t1 where id >0;",
+			expectedSQL: "select * from t1 where id > 0",
+		},
+		{
+			inputSQL:    "insert into t2 select * from t1 where id >0 limit 10;",
+			expectedSQL: "select * from t1 where id > 0 limit 10",
+		},
+		{
+			inputSQL:    "insert into t2 select * from t1 where id >0 order by c1 desc limit 10;",
+			expectedSQL: "select * from t1 where id > 0 order by c1 desc limit 10",
+		},
+		{
+			inputSQL:    "insert into t2 select distinct id from t1 where id >0 order by c1 desc limit 10;",
+			expectedSQL: "select distinct id from t1 where id > 0 order by c1 desc limit 10",
+		},
+		{
+			inputSQL:    "insert into t2 select c1,count(1) as cnt from t1 where id >0 group by c1 limit 10;",
+			expectedSQL: "select c1, count(1) as cnt from t1 where id > 0 group by c1 limit 10",
+		},
+		{
+			inputSQL:    "delete from test1 where id=1;",
+			expectedSQL: "select * from test1 where id = 1",
+		},
+		{
+			inputSQL:    "delete from test1 where order_no='order005';",
+			expectedSQL: "select * from test1 where order_no = 'order005'",
+		},
+		{
+			inputSQL:    "delete from test1 where created_time < '2024-03-20 17:57:36';",
+			expectedSQL: "select * from test1 where created_time < '2024-03-20 17:57:36'",
+		},
+		{
+			inputSQL:    "delete from t1 where id >0;",
+			expectedSQL: "select * from t1 where id > 0",
+		},
+		{
+			inputSQL:    "delete from t1 where id >0 limit 10;",
+			expectedSQL: "select * from t1 where id > 0 limit 10",
+		},
+		{
+			inputSQL:    "delete from t1 where id >0 order by c1 desc limit 10;",
+			expectedSQL: "select * from t1 where id > 0 order by c1 desc limit 10",
+		},
+		{
+			inputSQL:    "update t1 set c1=1 where id =10;",
+			expectedSQL: "select * from t1 where id = 10",
+		},
+		{
+			inputSQL:    "update t1 set c1=1 where id between 10 and 20;",
+			expectedSQL: "select * from t1 where id between 10 and 20",
+		},
+		{
+			inputSQL:    "update t1 set c1=1 where id >0;",
+			expectedSQL: "select * from t1 where id > 0",
+		},
+		{
+			inputSQL:    "update t1 set c1=1 where id >0 limit 10;",
+			expectedSQL: "select * from t1 where id > 0 limit 10",
+		},
+		{
+			inputSQL:    "update t1 set c1=1 where id >0 order by c1 desc limit 10;",
+			expectedSQL: "select * from t1 where id > 0 order by c1 desc limit 10",
+		},
+		{
+			inputSQL:    "update t1 inner join t2 on t1.id=t2.id2  set t1.c1=t2.c1 where c11=1;",
+			expectedSQL: "select * from t1 join t2 on t1.id = t2.id2 where c11 = 1",
+		},
+		{
+			inputSQL:    "update t1,t2 set t1.c1=t2.c1 where t1.id=t2.id2 and c11=1;",
+			expectedSQL: "select * from t1, t2 where t1.id = t2.id2 and c11 = 1",
+		},
+		{
+			inputSQL:    "update t1,t2 set t1.c1=t2.c1 where t1.id=t2.id2 and c11=1 limit 10;",
+			expectedSQL: "select * from t1, t2 where t1.id = t2.id2 and c11 = 1 limit 10",
+		},
+		// {
+		// 	inputSQL:    "REPLACE INTO test1 (id, order_no, created_time, updated_time) VALUES (7, 'Order007_REPLACED', '2024-06-25 21:00:00', '2024-06-25 21:00:00');",
+		// 	expectedSQL: "select * from t1 where id > 0 limit 10",
+		// },
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.inputSQL, func(t *testing.T) {
+			rw, err := NewRewrite(tt.inputSQL)
+			if err != nil {
+				t.Fatalf("failed to create Rewrite: %v", err)
+			}
+
+			err = rw.RewriteDML2Select()
+			if err != nil {
+				t.Fatalf("Rewrite failed: %v", err)
+			}
+
+			assert.Equal(t, rw.SQL, tt.expectedSQL)
+		})
+	}
+}
