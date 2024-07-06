@@ -78,6 +78,7 @@ export default {
       $('#btTable')
         .bootstrapTable('destroy')
         .bootstrapTable({
+          undefinedText: 'NULL',  // 设置空值显示为空白
           columns: this.renderColumns(data.columns),
           data: data.data,
           locale: 'zh-CN',

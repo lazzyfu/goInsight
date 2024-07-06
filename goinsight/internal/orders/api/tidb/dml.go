@@ -53,6 +53,17 @@ func (e *ExecuteTiDBDML) Run() (data base.ReturnData, err error) {
 	ch1 := make(chan int64)
 	go DaoTiDBGetProcesslist(e.DBConfig, e.OrderID, connectionID, ch1)
 
+	// 转换SQL
+	rw, err := base.NewRewrite(e.SQL)
+	if err != nil {
+		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "SQL转换失败，错误：")
+	}
+	err = rw.RewriteDML2Select()
+	if err != nil {
+		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "SQL转换失败，错误：")
+	}
+	fmt.Println("sql wa::: ", rw.SQL)
+
 	// 执行SQL
 	startTime := time.Now()
 	affectedRows, err := DaoTiDBExecute(db, e.SQL, ch1)
