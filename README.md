@@ -50,26 +50,31 @@
 ## 快速部署
 > [使用Supervisor管理服务](https://github.com/lazzyfu/goInsight/wiki/Service-Deployment)
 
-**1.下载二进制包**
+**1、下载二进制包**
 
 ```
 # 下载前请更新下载链接中的`版本号`为最新的`发行版本`
-wget https://github.com/lazzyfu/goInsight/releases/download/v1.3.3/goinsight-linux-amd64-v1.3.3.tar.gz
+wget https://github.com/lazzyfu/goInsight/releases/download/v1.3.4/goinsight-linux-amd64-v1.3.4.tar.gz
 ```
 
-**2.启动服务**
+**2、配置config.yaml**
+
+配置文件相对简单，请参考: [如何配置config.yaml](https://github.com/lazzyfu/goInsight/wiki/Config)
+
+
+**3、启动服务**
 
 ```
-# 确保已正确配置 config.yaml
 ./goInsight -config config.yaml
 ```
 
-**3.访问服务**
+**4、访问服务**
  - 通过 <http://ip:port> 访问
  - 默认管理员账号：`admin`
  - 默认管理员密码：`1234.Com!`
- - 登录后请及时修改密码
+ - 登录后请及时修改密码（如果无法登录）
 
 ## 联系作者
 
-E-mail: [1126227133@qq.com](mailto:1126227133@qq.com)
+- E-mail: [1126227133@qq.com](mailto:1126227133@qq.com)
+- 微信号: Lazzyfu
