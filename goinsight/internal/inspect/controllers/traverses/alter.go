@@ -200,6 +200,41 @@ func (c *TraverseAlterTableColCharset) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
+// TraverseAlterTableAddColAfter
+type TraverseAlterTableAddColAfter struct {
+	Table        string   // 表名
+	IsMatch      int      // 是否匹配当前规则
+	Cols         []string // add columns
+	PositionCols []string // position columns
+}
+
+func (c *TraverseAlterTableAddColAfter) Enter(in ast.Node) (ast.Node, bool) {
+	if stmt, ok := in.(*ast.AlterTableStmt); ok {
+		c.Table = stmt.Table.Name.String()
+
+		for _, spec := range stmt.Specs {
+			switch spec.Tp {
+			case ast.AlterTableAddColumns:
+				// 将add的列名放到列表里面
+				for _, col := range spec.NewColumns {
+					c.Cols = append(c.Cols, col.Name.Name.O)
+				}
+				// 将after后面的列名放到列表里面
+				switch spec.Position.Tp {
+				case ast.ColumnPositionAfter:
+					c.IsMatch++
+					c.PositionCols = append(c.PositionCols, spec.Position.RelativeColumn.Name.O)
+				}
+			}
+		}
+	}
+	return in, false
+}
+
+func (c *TraverseAlterTableAddColAfter) Leave(in ast.Node) (ast.Node, bool) {
+	return in, true
+}
+
 // TraverseAlterTableAddColOptions
 type TraverseAlterTableAddColOptions struct {
 	Table   string // 表名

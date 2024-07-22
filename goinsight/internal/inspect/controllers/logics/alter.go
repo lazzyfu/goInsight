@@ -181,6 +181,37 @@ func LogicAlterTableColCharset(v *traverses.TraverseAlterTableColCharset, r *con
 	}
 }
 
+// LogicAlterTableAddColAfter
+func LogicAlterTableAddColAfter(v *traverses.TraverseAlterTableAddColAfter, r *controllers.RuleHint) {
+	if v.IsMatch == 0 {
+		return
+	}
+	r.MergeAlter = v.Table
+
+	// 获取db表结构
+	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
+	if err != nil {
+		r.Summary = append(r.Summary, err.Error())
+		return
+	}
+	// 解析获取的db表结构
+	vAudit := &traverses.TraverseAlterTableShowCreateTableGetCols{}
+	switch audit := audit.(type) {
+	case *parser.Audit:
+		(audit.TiStmt[0]).Accept(vAudit)
+	}
+
+	// 将add的列和原始表的列放到一起
+	v.Cols = append(v.Cols, vAudit.Cols...)
+
+	// 检查AFTER的列是否存在
+	for _, pCol := range v.PositionCols {
+		if !utils.IsContain(v.Cols, pCol) {
+			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`语句中AFTER指定的列`%s`不存在", v.Table, pCol))
+		}
+	}
+}
+
 // LogicAlterTableAddColOptions
 func LogicAlterTableAddColOptions(v *traverses.TraverseAlterTableAddColOptions, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {

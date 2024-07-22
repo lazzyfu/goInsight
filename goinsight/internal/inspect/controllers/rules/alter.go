@@ -40,6 +40,10 @@ func AlterTableRules() []Rule {
 			CheckFunc: (*Rule).RuleAlterTableColCharset,
 		},
 		{
+			Hint:      "AlterTable#Add列After检查",
+			CheckFunc: (*Rule).RuleAlterTableAddColAfter,
+		},
+		{
 			Hint:      "AlterTable#Add列Options检查",
 			CheckFunc: (*Rule).RuleAlterTableAddColOptions,
 		},
@@ -142,6 +146,13 @@ func (r *Rule) RuleAlterTableColCharset(tistmt *ast.StmtNode) {
 	v := &traverses.TraverseAlterTableColCharset{}
 	(*tistmt).Accept(v)
 	logics.LogicAlterTableColCharset(v, r.RuleHint)
+}
+
+// RuleAlterTableAddColAfter
+func (r *Rule) RuleAlterTableAddColAfter(tistmt *ast.StmtNode) {
+	v := &traverses.TraverseAlterTableAddColAfter{}
+	(*tistmt).Accept(v)
+	logics.LogicAlterTableAddColAfter(v, r.RuleHint)
 }
 
 // RuleAlterTableAddColOptions
