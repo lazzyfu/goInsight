@@ -58,10 +58,10 @@
 </template>
 
 <script>
-import { getTasksApi, executeSingleTaskApi, executeAllTaskApi } from '@/api/orders'
+import { executeAllTaskApi, executeSingleTaskApi, getTasksApi } from '@/api/orders';
 
-import TasksWebsocketComponent from './components/TasksWebsocket.vue'
-import TasksResultComponent from './components/TasksResult.vue'
+import TasksResultComponent from './TasksResult.vue';
+import TasksWebsocketComponent from './TasksWebsocket.vue';
 
 const tableColumns = [
   {

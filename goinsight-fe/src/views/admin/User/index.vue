@@ -16,9 +16,9 @@
 
 <script>
 // 导入子组件
-import UsersComponent from './users'
-import RolesComponent from './roles'
-import OrganizationsComponent from './organizations'
+import OrganizationsComponent from './organizations/Index';
+import RolesComponent from './roles/Index';
+import UsersComponent from './users/Index';
 
 export default {
   components: {

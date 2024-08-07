@@ -170,17 +170,17 @@
 
 <script>
 import {
-  getOrdersDetailApi,
   approveOrdersApi,
-  feedbackOrdersApi,
-  reviewOrdersApi,
   closeOrdersApi,
+  feedbackOrdersApi,
   generateTasksApi,
+  getOrdersDetailApi,
   previewTasksApi,
+  reviewOrdersApi,
 } from '@/api/orders'
-import DetailCodeMirrorComponent from './components/DetailCodemirror.vue'
-import DetailHookComponent from './components/DetailHook.vue'
-import DetailProgressComponent from './components/DetailProgress.vue'
+import DetailCodeMirrorComponent from './DetailCodemirror.vue'
+import DetailHookComponent from './DetailHook.vue'
+import DetailProgressComponent from './DetailProgress.vue'
 
 // 模态框按钮
 const ConfirmBtnTips = { okText: '确认', cancelText: '取消', action: '' }

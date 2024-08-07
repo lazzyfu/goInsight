@@ -123,9 +123,9 @@
 </template>
 
 <script>
-import { getListApi, getEnvironmentsApi } from '@/api/orders'
+import { getEnvironmentsApi, getListApi } from '@/api/orders';
 
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
 
 const tableColumns = [
   {

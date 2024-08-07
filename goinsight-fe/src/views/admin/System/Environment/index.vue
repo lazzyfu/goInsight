@@ -32,16 +32,16 @@
         </div>
       </span>
     </a-table>
-    <SystemEnvironmentsAddComponent ref="SystemEnvironmentsAddComponent" @refreshTable="getEnvironments"></SystemEnvironmentsAddComponent>
-    <SystemEnvironmentsEditComponent ref="SystemEnvironmentsEditComponent" @refreshTable="getEnvironments"></SystemEnvironmentsEditComponent>
+    <EnvironmentsAddComponent ref="EnvironmentsAddComponent" @refreshTable="getEnvironments"></EnvironmentsAddComponent>
+    <EnvironmentsEditComponent ref="EnvironmentsEditComponent" @refreshTable="getEnvironments"></EnvironmentsEditComponent>
   </a-card>
 </template>
 
 <script>
-import { adminGetEnvironmentsApi, adminDeleteEnvironmentsApi } from '@/api/common'
+import { adminDeleteEnvironmentsApi, adminGetEnvironmentsApi } from '@/api/common';
 
-import SystemEnvironmentsAddComponent from './SystemEnvironmentsAdd'
-import SystemEnvironmentsEditComponent from './SystemEnvironmentsEdit'
+import EnvironmentsAddComponent from './EnvironmentsAdd';
+import EnvironmentsEditComponent from './EnvironmentsEdit';
 
 const tableColumns = [
   {
@@ -80,8 +80,8 @@ const tableColumns = [
 
 export default {
   components: {
-    SystemEnvironmentsAddComponent,
-    SystemEnvironmentsEditComponent,
+    EnvironmentsAddComponent,
+    EnvironmentsEditComponent,
   },
   data() {
     return {
@@ -122,10 +122,10 @@ export default {
         })
     },
     editRow(row) {
-      this.$refs.SystemEnvironmentsEditComponent.showModal(row)
+      this.$refs.EnvironmentsEditComponent.showModal(row)
     },
     onAdd() {
-      this.$refs.SystemEnvironmentsAddComponent.showModal()
+      this.$refs.EnvironmentsAddComponent.showModal()
     },
     DeleteConfirm(id) {
       const _this = this

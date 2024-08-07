@@ -45,10 +45,10 @@
 </template>
 
 <script>
-import { getFavoritesApi, deleteFavoritesApi } from '@/api/das'
+import { deleteFavoritesApi, getFavoritesApi } from '@/api/das';
 
-import FavoriteAddComponent from './FavoriteAdd'
-import FavoriteEditComponent from './FavoriteEdit'
+import FavoriteAddComponent from './FavoriteAdd';
+import FavoriteEditComponent from './FavoriteEdit';
 
 const tableColumns = [
   {

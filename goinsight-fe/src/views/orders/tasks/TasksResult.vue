@@ -51,13 +51,13 @@
 </template>
 
 <script>
-import 'codemirror/mode/sql/sql.js'
-import 'codemirror/addon/selection/active-line'
-import 'codemirror/addon/display/autorefresh'
 import 'codemirror/addon/comment/comment'
-import 'codemirror/addon/edit/matchbrackets'
+import 'codemirror/addon/display/autorefresh'
 import 'codemirror/addon/edit/closebrackets'
+import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/mode/overlay'
+import 'codemirror/addon/selection/active-line'
+import 'codemirror/mode/sql/sql.js'
 
 export default {
   data() {

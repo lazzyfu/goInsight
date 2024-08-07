@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import { adminGetInspectParamsApi  } from '@/api/inspect'
+import { adminGetInspectParamsApi } from '@/api/inspect';
 
-import InspectEditComponent from './InspectEdit'
+import InspectEditComponent from './InspectEdit';
 
 const tableColumns = [
   {

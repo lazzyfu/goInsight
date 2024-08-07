@@ -28,9 +28,9 @@
 
 <script>
 // 导入子组件
-import EditComponent from './edit/Index'
-import HistoryComponent from './history/Index'
-import FavoriteComponent from './favorite/Index'
+import EditComponent from './edit/Index';
+import FavoriteComponent from './favorite/Index';
+import HistoryComponent from './history/Index';
 
 export default {
   components: {

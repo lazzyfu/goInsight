@@ -19,10 +19,10 @@
 
 <script>
 // 导入子组件
-import DasComponent from './Das';
-import DBConfigsComponent from './DbConfig';
-import SystemEnvironmentsComponent from './Environment';
-import InspectComponent from './Inspect';
+import DasComponent from './das/Index';
+import DBConfigsComponent from './dbconfig/Index';
+import SystemEnvironmentsComponent from './environment/Index';
+import InspectComponent from './inspect/Index';
 
 export default {
   components: {
