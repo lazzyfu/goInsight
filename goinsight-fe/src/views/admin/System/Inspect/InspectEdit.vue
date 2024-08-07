@@ -46,7 +46,7 @@
   </template>
   
   <script>
-  import { adminUpdateInspectParamsApi } from '@/api/inspect'
+  import { adminUpdateInspectParamsApi } from '@/api/inspect';
   
   export default {
     data() {

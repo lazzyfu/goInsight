@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="visible" title="新增数据库实例" width="55%" on-ok="onSubmit" @cancel="handleCancel">
+  <a-modal v-model="visible" title="新增数据库实例" width="50%" on-ok="onSubmit" @cancel="handleCancel">
     <template slot="footer">
       <a-button key="back" @click="handleCancel">取消</a-button>
       <a-button key="submit" type="primary" :loading="loading" @click="onSubmit">确定</a-button>
@@ -73,9 +73,9 @@
         >
         </a-input-number>
       </a-form-item>
-      <a-form-item label="审核参数" help="格式要求为JSON类型" has-feedback>
+      <a-form-item label="自定义审核参数" help="格式要求为JSON类型，默认为{}，表示继承全局审核参数" has-feedback>
         <a-textarea
-          :auto-size="{ minRows: 3, maxRows: 5 }"
+          :auto-size="{ minRows: 5, maxRows: 10 }"
           placeholder="请输入自定义审核参数，默认为{}"
           v-decorator="[
             'inspect_params',
@@ -110,8 +110,8 @@
 </template>
 
 <script>
-import { getOrganizationsApi } from '@/api/users'
-import { adminCreateDBConfigApi, adminGetEnvironmentsApi } from '@/api/common'
+import { adminCreateDBConfigApi, adminGetEnvironmentsApi } from '@/api/common';
+import { getOrganizationsApi } from '@/api/users';
 
 export default {
   data() {

@@ -1,5 +1,6 @@
 <template>
   <a-card>
+    <a-alert message="全局审核参数配置，作用于全部数据库实例的语法审核。优先级：数据库实例级别审核参数 > 全局审核参数。如您需要个性化定制实例级别审核参数，请在「数据库实例配置」里面进行调整。" type="success" />
     <!-- 搜索框 -->
     <a-form layout="inline" :form="form" @keyup.enter.native="handleSearch">
       <a-form-item>
