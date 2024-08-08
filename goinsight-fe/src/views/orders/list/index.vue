@@ -42,7 +42,7 @@
       @change="handleTableChange"
     >
       <span slot="progress" slot-scope="text">
-        <!-- ('待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核', '已勾住') -->
+        <!-- ('待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核') -->
         <a-tag v-if="text === '待审核'" color="blue">
           {{ text }}
         </a-tag>
@@ -56,9 +56,6 @@
           {{ text }}
         </a-tag>
         <a-tag v-else-if="text === '执行中'" color="pink">
-          {{ text }}
-        </a-tag>
-        <a-tag v-else-if="text === '已勾住'">
           {{ text }}
         </a-tag>
         <a-tag v-else color="green">
@@ -217,7 +214,7 @@ export default {
       loading: false,
       onlyMyOrders: false,
       environments: [],
-      progs: ['待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核', '已勾住'],
+      progs: ['待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核'],
       tableColumns,
       tableData: [],
       pagination: {

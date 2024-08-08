@@ -7,7 +7,6 @@
       <a-step title="执行中"></a-step>
       <a-step title="已完成/已关闭"></a-step>
       <a-step title="已复核"></a-step>
-      <a-step title="已勾住"></a-step>
     </a-steps>
 
     <a-row :gutter="8" style="margin-top: 24px">
@@ -45,9 +44,9 @@
 
 
 <script>
-import { getOpLogsApi } from '@/api/orders'
+import { getOpLogsApi } from '@/api/orders';
 
-import elementResizeDetectorMaker from 'element-resize-detector'
+import elementResizeDetectorMaker from 'element-resize-detector';
 const erd = elementResizeDetectorMaker()
 
 export default {

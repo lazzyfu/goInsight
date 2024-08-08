@@ -83,7 +83,7 @@
         <a-button
           type="dashed"
           @click="generateSqlOrdersTasks"
-          v-if="['已批准', '执行中', '已完成', '已复核', '已勾住'].includes(orderDetail.progress)"
+          v-if="['已批准', '执行中', '已完成', '已复核'].includes(orderDetail.progress)"
           :loading="executeLoading"
           icon="thunderbolt"
           >执行工单</a-button
@@ -410,7 +410,7 @@ export default {
     this.previewTasks()
   },
   filters: {
-    // ('待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核', '已勾住')
+    // ('待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核')
     btnTitle(progress) {
       if (progress === '待审核') {
         BtnStatus.btnDisabled = false
@@ -433,7 +433,7 @@ export default {
         ConfirmBtnTips.cancelText = '取消'
         ConfirmBtnTips.action = 'review'
         return '复核'
-      } else if (['已勾住', '已复核', '已驳回', '已关闭'].includes(progress)) {
+      } else if (['已复核', '已驳回', '已关闭'].includes(progress)) {
         BtnStatus.btnDisabled = true
         BtnStatus.closeDisabled = true
         return '完成'

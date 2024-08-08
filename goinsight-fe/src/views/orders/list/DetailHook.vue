@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="HOOK工单" v-model="visible" width="40%" on-ok="onSubmit" @cancel="handleCancel">
+  <a-modal title="HOOK工单" v-model="visible" width="55%" on-ok="onSubmit" @cancel="handleCancel">
     <template slot="footer">
       <a-button key="back" @click="handleCancel">取消</a-button>
       <a-button key="submit" type="primary" :loading="loading" @click="onSubmit">确定</a-button>
@@ -17,49 +17,7 @@
       <a-form-item label="当前库">
         <a-input v-decorator="['schema', { rules: [{ required: true }] }]" disabled />
       </a-form-item>
-      <a-form-item label="目标工单环境" has-feedback>
-        <a-select
-          @change="changeEnvs"
-          v-decorator="['environment', { rules: [{ required: true, message: '请选择工单环境' }] }]"
-          placeholder="请选择工单环境"
-          allowClear
-          show-search
-        >
-          <a-select-option v-for="(item, index) in environments" :key="index" :label="item.name" :value="item.id">
-            {{ item.name }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="实例" has-feedback>
-        <a-select
-          @change="changeIns"
-          v-decorator="['instance_id', { rules: [{ required: true, message: '请选择数据库实例' }] }]"
-          placeholder="请选择数据库实例"
-          allowClear
-          show-search
-        >
-          <a-select-option
-            v-for="(item, index) in instances"
-            :key="index"
-            :label="item.remark"
-            :value="item.instance_id"
-          >
-            {{ item.remark }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="库名" has-feedback>
-        <a-select
-          v-decorator="['new_schema', { rules: [{ required: true, message: '请选择数据库' }] }]"
-          placeholder="请选择数据库"
-          allowClear
-          show-search
-        >
-          <a-select-option v-for="(item, index) in schemas" :key="index" :label="item.schema" :value="item.schema">
-            {{ item.schema }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
+
       <a-form-item label="审核状态">
         <a-switch
           checked-children="重置审核状态为：待审批"
@@ -68,12 +26,97 @@
           @change="onRestProgress"
         />
       </a-form-item>
+
+      <a-form-item label="目标实例库">
+        <div v-for="(item, index) in keysList" :key="index">
+          <a-row :gutter="24">
+            <a-col :span="8">
+              <a-form-item label="环境" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
+                <a-select
+                  @change="changeEnvs"
+                  v-decorator="[
+                    `target_environments[${index}]`,
+                    { rules: [{ required: true, message: '请选择工单环境' }] },
+                  ]"
+                  placeholder="请选择工单环境"
+                  allowClear
+                  show-search
+                >
+                  <a-select-option
+                    v-for="(item, index) in environments"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id"
+                  >
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="实例" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
+                <a-select
+                  @change="changeIns"
+                  v-decorator="[
+                    `target_instance_ids[${index}]`,
+                    { rules: [{ required: true, message: '请选择数据库实例' }] },
+                  ]"
+                  placeholder="请选择数据库实例"
+                  allowClear
+                  show-search
+                >
+                  <a-select-option
+                    v-for="(item, index) in instances"
+                    :key="index"
+                    :label="item.remark"
+                    :value="item.instance_id"
+                  >
+                    {{ item.remark }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="库名" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
+                <a-select
+                  v-decorator="[`target_schemas[${index}]`, { rules: [{ required: true, message: '请选择数据库' }] }]"
+                  placeholder="请选择数据库"
+                  allowClear
+                  show-search
+                >
+                  <a-select-option
+                    v-for="(item, index) in schemas"
+                    :key="index"
+                    :label="item.schema"
+                    :value="item.schema"
+                  >
+                    {{ item.schema }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="2">
+              <a-form-item :labelCol="{ span: 0 }" :wrapperCol="{ span: 24 }">
+                <template v-if="keysList.length > 1">
+                  <a-icon
+                    type="minus"
+                    :disabled="keysList.length === 1"
+                    @click="removeFormItem(index)"
+                    style="margin-left: 8px"
+                  />
+                </template>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </div>
+        <a-button type="dashed" icon="plus" @click="addFormItem" class="addRowBtn">新增一行</a-button>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 <script>
-import { getEnvironmentsApi, getInstancesApi, getSchemasApi, hookOrdersApi } from '@/api/orders'
+import { getEnvironmentsApi, getInstancesApi, getSchemasApi, hookOrdersApi } from '@/api/orders';
 
 export default {
   props: {
@@ -88,9 +131,16 @@ export default {
       schemas: [],
       progress: '待审核',
       form: this.$form.createForm(this, { name: 'hook' }),
+      keysList: [{}],
     }
   },
   methods: {
+    addFormItem() {
+      this.keysList.push({}) // 添加一个空对象作为新的表单项
+    },
+    removeFormItem(index) {
+      this.keysList.splice(index, 1) // 删除指定索引的表单项
+    },
     showModal() {
       this.visible = true
       this.$nextTick(() => {
@@ -112,14 +162,12 @@ export default {
     },
     // 获取环境
     getEnvironments() {
-      getEnvironmentsApi({is_page: false}).then((res) => {
+      getEnvironmentsApi({ is_page: false }).then((res) => {
         this.environments = res.data
       })
     },
     // Change环境
     changeEnvs(value) {
-      // Change环境时清空指定的字段
-      this.form.resetFields(['instance_id', 'new_schema'])
       // 获取指定环境的实例
       var params = {
         id: value,
@@ -134,8 +182,6 @@ export default {
     },
     // Change实例
     changeIns(value) {
-      // Change实例时清空指定的字段
-      this.form.resetFields(['new_schema'])
       // 获取指定实例的Schemas
       var params = {
         instance_id: value,
@@ -156,6 +202,18 @@ export default {
       this.loading = true
       e.preventDefault()
       this.form.validateFields((err, values) => {
+        // 遍历动态表单项
+        const targetArr = []
+        this.keysList.forEach((item, index) => {
+          const obj = {
+            environment: values['target_environments'][index],
+            instance_id: values['target_instance_ids'][index],
+            schema: values['target_schemas'][index],
+          }
+          targetArr.push(obj)
+        })
+        values['target'] = targetArr
+        // 增加进度
         values['progress'] = this.progress
         if (!err) {
           hookOrdersApi(values)
@@ -177,3 +235,12 @@ export default {
   },
 }
 </script>
+
+
+<style scoped>
+.addRowBtn {
+  width: 100%;
+  color: #1890ff;
+  border-color: #91d5ff;
+}
+</style>

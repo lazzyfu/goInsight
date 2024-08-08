@@ -50,7 +50,7 @@ func (s *GenerateTasksService) Run() (err error) {
 		return fmt.Errorf("您没有执行工单权限")
 	}
 	// 判断审核状态
-	if !utils.IsContain([]string{"已批准", "执行中", "已完成", "已复核", "已勾住"}, string(record.Progress)) {
+	if !utils.IsContain([]string{"已批准", "执行中", "已完成", "已复核"}, string(record.Progress)) {
 		return fmt.Errorf("当前工单状态为%s，禁止操作", string(record.Progress))
 	}
 	// 如果tasks记录存在，跳过
