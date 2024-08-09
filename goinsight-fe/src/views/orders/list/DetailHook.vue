@@ -1,10 +1,10 @@
 <template>
-  <a-modal title="HOOK工单" v-model="visible" width="55%" on-ok="onSubmit" @cancel="handleCancel">
+  <a-modal title="HOOK工单" v-model="visible" width="65%" on-ok="onSubmit" @cancel="handleCancel">
     <template slot="footer">
       <a-button key="back" @click="handleCancel">取消</a-button>
       <a-button key="submit" type="primary" :loading="loading" @click="onSubmit">确定</a-button>
     </template>
-    <a-form :form="form" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
+    <a-form :form="form" :label-col="{ span: 2 }" :wrapper-col="{ span: 22 }">
       <a-form-item label="工单ID" v-show="false">
         <a-input v-decorator="['order_id', { rules: [{ required: true }] }]" disabled />
       </a-form-item>
@@ -27,89 +27,91 @@
         />
       </a-form-item>
 
-      <a-form-item label="目标实例库">
-        <div v-for="(item, index) in keysList" :key="index">
-          <a-row :gutter="24">
-            <a-col :span="8">
-              <a-form-item label="环境" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
-                <a-select
-                  @change="changeEnvs"
-                  v-decorator="[
-                    `target_environments[${index}]`,
-                    { rules: [{ required: true, message: '请选择工单环境' }] },
-                  ]"
-                  placeholder="请选择工单环境"
-                  allowClear
-                  show-search
-                >
-                  <a-select-option
-                    v-for="(item, index) in environments"
-                    :key="index"
-                    :label="item.name"
-                    :value="item.id"
+      <a-form-item label="目标库">
+        <a-card>
+          <div v-for="(item, index) in keysList" :key="index">
+            <a-row :gutter="24">
+              <a-col :span="8">
+                <a-form-item label="环境" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
+                  <a-select
+                    @change="changeEnvs"
+                    v-decorator="[
+                      `target_environments[${index}]`,
+                      { rules: [{ required: true, message: '请选择工单环境' }] },
+                    ]"
+                    placeholder="请选择工单环境"
+                    allowClear
+                    show-search
                   >
-                    {{ item.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-item label="实例" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
-                <a-select
-                  @change="changeIns"
-                  v-decorator="[
-                    `target_instance_ids[${index}]`,
-                    { rules: [{ required: true, message: '请选择数据库实例' }] },
-                  ]"
-                  placeholder="请选择数据库实例"
-                  allowClear
-                  show-search
-                >
-                  <a-select-option
-                    v-for="(item, index) in instances"
-                    :key="index"
-                    :label="item.remark"
-                    :value="item.instance_id"
+                    <a-select-option
+                      v-for="(item, index) in environments"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                      {{ item.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item label="实例" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
+                  <a-select
+                    @change="changeIns"
+                    v-decorator="[
+                      `target_instance_ids[${index}]`,
+                      { rules: [{ required: true, message: '请选择数据库实例' }] },
+                    ]"
+                    placeholder="请选择数据库实例"
+                    allowClear
+                    show-search
                   >
-                    {{ item.remark }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item label="库名" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
-                <a-select
-                  v-decorator="[`target_schemas[${index}]`, { rules: [{ required: true, message: '请选择数据库' }] }]"
-                  placeholder="请选择数据库"
-                  allowClear
-                  show-search
-                >
-                  <a-select-option
-                    v-for="(item, index) in schemas"
-                    :key="index"
-                    :label="item.schema"
-                    :value="item.schema"
+                    <a-select-option
+                      v-for="(item, index) in instances"
+                      :key="index"
+                      :label="item.remark"
+                      :value="item.instance_id"
+                    >
+                      {{ item.remark }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="库名" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }" has-feedback>
+                  <a-select
+                    v-decorator="[`target_schemas[${index}]`, { rules: [{ required: true, message: '请选择数据库' }] }]"
+                    placeholder="请选择数据库"
+                    allowClear
+                    show-search
                   >
-                    {{ item.schema }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="2">
-              <a-form-item :labelCol="{ span: 0 }" :wrapperCol="{ span: 24 }">
-                <template v-if="keysList.length > 1">
-                  <a-icon
-                    type="minus"
-                    :disabled="keysList.length === 1"
-                    @click="removeFormItem(index)"
-                    style="margin-left: 8px"
-                  />
-                </template>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </div>
-        <a-button type="dashed" icon="plus" @click="addFormItem" class="addRowBtn">新增一行</a-button>
+                    <a-select-option
+                      v-for="(item, index) in schemas"
+                      :key="index"
+                      :label="item.schema"
+                      :value="item.schema"
+                    >
+                      {{ item.schema }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="2">
+                <a-form-item :labelCol="{ span: 0 }" :wrapperCol="{ span: 24 }">
+                  <template v-if="keysList.length > 1">
+                    <a-icon
+                      type="minus"
+                      :disabled="keysList.length === 1"
+                      @click="removeFormItem(index)"
+                      style="margin-left: 8px"
+                    />
+                  </template>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </div>
+          <a-button type="dashed" icon="plus" @click="addFormItem" class="addRowBtn">新增一行</a-button>
+        </a-card>
       </a-form-item>
     </a-form>
   </a-modal>

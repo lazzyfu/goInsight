@@ -12,6 +12,7 @@ import (
 	"goInsight/internal/orders/forms"
 	"goInsight/internal/orders/models"
 	"goInsight/pkg/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -86,8 +87,12 @@ func (s *HookOrdersService) Run() error {
 		}
 		// 生成新的工单ID
 		orderID := uuid.New()
+		hookTitle := record.Title
+		if !strings.HasPrefix(record.Title, "[Hook]") {
+			hookTitle = fmt.Sprintf("[Hook]%s", record.Title)
+		}
 		hookRecords = append(hookRecords, models.InsightOrderRecords{
-			Title:            record.Title,
+			Title:            hookTitle,
 			Progress:         commonModels.EnumType(s.Progress),
 			OrderID:          orderID,
 			HookOrderID:      record.OrderID,
