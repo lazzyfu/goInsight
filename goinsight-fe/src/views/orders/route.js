@@ -2,7 +2,7 @@ const route = [
   {
     name: 'view.orders.list',
     path: '/orders/list',
-    component: () => import('@/views/orders/list/Index'),
+    component: () => import('@/views/orders/list/index'),
     meta: { title: '工单列表', keepAlive: true, icon: 'unordered-list' },
   },
   {
@@ -15,7 +15,7 @@ const route = [
   {
     name: 'view.orders.tasks',
     path: '/orders/tasks/:order_id',
-    component: () => import('@/views/orders/tasks/Index'),
+    component: () => import('@/views/orders/tasks/index'),
     meta: { title: '工单任务', keepAlive: true },
     hidden: true,
   },
@@ -36,19 +36,19 @@ const route = [
       {
         path: 'ddl',
         name: `view.orders.commit.ddl`,
-        component: () => import('@/views/orders/commit/Index'),
+        component: () => import('@/views/orders/commit/index'),
         meta: { title: 'DDL工单' },
       },
       {
         path: 'dml',
         name: `view.orders.commit.dml`,
-        component: () => import('@/views/orders/commit/Index'),
+        component: () => import('@/views/orders/commit/index'),
         meta: { title: 'DML工单' },
       },
       {
         path: 'export',
         name: `view.orders.commit.export`,
-        component: () => import('@/views/orders/commit/Index'),
+        component: () => import('@/views/orders/commit/index'),
         meta: { title: '导出工单' },
       },
     ],

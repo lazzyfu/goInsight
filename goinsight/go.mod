@@ -1,6 +1,6 @@
 module goInsight
 
-go 1.21.11
+go 1.21.13
 
 replace github.com/vitessio/vitess => vitess.io/vitess v0.18.5
 
