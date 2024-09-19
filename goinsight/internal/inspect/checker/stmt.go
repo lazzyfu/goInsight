@@ -67,6 +67,32 @@ func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 	return data
 }
 
+// CreateDatabaseStmt 检查 CreateDatabase 语句
+func (s *Stmt) CreateDatabaseStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateDatabase", Level: "INFO"}
+
+	for _, rule := range rules.CreateDatabaseRules() {
+		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
+			DB:            s.DB,
+			KV:            kv,
+			Query:         stmt.Text(),
+			InspectParams: &s.InspectParams,
+		}
+		rule.RuleHint = ruleHint
+		rule.CheckFunc(&rule, &stmt)
+
+		if len(rule.RuleHint.Summary) > 0 {
+			data.Level = "WARN"
+			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		}
+		if rule.RuleHint.IsSkipNextStep {
+			break
+		}
+	}
+
+	return data
+}
+
 // RenameTableStmt 检查 RenameTable 语句
 func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
 	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "RenameTable", Level: "INFO"}

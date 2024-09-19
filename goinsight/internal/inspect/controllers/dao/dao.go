@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/06/24 10:18:49
-@Author  :   xff
-@Desc    :   获取目标数据库元信息
-*/
-
 package dao
 
 import (
@@ -18,9 +12,9 @@ import (
 	mysqlapi "github.com/go-sql-driver/mysql"
 )
 
-// ShowCreateTable
+// ShowCreateTable retrieves the structure of the specified table.
 func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, err error) {
-	// 返回表结构
+	// Return table structure from cache if available
 	data = kv.Get(table)
 	if data != nil {
 		return data, nil
@@ -32,11 +26,11 @@ func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, er
 	}
 	var createStatement string
 	for _, sql := range *result {
-		// 表
+		// Table
 		if _, ok := sql["Create Table"]; ok {
 			createStatement = sql["Create Table"].(string)
 		}
-		// 视图
+		// View
 		if _, ok := sql["Create View"]; ok {
 			createStatement = sql["Create View"].(string)
 		}
@@ -45,36 +39,35 @@ func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, er
 	var warns []error
 	data, warns, err = parser.NewParse(createStatement, "", "")
 	if len(warns) > 0 {
-		return nil, fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
+		return nil, fmt.Errorf("解析警告: %s", utils.ErrsJoin("; ", warns))
 	}
 	if err != nil {
-		return nil, fmt.Errorf("SQL语法解析错误：%s", err.Error())
+		return nil, fmt.Errorf("SQL语法解析错误: %s", err.Error())
 	}
 	kv.Put(table, data)
 	return data, nil
 }
 
-// descTable
-func DescTable(table string, db *DB) (error, string) {
-	// 检查表是否存在，适用于确认当前实例当前库的表
-	err := db.Execute(fmt.Sprintf("desc `%s`", table))
+// CheckIfTableExists checks if the specified table exists in the current database.
+func CheckIfTableExists(table string, db *DB) (string, error) {
+	err := db.Execute(fmt.Sprintf("DESC `%s`", table))
 	if me, ok := err.(*mysqlapi.MySQLError); ok {
 		if me.Number == 1146 {
-			// 表不存在
-			return err, fmt.Sprintf("表或视图`%s`不存在", table)
+			// Table does not exist
+			return fmt.Sprintf("表或视图`%s`不存在", table), err
 		} else if me.Number == 1045 {
-			return err, fmt.Sprintf("访问目标数据库%s:%d失败,%s", db.Host, db.Port, err.Error())
+			return fmt.Sprintf("无法访问目标数据库 %s:%d, %s", db.Host, db.Port, err.Error()), err
 		}
 	}
-	return nil, fmt.Sprintf("表或视图`%s`已经存在", table)
+	return fmt.Sprintf("表或视图`%s`已存在", table), nil
 }
 
-// verifyTable
-func VerifyTable(table string, db *DB) (error, string) {
-	// 通过information_schema.tables检查表是否存在，适用于确认当前实例跨库的表
-	result, err := db.Query(fmt.Sprintf("select count(*) as count from information_schema.tables where table_name='%s'", table))
+// CheckIfDatabaseExists checks if the specified database exists.
+func CheckIfDatabaseExists(database string, db *DB) (string, error) {
+	// Query the information_schema.schemata to check if the database exists
+	result, err := db.Query(fmt.Sprintf("SELECT COUNT(*) as count FROM information_schema.schemata WHERE schema_name='%s'", database))
 	if err != nil {
-		return err, fmt.Sprintf("执行SQL失败,主机:%s:%d,错误:%s", db.Host, db.Port, err.Error())
+		return fmt.Sprintf("执行SQL失败, 主机: %s:%d, 错误: %s", db.Host, db.Port, err.Error()), err
 	}
 	var count int
 	for _, row := range *result {
@@ -82,16 +75,36 @@ func VerifyTable(table string, db *DB) (error, string) {
 		break
 	}
 	if count == 0 {
-		// 表不存在
-		return errors.New("error"), fmt.Sprintf("表或视图`%s`不存在", table)
+		// Database does not exist
+		return fmt.Sprintf("数据库`%s`不存在", database), errors.New("error")
 	}
-	// 表存在
-	return nil, fmt.Sprintf("表或视图`%s`已经存在", table)
+	// Database exists
+	return fmt.Sprintf("数据库`%s`已存在", database), nil
 }
 
-// 获取DB变量
+// CheckIfTableExistsCrossDB checks if the specified table exists across databases.
+func CheckIfTableExistsCrossDB(table string, db *DB) (string, error) {
+	// Check if the table exists using information_schema.tables, suitable for cross-database checks
+	result, err := db.Query(fmt.Sprintf("SELECT COUNT(*) as count FROM information_schema.tables WHERE table_name='%s'", table))
+	if err != nil {
+		return fmt.Sprintf("执行SQL失败, 主机: %s:%d, 错误: %s", db.Host, db.Port, err.Error()), err
+	}
+	var count int
+	for _, row := range *result {
+		count, _ = strconv.Atoi(row["count"].(string))
+		break
+	}
+	if count == 0 {
+		// Table does not exist
+		return fmt.Sprintf("表或视图`%s`不存在", table), errors.New("error")
+	}
+	// Table exists
+	return fmt.Sprintf("表或视图`%s`已存在", table), nil
+}
+
+// GetDBVars retrieves database variables.
 func GetDBVars(db *DB) (map[string]string, error) {
-	result, err := db.Query(`show variables where Variable_name in ('innodb_large_prefix','version','character_set_database','innodb_default_row_format')`)
+	result, err := db.Query(`SHOW VARIABLES WHERE Variable_name IN ('innodb_large_prefix','version','character_set_database','innodb_default_row_format')`)
 	if err != nil {
 		return nil, err
 	}
@@ -107,12 +120,12 @@ func GetDBVars(db *DB) (map[string]string, error) {
 	for _, row := range *result {
 		variableName, ok := row["Variable_name"].(string)
 		if !ok {
-			return nil, fmt.Errorf("unexpected type for Variable_name")
+			return nil, fmt.Errorf("Variable_name类型意外")
 		}
 
 		value, ok := row["Value"].(string)
 		if !ok {
-			return nil, fmt.Errorf("unexpected type for Value in row")
+			return nil, fmt.Errorf("行中Value类型意外")
 		}
 
 		switch variableName {

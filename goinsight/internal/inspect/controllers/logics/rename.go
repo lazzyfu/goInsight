@@ -36,7 +36,7 @@ func LogicRenameTable(v *traverses.TraverseRenameTable, r *controllers.RuleHint)
 	var oldTables []string
 	// 旧表必须存在
 	for _, t := range v.Tables {
-		if err, msg := dao.DescTable(t.OldTable, r.DB); err != nil {
+		if msg, err := dao.CheckIfTableExists(t.OldTable, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 		} else {
 			oldTables = append(oldTables, t.OldTable)
@@ -47,7 +47,7 @@ func LogicRenameTable(v *traverses.TraverseRenameTable, r *controllers.RuleHint)
 		if len(oldTables) > 0 && utils.IsContain(oldTables, t.NewTable) {
 			continue
 		}
-		if err, msg := dao.DescTable(t.NewTable, r.DB); err == nil {
+		if msg, err := dao.CheckIfTableExists(t.NewTable, r.DB); err == nil {
 			r.Summary = append(r.Summary, msg)
 		}
 	}

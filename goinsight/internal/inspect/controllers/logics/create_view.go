@@ -24,7 +24,7 @@ func LogicCreateViewIsExist(v *traverses.TraverseCreateViewIsExist, r *controlle
 	}
 	if !v.OrReplace {
 		// create view，需要确保视图不存在
-		if err, msg := dao.DescTable(v.View, r.DB); err == nil {
+		if msg, err := dao.CheckIfTableExists(v.View, r.DB); err == nil {
 			newMsg := strings.Join([]string{msg, "【TiDB可以使用`CREATE OR REPLACE VIEW`语法】"}, "")
 			r.Summary = append(r.Summary, newMsg)
 			r.IsSkipNextStep = true
@@ -33,7 +33,7 @@ func LogicCreateViewIsExist(v *traverses.TraverseCreateViewIsExist, r *controlle
 	for _, table := range v.Tables {
 		// 检查除视图名外的表是否存在
 		if v.View != table {
-			if err, msg := dao.VerifyTable(table, r.DB); err != nil {
+			if msg, err := dao.CheckIfDatabaseExists(table, r.DB); err != nil {
 				r.Summary = append(r.Summary, msg)
 				r.IsSkipNextStep = true
 			}

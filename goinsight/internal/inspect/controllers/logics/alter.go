@@ -21,7 +21,7 @@ import (
 func LogicAlterTableIsExist(v *traverses.TraverseAlterTableIsExist, r *controllers.RuleHint) {
 	// 检查表是否存在，如果表不存在，skip下面的检查
 	r.MergeAlter = v.Table
-	if err, msg := dao.DescTable(v.Table, r.DB); err != nil {
+	if msg, err := dao.CheckIfTableExists(v.Table, r.DB); err != nil {
 		r.Summary = append(r.Summary, msg)
 		r.IsSkipNextStep = true
 	}
@@ -675,7 +675,7 @@ func LogicAlterTableRenameTblName(v *traverses.TraverseAlterTableRenameTblName, 
 		return
 	}
 	// 判断新表是否存在
-	if err, msg := dao.DescTable(v.NewTblName, r.DB); err == nil {
+	if msg, err := dao.CheckIfTableExists(v.NewTblName, r.DB); err == nil {
 		r.Summary = append(r.Summary, msg)
 		return
 	}

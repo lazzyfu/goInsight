@@ -19,7 +19,7 @@ import (
 // LogicCreateTableIsExist
 func LogicCreateTableIsExist(v *traverses.TraverseCreateTableIsExist, r *controllers.RuleHint) {
 	// 检查表是否存在,如果表存在,skip下面的检查
-	if err, msg := dao.DescTable(v.Table, r.DB); err == nil {
+	if msg, err := dao.CheckIfTableExists(v.Table, r.DB); err == nil {
 		r.Summary = append(r.Summary, msg)
 		r.IsSkipNextStep = true
 	}

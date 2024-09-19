@@ -10,6 +10,7 @@ import (
 	"goInsight/routers"
 	"io/fs"
 	"net/http"
+	"os"
 	"strings"
 
 	commonRouter "goInsight/internal/common/routers"
@@ -38,18 +39,19 @@ func RunServer() {
 
 	// 初始化认证中间件
 	var err error
-	global.App.JWT, err = middleware.InitAuthMiddleware()
-	if err != nil {
+	if global.App.JWT, err = middleware.InitAuthMiddleware(); err != nil {
 		fmt.Println("Failed to initialize authentication middleware:", err)
 		return
 	}
 
 	// 加载多个APP的路由配置
-	routers.Include(userRouter.Routers)
-	routers.Include(commonRouter.Routers)
-	routers.Include(inspectRouter.Routers)
-	routers.Include(dasRouter.Routers)
-	routers.Include(ordersRouter.Routers)
+	routers.Include(
+		userRouter.Routers,
+		commonRouter.Routers,
+		inspectRouter.Routers,
+		dasRouter.Routers,
+		ordersRouter.Routers,
+	)
 
 	// 初始化路由
 	r := routers.Init()
@@ -63,35 +65,34 @@ func RunServer() {
 	r.StaticFS("/static", http.FS(st))
 
 	// 提供其他非嵌入的文件系统
-	r.StaticFS("/media", http.Dir("media"))
+	if _, err := os.Stat("./media"); os.IsNotExist(err) {
+		os.MkdirAll("./media", os.ModePerm)
+	}
+	r.Static("/media", "./media")
 
 	// 默认头像文件
 	r.StaticFile("/avatar2.jpg", "dist/avatar2.jpg")
 
 	// 解决页面刷新404的问题
 	r.NoRoute(func(c *gin.Context) {
-		accept := c.Request.Header.Get("Accept")
-		flag := strings.Contains(accept, "text/html")
-		if flag {
-			// 这里要使用staticFS.ReadFile而不是os.ReadFile，这是因为您的静态文件是通过嵌入的文件系统访问的，而不是本地磁盘文件
+		if strings.Contains(c.Request.Header.Get("Accept"), "text/html") {
 			if content, err := staticFS.ReadFile("dist/index.html"); err == nil {
 				c.Header("Accept", "text/html")
 				c.Data(http.StatusOK, "text/html; charset=utf-8", content)
 				return
 			}
 		}
-		c.Writer.WriteHeader(404)
+		c.Writer.WriteHeader(http.StatusNotFound)
 		_, _ = c.Writer.WriteString("Not Found")
 	})
 
 	// 根路由
 	r.GET("/", func(c *gin.Context) {
-		data, err := staticFS.ReadFile("dist/index.html")
-		if err != nil {
+		if data, err := staticFS.ReadFile("dist/index.html"); err == nil {
+			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
+		} else {
 			_ = c.AbortWithError(http.StatusInternalServerError, err)
-			return
 		}
-		c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 	})
 
 	// 错误处理

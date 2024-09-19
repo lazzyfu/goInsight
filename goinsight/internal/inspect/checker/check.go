@@ -208,6 +208,8 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 			returnData = append(returnData, st.RenameTableStmt(stmt, kv, fingerId))
 		case *ast.AnalyzeTableStmt:
 			returnData = append(returnData, st.AnalyzeTableStmt(stmt, kv, fingerId))
+		case *ast.CreateDatabaseStmt:
+			returnData = append(returnData, st.CreateDatabaseStmt(stmt, kv, fingerId))
 		default:
 			// 不允许的其他语句，有需求可以扩展
 			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "", Level: "WARN"}

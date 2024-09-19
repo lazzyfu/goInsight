@@ -31,7 +31,7 @@ func LogicDisableAuditDMLTables(v *traverses.TraverseDisableAuditDMLTables, r *c
 	}
 	// DML语句检查表是否存在
 	for _, table := range v.Tables {
-		if err, msg := dao.DescTable(table, r.DB); err != nil {
+		if msg, err := dao.CheckIfTableExists(table, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 			r.IsSkipNextStep = true
 		}

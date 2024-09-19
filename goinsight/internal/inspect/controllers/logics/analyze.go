@@ -25,7 +25,7 @@ func LogicAnalyzeTable(v *traverses.TraverseAnalyzeTable, r *controllers.RuleHin
 	}
 	// 表必须存在
 	for _, table := range v.TableNames {
-		if err, msg := dao.DescTable(table, r.DB); err != nil {
+		if msg, err := dao.CheckIfTableExists(table, r.DB); err != nil {
 			r.Summary = append(r.Summary, msg)
 		}
 	}

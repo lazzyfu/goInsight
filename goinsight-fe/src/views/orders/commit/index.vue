@@ -16,16 +16,14 @@
                       validateTrigger: 'blur',
                     },
                   ]"
-                >
-                </a-input>
+                />
               </a-form-item>
               <a-form-item label="备注" has-feedback>
                 <a-textarea
                   v-decorator="['remark']"
                   :auto-size="{ minRows: 2, maxRows: 6 }"
                   placeholder="请输入工单需求或备注"
-                >
-                </a-textarea>
+                />
               </a-form-item>
               <a-form-item label="限制访问" help="开启后仅工单的提交人/审核人/复核人/抄送人可以查看工单内容">
                 <a-select
@@ -50,7 +48,7 @@
                   allowClear
                   show-search
                 >
-                  <a-select-option v-for="(item, index) in dbTypes" :key="index" :label="item" :value="item">
+                  <a-select-option v-for="(item, index) in dbTypes" :key="index" :value="item">
                     {{ item }}
                   </a-select-option>
                 </a-select>
@@ -66,7 +64,6 @@
                   <a-select-option
                     v-for="(item, index) in environments"
                     :key="index"
-                    :label="item.name"
                     :value="item.id"
                   >
                     {{ item.name }}
@@ -84,7 +81,6 @@
                   <a-select-option
                     v-for="(item, index) in instances"
                     :key="index"
-                    :label="item.remark"
                     :value="item.instance_id"
                   >
                     {{ item.remark }}
@@ -101,7 +97,6 @@
                   <a-select-option
                     v-for="(item, index) in schemas"
                     :key="index"
-                    :label="item.schema"
                     :value="item.schema"
                   >
                     {{ item.schema }}
@@ -115,12 +110,12 @@
                   allowClear
                   show-search
                 >
-                  <a-select-option v-for="(item, index) in exportFileFormats" :key="index" :label="item" :value="item">
+                  <a-select-option v-for="(item, index) in exportFileFormats" :key="index" :value="item">
                     {{ item }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item label="审核人" help="请至少选择2位工单审核人" has-feedback>
+              <a-form-item label="审核人" help="请至少选择1位工单审核人" has-feedback>
                 <a-select
                   v-decorator="[
                     'approver',
@@ -134,7 +129,6 @@
                   <a-select-option
                     v-for="(item, index) in users"
                     :key="index"
-                    :label="item.username"
                     :value="item.username"
                   >
                     {{ item.username }} <strong>{{ item.nick_name }}</strong>
@@ -152,7 +146,6 @@
                   <a-select-option
                     v-for="(item, index) in users"
                     :key="index"
-                    :label="item.username"
                     :value="item.username"
                   >
                     {{ item.username }} <strong>{{ item.nick_name }}</strong>
@@ -170,7 +163,6 @@
                   <a-select-option
                     v-for="(item, index) in users"
                     :key="index"
-                    :label="item.username"
                     :value="item.username"
                   >
                     {{ item.username }} <strong>{{ item.nick_name }}</strong>
@@ -188,7 +180,6 @@
                   <a-select-option
                     v-for="(item, index) in users"
                     :key="index"
-                    :label="item.username"
                     :value="item.username"
                   >
                     {{ item.username }} <strong>{{ item.nick_name }}</strong>
@@ -305,11 +296,11 @@ export default {
         keyMap: 'sublime', // 编辑器模式
       },
       validatorApprover: (rule, value, callback) => {
-        if (value.length < 2) {
-          return callback('请至少选择2位工单审核人')
+        if (value.length < 1) {
+          return callback('请至少选择1位工单审核人')
         }
-        if (value.length >= 5) {
-          return callback('最大不允许超过5位工单审核人')
+        if (value.length >= 3) {
+          return callback('最大不允许超过3位工单审核人')
         }
         callback()
       },
@@ -324,7 +315,7 @@ export default {
     },
     // 从URL后缀获取工单类型
     getSqlType() {
-      var urlSuffix = this.$route.path.split('/').at([-1]).toUpperCase()
+      var urlSuffix = this.$route.path.split('/').pop().toUpperCase()
       this.sqlType = urlSuffix
       this.cardTitle = `提交${this.sqlType}工单`
     },
@@ -400,28 +391,28 @@ export default {
     syntaxCheck() {
       var content = this.codemirror.getValue()
       // 检查提交的内容是否全
-      if (content == '') {
+      if (content === '') {
         this.$notification.warning({
           message: '警告',
           description: '输入内容不能为空',
         })
         return
       }
-      if (this.form.getFieldValue('environment') === undefined) {
+      if (!this.form.getFieldValue('environment')) {
         this.$notification.warning({
           message: '警告',
           description: '请选择环境',
         })
         return
       }
-      if (this.form.getFieldValue('instance_id') === undefined) {
+      if (!this.form.getFieldValue('instance_id')) {
         this.$notification.warning({
           message: '警告',
           description: '请选择实例',
         })
         return
       }
-      if (this.form.getFieldValue('schema') === undefined) {
+      if (!this.form.getFieldValue('schema')) {
         this.$notification.warning({
           message: '警告',
           description: '请选择库名',
@@ -447,7 +438,7 @@ export default {
       syntaxCheckApi(data)
         .then((res) => {
           if (res.code === '0000') {
-            if (data['sql_type'].toLowerCase() == 'export') {
+            if (data['sql_type'].toLowerCase() === 'export') {
               this.$notification.success({
                 message: '成功',
                 description: '语法检查通过，您可以提交工单了，(⊙o⊙)',
@@ -479,7 +470,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           var content = this.codemirror.getValue()
-          if (content != '') {
+          if (content !== '') {
             values['is_restrict_access'] = values['is_restrict_access'] === 'YES'
             values['content'] = content
             values['sql_type'] = this.sqlType
