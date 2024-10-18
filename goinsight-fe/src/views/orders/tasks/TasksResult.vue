@@ -39,59 +39,32 @@
     </a-card>
 
     <a-card v-show="executeResult.error != ''" size="small" title="错误信息" style="margin-top: 6px">
-      <codemirror ref="myCmErr" v-model="codeErr" :options="cmOptions" @ready="onCmReadyErr"></codemirror>
+      <TaskCodeMirrorComponent ref="ErrorCodeMirrorComponent" />
     </a-card>
     <a-card v-show="executeResult.execute_log != ''" size="small" title="执行日志" style="margin-top: 6px">
-      <codemirror ref="myCmLog" v-model="codeLog" :options="cmOptions" @ready="onCmReadyLog"></codemirror>
+      <TaskCodeMirrorComponent ref="LogCodeMirrorComponent" />
     </a-card>
     <a-card v-show="executeResult.rollback_sql != ''" size="small" title="回滚SQL" style="margin-top: 6px">
-      <codemirror ref="myCmRbsql" v-model="codeRbsql" :options="cmOptions" @ready="onCmReadyRbsql"></codemirror>
+      <TaskCodeMirrorComponent ref="RollbackCodeMirrorComponent" />
     </a-card>
   </a-modal>
 </template>
 
 <script>
-import 'codemirror/addon/comment/comment'
-import 'codemirror/addon/display/autorefresh'
-import 'codemirror/addon/edit/closebrackets'
-import 'codemirror/addon/edit/matchbrackets'
-import 'codemirror/addon/mode/overlay'
-import 'codemirror/addon/selection/active-line'
-import 'codemirror/mode/sql/sql.js'
+import TaskCodeMirrorComponent from './TaskCodeMirror';
 
 export default {
+  components: {
+    TaskCodeMirrorComponent,
+  },
   data() {
     return {
       visible: false,
       executeResult: {},
       sql_type: '',
-      codeLog: '',
-      codeErr: '',
-      codeRbsql: '',
-      cmOptions: {
-        mode: 'text/x-mysql',
-        indentUnit: 2,
-        tabSize: 2,
-        indentWithTabs: true,
-        smartIndent: true,
-        autoRefresh: true,
-        lineNumbers: true,
-        lineWrapping: true,
-        readOnly: true,
-        focuse: false,
-      },
     }
   },
   methods: {
-    onCmReadyRbsql(cm) {
-      cm.setSize('height', `250px`)
-    },
-    onCmReadyLog(cm) {
-      cm.setSize('height', `300px`)
-    },
-    onCmReadyErr(cm) {
-      cm.setSize('height', `100px`)
-    },
     // show modal
     showModal(data) {
       this.visible = true
@@ -100,10 +73,10 @@ export default {
 
       if (this.executeResult != null) {
         this.$nextTick(() => {
-          this.codemirrorRbsql.setValue(this.executeResult.rollback_sql)
-          this.codemirrorLog.setValue(this.executeResult.execute_log)
+          this.$refs.RollbackCodeMirrorComponent.setValue(this.executeResult.rollback_sql)
+          this.$refs.LogCodeMirrorComponent.setValue(this.executeResult.execute_log)
           if (this.executeResult.error != null) {
-            this.codemirrorErr.setValue(this.executeResult.error)
+            this.$refs.ErrorCodeMirrorComponent.setValue(this.executeResult.error)
           }
         })
       }
@@ -111,17 +84,6 @@ export default {
     // close modal
     handleCancel(e) {
       this.visible = false
-    },
-  },
-  computed: {
-    codemirrorRbsql() {
-      return this.$refs.myCmRbsql.codemirror
-    },
-    codemirrorLog() {
-      return this.$refs.myCmLog.codemirror
-    },
-    codemirrorErr() {
-      return this.$refs.myCmErr.codemirror
     },
   },
 }
