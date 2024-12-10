@@ -162,8 +162,8 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	}
 
 	if strings.Contains(e.Hostname, "rds.aliyuncs.com") {
-		ghostCMDParts = append(ghostCMDParts, "--aliyun-rds=true")
-		ghostCMDParts = append(ghostCMDParts, fmt.Sprintf("--assume-master-host=%s", e.Hostname))
+		ghostCMDParts = append(ghostCMDParts, "-aliyun-rds=true")
+		ghostCMDParts = append(ghostCMDParts, fmt.Sprintf("-assume-master-host=\"%s\"", e.Hostname))
 	}
 
 	ghostCMD := strings.Join(ghostCMDParts, " ")
