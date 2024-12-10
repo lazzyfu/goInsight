@@ -151,15 +151,23 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 
 	// 生成ghost命令
 	logAndPublish("生成gh-ost执行命令")
-	ghostCMD := strings.Join(
-		[]string{
-			global.App.Config.Ghost.Path,
-			strings.Join(global.App.Config.Ghost.Args, " "),
-			fmt.Sprintf("--user=\"%s\" --password=\"%s\"", global.App.Config.RemoteDB.UserName, global.App.Config.RemoteDB.Password),
-			fmt.Sprintf("--host=\"%s\" --port=%d", e.Hostname, e.Port),
-			fmt.Sprintf("--database=%s --table=%s", e.Schema, tableName),
-			fmt.Sprintf("--alter=\"%s\" --execute", vv),
-		}, " ")
+
+	ghostCMDParts := []string{
+		global.App.Config.Ghost.Path,
+		strings.Join(global.App.Config.Ghost.Args, " "),
+		fmt.Sprintf("--user=\"%s\" --password=\"%s\"", global.App.Config.RemoteDB.UserName, global.App.Config.RemoteDB.Password),
+		fmt.Sprintf("--host=\"%s\" --port=%d", e.Hostname, e.Port),
+		fmt.Sprintf("--database=%s --table=%s", e.Schema, tableName),
+		fmt.Sprintf("--alter=\"%s\" --execute", vv),
+	}
+
+	if strings.Contains(e.Hostname, "rds.aliyuncs.com") {
+		ghostCMDParts = append(ghostCMDParts, "--aliyun-rds=true")
+		ghostCMDParts = append(ghostCMDParts, fmt.Sprintf("--assume-master-host=%s", e.Hostname))
+	}
+
+	ghostCMD := strings.Join(ghostCMDParts, " ")
+
 	startTime := time.Now()
 	// 打印命令，已掩码password
 	re = regexp.MustCompile(`--password="([^"]*)"`)
