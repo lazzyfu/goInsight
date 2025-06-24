@@ -22,29 +22,77 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 定义版本
+// Define version
 var version string
 
-// 读取本地配置文件
-var ConfigFile = flag.String("config", "config.yaml", "config file")
+// Read local config file
+var configFile = flag.String("config", "config.yaml", "config file")
 
 //go:embed dist
 var staticFS embed.FS
 
+const mediaDir = "./media"
+
+func setupStaticFiles(r *gin.Engine) error {
+	// Embedded file system
+	st, err := fs.Sub(staticFS, "dist")
+	if err != nil {
+		return fmt.Errorf("Error accessing embedded filesystem: %w", err)
+	}
+	r.StaticFS("/static", http.FS(st))
+
+	// Provide other non-embedded file system
+	if _, err := os.Stat(mediaDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(mediaDir, os.ModePerm); err != nil {
+			return fmt.Errorf("Failed to create media directory: %w", err)
+		}
+	}
+	r.Static("/media", mediaDir)
+
+	// Default avatar file
+	r.StaticFile("/avatar2.jpg", "dist/avatar2.jpg")
+	return nil
+}
+
+func setupNoRoute(r *gin.Engine) {
+	// Fix 404 issue on page refresh
+	r.NoRoute(func(c *gin.Context) {
+		if strings.Contains(c.Request.Header.Get("Accept"), "text/html") {
+			if content, err := staticFS.ReadFile("dist/index.html"); err == nil {
+				c.Header("Content-Type", "text/html; charset=utf-8")
+				c.Data(http.StatusOK, "text/html; charset=utf-8", content)
+				return
+			}
+		}
+		c.String(http.StatusNotFound, "Not Found")
+	})
+}
+
+func setupRootRoute(r *gin.Engine) {
+	// Root route
+	r.GET("/", func(c *gin.Context) {
+		if data, err := staticFS.ReadFile("dist/index.html"); err == nil {
+			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
+		} else {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+		}
+	})
+}
+
 func RunServer() {
-	// 生产环境模式
+	// Production mode
 	if global.App.Config.App.Environment == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// 初始化认证中间件
+	// Initialize authentication middleware
 	var err error
 	if global.App.JWT, err = middleware.InitAuthMiddleware(); err != nil {
 		fmt.Println("Failed to initialize authentication middleware:", err)
 		return
 	}
 
-	// 加载多个APP的路由配置
+	// Load route configs for multiple APPs
 	routers.Include(
 		userRouter.Routers,
 		commonRouter.Routers,
@@ -53,89 +101,45 @@ func RunServer() {
 		ordersRouter.Routers,
 	)
 
-	// 初始化路由
+	// Initialize router
 	r := routers.Init()
 
-	// 嵌入的文件系统
-	st, err := fs.Sub(staticFS, "dist")
-	if err != nil {
-		fmt.Println("Error accessing embedded filesystem:", err)
+	// Static files and routes
+	if err := setupStaticFiles(r); err != nil {
+		fmt.Println(err)
 		return
 	}
-	r.StaticFS("/static", http.FS(st))
+	setupNoRoute(r)
+	setupRootRoute(r)
 
-	// 提供其他非嵌入的文件系统
-	if _, err := os.Stat("./media"); os.IsNotExist(err) {
-		os.MkdirAll("./media", os.ModePerm)
-	}
-	r.Static("/media", "./media")
-
-	// 默认头像文件
-	r.StaticFile("/avatar2.jpg", "dist/avatar2.jpg")
-
-	// 解决页面刷新404的问题
-	r.NoRoute(func(c *gin.Context) {
-		if strings.Contains(c.Request.Header.Get("Accept"), "text/html") {
-			if content, err := staticFS.ReadFile("dist/index.html"); err == nil {
-				c.Header("Accept", "text/html")
-				c.Data(http.StatusOK, "text/html; charset=utf-8", content)
-				return
-			}
-		}
-		c.Writer.WriteHeader(http.StatusNotFound)
-		_, _ = c.Writer.WriteString("Not Found")
-	})
-
-	// 根路由
-	r.GET("/", func(c *gin.Context) {
-		if data, err := staticFS.ReadFile("dist/index.html"); err == nil {
-			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
-		} else {
-			_ = c.AbortWithError(http.StatusInternalServerError, err)
-		}
-	})
-
-	// 错误处理
+	// Error handling
 	r.Use(gin.Recovery())
 
-	// 启动
+	// Start server
 	if err := r.Run(global.App.Config.App.ListenAddress); err != nil {
 		fmt.Println("Failed to start server: ", err.Error())
 	}
 }
 
 func main() {
-	// 打印版本
 	if version != "" {
-		fmt.Println("goInsight Version：", version)
+		fmt.Println("goInsight Version:", version)
 	}
-
-	// 解析输入
 	flag.Parse()
-
-	// 初始化配置
-	bootstrap.InitializeConfig(*ConfigFile)
-
-	// 初始化日志
+	if _, err := os.Stat(*configFile); os.IsNotExist(err) {
+		fmt.Printf("Config file %s does not exist, you can also specify the config file path with -config parameter\n", *configFile)
+		os.Exit(1)
+	}
+	bootstrap.InitializeConfig(*configFile)
 	bootstrap.InitializeLog()
-
-	// 初始化数据库
 	global.App.DB = bootstrap.InitializeDB()
-
-	// 初始化Redis
 	global.App.Redis = bootstrap.InitializeRedis()
-
-	// 程序关闭前，释放数据库连接
 	defer func() {
 		if global.App.DB != nil {
 			db, _ := global.App.DB.DB()
 			db.Close()
 		}
 	}()
-
-	// 初始化cron
 	bootstrap.InitializeCron()
-
-	// 启动服务器
 	RunServer()
 }
