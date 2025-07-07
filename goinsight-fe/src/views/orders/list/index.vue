@@ -12,19 +12,35 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-select allowClear style="width: 200px" v-decorator="['environment']" placeholder="请选择环境" show-search>
+        <a-select
+          allowClear
+          style="width: 250px"
+          v-decorator="['environment', { initialValue: '' }]"
+          placeholder="请选择环境"
+          show-search
+        >
+          <a-select-option value="">所有环境</a-select-option>
           <a-select-option v-for="(item, index) in environments" :key="index" :label="item.name" :value="item.id">
             {{ item.name }}
           </a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item>
-        <a-select allowClear style="width: 200px" v-decorator="['progress']" placeholder="请选择进度" show-search>
-          <a-select-option v-for="s in progs" :key="s" :value="s">{{ s }}</a-select-option>
+        <a-select
+          allowClear
+          style="width: 250px"
+          v-decorator="['progress', { initialValue: '' }]"
+          placeholder="请选择进度"
+          show-search
+        >
+          <a-select-option value="">所有进度</a-select-option>
+          <a-select-option v-for="(item, index) in progs" :key="index" :label="item" :value="item">{{
+            item
+          }}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item>
-        <a-input-search allowClear style="width: 300px" placeholder="输入要查询工单标题" v-decorator="['search']" />
+        <a-input-search allowClear style="width: 350px" placeholder="输入要查询工单标题" v-decorator="['search']" />
       </a-form-item>
       <a-form-item>
         <span class="table-page-search-submitButtons">
@@ -41,77 +57,88 @@
       :loading="loading"
       @change="handleTableChange"
     >
+      <!-- 进度插槽 -->
       <span slot="progress" slot-scope="text">
-        <!-- ('待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核') -->
-        <a-tag v-if="text === '待审核'" color="blue">
-          {{ text }}
-        </a-tag>
-        <a-tag v-else-if="['已驳回', '已关闭'].indexOf(text) >= 0" color="red">
-          {{ text }}
-        </a-tag>
-        <a-tag v-else-if="text === '已批准'" color="orange">
-          {{ text }}
-        </a-tag>
-        <a-tag v-else-if="text === '已复核'" color="purple">
-          {{ text }}
-        </a-tag>
-        <a-tag v-else-if="text === '执行中'" color="pink">
-          {{ text }}
-        </a-tag>
-        <a-tag v-else color="green">
+        <a-tag :color="getProgressTagColor(text)" class="progress-tag" circle>
+          <a-icon :type="getProgressIcon(text)" />
           {{ text }}
         </a-tag>
       </span>
-      <span slot="applicant" slot-scope="text, record" style="display: flex; align-items: center; margin-right: 4px">
+
+      <!-- 工单标题插槽 -->
+      <span slot="order_title" slot-scope="text, record">
         <a-tooltip>
           <template slot="title">
-            <span v-if="record.is_restrict_access"
-              >仅当前工单的提交人/审核人/复核人/抄送人可以查看工单内容（要求工单查看权限）</span
-            >
+            <span v-if="record.is_restrict_access">
+              仅当前工单的提交人/审核人/复核人/抄送人可以查看工单内容（要求工单查看权限）
+            </span>
             <span v-else>所有用户均可以查看工单内容（要求工单查看权限）</span>
           </template>
           <a-icon
-            type="lock"
-            theme="twoTone"
-            two-tone-color="#eb2f96"
-            style="margin-right: 2px"
-            v-if="record.is_restrict_access"
+            :type="record.is_restrict_access ? 'lock' : 'unlock'"
+            :theme="record.is_restrict_access ? 'twoTone' : 'outlined'"
+            :two-tone-color="record.is_restrict_access ? '#eb2f96' : '#52c41a'"
+            class="access-icon"
           />
-          <a-icon type="unlock" style="margin-right: 2px" v-else />
         </a-tooltip>
-        {{ text }}
-      </span>
-      <span slot="order_title" slot-scope="text, record">
-        <router-link :to="{ name: 'view.orders.detail', params: { order_id: record.order_id } }">
+        <router-link :to="{ name: 'view.orders.detail', params: { order_id: record.order_id } }" class="title-link">
           <a-tooltip>
-            <template slot="title">
-              {{ text }}
-            </template>
-            {{ text }}
+            <template slot="title">{{ text }}</template>
+            <span class="title-text">{{ text }}</span>
           </a-tooltip>
         </router-link>
-        <br />
-        At: {{ record.created_at }}
+        <div class="title-meta">
+          <a-icon type="clock-circle" />
+          <span>{{ record.created_at }}</span>
+        </div>
       </span>
-      <span slot="instance" slot-scope="text, record">
-        {{ text }}
-        <br />
-        {{ record.schema }}
+      <!-- 环境插槽 -->
+      <span slot="environment" slot-scope="text">
+        <a-tag>
+          <a-icon type="cloud" />
+          {{ text }}
+        </a-tag>
+      </span>
+      <!-- SQL类型插槽 -->
+      <span slot="sql_type" slot-scope="text">
+        <span v-if="text === 'EXPORT'">数据导出</span>
+        <span v-else>{{ text }}</span>
+      </span>
+      <!-- 实例/库插槽 -->
+      <span slot="instance" slot-scope="text, record" class="instance-cell">
+        <div class="instance-info">
+          <a-icon type="link" />
+          <span class="instance-name">{{ text }}</span>
+        </div>
+        <div class="schema-info">
+          <a-icon type="database" />
+          <span class="schema-name">{{ record.schema }}</span>
+        </div>
       </span>
       <span slot="approver" slot-scope="text">
         <div v-for="tag of text" :key="tag.user + tag.status">
-          <span :style="{ color: tag.status === 'pending' ? '#f56c6c' : '#67c23a' }">
-            <span>{{ tag.user }}</span>
+          <a-icon
+            :type="tag.status === 'pending' ? 'clock-circle' : 'check-circle'"
+            :style="{ color: tag.status === 'pending' ? '#fa1a16' : '#52c41a' }"
+          />
+          <span class="user-text" :style="{ color: tag.status === 'pending' ? '#fa1a16' : '#52c41a' }">
+            {{ tag.user }}
           </span>
         </div>
       </span>
+
       <span slot="reviewer" slot-scope="text">
         <div v-for="tag of text" :key="tag.user + tag.status">
-          <span :style="{ color: tag.status === 'pending' ? '#f56c6c' : '#67c23a' }">
-            <span>{{ tag.user }}</span>
+          <a-icon
+            :type="tag.status === 'pending' ? 'clock-circle' : 'check-circle'"
+            :style="{ color: tag.status === 'pending' ? '#fa1a16' : '#52c41a' }"
+          />
+          <span class="user-text" :style="{ color: tag.status === 'pending' ? '#fa1a16' : '#52c41a' }">
+            {{ tag.user }}
           </span>
         </div>
       </span>
+      <!-- 自定义申请人标题 -->
       <span slot="customApplicant">
         <a-tooltip placement="topLeft" title="工单申请人" arrow-point-at-center> 申请人</a-tooltip>
       </span>
@@ -120,9 +147,9 @@
 </template>
 
 <script>
-import { getEnvironmentsApi, getListApi } from '@/api/orders';
+import { getEnvironmentsApi, getListApi } from '@/api/orders'
 
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex'
 
 const tableColumns = [
   {
@@ -165,7 +192,7 @@ const tableColumns = [
     },
   },
   {
-    title: '环境',
+    title: '工单环境',
     dataIndex: 'environment',
     key: 'environment',
     ellipsis: true,
@@ -174,7 +201,7 @@ const tableColumns = [
     },
   },
   {
-    title: '类型',
+    title: '工单类型',
     dataIndex: 'sql_type',
     key: 'sql_type',
     scopedSlots: {
@@ -240,7 +267,36 @@ export default {
       this.pagination.total = 0
       this.getList()
     },
-    // 获取
+
+    // 获取进度标签颜色
+    getProgressTagColor(progress) {
+      const colorMap = {
+        待审核: 'blue',
+        已驳回: 'red',
+        已关闭: 'red',
+        已批准: 'orange',
+        已复核: 'purple',
+        执行中: 'pink',
+        已完成: 'green',
+      }
+      return colorMap[progress] || 'default'
+    },
+
+    // 获取进度图标
+    getProgressIcon(progress) {
+      const iconMap = {
+        待审核: 'clock-circle',
+        已驳回: 'close-circle',
+        已关闭: 'stop',
+        已批准: 'check-circle',
+        已复核: 'audit',
+        执行中: 'loading',
+        已完成: 'check-circle',
+      }
+      return iconMap[progress] || 'question-circle'
+    },
+
+    // 获取数据
     getList() {
       this.loading = true
       const params = {
