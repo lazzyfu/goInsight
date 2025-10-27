@@ -1,21 +1,23 @@
 <template>
-  <div ref="editor" style="height: 100%;"></div>
+  <div ref="editor" style="height: 100%"></div>
 </template>
 
 <script setup>
-import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
-import { historyKeymap, indentWithTab } from '@codemirror/commands';
-import { MySQL, sql, StandardSQL } from '@codemirror/lang-sql';
-import { foldGutter } from '@codemirror/language';
-import { Compartment, EditorState } from '@codemirror/state';
-import { EditorView, keymap } from '@codemirror/view';
-import { basicSetup } from 'codemirror';
-import { format } from 'sql-formatter';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
+import { historyKeymap, indentWithTab } from '@codemirror/commands'
+import { MySQL, sql, StandardSQL } from '@codemirror/lang-sql'
+import { foldGutter } from '@codemirror/language'
+import { Compartment, EditorState } from '@codemirror/state'
+import { EditorView, keymap } from '@codemirror/view'
+import { basicSetup } from 'codemirror'
+import { format } from 'sql-formatter'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-const editor = ref(null);   // template ref
-let editorView = ref(null); // 编辑器实例
-const languageCompartment = new Compartment();
+const editor = ref(null) // template ref
+let editorView = ref(null) // 编辑器实例
+
+const languageCompartment = new Compartment()
+const editableCompartment = new Compartment()
 
 // 初始化扩展
 const fixedExtensions = [
@@ -25,63 +27,76 @@ const fixedExtensions = [
     ...completionKeymap,
     // ...historyKeymap 提供了撤销/重做功能
     ...historyKeymap,
-    indentWithTab
+    indentWithTab,
   ]),
   // 启用自动补全
   autocompletion(),
   foldGutter(),
-  // 可写
-  EditorView.editable.of(true),
-];
+]
 
 // 初始化编辑器
 const initEditor = () => {
   if (editorView.value) {
-    editorView.value.destroy();
+    editorView.value.destroy()
   }
   const startState = EditorState.create({
     doc: `SELECT * FROM `,
     extensions: [
       fixedExtensions,
-      languageCompartment.of(sql({ dialect: StandardSQL }))
+      languageCompartment.of(sql({ dialect: StandardSQL })),
+      editableCompartment.of(EditorView.editable.of(true)),
     ],
-  });
+  })
   editorView.value = new EditorView({
     state: startState,
     parent: editor.value,
   })
-  editorView.value.dom.style.border = "1px solid #f0f0f0"
+  editorView.value.dom.style.border = '1px solid #f0f0f0'
   editorView.value.dom.style.height = '470px'
-};
+}
+
+// 设置为只读
+const setReadonly = (readonly) => {
+  if (!editorView.value) return
+  editorView.value.dispatch({
+    effects: editableCompartment.reconfigure(EditorView.editable.of(!readonly)),
+  })
+}
+
+// 设置编辑器高度
+const setHeight = (height) => {
+  if (!editorView.value) return
+  // 支持数值或字符串两种传入形式
+  const value = typeof height === 'number' ? `${height}px` : height
+  editorView.value.dom.style.height = value
+}
 
 // 设置自动补全
 const setCompletion = (completionData) => {
-  if (!editorView.value) return;
+  if (!editorView.value) return
 
   editorView.value.dispatch({
-    effects: languageCompartment.reconfigure(
-      sql({ dialect: MySQL, schema: completionData })
-    )
+    effects: languageCompartment.reconfigure(sql({ dialect: MySQL, schema: completionData })),
   })
-};
+}
 
 // 格式化内容
 const formatContent = () => {
-  if (!editorView.value) return;
-  const formatted = format(editorView.value.state.doc.toString());
+  if (!editorView.value) return
+  const formatted = format(editorView.value.state.doc.toString())
   editorView.value.dispatch({
     changes: { from: 0, to: editorView.value.state.doc.length, insert: formatted },
-  });
-};
+  })
+}
 
 // 获取全部内容
 const getContent = () => {
   return editorView.value.state.doc.toString()
-};
+}
 
 // 获取选中内容
 const getSelectedText = () => {
-  let text = ""
+  let text = ''
   for (let range of editorView.value.state.selection.ranges) {
     if (!range.empty) {
       text += editorView.value.state.doc.sliceString(range.from, range.to)
@@ -92,21 +107,21 @@ const getSelectedText = () => {
 
 // 设置内容
 const setContent = (content) => {
-  if (!editorView.value) return;
+  if (!editorView.value) return
   editorView.value.dispatch({
     changes: { from: 0, to: editorView.value.state.doc.length, insert: content },
-  });
-};
+  })
+}
 
 onMounted(() => {
-  initEditor();
-});
+  initEditor()
+})
 
 onBeforeUnmount(() => {
   if (editorView.value) {
-    editorView.value.destroy();
+    editorView.value.destroy()
   }
-});
+})
 
 defineExpose({
   formatContent,
@@ -115,12 +130,18 @@ defineExpose({
   setCompletion,
   setContent,
   editorView,
-});
+  setReadonly,
+  setHeight,
+})
 </script>
 
 <style scoped>
 :deep(.cm-gutters) {
   color: #9f9d9d;
   background-color: #f7f7f7;
+}
+
+:deep(.cm-editor.cm-focused) {
+  outline: none !important; /* 去掉浏览器默认的焦点高亮，CodeMirror 6 的容器 <div class="cm-editor"> 在获得焦点时，默认会被加上 */
 }
 </style>
