@@ -1,21 +1,18 @@
-/*
-@Time    :   2023/08/14 15:53:53
-@Author  :   xff
-*/
-
 package bootstrap
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	commonModels "goInsight/internal/common/models"
-	dasModels "goInsight/internal/das/models"
-	inspectModels "goInsight/internal/inspect/models"
-	ordersModels "goInsight/internal/orders/models"
-	usersModels "goInsight/internal/users/models"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
+	dasModels "github.com/lazzyfu/goinsight/internal/das/models"
+	inspectModels "github.com/lazzyfu/goinsight/internal/inspect/models"
+	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
+	usersModels "github.com/lazzyfu/goinsight/internal/users/models"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
@@ -109,8 +106,10 @@ func initializeTables(db *gorm.DB) {
 		// orders
 		&ordersModels.InsightOrderRecords{},
 		&ordersModels.InsightOrderTasks{},
-		&ordersModels.InsightOrderOpLogs{},
 		&ordersModels.InsightOrderMessages{},
+		&ordersModels.ApprovalFlow{},
+		&ordersModels.ApprovalRecords{},
+		&ordersModels.ApprovalMaps{},
 	)
 	if err != nil {
 		global.App.Log.Fatal("migrate table failed", err.Error())

@@ -3,13 +3,16 @@ package views
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/forms"
-	ordersModels "goInsight/internal/orders/models"
-	"goInsight/internal/orders/services"
-	"goInsight/pkg/response"
 	"net/http"
 	"os"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
+	"github.com/lazzyfu/goinsight/internal/orders/services"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"

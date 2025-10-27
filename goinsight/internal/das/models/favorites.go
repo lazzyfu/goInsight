@@ -1,7 +1,7 @@
 package models
 
 import (
-	"goInsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/common/models"
 )
 
 type InsightDASFavorites struct {

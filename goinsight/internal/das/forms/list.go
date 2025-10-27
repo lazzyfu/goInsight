@@ -1,8 +1,3 @@
-/*
-@Time    :   2023/03/08 14:54:37
-@Author  :   xff
-*/
-
 package forms
 
 type GetTablesForm struct {

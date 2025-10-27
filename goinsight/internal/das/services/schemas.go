@@ -1,13 +1,7 @@
-/*
-@Time    :   2023/03/17 14:50:56
-@Author  :   xff
-@Desc    :   获取用户有权限的库
-*/
-
 package services
 
 import (
-	"goInsight/global"
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

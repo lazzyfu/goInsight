@@ -3,13 +3,16 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/api/base"
-	"goInsight/internal/orders/api/file"
-	"goInsight/pkg/utils"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
+	"github.com/lazzyfu/goinsight/internal/orders/api/file"
 
 	"golang.org/x/sync/errgroup"
 )

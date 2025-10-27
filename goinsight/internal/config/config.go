@@ -1,8 +1,3 @@
-/*
-@Time    :   2023/08/14 15:48:49
-@Author  :   xff
-*/
-
 package config
 
 type App struct {

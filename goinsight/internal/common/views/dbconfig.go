@@ -1,15 +1,12 @@
-/*
-@Author  :   xff
-@Desc    :
-*/
-
 package views
 
 import (
-	"goInsight/internal/common/forms"
-	"goInsight/internal/common/services"
-	"goInsight/pkg/response"
 	"strconv"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/common/forms"
+	"github.com/lazzyfu/goinsight/internal/common/services"
 
 	"github.com/gin-gonic/gin"
 )

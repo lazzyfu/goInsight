@@ -1,10 +1,12 @@
 package views
 
 import (
-	"goInsight/internal/inspect/forms"
-	"goInsight/internal/inspect/services"
-	"goInsight/pkg/response"
 	"strconv"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/forms"
+	"github.com/lazzyfu/goinsight/internal/inspect/services"
 
 	"github.com/gin-gonic/gin"
 )

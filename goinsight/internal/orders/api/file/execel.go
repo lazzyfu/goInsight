@@ -2,8 +2,9 @@ package file
 
 import (
 	"database/sql"
-	"goInsight/global"
 	"strconv"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/xuri/excelize/v2"
 )

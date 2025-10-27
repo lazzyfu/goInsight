@@ -1,11 +1,6 @@
-/*
-@Time    :   2023/03/08 14:54:37
-@Author  :   xff
-*/
-
 package forms
 
-import "goInsight/pkg/pagination"
+import "github.com/lazzyfu/goinsight/pkg/pagination"
 
 type GetHistoryForm struct {
 	PaginationQ pagination.Pagination

@@ -1,7 +1,7 @@
 package forms
 
 import (
-	"goInsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/pagination"
 )
 
 type GetListForm struct {
@@ -10,8 +10,4 @@ type GetListForm struct {
 	Search       string `form:"search"`
 	Progress     string `form:"progress" json:"progress"`
 	Environment  int    `form:"environment" json:"environment" `
-}
-
-type GetOpLogsForm struct {
-	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 }

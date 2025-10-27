@@ -1,14 +1,9 @@
-/*
-@Time    :   2023/08/02 17:47:51
-@Author  :   xff
-@Desc    :
-*/
-
 package services
 
 import (
-	"goInsight/global"
-	"goInsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/forms"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

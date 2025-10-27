@@ -1,21 +1,19 @@
-/*
-@Author  :   xff
-@Desc    :   执行DDL
-*/
-
 package mysql
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/api/base"
-	"goInsight/pkg/parser"
-	"goInsight/pkg/utils"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/parser"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 )
 
 // 执行Online DDL语句

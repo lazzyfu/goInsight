@@ -1,20 +1,16 @@
-/*
-@Time    :   2022/07/06 10:12:48
-@Author  :   xff
-@Desc    :   None
-*/
-
 package process
 
 import (
 	"bytes"
 	"fmt"
-	"goInsight/internal/inspect/config"
-	"goInsight/pkg/kv"
-	"goInsight/pkg/utils"
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/lazzyfu/goinsight/pkg/kv"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/config"
 
 	"github.com/pingcap/tidb/pkg/parser/mysql"
 )

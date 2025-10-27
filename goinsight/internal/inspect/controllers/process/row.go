@@ -34,8 +34,9 @@ package process
 
 import (
 	"fmt"
-	"goInsight/pkg/kv"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/pkg/kv"
 
 	"github.com/jinzhu/copier"
 	"github.com/pingcap/tidb/pkg/parser/mysql"

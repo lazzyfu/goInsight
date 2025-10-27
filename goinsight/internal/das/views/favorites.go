@@ -1,15 +1,12 @@
-/*
-@Time    :   2023/06/09 14:26:16
-@Author  :   xff
-*/
-
 package views
 
 import (
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/services"
-	"goInsight/pkg/response"
 	"strconv"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/services"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"

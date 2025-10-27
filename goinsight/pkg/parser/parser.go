@@ -1,14 +1,10 @@
-/*
-@Time    :   2023/10/26 16:56:37
-@Author  :   xff
-*/
-
 package parser
 
 import (
 	"errors"
 	"fmt"
-	"goInsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/pingcap/tidb/pkg/parser"
 	"github.com/pingcap/tidb/pkg/parser/ast"

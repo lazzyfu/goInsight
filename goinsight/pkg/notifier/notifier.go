@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/users/models"
-	"goInsight/pkg/utils"
 	"net/http"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/users/models"
 
 	"gopkg.in/gomail.v2"
 )

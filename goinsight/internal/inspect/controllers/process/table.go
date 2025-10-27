@@ -1,16 +1,13 @@
-/*
-@Time    :   2022/06/24 13:12:20
-@Author  :   xff
-*/
-
 package process
 
 import (
 	"fmt"
-	"goInsight/internal/inspect/config"
-	"goInsight/pkg/utils"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/config"
 )
 
 type TableOptions struct {

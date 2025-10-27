@@ -3,9 +3,10 @@ package execute
 import (
 	"errors"
 	"fmt"
-	"goInsight/internal/orders/api/base"
-	"goInsight/internal/orders/api/mysql"
-	"goInsight/internal/orders/api/tidb"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
+	"github.com/lazzyfu/goinsight/internal/orders/api/mysql"
+	"github.com/lazzyfu/goinsight/internal/orders/api/tidb"
 )
 
 type Executor interface {

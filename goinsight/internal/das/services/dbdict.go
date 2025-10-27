@@ -3,11 +3,13 @@ package services
 import (
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/parser"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/parser"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

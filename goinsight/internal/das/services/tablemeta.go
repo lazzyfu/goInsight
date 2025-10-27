@@ -1,19 +1,15 @@
-/*
-@Time    :   2023/05/10 17:03:25
-@Author  :   xff
-@Desc    : 	 获取表的元信息
-*/
-
 package services
 
 import (
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/parser"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/parser"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

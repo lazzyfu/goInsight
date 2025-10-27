@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/06/23 16:37:41
-@Author  :   xff
-@Desc    :   操作目标审核数据库
-*/
-
 package dao
 
 import (

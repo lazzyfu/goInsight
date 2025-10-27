@@ -1,32 +1,27 @@
-package main
+package app
 
 import (
 	"embed"
 	"flag"
 	"fmt"
-	"goInsight/bootstrap"
-	"goInsight/global"
-	"goInsight/middleware"
-	"goInsight/routers"
 	"io/fs"
 	"net/http"
 	"os"
 	"strings"
 
-	commonRouter "goInsight/internal/common/routers"
-	dasRouter "goInsight/internal/das/routers"
-	inspectRouter "goInsight/internal/inspect/routers"
-	ordersRouter "goInsight/internal/orders/routers"
-	userRouter "goInsight/internal/users/routers"
+	"github.com/lazzyfu/goinsight/api"
+	"github.com/lazzyfu/goinsight/internal/bootstrap"
+	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/middleware"
+
+	commonRouter "github.com/lazzyfu/goinsight/internal/common/routers"
+	dasRouter "github.com/lazzyfu/goinsight/internal/das/routers"
+	inspectRouter "github.com/lazzyfu/goinsight/internal/inspect/routers"
+	ordersRouter "github.com/lazzyfu/goinsight/internal/orders/routers"
+	userRouter "github.com/lazzyfu/goinsight/internal/users/routers"
 
 	"github.com/gin-gonic/gin"
 )
-
-// Define version
-var version string
-
-// Read local config file
-var configFile = flag.String("config", "config.yaml", "config file")
 
 //go:embed dist
 var staticFS embed.FS
@@ -93,7 +88,7 @@ func RunServer() {
 	}
 
 	// Load route configs for multiple APPs
-	routers.Include(
+	api.Include(
 		userRouter.Routers,
 		commonRouter.Routers,
 		inspectRouter.Routers,
@@ -102,7 +97,7 @@ func RunServer() {
 	)
 
 	// Initialize router
-	r := routers.Init()
+	r := api.Init()
 
 	// Static files and routes
 	if err := setupStaticFiles(r); err != nil {
@@ -121,15 +116,23 @@ func RunServer() {
 	}
 }
 
-func main() {
+func Run() {
+	// Define version
+	var version string
+
+	// Read local config file
+	var configFile = flag.String("config", "config.yaml", "config file")
+
 	if version != "" {
 		fmt.Println("goInsight Version:", version)
 	}
+
 	flag.Parse()
 	if _, err := os.Stat(*configFile); os.IsNotExist(err) {
 		fmt.Printf("Config file %s does not exist, you can also specify the config file path with -config parameter\n", *configFile)
 		os.Exit(1)
 	}
+
 	bootstrap.InitializeConfig(*configFile)
 	bootstrap.InitializeLog()
 	global.App.DB = bootstrap.InitializeDB()

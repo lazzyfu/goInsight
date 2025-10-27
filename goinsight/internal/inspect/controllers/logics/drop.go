@@ -1,17 +1,13 @@
-/*
-@Time    :   2022/07/06 10:12:27
-@Author  :   xff
-@Desc    :   None
-*/
-
 package logics
 
 import (
 	"fmt"
-	"goInsight/internal/inspect/controllers"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/internal/inspect/controllers/traverses"
-	"goInsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 )
 
 // LogicDropTable

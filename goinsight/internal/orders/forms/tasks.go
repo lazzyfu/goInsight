@@ -1,6 +1,6 @@
 package forms
 
-import "goInsight/pkg/pagination"
+import "github.com/lazzyfu/goinsight/pkg/pagination"
 
 type GenerateTasksForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`

@@ -1,8 +1,4 @@
 /*
-@Time    :   2022/09/13 16:20:28
-@Author  :   xff
-@Desc    :   None
-
 # 测试
  ~/Desktop [main*] go test -v
 === RUN   TestRuleDML
@@ -20,7 +16,7 @@ package rules
 import (
 	"crypto/rand"
 	"fmt"
-	"goInsight/internal/inspect/config"
+	"github.com/lazzyfu/goinsight/internal/inspect/config"
 	"log"
 	"sqlSyntaxAudit/forms"
 	"sqlSyntaxAudit/global"

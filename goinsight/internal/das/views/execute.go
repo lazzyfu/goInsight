@@ -1,17 +1,13 @@
-/*
-@Time    :   2023/04/03 18:13:42
-@Author  :   xff
-@Desc    :   类似于view
-*/
-
 package views
 
 import (
-	"goInsight/global"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/models"
-	"goInsight/internal/das/services"
-	"goInsight/pkg/response"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/models"
+	"github.com/lazzyfu/goinsight/internal/das/services"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"

@@ -1,17 +1,13 @@
-/*
-@Time    :   2023/08/03 11:27:25
-@Author  :   xff
-@Desc    :
-*/
-
 package services
 
 import (
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/forms"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/forms"
 
 	"github.com/gin-gonic/gin"
 )

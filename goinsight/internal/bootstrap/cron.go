@@ -1,10 +1,12 @@
 package bootstrap
 
 import (
-	"goInsight/global"
-	commonTasks "goInsight/internal/common/tasks"
-	dasTasks "goInsight/internal/das/tasks"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	commonTasks "github.com/lazzyfu/goinsight/internal/common/tasks"
+	dasTasks "github.com/lazzyfu/goinsight/internal/das/tasks"
 
 	"github.com/robfig/cron/v3"
 )

@@ -1,16 +1,10 @@
-/*
-@Time    :   2023/04/19 15:09:38
-@Author  :   xff
-@Desc    :
-*/
-
 package logics
 
 import (
-	"goInsight/internal/inspect/controllers"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/internal/inspect/controllers/process"
-	"goInsight/internal/inspect/controllers/traverses"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/process"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 )
 
 // LogicRenameTable

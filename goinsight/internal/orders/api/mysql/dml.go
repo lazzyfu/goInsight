@@ -1,16 +1,13 @@
-/*
-@Author  :   xff
-@Desc    :   执行DML
-*/
-
 package mysql
 
 import (
 	"fmt"
-	"goInsight/internal/orders/api/base"
-	"goInsight/pkg/utils"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 )
 
 // MySQL DML

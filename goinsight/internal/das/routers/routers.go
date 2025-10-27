@@ -1,9 +1,11 @@
 package routers
 
 import (
-	"goInsight/global"
-	"goInsight/internal/das/views"
-	"goInsight/middleware"
+	"github.com/lazzyfu/goinsight/middleware"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/views"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,8 +33,9 @@ func Routers(r *gin.Engine) {
 	{
 		v1.GET("environments", views.GetEnvironmentsView)
 		v1.GET("schemas", views.GetSchemasView)
-		v1.GET("tables", views.GetTablesView)
-		v1.POST("execute/query/mysql", views.ExecuteMySQLQueryView)
+		v1.GET("schema/tables", views.GetTablesView)
+		v1.GET("schema/grants", views.GetUserGrantsView)
+		v1.POST("query/mysql", views.ExecuteMySQLQueryView)
 		v1.POST("execute/query/clickhouse", views.ExecuteClickHouseQueryView)
 		v1.GET("table-info", views.GetTableInfoView)
 		v1.GET("dbdict", views.GetDbDictView)
@@ -41,7 +44,6 @@ func Routers(r *gin.Engine) {
 		v1.POST("favorites", views.CreateFavoritesView)
 		v1.PUT("favorites/:id", views.UpdateFavoritesView)
 		v1.DELETE("favorites/:id", views.DeleteFavoritesView)
-		v1.GET("user/grants", views.GetUserGrantsView)
 
 		AdminRoutes(v1)
 	}

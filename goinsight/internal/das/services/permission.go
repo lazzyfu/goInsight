@@ -1,18 +1,15 @@
-/*
-@Time    :   2023/03/23 16:45:28
-@Author  :   xff
-@Desc    :   检查用户的库表权限
-*/
-
 package services
 
 import (
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/parser"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/das/parser"
 
 	"github.com/google/uuid"
 )

@@ -1,14 +1,8 @@
-/*
-@Time    :   2023/04/19 15:10:11
-@Author  :   xff
-@Desc    :
-*/
-
 package rules
 
 import (
-	"goInsight/internal/inspect/controllers/logics"
-	"goInsight/internal/inspect/controllers/traverses"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/logics"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 )

@@ -1,21 +1,18 @@
-/*
-@Time    :   2023/08/03 16:05:17
-@Author  :   xff
-@Desc    :
-*/
-
 package services
 
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/internal/common/models"
-	"goInsight/internal/orders/forms"
 
-	"goInsight/global"
-	ordersModels "goInsight/internal/orders/models"
-	"goInsight/pkg/pagination"
-	"goInsight/pkg/utils"
+	"github.com/lazzyfu/goinsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/datatypes"
@@ -29,7 +26,7 @@ type GetListServices struct {
 
 func (s *GetListServices) Run() (responseData interface{}, total int64, err error) {
 	type record struct {
-		OrderTitle       string           `json:"order_title"`
+		Title            string           `json:"title"`
 		Progress         string           `json:"progress"`
 		IsRestrictAccess bool             `json:"is_restrict_access"`
 		Applicant        string           `json:"applicant"`
@@ -47,7 +44,7 @@ func (s *GetListServices) Run() (responseData interface{}, total int64, err erro
 	tx := global.App.DB.Table("insight_order_records a").
 		Select(`
 			a.progress, 
-			a.title as order_title, 
+			a.title as title, 
 			a.applicant, 
 			if(length(a.organization)=0, "N/A", a.organization) as organization,
 			a.is_restrict_access,
@@ -128,20 +125,4 @@ func (s *GetDetailServices) Run() (responseData interface{}, err error) {
 		}
 	}
 	return result, nil
-}
-
-type GetOpLogsServices struct {
-	*forms.GetOpLogsForm
-	C *gin.Context
-}
-
-func (s *GetOpLogsServices) Run() (responseData interface{}, err error) {
-	var records []ordersModels.InsightOrderOpLogs
-	tx := global.App.DB.Table("insight_order_oplogs").
-		Where("order_id=?", s.OrderID).
-		Scan(&records)
-	if tx.RowsAffected == 0 {
-		return records, fmt.Errorf("记录`%s`不存在", s.OrderID)
-	}
-	return records, nil
 }

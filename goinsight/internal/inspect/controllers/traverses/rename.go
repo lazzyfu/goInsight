@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/08/25 16:41:19
-@Author  :   xff
-@Desc    :   None
-*/
-
 package traverses
 
 import (

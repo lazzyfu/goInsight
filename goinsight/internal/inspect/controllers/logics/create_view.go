@@ -1,18 +1,12 @@
-/*
-@Time    :   2022/07/06 10:12:14
-@Author  :   xff
-@Desc    :   None
-*/
-
 package logics
 
 import (
 	"fmt"
 	"strings"
 
-	"goInsight/internal/inspect/controllers"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/internal/inspect/controllers/traverses"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 )
 
 // LogicCreateViewIsExist

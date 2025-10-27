@@ -1,17 +1,15 @@
-/*
-@Time    :   2023/10/24 19:14:17
-@Author  :   xff
-*/
-
 package services
 
 import (
 	"fmt"
-	"goInsight/global"
-	commonModels "goInsight/internal/common/models"
-	"goInsight/internal/inspect/checker"
-	"goInsight/internal/orders/forms"
-	"goInsight/pkg/parser"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/parser"
+
+	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/inspect/checker"
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,20 +1,16 @@
-/*
-@Time    :   2023/04/11 16:04:55
-@Author  :   xff
-@Desc    :
-*/
-
 package services
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/models"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/models"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

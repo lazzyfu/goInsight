@@ -1,9 +1,10 @@
 package routers
 
 import (
-	"goInsight/global"
-	"goInsight/internal/common/views"
-	"goInsight/middleware"
+	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/middleware"
+
+	"github.com/lazzyfu/goinsight/internal/common/views"
 
 	"github.com/gin-gonic/gin"
 )

@@ -3,7 +3,8 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	"goInsight/global"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/redis/go-redis/v9"
 )

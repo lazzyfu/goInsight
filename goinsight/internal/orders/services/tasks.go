@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/api/base"
-	"goInsight/internal/orders/api/execute"
-	"goInsight/internal/orders/forms"
-	ordersModels "goInsight/internal/orders/models"
-	"goInsight/pkg/notifier"
-	"goInsight/pkg/pagination"
-	"goInsight/pkg/parser"
-	"goInsight/pkg/utils"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/notifier"
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/parser"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
+	"github.com/lazzyfu/goinsight/internal/orders/api/execute"
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

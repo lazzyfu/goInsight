@@ -1,16 +1,13 @@
-/*
-@Time    :   2023/08/30 15:46:42
-@Author  :   xff
-@Desc    :   个人中心
-*/
 package views
 
 import (
-	"goInsight/internal/users/forms"
-	"goInsight/internal/users/services"
-	"goInsight/pkg/response"
 	"net/http"
 	"strconv"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/users/forms"
+	"github.com/lazzyfu/goinsight/internal/users/services"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"

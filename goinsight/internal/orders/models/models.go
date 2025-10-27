@@ -1,24 +1,20 @@
-/*
-@Time    :   2023/09/21 19:49:45
-@Author  :   xff
-*/
-
 package models
 
 import (
-	"goInsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/common/models"
 
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 // 工单记录
 type InsightOrderRecords struct {
 	*models.Model
-	Title            string          `gorm:"type:varchar(128);not null;default:'';comment:工单标题;index:idx_title" json:"title"`
+	Title            string          `gorm:"type:varchar(256);not null;default:'';comment:工单标题;index:idx_title" json:"title"`
 	OrderID          uuid.UUID       `gorm:"type:char(36);comment:工单ID;uniqueIndex:uniq_order_id" json:"order_id"`
 	HookOrderID      uuid.UUID       `gorm:"type:char(36);comment:HOOK源工单ID;index:idx_hook_order_id" json:"hook_order_id"`
-	Remark           string          `gorm:"type:varchar(1024);not null;default:'';comment:工单备注" json:"remark"`
+	Remark           string          `gorm:"type:varchar(2048);not null;default:'';comment:工单备注" json:"remark"`
 	IsRestrictAccess bool            `gorm:"type:tinyint(1);not null;default:0;comment:是否限制访问" json:"is_restrict_access"`
 	DBType           models.EnumType `gorm:"type:ENUM('MySQL', 'TiDB', 'ClickHouse');default:'MySQL';comment:DB类型" json:"db_type"`
 	SQLType          models.EnumType `gorm:"type:ENUM('DML', 'DDL', 'EXPORT');default:'DML';comment:SQL类型" json:"sql_type"`
@@ -35,22 +31,50 @@ type InsightOrderRecords struct {
 	FixVersion       string          `gorm:"type:varchar(128);not null;default:'';comment:上线版本;index" json:"fix_version"`
 	Content          string          `gorm:"type:text;null;comment:工单内容" json:"content"`
 	ExportFileFormat models.EnumType `gorm:"type:ENUM('XLSX', 'CSV');default:'XLSX';comment:导出文件格式" json:"export_file_format"`
+	FlowID           uint            `json:"flow_id"` // 关联 ApprovalFlow
+	CurrentStage     int             `json:"current_stage"`
+	WorkflowID       string          `json:"workflow_id"` // goflow 工作流ID
+	Status           string          `json:"status"`      // pending, in_approval, approved, rejected, executed
 }
 
 func (InsightOrderRecords) TableName() string {
 	return "insight_order_records"
 }
 
-// 工单操作日志表
-type InsightOrderOpLogs struct {
-	*models.Model
-	Username string    `gorm:"type:varchar(32);not null;index:idx_username;comment:操作用户" json:"username"`
-	OrderID  uuid.UUID `gorm:"type:char(36);comment:工单ID;index:idx_order_id" json:"order_id"`
-	Msg      string    `gorm:"type:varchar(1024);null;;comment:操作信息" json:"msg"`
+// 审批流
+type ApprovalFlow struct {
+	gorm.Model
+	ApprovalID uuid.UUID      `gorm:"type:char(36);comment:审批流ID;uniqueIndex:uniq_approval_id" json:"approval_id"`
+	Name       string         `json:"name"`
+	Definition datatypes.JSON `json:"definition"` // [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND"}]
 }
 
-func (InsightOrderOpLogs) TableName() string {
-	return "insight_order_oplogs"
+func (ApprovalFlow) TableName() string {
+	return "insight_approval_flow"
+}
+
+// 审批流和用户映射表，每个用户只能在一个审批流里面
+type ApprovalMaps struct {
+	gorm.Model
+	Username   string    `gorm:"type:varchar(32);not null;uniqueIndex:uniq_username;comment:用户名" json:"username"`
+	ApprovalID uuid.UUID `gorm:"type:char(36);comment:审批流ID;index:idx_approval_id" json:"approval_id"`
+}
+
+func (ApprovalMaps) TableName() string {
+	return "insight_approval_maps"
+}
+
+// 审批记录
+type ApprovalRecords struct {
+	gorm.Model
+	OrderID  uuid.UUID       `json:"order_id" gorm:"char(36)"`
+	Stage    int             `json:"stage"` // 审批阶段，1/2/3...
+	Approver string          `gorm:"type:varchar(32);not null;comment:审批人" json:"approver"`
+	Status   models.EnumType `gorm:"type:ENUM('PENDING', 'APPROVED', 'REJECTED');default:'PENDING';comment:审批状态" json:"status"`
+}
+
+func (ApprovalRecords) TableName() string {
+	return "insight_approval_records"
 }
 
 // 工单记录生成的执行任务

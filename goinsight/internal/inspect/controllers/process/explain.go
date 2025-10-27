@@ -1,18 +1,14 @@
-/*
-@Time    :   2022/07/06 10:12:48
-@Author  :   xff
-@Desc    :   None
-*/
-
 package process
 
 import (
 	"errors"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/pkg/kv"
-	"goInsight/pkg/utils"
 	"strconv"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/pkg/kv"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
 
 	"github.com/mitchellh/mapstructure"
 )

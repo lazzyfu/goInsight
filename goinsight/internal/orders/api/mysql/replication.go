@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
-	"goInsight/internal/orders/api/base"
-	"goInsight/pkg/parser"
-	"goInsight/pkg/utils"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/pkg/parser"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 

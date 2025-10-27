@@ -1,26 +1,23 @@
-/*
-@Time    :   2023/08/03 16:05:17
-@Author  :   xff
-@Desc    :
-*/
-
 package services
 
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	commonModels "goInsight/internal/common/models"
-	"goInsight/internal/inspect/checker"
-	"goInsight/internal/orders/forms"
-	"goInsight/internal/orders/models"
-	usersModels "goInsight/internal/users/models"
-	"goInsight/pkg/notifier"
-	"goInsight/pkg/pagination"
-	"goInsight/pkg/parser"
-	"goInsight/pkg/utils"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/notifier"
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/parser"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/inspect/checker"
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+	"github.com/lazzyfu/goinsight/internal/orders/models"
+	usersModels "github.com/lazzyfu/goinsight/internal/users/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -105,20 +102,43 @@ type CreateOrdersService struct {
 	Audit    *parser.TiStmt
 }
 
-// 转json
-func (s *CreateOrdersService) toJson(values []string) (datatypes.JSON, error) {
-	var tmpData []map[string]interface{}
-	for _, u := range values {
-		// user：审核人/复核人
-		// status : pending, approved, reject
-		// time：审核时间
-		tmpData = append(tmpData, map[string]interface{}{"user": u, "status": "pending"})
+func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
+	fmt.Printf("orderID: %+v", orderID)
+	type FlowStage struct {
+		Type      string   `json:"type"`
+		Stage     int      `json:"stage"`
+		Approvers []string `json:"approvers"`
 	}
-	data, err := json.Marshal(tmpData)
-	if err != nil {
-		return nil, err
+
+	var record models.ApprovalFlow
+	tx := global.App.DB.Table("insight_approval_maps a").Select(`b.definition`).
+		Joins("inner join insight_approval_flow b on a.approval_id = b.approval_id").
+		Where("a.username = ?", s.Username).Take(&record)
+	if tx.Error != nil || tx.RowsAffected == 0 {
+		return fmt.Errorf("查询审批流失败: %w", tx.Error)
 	}
-	return datatypes.JSON(data), nil
+	// [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND"}]
+	var stages []FlowStage
+	if err := json.Unmarshal(record.Definition, &stages); err != nil {
+		return fmt.Errorf("解析审批流JSON失败: %w", err)
+	}
+
+	for _, s := range stages {
+		for _, approver := range s.Approvers {
+			audit := models.ApprovalRecords{
+				OrderID:  orderID,
+				Stage:    s.Stage,
+				Approver: approver,
+				Status:   "PENDING",
+			}
+
+			if err := global.App.DB.Create(&audit).Error; err != nil {
+				return fmt.Errorf("创建审批记录失败: %w", err)
+			}
+		}
+	}
+	fmt.Printf("2222222222")
+	return nil
 }
 
 // 审核SQL
@@ -198,42 +218,29 @@ func (s *CreateOrdersService) Run() error {
 		First(&config)
 	// 检查DDL/DML工单语法检查是否通过
 	// 不对EXPORT工单进行语法检查，CheckSqlType已经要求EXPORT工单只能为SELECT语句
-	if s.SQLType != "EXPORT" {
-		returnData, err := s.inspectSQL(config)
-		if err != nil {
-			return err
-		}
-		// status: 0表示语法检查通过，1表示语法检查不通过
-		status := 0
-		for _, row := range returnData {
-			if row.Level != "INFO" {
-				status = 1
-				break
-			}
-		}
-		if status == 1 {
-			return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
-		}
-	}
+	// if s.SQLType != "EXPORT" {
+	// 	returnData, err := s.inspectSQL(config)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	// status: 0表示语法检查通过，1表示语法检查不通过
+	// 	status := 0
+	// 	for _, row := range returnData {
+	// 		if row.Level != "INFO" {
+	// 			status = 1
+	// 			break
+	// 		}
+	// 	}
+	// 	if status == 1 {
+	// 		return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
+	// 	}
+	// }
 	// 解析UUID
 	instance_id, err := utils.ParserUUID(s.InstanceID)
 	if err != nil {
 		return err
 	}
-	// 解析为json格式
-	approver, err := s.toJson(s.Approver)
-	if err != nil {
-		return err
-	}
-	reviewer, err := s.toJson(s.Reviewer)
-	if err != nil {
-		return err
-	}
-	executorData, err := json.Marshal(s.Executor)
-	if err != nil {
-		return err
-	}
-	executor := datatypes.JSON(executorData)
+	// 抄送人
 	ccData, err := json.Marshal(s.CC)
 	if err != nil {
 		return err
@@ -241,14 +248,13 @@ func (s *CreateOrdersService) Run() error {
 	cc := datatypes.JSON(ccData)
 	// 生成工单ID
 	orderID := uuid.New()
-	// Title加上时间
+	// 创建工单
 	timeStr := time.Now().Format("2006-01-02 15:04:05")
 	title := fmt.Sprintf("%s_[%s] ", s.Title, timeStr)
 	record := models.InsightOrderRecords{
 		Title:            title,
 		OrderID:          orderID,
 		Remark:           s.Remark,
-		IsRestrictAccess: *s.IsRestrictAccess,
 		SQLType:          s.SQLType,
 		DBType:           s.DBType,
 		Environment:      s.Environment,
@@ -256,9 +262,6 @@ func (s *CreateOrdersService) Run() error {
 		Schema:           s.Schema,
 		Applicant:        s.Username,
 		Organization:     s.getUserOrg(),
-		Approver:         approver,
-		Reviewer:         reviewer,
-		Executor:         executor,
 		CC:               cc,
 		Content:          s.Content,
 		ExportFileFormat: s.ExportFileFormat,
@@ -273,14 +276,10 @@ func (s *CreateOrdersService) Run() error {
 			global.App.Log.Error(err)
 			return err
 		}
-		// 操作日志
-		log := models.InsightOrderOpLogs{
-			Username: s.Username,
-			OrderID:  record.OrderID,
-			Msg:      fmt.Sprintf("用户%s提交了工单", s.Username),
-		}
-		if err := tx.Model(&models.InsightOrderOpLogs{}).Create(&log).Error; err != nil {
-			global.App.Log.Error(err)
+
+		// 生成审批流
+		err = s.generateApprovalRecords(orderID)
+		if err != nil {
 			return err
 		}
 		// 获取提交的环境
@@ -290,24 +289,19 @@ func (s *CreateOrdersService) Run() error {
 			Take(&env)
 		// 发送消息，发送给工单申请人
 		receiver := []string{record.Applicant}
-		receiver = append(receiver, s.Approver...)
-		receiver = append(receiver, s.Reviewer...)
 		receiver = append(receiver, s.CC...)
 
 		msg := fmt.Sprintf(
 			"您好，用户%s提交了工单\n"+
 				">工单标题：%s\n"+
 				">备注：%s\n"+
-				">审核人：%s\n"+
-				">复核人：%s\n"+
-				">执行人：%s\n"+
 				">抄送：%s\n"+
 				">环境：%s\n"+
 				">数据库类型：%s\n"+
 				">工单类型：%s\n"+
 				">库名：%s",
 			s.Username, title, s.Remark,
-			strings.Join(s.Approver, ","), strings.Join(s.Reviewer, ","), strings.Join(s.Executor, ","), strings.Join(s.CC, ","),
+			strings.Join(s.CC, ","),
 			env.Name, s.DBType, s.SQLType, s.Schema,
 		)
 

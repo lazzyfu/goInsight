@@ -2,7 +2,7 @@ package extract
 
 import (
 	"errors"
-	"goInsight/internal/inspect/config"
+	"github.com/lazzyfu/goinsight/internal/inspect/config"
 	"sqlSyntaxAudit/forms"
 	"sqlSyntaxAudit/global"
 	logger "sqlSyntaxAudit/middleware/log"

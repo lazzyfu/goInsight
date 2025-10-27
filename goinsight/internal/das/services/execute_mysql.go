@@ -1,21 +1,18 @@
-/*
-@Time    :   2023/03/17 14:50:56
-@Author  :   xff
-@Desc    :   MySQL/TiDB逻辑层
-*/
-
 package services
 
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/models"
-	"goInsight/internal/das/parser"
-	"goInsight/pkg/query"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/query"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/models"
+	"github.com/lazzyfu/goinsight/internal/das/parser"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"

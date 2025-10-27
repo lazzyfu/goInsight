@@ -1,8 +1,9 @@
 package forms
 
 import (
-	"goInsight/internal/common/models"
-	"goInsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+
+	"github.com/lazzyfu/goinsight/internal/common/models"
 )
 
 type AdminGetDBConfigForm struct {

@@ -1,6 +1,6 @@
 package forms
 
-import "goInsight/pkg/pagination"
+import "github.com/lazzyfu/goinsight/pkg/pagination"
 
 type UserGrantsForm struct {
 	InstanceID string `form:"instance_id" json:"instance_id" binding:"required,uuid"`

@@ -1,8 +1,9 @@
 package routers
 
 import (
-	"goInsight/global"
-	"goInsight/internal/orders/views"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/orders/views"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,13 +15,12 @@ func Routers(r *gin.Engine) {
 	{
 		v1.GET("environments", views.GetEnvironmentsView)
 		v1.GET("instances", views.GetInstancesView)
-		v1.POST("syntax-inspect", views.SyntaxInspectView)
+		v1.POST("inspect-sql-syntax", views.SyntaxInspectView)
 		v1.GET("schemas", views.GetSchemasView)
 		v1.GET("users", views.GetUsersView)
 		v1.POST("commit", views.CreateOrdersView)
 		v1.GET("list", views.GetListView)
 		v1.GET("detail/:order_id", views.GetDetailView)
-		v1.GET("detail/oplogs", views.GetOpLogsView)
 		v1.PUT("operate/approve", views.ApproveView)
 		v1.PUT("operate/feedback", views.FeedbackView)
 		v1.PUT("operate/review", views.ReviewView)

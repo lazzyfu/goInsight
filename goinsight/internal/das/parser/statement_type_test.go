@@ -1,15 +1,10 @@
-/*
-@Time    :   2023/06/27 11:02:07
-@Author  :   xff
-@Desc    :   测试用例
-*/
-
 package parser
 
 import (
 	"fmt"
-	"goInsight/pkg/utils"
 	"testing"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	"github.com/stretchr/testify/assert"

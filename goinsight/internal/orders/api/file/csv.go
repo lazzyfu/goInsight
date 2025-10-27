@@ -2,8 +2,9 @@ package file
 
 import (
 	"encoding/csv"
-	"goInsight/global"
 	"os"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/spf13/cast"
 )

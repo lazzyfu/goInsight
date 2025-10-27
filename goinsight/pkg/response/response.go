@@ -1,8 +1,9 @@
 package response
 
 import (
-	"goInsight/global"
 	"net/http"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"

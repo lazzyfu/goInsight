@@ -3,9 +3,10 @@ package checker
 import (
 	"regexp"
 
-	"goInsight/internal/inspect/controllers"
-	"goInsight/internal/inspect/controllers/rules"
-	"goInsight/pkg/kv"
+	"github.com/lazzyfu/goinsight/pkg/kv"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/rules"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	_ "github.com/pingcap/tidb/pkg/types/parser_driver"

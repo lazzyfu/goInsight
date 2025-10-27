@@ -1,9 +1,11 @@
 package views
 
 import (
-	"goInsight/global"
-	"goInsight/pkg/utils"
 	"net/http"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"

@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/07/06 10:12:33
-@Author  :   xff
-@Desc    :   None
-*/
-
 package parser
 
 import (

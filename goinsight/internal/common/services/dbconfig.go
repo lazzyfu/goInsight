@@ -1,17 +1,15 @@
-/*
-@Time    :   2023/08/31 15:19:46
-@Author  :   xff
-*/
-
 package services
 
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/common/forms"
-	"goInsight/internal/common/models"
-	"goInsight/pkg/pagination"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+
+	"github.com/lazzyfu/goinsight/internal/common/forms"
+	"github.com/lazzyfu/goinsight/internal/common/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"

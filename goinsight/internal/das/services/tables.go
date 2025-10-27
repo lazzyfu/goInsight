@@ -1,18 +1,14 @@
-/*
-@Time    :   2023/03/17 14:50:56
-@Author  :   xff
-@Desc    :   获取用户有权限的表
-*/
-
 package services
 
 import (
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/parser"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/parser"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

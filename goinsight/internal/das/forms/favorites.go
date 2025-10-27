@@ -1,7 +1,7 @@
 package forms
 
 import (
-	"goInsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/pagination"
 )
 
 type GetFavoritesForm struct {

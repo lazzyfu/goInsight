@@ -1,9 +1,11 @@
 package routers
 
 import (
-	"goInsight/global"
-	"goInsight/internal/users/views"
-	"goInsight/middleware"
+	"github.com/lazzyfu/goinsight/middleware"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/users/views"
 
 	"github.com/gin-gonic/gin"
 )
@@ -50,7 +52,7 @@ func Routers(r *gin.Engine) {
 	v1.Use(global.App.JWT.MiddlewareFunc())
 	{
 		// 个人
-		v1.GET("/user", views.GetUserInfoView)
+		v1.GET("/user/profile", views.GetUserInfoView)
 		v1.PUT("/user/:uid", views.UpdateUserInfoView)
 		v1.POST("/user/change/avatar", views.ChangeUserAvatarView)
 		v1.POST("/user/change/password", views.ChangeUserPasswordView)

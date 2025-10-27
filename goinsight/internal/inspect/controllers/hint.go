@@ -1,14 +1,10 @@
-/*
-@Time    :   2022/06/29 15:30:31
-@Author  :   xff
-*/
-
 package controllers
 
 import (
-	"goInsight/internal/inspect/config"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/pkg/kv"
+	"github.com/lazzyfu/goinsight/pkg/kv"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/config"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
 )
 
 type RuleHint struct {

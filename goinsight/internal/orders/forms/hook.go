@@ -1,7 +1,7 @@
 package forms
 
 import (
-	"goInsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/common/models"
 )
 
 type HookOrdersForm struct {

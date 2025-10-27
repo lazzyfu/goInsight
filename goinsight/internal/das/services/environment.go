@@ -1,14 +1,9 @@
-/*
-@Time    :   2023/08/03 16:05:17
-@Author  :   xff
-@Desc    :
-*/
-
 package services
 
 import (
-	"goInsight/global"
-	"goInsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/common/models"
 
 	"github.com/gin-gonic/gin"
 )

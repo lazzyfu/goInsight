@@ -1,15 +1,11 @@
-/*
-@Time    :   2022/06/24 13:12:20
-@Author  :   xff
-@Desc    :   遍历语法树,语法参考pingcap文档：https://github.com/pingcap/parser/blob/master/docs/quickstart.md
-*/
-
 package traverses
 
 import (
-	"goInsight/internal/inspect/controllers/process"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/process"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	"github.com/pingcap/tidb/pkg/parser/mysql"

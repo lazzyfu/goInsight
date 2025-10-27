@@ -1,13 +1,9 @@
-/*
-@Time    :   2023/08/14 15:49:31
-@Author  :   xff
-*/
-
 package bootstrap
 
 import (
-	"goInsight/global"
-	"goInsight/middleware"
+	"github.com/lazzyfu/goinsight/middleware"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 )
 
 func InitializeLog() {

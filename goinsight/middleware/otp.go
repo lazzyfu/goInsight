@@ -1,16 +1,13 @@
-/*
-@Author  :   xff
-@Desc    :
-*/
-
 package middleware
 
 import (
 	"errors"
-	"goInsight/global"
-	userModels "goInsight/internal/users/models"
 
-	"goInsight/pkg/response"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	userModels "github.com/lazzyfu/goinsight/internal/users/models"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/gin-contrib/requestid"
 
@@ -51,7 +48,7 @@ func (u *userInfo) checkUserValid() error {
 	// 验证密码
 	err := bcrypt.CompareHashAndPassword([]byte(u.user.Password), []byte(u.password))
 	if err != nil {
-		return errors.New("incorrect Username or Password")
+		return errors.New("用户名或密码错误")
 	}
 	return nil
 }
@@ -81,13 +78,13 @@ func OTPMiddleware() gin.HandlerFunc {
 		// 检查用户是否存在
 		if err := check.checkIfUserExist(); err != nil {
 			global.App.Log.WithFields(logrus.Fields{"request_id": requestid.Get(c), "username": username, "error": err}).Error(err.Error())
-			c.AbortWithStatusJSON(500, gin.H{"message": err.Error(), "data": nil, "request_id": requestid.Get(c)})
+			c.AbortWithStatusJSON(400, gin.H{"message": err.Error(), "data": nil, "request_id": requestid.Get(c)})
 			return
 		}
 		// 验证用户有效性
 		if err := check.checkUserValid(); err != nil {
 			global.App.Log.WithFields(logrus.Fields{"request_id": requestid.Get(c), "username": username, "error": err}).Error(err.Error())
-			c.AbortWithStatusJSON(500, gin.H{"message": err.Error(), "data": nil, "request_id": requestid.Get(c)})
+			c.AbortWithStatusJSON(400, gin.H{"message": err.Error(), "data": nil, "request_id": requestid.Get(c)})
 			return
 		}
 		// 用户是否开启2FA认证

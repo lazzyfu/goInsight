@@ -1,6 +1,4 @@
 /*
-@Time    :   2023/04/26 10:12:19
-@Author  :   xff
 @Desc    :   检查TiDB异常的连接是否被释放，如果没有，触发kill操作。
 			 原因是TiDB不支持DB接口上下文超时自动结束会话
 			 已测试不支持版本：TiDB5.x/TiDB6.x
@@ -11,12 +9,14 @@ package tasks
 import (
 	"context"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/models"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/models"
 )
 
 type tidbQueryRecord struct {

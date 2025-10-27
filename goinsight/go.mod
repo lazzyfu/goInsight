@@ -1,8 +1,8 @@
-module goInsight
+module github.com/lazzyfu/goinsight
 
 go 1.21.13
 
-replace github.com/vitessio/vitess => vitess.io/vitess v0.18.5
+replace github.com/vitessio/vitess => vitess.io/vitess v0.18.8
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.13.3
@@ -15,12 +15,13 @@ require (
 	github.com/pingcap/tidb/pkg/parser v0.0.0-20240605094755-3c02c2aa1339
 	github.com/pquerna/otp v1.4.0
 	github.com/redis/go-redis/v9 v9.3.0
+	github.com/s8sg/goflow v0.1.5-0.20230729173817-d3eded44d6f8
 	github.com/shopspring/decimal v1.3.1
 	github.com/xuri/excelize/v2 v2.8.0
 	golang.org/x/sync v0.6.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	vitess.io/vitess v0.18.5
+	vitess.io/vitess v0.18.8
 )
 
 require (
@@ -35,6 +36,8 @@ require (
 	github.com/DataDog/go-tuf v1.0.4-0.5.2-debug // indirect
 	github.com/DataDog/sketches-go v1.4.4 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
+	github.com/adjust/rmq/v4 v4.0.0 // indirect
+	github.com/alexellis/hmac v0.0.0-20180624211220-5c52ab81c0de // indirect
 	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
@@ -54,6 +57,8 @@ require (
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
+	github.com/go-redis/redis v6.15.9+incompatible // indirect
+	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.2.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -65,6 +70,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/influxdata/tdigest v0.0.1 // indirect
+	github.com/jasonlvhit/gocron v0.0.1 // indirect
 	github.com/jellydator/ttlcache/v3 v3.0.1 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -95,6 +101,7 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
+	github.com/rs/xid v1.2.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/secure-systems-lab/go-securesystemslib v0.8.0 // indirect
@@ -135,6 +142,7 @@ require (
 	google.golang.org/grpc v1.62.1 // indirect
 	gopkg.in/DataDog/dd-trace-go.v1 v1.61.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/redis.v5 v5.2.9 // indirect
 )
 
 require (

@@ -3,14 +3,17 @@ package services
 import (
 	"errors"
 	"fmt"
-	"goInsight/global"
-	commonModels "goInsight/internal/common/models"
-	"goInsight/internal/das/dao"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/models"
-	"goInsight/pkg/pagination"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/das/dao"
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"

@@ -1,8 +1,3 @@
-/*
-@Time    :   2023/09/19 15:50:47
-@Author  :   xff
-*/
-
 package models
 
 import "database/sql/driver"

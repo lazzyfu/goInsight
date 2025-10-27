@@ -1,10 +1,12 @@
 package services
 
 import (
-	"goInsight/global"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/models"
-	"goInsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/pagination"
+
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/models"
 
 	"github.com/gin-gonic/gin"
 )

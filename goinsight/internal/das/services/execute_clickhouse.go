@@ -1,22 +1,18 @@
-/*
-@Time    :   2023/03/17 14:50:56
-@Author  :   xff
-@Desc    :   ClickHouse逻辑层，复用MySQL/TiDB
-			 拆分的原因主要2点，一是form传参Params结构不一致，二是后续clickhouse逻辑可单独调整
-*/
-
 package services
 
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/das/forms"
-	"goInsight/internal/das/models"
-	"goInsight/internal/das/parser"
-	"goInsight/pkg/query"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/query"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/das/forms"
+	"github.com/lazzyfu/goinsight/internal/das/models"
+	"github.com/lazzyfu/goinsight/internal/das/parser"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"

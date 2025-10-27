@@ -1,13 +1,9 @@
-/*
-@Time    :   2023/08/14 15:45:43
-@Author  :   xff
-*/
-
 package bootstrap
 
 import (
 	"fmt"
-	"goInsight/global"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/spf13/viper"
 )

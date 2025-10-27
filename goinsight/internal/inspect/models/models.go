@@ -1,12 +1,7 @@
-/*
-@Time    :   2023/09/21 19:49:45
-@Author  :   xff
-*/
-
 package models
 
 import (
-	"goInsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/common/models"
 
 	"gorm.io/datatypes"
 )

@@ -1,9 +1,9 @@
 package logics
 
 import (
-	"goInsight/internal/inspect/controllers"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/internal/inspect/controllers/traverses"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 )
 
 // LogicCreateDatabaseIsExist

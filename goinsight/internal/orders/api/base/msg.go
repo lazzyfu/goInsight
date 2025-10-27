@@ -2,8 +2,10 @@ package base
 
 import (
 	"context"
-	"goInsight/global"
-	"goInsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
 )
 
 // PublishMessageToChannel publishes a message to a specified channel with a given render type.

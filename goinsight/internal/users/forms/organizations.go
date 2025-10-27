@@ -1,11 +1,6 @@
-/*
-@Time    :   2023/09/04 16:56:06
-@Author  :   xff
-*/
-
 package forms
 
-import "goInsight/pkg/pagination"
+import "github.com/lazzyfu/goinsight/pkg/pagination"
 
 type CreateRootOrganizationsForm struct {
 	Name string `form:"name"  json:"name" binding:"required,min=2,max=32"`

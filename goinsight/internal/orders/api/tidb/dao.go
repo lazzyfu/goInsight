@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/api/base"
 	"strconv"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 
 	"github.com/go-sql-driver/mysql"
 )

@@ -1,12 +1,7 @@
-/*
-@Time    :   2023/08/14 16:51:22
-@Author  :   xff
-*/
-
 package models
 
 import (
-	"goInsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/common/models"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/datatypes"

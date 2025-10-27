@@ -1,15 +1,13 @@
-/*
-@Time    :   2023/08/14 17:53:11
-@Author  :   xff
-*/
-
 package middleware
 
 import (
 	"errors"
-	"goInsight/global"
-	userModels "goInsight/internal/users/models"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	userModels "github.com/lazzyfu/goinsight/internal/users/models"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -47,6 +45,15 @@ func InitAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		Timeout:     24 * time.Hour,
 		MaxRefresh:  24 * time.Hour,
 		IdentityKey: identityKey,
+		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
+			requestID := c.GetString("X-Request-ID")
+			c.JSON(code, response.Response{
+				RequestID: requestID,
+				Code:      "0000",
+				Data:      gin.H{"token": token, "expire": expire.Format(time.RFC3339)},
+				Message:   "登录成功",
+			})
+		},
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
 				return jwt.MapClaims{

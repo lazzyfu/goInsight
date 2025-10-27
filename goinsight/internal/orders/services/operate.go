@@ -3,12 +3,15 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/forms"
-	"goInsight/internal/orders/models"
-	"goInsight/pkg/notifier"
-	"goInsight/pkg/utils"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/notifier"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+	"github.com/lazzyfu/goinsight/internal/orders/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -108,9 +111,6 @@ func (s *ApproveService) Run() (err error) {
 		if s.Status == "reject" {
 			logMsg = fmt.Sprintf("用户%s驳回了工单", s.Username)
 		}
-		if err := CreateOpLogs(tx, record.OrderID, s.Username, fmt.Sprintf("%s，附加消息：%s", logMsg, s.Msg)); err != nil {
-			return err
-		}
 		// 发送消息，发送给工单申请人
 		receiver := []string{record.Applicant}
 		msg := fmt.Sprintf("您好，%s\n>工单标题：%s\n>附加消息：%s", logMsg, record.Title, s.Msg)
@@ -143,11 +143,6 @@ func (s *FeedbackService) Run() (err error) {
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]interface{}{"progress": s.Progress, "updated_at": time.Now().Format("2006-01-02 15:04:05")}).Error; err != nil {
 			global.App.Log.Error(err)
-			return err
-		}
-		// 操作日志
-		logMsg := fmt.Sprintf("用户%s更新工单状态为%s，附加消息：%s", s.Username, s.Progress, s.Msg)
-		if err := CreateOpLogs(tx, record.OrderID, s.Username, logMsg); err != nil {
 			return err
 		}
 		// 发送消息，发送给工单申请人
@@ -241,11 +236,6 @@ func (s *ReviewService) Run() (err error) {
 				return err
 			}
 		}
-		// 操作日志
-		logMsg := fmt.Sprintf("用户%s复核了工单，附加消息：%s", s.Username, s.Msg)
-		if err := CreateOpLogs(tx, record.OrderID, s.Username, logMsg); err != nil {
-			return err
-		}
 		// 发送消息，发送给工单申请人
 		receiver := []string{record.Applicant}
 		msg := fmt.Sprintf("您好，用户%s更新工单状态为：已复核\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
@@ -288,11 +278,6 @@ func (s *CloseService) Run() (err error) {
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 更新状态为已关闭
 		if err := s.updateProgress(tx, "已关闭"); err != nil {
-			return err
-		}
-		// 操作日志
-		logMsg := fmt.Sprintf("用户%s关闭了工单，附加消息：%s", s.Username, s.Msg)
-		if err := CreateOpLogs(tx, record.OrderID, s.Username, logMsg); err != nil {
 			return err
 		}
 		// 发送消息，发送给工单申请人

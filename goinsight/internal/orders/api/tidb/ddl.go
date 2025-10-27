@@ -3,11 +3,13 @@ package tidb
 import (
 	"errors"
 	"fmt"
-	"goInsight/internal/orders/api/base"
-	"goInsight/pkg/parser"
-	"goInsight/pkg/utils"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/pkg/parser"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 )
 
 // 执行Online DDL语句

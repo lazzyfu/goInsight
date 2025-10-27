@@ -5,16 +5,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/inspect/config"
-	"goInsight/internal/inspect/controllers/dao"
-	"goInsight/internal/inspect/controllers/parser"
-	"goInsight/internal/inspect/controllers/process"
-	"goInsight/internal/inspect/models"
-	"goInsight/pkg/kv"
-	"goInsight/pkg/query"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/kv"
+	"github.com/lazzyfu/goinsight/pkg/query"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/config"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/parser"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/process"
+	"github.com/lazzyfu/goinsight/internal/inspect/models"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"

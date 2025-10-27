@@ -1,14 +1,9 @@
-/*
-@Time    :   2022/06/27 15:49:13
-@Author  :   xff
-@Desc    :   None
-*/
-
 package process
 
 import (
 	"fmt"
-	"goInsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/pingcap/tidb/pkg/parser/mysql"
 )

@@ -1,9 +1,3 @@
-/*
-@Time    :   2023/08/02 17:49:29
-@Author  :   xff
-@Desc    :
-*/
-
 package forms
 
 type GetOrderSchemasForm struct {

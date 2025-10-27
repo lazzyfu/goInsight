@@ -1,13 +1,7 @@
-/*
-@Time    :   2022/06/24 13:12:20
-@Author  :   xff
-@Desc    :   遍历语法树
-*/
-
 package traverses
 
 import (
-	"goInsight/internal/inspect/controllers/process"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/process"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 )

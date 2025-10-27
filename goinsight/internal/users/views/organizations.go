@@ -1,14 +1,10 @@
-/*
-@Time    :   2023/09/04 17:09:11
-@Author  :   xff
-*/
-
 package views
 
 import (
-	"goInsight/internal/users/forms"
-	"goInsight/internal/users/services"
-	"goInsight/pkg/response"
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/users/forms"
+	"github.com/lazzyfu/goinsight/internal/users/services"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"

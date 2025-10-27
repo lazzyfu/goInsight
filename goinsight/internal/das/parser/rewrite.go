@@ -1,15 +1,10 @@
-/*
-@Time    :   2023/03/24 10:06:56
-@Author  :   xff
-@Desc    :   重写sql
-*/
-
 package parser
 
 import (
 	"fmt"
-	"goInsight/global"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	"github.com/pingcap/tidb/pkg/parser/model"

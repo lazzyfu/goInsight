@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/09/09 10:35:02
-@Author  :   xff
-@Desc    :   提取表名
-*/
-
 package extract
 
 import (

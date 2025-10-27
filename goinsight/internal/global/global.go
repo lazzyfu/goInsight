@@ -1,12 +1,7 @@
-/*
-@Time    :   2023/08/14 15:46:37
-@Author  :   xff
-*/
-
 package global
 
 import (
-	config "goInsight/config"
+	config "github.com/lazzyfu/goinsight/internal/config"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/redis/go-redis/v9"

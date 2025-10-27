@@ -1,9 +1,3 @@
-/*
-@Time    :   2023/04/11 15:21:19
-@Author  :   xff
-@Desc    :
-*/
-
 package parser
 
 import (
@@ -180,12 +174,6 @@ func (s *StatementType) Extract(in ast.StmtNode) (statementType string) {
 		}
 		if stmt.Tp == ast.ShowBindingCacheStatus {
 			statementType = "ShowBindingCacheStatus"
-		}
-		if stmt.Tp == ast.ShowPumpStatus {
-			statementType = "ShowPumpStatus"
-		}
-		if stmt.Tp == ast.ShowDrainerStatus {
-			statementType = "ShowDrainerStatus"
 		}
 		if stmt.Tp == ast.ShowOpenTables {
 			statementType = "ShowOpenTables"

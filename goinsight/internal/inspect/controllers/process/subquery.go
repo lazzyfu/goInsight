@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/07/15 14:16:21
-@Author  :   xff
-@Desc    :   迭代子查询
-*/
-
 package process
 
 import (

@@ -7,8 +7,9 @@ package parser
 
 import (
 	"fmt"
-	"goInsight/pkg/utils"
 	"testing"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	"github.com/stretchr/testify/assert"

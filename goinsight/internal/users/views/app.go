@@ -1,8 +1,9 @@
 package views
 
 import (
-	"goInsight/global"
 	"net/http"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/gin-gonic/gin"
 )

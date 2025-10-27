@@ -1,21 +1,18 @@
-/*
-@Time    :   2023/03/17 09:53:21
-@Author  :   xff
-@Desc    :   从用户定义的远程数据库实例同步库信息
-*/
-
 package tasks
 
 import (
 	"context"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/common/models"
-	"goInsight/internal/das/dao"
-	"goInsight/pkg/utils"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/common/models"
+	"github.com/lazzyfu/goinsight/internal/das/dao"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

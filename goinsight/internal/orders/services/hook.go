@@ -1,18 +1,16 @@
-/*
-@Time    :   2023/10/24 19:14:17
-@Author  :   xff
-*/
-
 package services
 
 import (
 	"encoding/json"
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/orders/forms"
-	"goInsight/internal/orders/models"
-	"goInsight/pkg/utils"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+	"github.com/lazzyfu/goinsight/internal/orders/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -20,7 +18,7 @@ import (
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 
-	commonModels "goInsight/internal/common/models"
+	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
 )
 
 // hook工单
@@ -121,11 +119,6 @@ func (s *HookOrdersService) Run() error {
 				return fmt.Errorf("记录已存在，错误:%s", err.Error())
 			}
 			global.App.Log.Error(err)
-			return err
-		}
-		// 操作日志
-		logMsg := fmt.Sprintf("用户%s触发了HOOK操作", s.Username)
-		if err := CreateOpLogs(tx, record.OrderID, s.Username, logMsg); err != nil {
 			return err
 		}
 		return nil

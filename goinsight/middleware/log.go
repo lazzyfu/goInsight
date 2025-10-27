@@ -1,17 +1,13 @@
-/*
-@Time    :   2023/08/14 15:51:08
-@Author  :   xff
-*/
-
 package middleware
 
 import (
 	"fmt"
-	"goInsight/global"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"

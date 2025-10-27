@@ -1,9 +1,3 @@
-/*
-@Time    :   2023/04/25 09:38:32
-@Author  :   xff
-@Desc    :   http://go-database-sql.org/varcols.html
-*/
-
 package dao
 
 import (

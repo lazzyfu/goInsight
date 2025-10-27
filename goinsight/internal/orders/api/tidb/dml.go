@@ -2,11 +2,12 @@ package tidb
 
 import (
 	"fmt"
-	"goInsight/pkg/utils"
 	"strings"
 	"time"
 
-	"goInsight/internal/orders/api/base"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 )
 
 // TiDB DML

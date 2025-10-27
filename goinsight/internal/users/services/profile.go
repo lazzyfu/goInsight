@@ -2,10 +2,12 @@ package services
 
 import (
 	"fmt"
-	"goInsight/global"
-	"goInsight/internal/users/forms"
-	"goInsight/internal/users/models"
 	"time"
+
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	"github.com/lazzyfu/goinsight/internal/users/forms"
+	"github.com/lazzyfu/goinsight/internal/users/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -69,14 +71,14 @@ func (s *ChangeUserPasswordService) Run() error {
 	var user models.InsightUsers
 	global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Scan(&user)
 	// 验证老密码是否正确
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(s.CurrentPassword))
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(s.OldPassword))
 	if err != nil {
-		return fmt.Errorf("密码更改失败，旧密码输入不正确")
+		return fmt.Errorf("密码更改失败，请检查旧密码是否正确")
 	}
 	// 验证新老密码是否一致
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(s.NewPassword))
 	if err == nil {
-		return fmt.Errorf("密码更改失败，新旧密码一致")
+		return fmt.Errorf("密码更改失败，新密码不能与旧密码相同")
 	}
 	// 加密密码
 	hashedPassword := models.BcryptPW(s.NewPassword)

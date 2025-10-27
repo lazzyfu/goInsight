@@ -1,13 +1,9 @@
-/*
-@Time    :   2023/09/18 16:29:12
-@Author  :   xff
-*/
-
 package middleware
 
 import (
-	"goInsight/global"
-	userModels "goInsight/internal/users/models"
+	"github.com/lazzyfu/goinsight/internal/global"
+
+	userModels "github.com/lazzyfu/goinsight/internal/users/models"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"

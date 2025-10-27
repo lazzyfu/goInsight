@@ -1,9 +1,3 @@
-/*
-@Time    :   2022/07/12 17:03:31
-@Author  :   xff
-@Desc    :   None
-*/
-
 package process
 
 var Keywords = map[string]bool{

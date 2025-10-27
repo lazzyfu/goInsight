@@ -1,13 +1,9 @@
-/*
-@Time    :   2023/08/14 18:16:00
-@Author  :   xff
-*/
-
-package routers
+package api
 
 import (
-	"goInsight/middleware"
 	"time"
+
+	"github.com/lazzyfu/goinsight/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/requestid"
@@ -28,7 +24,15 @@ func Init() *gin.Engine {
 	r := gin.New()
 
 	// 使用CORS中间件
-	r.Use(cors.Default())
+	// r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:  []string{"*"},
+		AllowMethods:  []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:  []string{"Origin", "Content-Length", "Authorization", "Token", "X-Trace-Id", "x-requested-with", "Content-Type"},
+		ExposeHeaders: []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
+		//AllowCredentials: true,
+		MaxAge: 24 * time.Hour,
+	}))
 
 	// 使用requestid
 	r.Use(requestid.New())

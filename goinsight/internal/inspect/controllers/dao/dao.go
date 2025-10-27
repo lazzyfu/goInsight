@@ -3,11 +3,13 @@ package dao
 import (
 	"errors"
 	"fmt"
-	"goInsight/internal/inspect/controllers/parser"
-	"goInsight/pkg/kv"
-	"goInsight/pkg/utils"
 	"strconv"
 	"strings"
+
+	"github.com/lazzyfu/goinsight/pkg/kv"
+	"github.com/lazzyfu/goinsight/pkg/utils"
+
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers/parser"
 
 	mysqlapi "github.com/go-sql-driver/mysql"
 )
