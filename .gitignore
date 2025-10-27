@@ -27,6 +27,7 @@ goInsight-fe/yarn-error.log
 goInsight/config.yaml
 goInsight/dist/
 goInsight/media/
+goInsight/logs/
 goInsight/goinsight/dist
 .DS_Store
 goinsight/bin/

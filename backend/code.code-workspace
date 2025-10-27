@@ -12,7 +12,7 @@
         "go.lintTool": "golangci-lint",
         "go.lintFlags": [],
         "go.coverOnSave": false,
-        "go.goroot": "/opt/homebrew/Cellar/go@1.21/1.21.13/libexec/",
+        "go.goroot": "/opt/homebrew/Cellar/go@1.23/1.23.11/libexec/",
         "[go]": {
             "editor.insertSpaces": false,
             "editor.formatOnSave": true,
