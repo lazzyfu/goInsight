@@ -107,9 +107,9 @@ func initializeTables(db *gorm.DB) {
 		&ordersModels.InsightOrderRecords{},
 		&ordersModels.InsightOrderTasks{},
 		&ordersModels.InsightOrderMessages{},
-		&ordersModels.ApprovalFlow{},
-		&ordersModels.ApprovalRecords{},
-		&ordersModels.ApprovalMaps{},
+		&ordersModels.InsightApprovalFlow{},
+		&ordersModels.InsightApprovalRecords{},
+		&ordersModels.InsightApprovalMaps{},
 	)
 	if err != nil {
 		global.App.Log.Fatal("migrate table failed", err.Error())

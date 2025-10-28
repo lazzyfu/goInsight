@@ -46,3 +46,19 @@ func GetDetailView(c *gin.Context) {
 		response.Success(c, returnData, "success")
 	}
 }
+
+func GetOrderApprovalView(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	username := claims["id"].(string)
+	service := services.GetOrderApprovalServices{
+		OrderID:  c.Param("order_id"),
+		C:        c,
+		Username: username,
+	}
+	returnData, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+	} else {
+		response.Success(c, returnData, "success")
+	}
+}

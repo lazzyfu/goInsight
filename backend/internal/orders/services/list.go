@@ -114,6 +114,7 @@ func (s *GetDetailServices) Run() (responseData interface{}, err error) {
 	if tx.RowsAffected == 0 {
 		return result, fmt.Errorf("记录`%s`不存在", s.OrderID)
 	}
+
 	// 限制访问
 	if result.IsRestrictAccess {
 		var users []string = []string{result.Applicant}
@@ -124,5 +125,24 @@ func (s *GetDetailServices) Run() (responseData interface{}, err error) {
 			result.Content = "您没有权限查看当前工单内容"
 		}
 	}
+	return result, nil
+}
+
+type GetOrderApprovalServices struct {
+	C        *gin.Context
+	OrderID  string
+	Username string
+}
+
+func (s *GetOrderApprovalServices) Run() (responseData interface{}, err error) {
+	var result []ordersModels.InsightApprovalRecords
+	// 返回记录
+	tx := global.App.DB.Table("`insight_approval_records` a").
+		Where("a.order_id=?", s.OrderID).
+		Scan(&result)
+	if tx.RowsAffected == 0 {
+		return result, fmt.Errorf("记录`%s`不存在", s.OrderID)
+	}
+
 	return result, nil
 }

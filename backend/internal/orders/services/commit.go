@@ -110,7 +110,7 @@ func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
 		Approvers []string `json:"approvers"`
 	}
 
-	var record models.ApprovalFlow
+	var record models.InsightApprovalFlow
 	tx := global.App.DB.Table("insight_approval_maps a").Select(`b.definition`).
 		Joins("inner join insight_approval_flow b on a.approval_id = b.approval_id").
 		Where("a.username = ?", s.Username).Take(&record)
@@ -125,7 +125,7 @@ func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
 
 	for _, s := range stages {
 		for _, approver := range s.Approvers {
-			audit := models.ApprovalRecords{
+			audit := models.InsightApprovalRecords{
 				OrderID:  orderID,
 				Stage:    s.Stage,
 				Approver: approver,
