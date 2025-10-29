@@ -1,38 +1,135 @@
 <template>
   <a-space>
-    <a-button key="3" v-show="btnStatus.btnShow"> {{ btnTitle }}</a-button>
-    <a-button key="2" :disabled="btnStatus.closeBtnDisabled">关闭</a-button>
+    <a-button key="3" v-show="btnOptions.status.btnShow" @click="showBtnModal">
+      {{ btnTitle }}</a-button
+    >
+    <a-button key="2" :disabled="btnOptions.status.closeBtnDisabled" @click="showCloseModal"
+      >关闭</a-button
+    >
     <a-button key="1" type="primary">Primary</a-button>
   </a-space>
+
+  <!-- 审批等操作模态框 -->
+  <a-modal v-model:open="btnOptions.open" :title="btnOptions.tips.title" @ok="handleBtnOk">
+    <template #footer>
+      <a-button key="back" @click="handleBtnCancel">{{ btnOptions.tips.cancelText }}</a-button>
+      <a-button key="submit" type="primary" :loading="btnOptions.loading" @click="handleBtnOk">{{
+        btnOptions.tips.okText
+      }}</a-button>
+    </template>
+    <a-textarea :placeholder="btnOptions.tips.placeholder" v-model:value="confirmMsg" :rows="3" />
+  </a-modal>
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
   orderDetail: Object,
 })
 
-// 默认显示btn,关闭按钮
-const btnStatus = reactive({ btnShow: true, closeBtnDisabled: false })
+const confirmMsg = ref('')
+
+const btnOptions = reactive({
+  loading: false,
+  open: false,
+  tips: { okText: '确定', cancelText: '取消', action: 'approval', title: '', placeholder: ''},
+  status: { btnShow: true, closeBtnDisabled: false }, // 默认显示btn,关闭按钮
+})
+
+const getBtnConfig = (progress) => {
+  // 统一容错：进度可能为 undefined/null
+  const p = String(progress || '').toUpperCase()
+  // 默认配置
+  const defaultConfig = {
+    title: '',
+    tips: { okText: '确定', cancelText: '取消', action: 'approval', title: '', placeholder: '' },
+    status: { btnShow: true, closeBtnDisabled: false },
+  }
+
+  switch (p) {
+    case 'PENDING': // 待审批
+      return {
+        title: '审批',
+        tips: { okText: '同意', cancelText: '驳回', action: 'approval', title: '请审批', placeholder: '请输入审批意见...'},
+        status: { btnShow: true, closeBtnDisabled: false },
+      }
+    case 'APPROVED': // 已审批，待认领
+      return {
+        title: '认领',
+        tips: { okText: '认领', cancelText: '取消', action: 'claim', title: '认领任务' },
+        status: { btnShow: true, closeBtnDisabled: false },
+      }
+    case 'CLAIMED':
+    case 'EXECUTING': // 认领或执行中
+      return {
+        title: '执行',
+        tips: { okText: '执行完成', cancelText: '执行中', action: 'feedback', title: '执行' },
+        status: { btnShow: true, closeBtnDisabled: false },
+      }
+    case 'COMPLETED': // 执行完成，待复核
+      return {
+        title: '复核',
+        tips: { okText: '确定', cancelText: '取消', action: 'review', title: '复核' },
+        status: { btnShow: true, closeBtnDisabled: true }, // 复核时关闭按钮置灰示例
+      }
+    case 'REJECTED':
+    case 'REVIEWED':
+    case 'CLOSED':
+      return {
+        title: '',
+        tips: { okText: '确定', cancelText: '取消', action: 'none', title: '' },
+        status: { btnShow: false, closeBtnDisabled: true },
+      }
+    default:
+      return defaultConfig
+  }
+}
 
 const btnTitle = computed(() => {
-  const progress = props.orderDetail.progress
-  switch (progress) {
-    case 'PENDING':
-      return '审批'
-    case 'APPROVED':
-      return '认领'
-    case ('REJECTED', 'REVIEWED', 'CLOSED'):
-      btnStatus.btnShow = false
-      btnStatus.closeBtnDisabled = true
-      return '已驳回'
-    case ('CLAIMED', 'EXECUTING'):
-      return '执行'
-    case 'COMPLETED':
-      return '复核'
-  }
+  const p = props.orderDetail?.progress
+  const cfg = getBtnConfig(p)
+  return cfg.title
 })
+
+watch(
+  () => props.orderDetail?.progress,
+  (newProgress) => {
+    const cfg = getBtnConfig(newProgress)
+    btnOptions.status.btnShow = cfg.status.btnShow
+    btnOptions.status.closeBtnDisabled = cfg.status.closeBtnDisabled
+  },
+  { immediate: true }
+)
+
+const showBtnModal = () => {
+  const cfg = getBtnConfig(props.orderDetail?.progress)
+  btnOptions.tips = { ...cfg.tips }
+  btnOptions.open = true
+}
+
+const showCloseModal = () => {
+  btnOptions.tips = {
+    okText: '确定',
+    cancelText: '取消',
+    action: 'close',
+    title: '确定关闭工单?',
+    placeholder: '请输入关闭原因...'
+  }
+  btnOptions.open = true
+}
+
+const handleBtnOk = () => {
+  btnOptions.loading = true
+  // TODO 调用接口
+  setTimeout(() => {
+    btnOptions.loading = false
+    btnOptions.open = false
+  }, 2000)
+}
+const handleBtnCancel = () => {
+  btnOptions.open = false
+}
 </script>
 
 <!--
