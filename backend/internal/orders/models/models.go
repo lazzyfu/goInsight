@@ -9,6 +9,32 @@ import (
 )
 
 // 工单记录
+/**
+# 工单生命周期
+| 阶段            | 描述                | 示例触发方     |
+| ------------- | ----------------- | --------- |
+| **PENDING**   | 待审批（创建后进入此状态）     | 工单提交人     |
+| **APPROVED**  | 已批准，待执行           | 审批人同意     |
+| **REJECTED**  | 已驳回，流程终止          | 审批人驳回     |
+| **CLAIMED**   | 已认领，执行人接单         | 执行人主动认领   |
+| **EXECUTING** | 执行中               | 执行人操作     |
+| **COMPLETED** | 执行完成，待复核          | 执行人提交结果   |
+| **REVIEWED**  | 已复核，流程结束          | 复核人通过     |
+| **CLOSED**    | 已关闭，非正常终止（例如人工关闭） | 任意角色（管理方） |
+
+# 前端展示映射
+| 枚举        | 显示文案 | 显示颜色    |
+| --------- | ---- | ------- |
+| PENDING   | 待审批  | default |
+| APPROVED  | 已批准  | blue    |
+| REJECTED  | 已驳回  | red     |
+| CLAIMED   | 已认领  | cyan    |
+| EXECUTING | 执行中  | orange  |
+| COMPLETED | 已完成  | green   |
+| REVIEWED  | 已复核  | green   |
+| CLOSED    | 已关闭  | gray    |
+
+*/
 type InsightOrderRecords struct {
 	*models.Model
 	Title            string          `gorm:"type:varchar(256);not null;default:'';comment:工单标题;index:idx_title" json:"title"`
@@ -27,7 +53,7 @@ type InsightOrderRecords struct {
 	CC               datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单抄送人" json:"cc"`
 	InstanceID       uuid.UUID       `gorm:"type:char(36);comment:关联insight_db_config的instance_id;index" json:"instance_id"`
 	Schema           string          `gorm:"type:varchar(128);not null;default:'';comment:库名" json:"schema"`
-	Progress         models.EnumType `gorm:"type:ENUM('待审核', '已驳回', '已批准', '执行中', '已关闭', '已完成', '已复核');default:'待审核';comment:工单进度" json:"progress"`
+	Progress         models.EnumType `gorm:"type:ENUM('PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED','REVIEWED','CLOSED');default:'PENDING';comment:工单进度" json:"progress"`
 	FixVersion       string          `gorm:"type:varchar(128);not null;default:'';comment:上线版本;index" json:"fix_version"`
 	Content          string          `gorm:"type:text;null;comment:工单内容" json:"content"`
 	ExportFileFormat models.EnumType `gorm:"type:ENUM('XLSX', 'CSV');default:'XLSX';comment:导出文件格式" json:"export_file_format"`
@@ -63,12 +89,12 @@ func (InsightApprovalMaps) TableName() string {
 // 审批记录
 type InsightApprovalRecords struct {
 	gorm.Model
-	OrderID      uuid.UUID       `gorm:"type:char(36);comment:工单ID;index:index_order_id" json:"order_id"`
-	Stage        int             `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
-	StageName    string          `gorm:"type:varchar(64);null;default:null;comment:审批阶段名称" json:"stage_name"`
-	Approver     string          `gorm:"type:varchar(32);not null;comment:审批人" json:"approver"`
-	ApproverType models.EnumType `gorm:"type:ENUM('AND', 'OR');default:'AND';comment:审批类型" json:"approver_type"`
-	Status       models.EnumType `gorm:"type:ENUM('PENDING', 'APPROVED', 'REJECTED');default:'PENDING';comment:审批状态" json:"status"`
+	OrderID        uuid.UUID       `gorm:"type:char(36);comment:工单ID;index:index_order_id" json:"order_id"`
+	Stage          int             `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
+	StageName      string          `gorm:"type:varchar(64);null;default:null;comment:审批阶段名称" json:"stage_name"`
+	Approver       string          `gorm:"type:varchar(32);not null;comment:审批人" json:"approver"`
+	ApprovalType   models.EnumType `gorm:"type:ENUM('AND', 'OR');default:'AND';comment:审批类型" json:"approval_type"`
+	ApprovalStatus models.EnumType `gorm:"type:ENUM('PENDING', 'APPROVED', 'REJECTED');default:'PENDING';comment:审批状态" json:"approval_status"`
 }
 
 func (InsightApprovalRecords) TableName() string {

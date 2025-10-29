@@ -10,15 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetListView(c *gin.Context) {
+func GetOrderListView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.GetListForm = &forms.GetListForm{}
+	var form *forms.GetOrderListForm = &forms.GetOrderListForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.GetListServices{
-			GetListForm: form,
-			C:           c,
-			Username:    username,
+		service := services.GetOrderListServices{
+			GetOrderListForm: form,
+			C:                c,
+			Username:         username,
 		}
 		returnData, total, err := service.Run()
 		if err != nil {
@@ -31,10 +31,10 @@ func GetListView(c *gin.Context) {
 	}
 }
 
-func GetDetailView(c *gin.Context) {
+func GetOrderDetailView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	service := services.GetDetailServices{
+	service := services.GetOrderDetailServices{
 		OrderID:  c.Param("order_id"),
 		C:        c,
 		Username: username,

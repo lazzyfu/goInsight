@@ -11,15 +11,15 @@ import (
 )
 
 // 语法审核
-func SyntaxInspectView(c *gin.Context) {
+func InspectOrderSyntaxView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.SyntaxInspectForm = &forms.SyntaxInspectForm{}
+	var form *forms.InspectOrderSyntaxForm = &forms.InspectOrderSyntaxForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.SyntaxInspectService{
-			SyntaxInspectForm: form,
-			C:                 c,
-			Username:          username,
+		service := services.InspectOrderSyntaxService{
+			InspectOrderSyntaxForm: form,
+			C:                      c,
+			Username:               username,
 		}
 		returnData, err := service.Run()
 		if err != nil {

@@ -14,14 +14,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type SyntaxInspectService struct {
-	*forms.SyntaxInspectForm
+type InspectOrderSyntaxService struct {
+	*forms.InspectOrderSyntaxForm
 	C        *gin.Context
 	Username string
 }
 
 // 获取实例配置
-func (s *SyntaxInspectService) getInstanceConfig() (commonModels.InsightDBConfig, error) {
+func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightDBConfig, error) {
 	// 获取实例配置
 	var config commonModels.InsightDBConfig
 	tx := global.App.DB.Table("`insight_db_config`").
@@ -34,7 +34,7 @@ func (s *SyntaxInspectService) getInstanceConfig() (commonModels.InsightDBConfig
 }
 
 // 审核SQL
-func (s *SyntaxInspectService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *InspectOrderSyntaxService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
 		DbUser:     global.App.Config.RemoteDB.UserName,
@@ -49,7 +49,7 @@ func (s *SyntaxInspectService) inspectSQL(config commonModels.InsightDBConfig) (
 	return inspect.Run()
 }
 
-func (s *SyntaxInspectService) Run() (interface{}, error) {
+func (s *InspectOrderSyntaxService) Run() (interface{}, error) {
 	// 判断SQL类型是否匹配，DML工单仅允许提交DML语句，DDL工单仅允许提交DDL语句
 	err := parser.CheckSqlType(s.Content, string(s.SQLType))
 	if err != nil {

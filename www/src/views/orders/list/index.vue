@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { getOrdersHistoryApi } from '@/api/order'
+import { getOrderListApi } from '@/api/order'
 import { onMounted, reactive, ref } from 'vue'
 
 import { DatabaseOutlined } from '@ant-design/icons-vue'
@@ -165,7 +165,7 @@ const fetchData = async () => {
     search: searchValue.value,
   }
 
-  const res = await getOrdersHistoryApi(params)
+  const res = await getOrderListApi(params)
   console.log('res: ', res)
 
   if (res) {

@@ -27,11 +27,11 @@ import (
 )
 
 // 获取环境
-type GetEnvironmentsService struct {
+type GetOrderEnvironmentsService struct {
 	C *gin.Context
 }
 
-func (s *GetEnvironmentsService) Run() ([]commonModels.InsightDBEnvironments, error) {
+func (s *GetOrderEnvironmentsService) Run() ([]commonModels.InsightDBEnvironments, error) {
 	var results []commonModels.InsightDBEnvironments
 	global.App.DB.Table("`insight_db_environments` a").
 		Select("a.`name`, a.id").
@@ -40,13 +40,13 @@ func (s *GetEnvironmentsService) Run() ([]commonModels.InsightDBEnvironments, er
 }
 
 // 获取指定环境的实例
-type GetInstancesService struct {
-	*forms.GetInstancesForm
+type GetOrderInstancesService struct {
+	*forms.GetOrderInstancesForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *GetInstancesService) Run() (responseData interface{}, total int64, err error) {
+func (s *GetOrderInstancesService) Run() (responseData interface{}, total int64, err error) {
 	// 获取当前用户当前绑定组织和所有上级组织
 	var organization usersModels.InsightOrganizations
 	global.App.DB.Table("`insight_organizations` a").
@@ -69,12 +69,12 @@ func (s *GetInstancesService) Run() (responseData interface{}, total int64, err 
 }
 
 // 获取指定实例的Schemas
-type GetSchemasService struct {
-	*forms.GetSchemasForm
+type GetOrderSchemasService struct {
+	*forms.GetOrderSchemasForm
 	C *gin.Context
 }
 
-func (s *GetSchemasService) Run() (responseData interface{}, total int64, err error) {
+func (s *GetOrderSchemasService) Run() (responseData interface{}, total int64, err error) {
 	var roles []commonModels.InsightDBSchemas
 	tx := global.App.DB.Table("insight_db_schemas").Where("instance_id=?", s.InstanceID)
 	total = pagination.Pager(&s.PaginationQ, tx, &roles)
@@ -82,12 +82,12 @@ func (s *GetSchemasService) Run() (responseData interface{}, total int64, err er
 }
 
 // 获取审核/复核/抄送人
-type GetUsersService struct {
-	*forms.GetUsersForm
+type GetOrderUsersService struct {
+	*forms.GetOrderUsersForm
 	C *gin.Context
 }
 
-func (s *GetUsersService) Run() (responseData interface{}, total int64, err error) {
+func (s *GetOrderUsersService) Run() (responseData interface{}, total int64, err error) {
 	var roles []usersModels.InsightUsers
 	tx := global.App.DB.Table("insight_users").Where("is_active=1")
 	total = pagination.Pager(&s.PaginationQ, tx, &roles)
@@ -95,18 +95,19 @@ func (s *GetUsersService) Run() (responseData interface{}, total int64, err erro
 }
 
 // 提交工单
-type CreateOrdersService struct {
+type CreateOrderService struct {
 	*forms.CreateOrderForm
 	C        *gin.Context
 	Username string
 	Audit    *parser.TiStmt
 }
 
-func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
+func (s *CreateOrderService) generateApprovalRecords(orderID uuid.UUID) error {
 	fmt.Printf("orderID: %+v", orderID)
 	type FlowStage struct {
 		Type      string   `json:"type"`
 		Stage     int      `json:"stage"`
+		StageName string   `json:"stage_name"`
 		Approvers []string `json:"approvers"`
 	}
 
@@ -117,7 +118,7 @@ func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return fmt.Errorf("查询审批流失败: %w", tx.Error)
 	}
-	// [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND"}]
+	// [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND", "stage_name":"安全组审批"}]
 	var stages []FlowStage
 	if err := json.Unmarshal(record.Definition, &stages); err != nil {
 		return fmt.Errorf("解析审批流JSON失败: %w", err)
@@ -126,10 +127,12 @@ func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
 	for _, s := range stages {
 		for _, approver := range s.Approvers {
 			audit := models.InsightApprovalRecords{
-				OrderID:  orderID,
-				Stage:    s.Stage,
-				Approver: approver,
-				Status:   "PENDING",
+				OrderID:        orderID,
+				Stage:          s.Stage,
+				StageName:      s.StageName,
+				Approver:       approver,
+				ApprovalStatus: "PENDING",
+				ApprovalType:   commonModels.EnumType(s.Type),
 			}
 
 			if err := global.App.DB.Create(&audit).Error; err != nil {
@@ -137,12 +140,11 @@ func (s *CreateOrdersService) generateApprovalRecords(orderID uuid.UUID) error {
 			}
 		}
 	}
-	fmt.Printf("2222222222")
 	return nil
 }
 
 // 审核SQL
-func (s *CreateOrdersService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *CreateOrderService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
 		DbUser:     global.App.Config.RemoteDB.UserName,
@@ -158,7 +160,7 @@ func (s *CreateOrdersService) inspectSQL(config commonModels.InsightDBConfig) ([
 }
 
 // 获取用户组织，没有返回空值
-func (s *CreateOrdersService) getUserOrg() (organization string) {
+func (s *CreateOrderService) getUserOrg() (organization string) {
 	type org struct {
 		Organization string
 	}
@@ -200,7 +202,7 @@ func (s *CreateOrdersService) getUserOrg() (organization string) {
 	return record.Organization
 }
 
-func (s *CreateOrdersService) Run() error {
+func (s *CreateOrderService) Run() error {
 	// 判断SQL类型是否匹配，DML工单仅允许提交DML语句，DDL工单仅允许提交DDL语句
 	err := parser.CheckSqlType(s.Content, string(s.SQLType))
 	if err != nil {

@@ -11,8 +11,8 @@ import (
 )
 
 // 获取环境
-func GetEnvironmentsView(c *gin.Context) {
-	service := services.GetEnvironmentsService{C: c}
+func GetOrderEnvironmentsView(c *gin.Context) {
+	service := services.GetOrderEnvironmentsService{C: c}
 	returnData, err := service.Run()
 	if err == nil {
 		response.Success(c, returnData, "success")
@@ -22,15 +22,15 @@ func GetEnvironmentsView(c *gin.Context) {
 }
 
 // 获取指定环境的Schemas
-func GetInstancesView(c *gin.Context) {
+func GetOrderInstancesView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.GetInstancesForm = &forms.GetInstancesForm{}
+	var form *forms.GetOrderInstancesForm = &forms.GetOrderInstancesForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.GetInstancesService{
-			GetInstancesForm: form,
-			C:                c,
-			Username:         username,
+		service := services.GetOrderInstancesService{
+			GetOrderInstancesForm: form,
+			C:                     c,
+			Username:              username,
 		}
 		returnData, total, err := service.Run()
 		if err != nil {
@@ -44,12 +44,12 @@ func GetInstancesView(c *gin.Context) {
 }
 
 // 获取指定环境的Schemas
-func GetSchemasView(c *gin.Context) {
-	var form *forms.GetSchemasForm = &forms.GetSchemasForm{}
+func GetOrderSchemasView(c *gin.Context) {
+	var form *forms.GetOrderSchemasForm = &forms.GetOrderSchemasForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.GetSchemasService{
-			GetSchemasForm: form,
-			C:              c,
+		service := services.GetOrderSchemasService{
+			GetOrderSchemasForm: form,
+			C:                   c,
 		}
 		returnData, total, err := service.Run()
 		if err != nil {
@@ -63,12 +63,12 @@ func GetSchemasView(c *gin.Context) {
 }
 
 // 获取审核/复核/抄送人
-func GetUsersView(c *gin.Context) {
-	var form *forms.GetUsersForm = &forms.GetUsersForm{}
+func GetOrderUsersView(c *gin.Context) {
+	var form *forms.GetOrderUsersForm = &forms.GetOrderUsersForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.GetUsersService{
-			GetUsersForm: form,
-			C:            c,
+		service := services.GetOrderUsersService{
+			GetOrderUsersForm: form,
+			C:                 c,
 		}
 		returnData, total, err := service.Run()
 		if err != nil {
@@ -82,12 +82,12 @@ func GetUsersView(c *gin.Context) {
 }
 
 // 提交工单
-func CreateOrdersView(c *gin.Context) {
+func CreateOrderView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
 	var form *forms.CreateOrderForm
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.CreateOrdersService{
+		service := services.CreateOrderService{
 			CreateOrderForm: form,
 			C:               c,
 			Username:        username,

@@ -127,20 +127,22 @@
 
 <script setup>
 import {
-  createOrdersApi,
-  getEnvironmentsApi,
-  getInstancesApi,
-  getSchemasApi,
-  getUsersApi,
-  inspectSQLSyntaxApi,
+  createOrderApi,
+  getOrderEnvironmentsApi,
+  getOrderInstancesApi,
+  getOrderSchemasApi,
+  getOrderUsersApi,
+  inspectOrderSyntaxApi,
 } from '@/api/order'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import { CodeOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { debounce } from 'lodash-es'
 import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import InspectResultTable from './table.vue'
 
+const router = useRouter()
 const codemirrorRef = ref(null)
 const inspectResultTableRef = ref(null)
 
@@ -185,7 +187,7 @@ const handleChangeDbType = debounce(async (value) => {
   schemas.value = []
   if (!value) return
 
-  const res = await getInstancesApi({
+  const res = await getOrderInstancesApi({
     id: formState.environment,
     db_type: formState.db_type,
     is_page: false,
@@ -199,7 +201,7 @@ const handleChangeIns = debounce(async (value) => {
   formState.schema = ''
   schemas.value = []
   if (!value) return
-  const res = await getSchemasApi({ instance_id: value, is_page: false })
+  const res = await getOrderSchemasApi({ instance_id: value, is_page: false })
   if (res) {
     schemas.value = res.data || []
   }
@@ -215,9 +217,10 @@ const onSubmit = debounce(async () => {
 
   console.log('values', formState)
 
-  const res = await createOrdersApi(formState).catch((err) => {})
+  const res = await createOrderApi(formState).catch((err) => {})
   if (res) {
-    console.log('res: ', res)
+    message.success('工单创建成功')
+    router.push({ name: 'orders.list' })
   }
 })
 
@@ -251,7 +254,7 @@ const checkSyntax = debounce(async () => {
     content: sqltext,
   }
 
-  const res = await inspectSQLSyntaxApi(data).catch((err) => {})
+  const res = await inspectOrderSyntaxApi(data).catch((err) => {})
   if (res) {
     inspectResultTableRef.value.render(res.data)
   }
@@ -259,8 +262,8 @@ const checkSyntax = debounce(async () => {
 
 onMounted(async () => {
   const [envRes, userRes] = await Promise.all([
-    getEnvironmentsApi(),
-    getUsersApi({ is_page: false }),
+    getOrderEnvironmentsApi(),
+    getOrderUsersApi({ is_page: false }),
   ])
 
   environments.value = envRes.data || []

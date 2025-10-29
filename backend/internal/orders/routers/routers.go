@@ -10,17 +10,22 @@ import (
 
 func Routers(r *gin.Engine) {
 	r.GET("/ws/:channel", views.WebSocketHandler)
+
 	v1 := r.Group("/api/v1/orders")
 	v1.Use(global.App.JWT.MiddlewareFunc())
 	{
-		v1.GET("environments", views.GetEnvironmentsView)
-		v1.GET("instances", views.GetInstancesView)
-		v1.POST("inspect-sql-syntax", views.SyntaxInspectView)
-		v1.GET("schemas", views.GetSchemasView)
-		v1.GET("users", views.GetUsersView)
-		v1.POST("commit", views.CreateOrdersView)
-		v1.GET("history", views.GetListView)
-		v1.GET("history/:order_id", views.GetDetailView)
+		// 工单上下文选项查询
+		v1.GET("environments", views.GetOrderEnvironmentsView)
+		v1.GET("instances", views.GetOrderInstancesView)
+		v1.GET("schemas", views.GetOrderSchemasView)
+		v1.GET("users", views.GetOrderUsersView)
+		// SQL 语法检查
+		v1.POST("inspect-syntax", views.InspectOrderSyntaxView)
+		// 工单主流程
+		v1.POST("", views.CreateOrderView)
+		v1.GET("", views.GetOrderListView)
+		v1.GET(":order_id", views.GetOrderDetailView)
+		// 获取工单审批状态
 		v1.GET("approval/:order_id", views.GetOrderApprovalView)
 		v1.PUT("operate/approve", views.ApproveView)
 		v1.PUT("operate/feedback", views.FeedbackView)

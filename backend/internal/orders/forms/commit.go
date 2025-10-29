@@ -6,18 +6,18 @@ import (
 	"github.com/lazzyfu/goinsight/internal/common/models"
 )
 
-type GetInstancesForm struct {
+type GetOrderInstancesForm struct {
 	PaginationQ pagination.Pagination
 	ID          uint64 `form:"id"  json:"id" binding:"required"`
 	DbType      string `form:"db_type" json:"db_type" binding:"required,oneof=MySQL TiDB ClickHouse"`
 }
 
-type GetSchemasForm struct {
+type GetOrderSchemasForm struct {
 	PaginationQ pagination.Pagination
 	InstanceID  string `form:"instance_id" json:"instance_id" binding:"required,uuid"`
 }
 
-type GetUsersForm struct {
+type GetOrderUsersForm struct {
 	PaginationQ pagination.Pagination
 }
 

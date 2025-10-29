@@ -4,7 +4,7 @@ import (
 	"github.com/lazzyfu/goinsight/internal/common/models"
 )
 
-type SyntaxInspectForm struct {
+type InspectOrderSyntaxForm struct {
 	DBType     models.EnumType `form:"db_type" json:"db_type" binding:"required,oneof=MySQL TiDB ClickHouse"`
 	SQLType    models.EnumType `form:"sql_type" json:"sql_type" binding:"required,oneof=DML DDL EXPORT"`
 	InstanceID string          `form:"instance_id" json:"instance_id" binding:"required,uuid"`

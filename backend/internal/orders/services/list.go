@@ -18,13 +18,13 @@ import (
 	"gorm.io/datatypes"
 )
 
-type GetListServices struct {
-	*forms.GetListForm
+type GetOrderListServices struct {
+	*forms.GetOrderListForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *GetListServices) Run() (responseData interface{}, total int64, err error) {
+func (s *GetOrderListServices) Run() (responseData interface{}, total int64, err error) {
 	type record struct {
 		Title            string           `json:"title"`
 		Progress         string           `json:"progress"`
@@ -78,13 +78,13 @@ func (s *GetListServices) Run() (responseData interface{}, total int64, err erro
 	return &records, total, nil
 }
 
-type GetDetailServices struct {
+type GetOrderDetailServices struct {
 	C        *gin.Context
 	OrderID  string
 	Username string
 }
 
-func (s *GetDetailServices) convertToList(data datatypes.JSON) (users []string) {
+func (s *GetOrderDetailServices) convertToList(data datatypes.JSON) (users []string) {
 	var usersList []map[string]string
 	err := json.Unmarshal([]byte(data), &usersList)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *GetDetailServices) convertToList(data datatypes.JSON) (users []string) 
 	return
 }
 
-func (s *GetDetailServices) Run() (responseData interface{}, err error) {
+func (s *GetOrderDetailServices) Run() (responseData interface{}, err error) {
 	type record struct {
 		ordersModels.InsightOrderRecords
 		Environment string `json:"environment"`

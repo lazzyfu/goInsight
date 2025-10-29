@@ -6,22 +6,22 @@ const route = {
   meta: { title: '数据库工单', keepAlive: true },
   children: [
     {
-      name: 'orders.commit',
-      path: '/orders/commit',
+      name: 'orders.create',
+      path: '/orders/create',
       icon: 'FormOutlined',
-      component: () => import('./commit/index.vue'),
-      meta: { title: '提交工单', keepAlive: true },
+      component: () => import('./create/index.vue'),
+      meta: { title: '新建工单', keepAlive: true },
     },
     {
-      name: 'orders.export',
-      path: '/orders/export',
+      name: 'orders.list',
+      path: '/orders',
       icon: 'UnorderedListOutlined',
       component: () => import('./list/index.vue'),
       meta: { title: '工单列表', keepAlive: true },
     },
     {
       name: 'orders.detail',
-      path: '/orders/detail/:order_id',
+      path: '/orders/:order_id',
       component: () => import('./detail/index.vue'),
       meta: { title: '工单详情', keepAlive: true, hidden: true },
     }
