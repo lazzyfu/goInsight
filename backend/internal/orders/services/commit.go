@@ -103,7 +103,6 @@ type CreateOrderService struct {
 }
 
 func (s *CreateOrderService) generateApprovalRecords(orderID uuid.UUID) error {
-	fmt.Printf("orderID: %+v", orderID)
 	type FlowStage struct {
 		Type      string   `json:"type"`
 		Stage     int      `json:"stage"`

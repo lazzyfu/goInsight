@@ -22,18 +22,20 @@
 </template>
 
 <script setup>
+import { approvalOrderApi } from '@/api/order'
+import { message } from 'ant-design-vue'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
   orderDetail: Object,
 })
-
+const emit = defineEmits(['refresh'])
 const confirmMsg = ref('')
 
 const btnOptions = reactive({
   loading: false,
   open: false,
-  tips: { okText: '确定', cancelText: '取消', action: 'approval', title: '', placeholder: ''},
+  tips: { okText: '确定', cancelText: '取消', action: 'approval', title: '', placeholder: '' },
   status: { btnShow: true, closeBtnDisabled: false }, // 默认显示btn,关闭按钮
 })
 
@@ -51,7 +53,13 @@ const getBtnConfig = (progress) => {
     case 'PENDING': // 待审批
       return {
         title: '审批',
-        tips: { okText: '同意', cancelText: '驳回', action: 'approval', title: '请审批', placeholder: '请输入审批意见...'},
+        tips: {
+          okText: '同意',
+          cancelText: '驳回',
+          action: 'approval',
+          title: '请审批',
+          placeholder: '请输入审批意见...',
+        },
         status: { btnShow: true, closeBtnDisabled: false },
       }
     case 'APPROVED': // 已审批，待认领
@@ -99,7 +107,7 @@ watch(
     btnOptions.status.btnShow = cfg.status.btnShow
     btnOptions.status.closeBtnDisabled = cfg.status.closeBtnDisabled
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const showBtnModal = () => {
@@ -114,18 +122,33 @@ const showCloseModal = () => {
     cancelText: '取消',
     action: 'close',
     title: '确定关闭工单?',
-    placeholder: '请输入关闭原因...'
+    placeholder: '请输入关闭原因...',
   }
   btnOptions.open = true
 }
 
-const handleBtnOk = () => {
+const handleBtnOk = async () => {
   btnOptions.loading = true
-  // TODO 调用接口
-  setTimeout(() => {
-    btnOptions.loading = false
-    btnOptions.open = false
-  }, 2000)
+  switch (btnOptions.tips.action) {
+    case 'approval':
+      const res = await approvalOrderApi({
+        order_id: props.orderDetail?.order_id,
+        status: 'APPROVED',
+        msg: confirmMsg.value,
+      }).catch((err) => {})
+      if (res?.code === '0000') {
+        message.info('审批通过')
+        emit('refresh')
+      }
+      break
+
+    default:
+      break
+  }
+  console.log('btnOptions: ', btnOptions)
+
+  btnOptions.loading = false
+  btnOptions.open = false
 }
 const handleBtnCancel = () => {
   btnOptions.open = false

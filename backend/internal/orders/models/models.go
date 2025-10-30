@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 )
 
 // 工单记录
@@ -53,6 +52,7 @@ type InsightOrderRecords struct {
 	CC               datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单抄送人" json:"cc"`
 	InstanceID       uuid.UUID       `gorm:"type:char(36);comment:关联insight_db_config的instance_id;index" json:"instance_id"`
 	Schema           string          `gorm:"type:varchar(128);not null;default:'';comment:库名" json:"schema"`
+	Stage            int             `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
 	Progress         models.EnumType `gorm:"type:ENUM('PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED','REVIEWED','CLOSED');default:'PENDING';comment:工单进度" json:"progress"`
 	FixVersion       string          `gorm:"type:varchar(128);not null;default:'';comment:上线版本;index" json:"fix_version"`
 	Content          string          `gorm:"type:text;null;comment:工单内容" json:"content"`
@@ -65,7 +65,7 @@ func (InsightOrderRecords) TableName() string {
 
 // 审批流
 type InsightApprovalFlow struct {
-	gorm.Model
+	*models.Model
 	ApprovalID uuid.UUID      `gorm:"type:char(36);comment:审批流ID;uniqueIndex:uniq_approval_id" json:"approval_id"`
 	Name       string         `gorm:"type:varchar(64);not null;default:'';comment:审批流名称" json:"name"`
 	Definition datatypes.JSON `json:"definition"` // [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND", "stage_name": '部门审批'}]
@@ -77,7 +77,7 @@ func (InsightApprovalFlow) TableName() string {
 
 // 审批流和用户映射表，每个用户只能在一个审批流里面
 type InsightApprovalMaps struct {
-	gorm.Model
+	*models.Model
 	Username   string    `gorm:"type:varchar(32);not null;uniqueIndex:uniq_username;comment:用户名" json:"username"`
 	ApprovalID uuid.UUID `gorm:"type:char(36);comment:审批流ID;index:idx_approval_id" json:"approval_id"`
 }
@@ -88,13 +88,15 @@ func (InsightApprovalMaps) TableName() string {
 
 // 审批记录
 type InsightApprovalRecords struct {
-	gorm.Model
-	OrderID        uuid.UUID       `gorm:"type:char(36);comment:工单ID;index:index_order_id" json:"order_id"`
-	Stage          int             `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
-	StageName      string          `gorm:"type:varchar(64);null;default:null;comment:审批阶段名称" json:"stage_name"`
-	Approver       string          `gorm:"type:varchar(32);not null;comment:审批人" json:"approver"`
-	ApprovalType   models.EnumType `gorm:"type:ENUM('AND', 'OR');default:'AND';comment:审批类型" json:"approval_type"`
-	ApprovalStatus models.EnumType `gorm:"type:ENUM('PENDING', 'APPROVED', 'REJECTED');default:'PENDING';comment:审批状态" json:"approval_status"`
+	*models.Model
+	OrderID        uuid.UUID        `gorm:"type:char(36);comment:工单ID;index:index_order_id" json:"order_id"`
+	Stage          int              `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
+	StageName      string           `gorm:"type:varchar(64);null;default:null;comment:审批阶段名称" json:"stage_name"`
+	Approver       string           `gorm:"type:varchar(32);not null;comment:审批人" json:"approver"`
+	ApprovalType   models.EnumType  `gorm:"type:ENUM('AND', 'OR');default:'AND';comment:审批类型" json:"approval_type"`
+	ApprovalStatus models.EnumType  `gorm:"type:ENUM('PENDING', 'APPROVED', 'REJECTED');default:'PENDING';comment:审批状态" json:"approval_status"`
+	ApprovalAt     models.LocalTime `gorm:"comment:审批时间" json:"approval_at"`
+	Msg            string           `gorm:"type:varchar(512);not null;default:'';comment:审批意见" json:"msg"`
 }
 
 func (InsightApprovalRecords) TableName() string {

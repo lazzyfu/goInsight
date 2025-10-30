@@ -77,8 +77,8 @@ const formatApprovalData = (data) => {
                   : '已驳回'
             }</span>
           </span>
-          <span>备注：<b>${i.approval_remark}</b></span>
-          <span>审批时间：<b>${i.approval_time}</b></span>
+          <span>审批时间：<b>${i.updated_at}</b></span>
+          <span>备注：<b>${i.msg}</b></span>
         </div>
       `,
       )

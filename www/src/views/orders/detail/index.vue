@@ -10,7 +10,7 @@
         <a-tag :color="progressInfo.color">{{ progressInfo.text }}</a-tag>
       </template>
       <template #extra>
-        <extra-btn :order-detail="orderDetail" />
+        <extra-btn :order-detail="orderDetail" @refresh="refresh" />
       </template>
       <content :order-detail="orderDetail" />
     </a-page-header>
@@ -56,6 +56,7 @@ const getOrderApproval = async () => {
     order_id: orderId,
   }).catch((err) => {})
   if (res) {
+    console.log('res: ', res);
     approvalList.value = res.data
   }
 }
@@ -72,6 +73,11 @@ const getProgressAlias = (progress) => {
     CLOSED: { text: '已关闭', color: 'gray' },
   }
   return statusMap[progress] || { text: progress, color: 'default' }
+}
+
+const refresh = () => {
+  getOrderDetail()
+  getOrderApproval()
 }
 
 watch(

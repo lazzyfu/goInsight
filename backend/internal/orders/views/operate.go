@@ -11,14 +11,14 @@ import (
 )
 
 // 审批
-func ApproveView(c *gin.Context) {
+func ApprovalView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
-	var form *forms.ApproveForm = &forms.ApproveForm{}
+	var form *forms.ApprovalForm = &forms.ApprovalForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.ApproveService{
-			ApproveForm: form,
-			C:           c,
-			Username:    username,
+		service := services.ApprovalService{
+			ApprovalForm: form,
+			C:            c,
+			Username:     username,
 		}
 		err := service.Run()
 		if err != nil {

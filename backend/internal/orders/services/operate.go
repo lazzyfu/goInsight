@@ -18,103 +18,117 @@ import (
 )
 
 // 审批
-type ApproveService struct {
-	*forms.ApproveForm
+type ApprovalService struct {
+	*forms.ApprovalForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *ApproveService) updateProgress(tx *gorm.DB, progress string) error {
-	if err := tx.Model(&models.InsightOrderRecords{}).
-		Where("order_id=?", s.OrderID).
-		Updates(map[string]interface{}{
-			"progress":   progress,
-			"updated_at": time.Now().Format("2006-01-02 15:04:05"),
-		}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *ApproveService) updateApprover(tx *gorm.DB, users []map[string]interface{}) error {
-	usersJson, err := json.Marshal(users)
-	if err != nil {
-		return err
-	}
-	if err := tx.Model(&models.InsightOrderRecords{}).
-		Where("order_id=?", s.OrderID).
-		Updates(map[string]interface{}{
-			"approver":   string(usersJson),
-			"updated_at": time.Now().Format("2006-01-02 15:04:05"),
-		}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *ApproveService) Run() (err error) {
-	// 判断记录是否存在
-	var record models.InsightOrderRecords
-	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
+func (s *ApprovalService) Run() (err error) {
+	// 判断工单是否存在
+	var orderRecord models.InsightOrderRecords
+	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&orderRecord)
 	if tx.RowsAffected == 0 {
-		return fmt.Errorf("记录`%s`不存在", s.OrderID)
+		return fmt.Errorf("工单`%s`不存在", s.OrderID)
 	}
-	// 判断审核状态
-	if !utils.IsContain([]string{"待审核"}, string(record.Progress)) {
-		return fmt.Errorf("非可操作状态，禁止操作")
+	// 判断当前工单的审批状态
+	if !utils.IsContain([]string{"PENDING"}, string(orderRecord.Progress)) {
+		return fmt.Errorf("非待审批状态，禁止操作")
 	}
-	// 获取允许审核的用户
-	var approverList []map[string]interface{}
-	err = json.Unmarshal([]byte(record.Approver), &approverList)
-	if err != nil {
-		return err
+	// 获取当前审批阶段的审批记录
+	var approvalRecords []models.InsightApprovalRecords
+	tx = global.App.DB.Table("`insight_approval_records` a").
+		Where("a.order_id=? and stage=?", s.OrderID, orderRecord.Stage).
+		Scan(&approvalRecords)
+	if tx.RowsAffected == 0 {
+		return fmt.Errorf("审批记录`%s`不存在", s.OrderID)
 	}
-	// 更新审核人信息
-	var M int = 0
-	var passCount int = 0
-	for _, i := range approverList {
-		if i["user"] == s.Username {
-			M += 1
-			if i["status"] != "pending" {
-				return fmt.Errorf("您已审核过，请不要重复执行")
+	// 判断用户是否有当前审批阶段的审批权限及是否已审批
+	hasPermission := false
+	for _, r := range approvalRecords {
+		if r.Approver == s.Username {
+			hasPermission = true
+			if r.ApprovalStatus != "PENDING" {
+				return fmt.Errorf("您已审批过，请勿重复执行")
 			}
-			i["status"] = s.Status
-			i["user"] = s.Username
-		}
-		if i["status"] == "pass" {
-			// 计算为审核通过
-			passCount += 1
+			break
 		}
 	}
-	if M == 0 {
-		return fmt.Errorf("您没有当前工单的审核权限")
+	if !hasPermission {
+		return fmt.Errorf("当前用户无审批权限或审批阶段未激活")
 	}
+
+	now := time.Now().Format("2006-01-02 15:04:05")
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		// 更新审批人信息
-		if err := s.updateApprover(tx, approverList); err != nil {
+		// 更新当前用户审批状态
+		if err := tx.Model(&models.InsightApprovalRecords{}).
+			Where("order_id=? AND stage=? AND approver=?", s.OrderID, orderRecord.Stage, s.Username).
+			Updates(map[string]any{
+				"approval_status": s.Status,
+				"msg":             s.Msg,
+				"approval_at":     now,
+			}).Error; err != nil {
 			return err
 		}
-		// 全部都通过了审核，设置为已批准
-		if len(approverList) == passCount {
-			if err := s.updateProgress(tx, "已批准"); err != nil {
+
+		// 如果当前审核人驳回，直接驳回整个工单
+		if s.Status == "REJECTED" {
+			return tx.Model(&models.InsightOrderRecords{}).
+				Where("order_id=?", s.OrderID).
+				Updates(map[string]any{
+					"progress": "REJECTED",
+				}).Error
+		}
+
+		// 重新加载当前阶段记录，计算是否通过
+		var stageRecords []models.InsightApprovalRecords
+		if err := tx.Where("order_id=? AND stage=?", s.OrderID, orderRecord.Stage).Find(&stageRecords).Error; err != nil {
+			return err
+		}
+
+		approvalType := stageRecords[0].ApprovalType
+		allApproved := true
+		anyApproved := false
+		for _, r := range stageRecords {
+			switch r.ApprovalStatus {
+			case "APPROVED":
+				anyApproved = true
+			default:
+				allApproved = false
+			}
+		}
+
+		stagePass := false
+		if approvalType == "AND" && allApproved {
+			stagePass = true
+		}
+		if approvalType == "OR" && anyApproved {
+			stagePass = true
+		}
+
+		if stagePass {
+			// 当前阶段通过，检查是否还有下一阶段
+			var nextStageCount int64
+			if err := tx.Model(&models.InsightApprovalRecords{}).
+				Where("order_id=? AND stage > ?", s.OrderID, orderRecord.Stage).
+				Count(&nextStageCount).Error; err != nil {
+				return err
+			}
+			if nextStageCount == 0 {
+				// 没有下一阶段，全部审批完成
+				return tx.Model(&models.InsightOrderRecords{}).
+					Where("order_id=?", s.OrderID).
+					Updates(map[string]any{
+						"progress": "APPROVED",
+					}).Error
+			}
+			// 有下一阶段，工单阶段 +1
+			if err := tx.Model(&models.InsightOrderRecords{}).
+				Where("order_id=?", s.OrderID).
+				Update("stage", orderRecord.Stage+1).Error; err != nil {
 				return err
 			}
 		}
-		// 如果点击驳回，将工单设置为已驳回
-		if s.Status == "reject" {
-			if err := s.updateProgress(tx, "已驳回"); err != nil {
-				return err
-			}
-		}
-		// 操作日志
-		logMsg := fmt.Sprintf("用户%s审核通过了工单", s.Username)
-		if s.Status == "reject" {
-			logMsg = fmt.Sprintf("用户%s驳回了工单", s.Username)
-		}
-		// 发送消息，发送给工单申请人
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，%s\n>工单标题：%s\n>附加消息：%s", logMsg, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
 }
