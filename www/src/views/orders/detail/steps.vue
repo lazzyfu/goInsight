@@ -17,12 +17,12 @@
 <script setup>
 import { ref, watch } from 'vue'
 
-const currentProgress = ref(0)
-const approvals = ref([])
-
 const props = defineProps({
   approvalList: Array,
 })
+
+const currentProgress = ref(0)
+const approvals = ref([])
 
 // 格式化审批数据，计算 current 进度
 const formatApprovalData = (data) => {
@@ -64,9 +64,17 @@ const formatApprovalData = (data) => {
           <span>审批人：<b>${i.approver}</b></span>
           <span>状态：
             <span style="color: ${
-              i.approval_status === 'PENDING' ? '' : i.approval_status === 'APPROVED' ? '#52c41a' : '#f5222d'
+              i.approval_status === 'PENDING'
+                ? ''
+                : i.approval_status === 'APPROVED'
+                  ? '#52c41a'
+                  : '#f5222d'
             };">${
-              i.approval_status === 'PENDING' ? '待审批' : i.approval_status === 'APPROVED' ? '已通过' : '已驳回'
+              i.approval_status === 'PENDING'
+                ? '待审批'
+                : i.approval_status === 'APPROVED'
+                  ? '已通过'
+                  : '已驳回'
             }</span>
           </span>
           <span>备注：<b>${i.approval_remark}</b></span>

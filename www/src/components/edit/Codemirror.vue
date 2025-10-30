@@ -18,6 +18,8 @@ let editorView = ref(null) // 编辑器实例
 
 const languageCompartment = new Compartment()
 const editableCompartment = new Compartment()
+const readonlyCompartment = new Compartment()
+
 
 // 初始化扩展
 const fixedExtensions = [
@@ -44,6 +46,7 @@ const initEditor = () => {
     extensions: [
       fixedExtensions,
       languageCompartment.of(sql({ dialect: StandardSQL })),
+      readonlyCompartment.of(EditorState.readOnly.of(false)),
       editableCompartment.of(EditorView.editable.of(true)),
     ],
   })
@@ -55,11 +58,11 @@ const initEditor = () => {
   editorView.value.dom.style.height = '470px'
 }
 
-// 设置为只读
+// 设置为只读，但可选中、可复制
 const setReadonly = (readonly) => {
   if (!editorView.value) return
   editorView.value.dispatch({
-    effects: editableCompartment.reconfigure(EditorView.editable.of(!readonly)),
+    effects: readonlyCompartment.reconfigure(EditorState.readOnly.of(readonly)),
   })
 }
 

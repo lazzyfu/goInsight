@@ -1,6 +1,17 @@
 <template>
-  <a-tabs v-model="data.activeKey" type="editable-card" size="small" @edit="handleTabEdit" @change="handleTabChange">
-    <a-tab-pane v-for="pane in data.panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
+  <a-tabs
+    v-model="data.activeKey"
+    type="editable-card"
+    size="small"
+    @edit="handleTabEdit"
+    @change="handleTabChange"
+  >
+    <a-tab-pane
+      v-for="pane in data.panes"
+      :key="pane.key"
+      :tab="pane.title"
+      :closable="pane.closable"
+    >
     </a-tab-pane>
   </a-tabs>
   <a-space size="small">
@@ -39,7 +50,6 @@
         </a-select-option>
       </a-select>
     </span>
-
   </a-space>
   <div style="margin-top: 6px">
     <a-spin :spinning="data.tableLoading" tip="Loading...">
@@ -52,18 +62,28 @@
   <!-- 数据字典 -->
   <DbDict ref="dbDictRef" :open="isDbDictOpen" @update:open="isDbDictOpen = false" />
   <!-- 新增收藏SQL -->
-  <FavoritesAdd :open="isFavoritesOpen" :formState="favoritesFormState" :btnType="favoritesBtnType"
-    @update:open="isFavoritesOpen = $event" @submit="handleFavoritesSubmit" />
+  <FavoritesAdd
+    :open="isFavoritesOpen"
+    :formState="favoritesFormState"
+    :btnType="favoritesBtnType"
+    @update:open="isFavoritesOpen = $event"
+    @submit="handleFavoritesSubmit"
+  />
 </template>
 
 <script setup>
-import { CreateFavoritesApi, ExecuteClickHouseQueryApi, ExecuteMySQLQueryApi, GetDBDictApi } from "@/api/das";
-import CodeMirror from '@/components/edit/Codemirror.vue';
-import FavoritesAdd from "@/views/das/favorite/modal.vue";
-import { BookOutlined, CodeOutlined, PlayCircleOutlined, StarOutlined } from "@ant-design/icons-vue";
-import { message } from "ant-design-vue";
-import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import DbDict from './dbdict.vue';
+import {
+  CreateFavoritesApi,
+  ExecuteClickHouseQueryApi,
+  ExecuteMySQLQueryApi,
+  GetDBDictApi,
+} from '@/api/das'
+import CodeMirror from '@/components/edit/Codemirror.vue'
+import FavoritesAdd from '@/views/das/favorite/modal.vue'
+import { BookOutlined, CodeOutlined, PlayCircleOutlined, StarOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import DbDict from './dbdict.vue'
 
 const characterSets = [
   { key: 'utf8', value: 'utf8' },
@@ -76,12 +96,12 @@ const dbDictRef = ref(null)
 const isFavoritesOpen = ref(false)
 const favoritesBtnType = ref('收藏')
 const favoritesFormState = ref({
-  sqltext: ''
-});
+  sqltext: '',
+})
 
-const dasInstanceData = inject('dasInstanceData');
-const codemirrorRef = ref(null);
-const emit = defineEmits(["renderResultTable"])
+const dasInstanceData = inject('dasInstanceData')
+const codemirrorRef = ref(null)
+const emit = defineEmits(['renderResultTable'])
 const data = reactive({
   panes: [],
   activeKey: 1,
@@ -149,8 +169,8 @@ const loadTab = () => {
 // 保存tab cache
 const saveTabToCache = () => {
   var tabData = {
-    "characterSet": data.characterSet,
-    "userInput": codemirrorRef.value.getContent(),
+    characterSet: data.characterSet,
+    userInput: codemirrorRef.value.getContent(),
   }
   localStorage.setItem('das#tab#' + data.activeKey, JSON.stringify(tabData))
 }
@@ -162,8 +182,8 @@ const loadTabFromCache = () => {
     codemirrorRef.value.setContent(tabData.userInput)
     data.characterSet = tabData.characterSet
   } else {
-    data.characterSet = "utf8"
-    codemirrorRef.value.setContent("")
+    data.characterSet = 'utf8'
+    codemirrorRef.value.setContent('')
   }
 }
 
@@ -176,7 +196,7 @@ const generatorDataDictionary = () => {
   const payLoad = {
     instance_id: data.instance_id,
     schema: data.schema,
-    db_type: data.db_type
+    db_type: data.db_type,
   }
   GetDBDictApi(payLoad).then((res) => {
     isDbDictOpen.value = true
@@ -199,7 +219,7 @@ const addToFavorites = () => {
 
 // 收藏SQL提交
 const handleFavoritesSubmit = (data) => {
-  CreateFavoritesApi(data).then(res => {
+  CreateFavoritesApi(data).then((res) => {
     if (res.code == '0000') {
       message.success('收藏成功')
     } else {
@@ -209,27 +229,8 @@ const handleFavoritesSubmit = (data) => {
   })
 }
 
-// 处理执行SQL返回的结果
-const handleQueryResult = (res, resMsgs, emit) => {
-  data.tableLoading = false;
-  if (res.code === '0000') {
-    message.success('执行成功');
-    resMsgs.push('结果: 执行成功');
-    resMsgs.push(`耗时: ${res.data.duration}${data.db_type === 'clickhouse' ? 'ms' : ''}`);
-    resMsgs.push(`SQL: ${res.data.sqltext}`);
-    emit('renderResultTable', res.data);
-  } else {
-    message.error('执行失败, ' + res.message);
-    resMsgs.push('结果: 执行失败');
-    resMsgs.push(`错误: ${res.message}`);
-    resMsgs.push(`请求ID: ${res.request_id}`);
-    emit('renderResultTable', null);
-  }
-  data.queryResultMessage = resMsgs.join('<br>');
-};
-
 // 执行SQL
-const executeSqlQuery = () => {
+const executeSqlQuery = async () => {
   /* post data:
     {
       "instance_id": "291a892e-d8fb-11ed-8e15-126be0261c1a",
@@ -255,38 +256,50 @@ const executeSqlQuery = () => {
     message.warning('请鼠标选中要执行的SQL')
     return
   }
-
+  const dbType = data.db_type?.toLowerCase()
   const payLoad = {
     instance_id: data.instance_id,
     schema: data.schema,
     db_type: data.db_type,
-    sqltext: sqltext
+    sqltext: sqltext,
   }
-
-  var resMsgs = []
-  data.tableLoading = true
-
-  const queryHandlers = {
-    mysql: ExecuteMySQLQueryApi,
-    tidb: ExecuteMySQLQueryApi,
-    clickhouse: ExecuteClickHouseQueryApi,
-  };
-
-  const dbType = data.db_type.toLowerCase();
-  if (queryHandlers[dbType]) {
+  if (dbType === 'mysql' || dbType === 'tidb') {
     payLoad.params = {
       character_set_client: data.characterSet,
       character_set_connection: data.characterSet,
       character_set_results: data.characterSet,
-    };
-    queryHandlers[dbType](payLoad)
-      .then(res => handleQueryResult(res, resMsgs, emit));
+    }
+  }
+
+  let res = null
+  data.tableLoading = true
+  const resMsgs = []
+  try {
+    if (dbType === 'mysql' || dbType === 'tidb') {
+      res = await ExecuteMySQLQueryApi(payLoad).catch((err) => {})
+    } else if (dbType === 'clickhouse') {
+      res = await ExecuteClickHouseQueryApi(payLoad).catch((err) => {})
+    } else {
+      message.error(`不支持的数据库类型: ${data.db_type}`)
+      return
+    }
+    if (res) {
+      message.success('执行成功')
+      resMsgs.push('结果: 执行成功')
+      resMsgs.push(`耗时: ${res.data?.duration ?? '-'}${dbType === 'clickhouse' ? 'ms' : ''}`)
+      resMsgs.push(`SQL: ${res.data?.sqltext ?? sqltext}`)
+      resMsgs.push(`请求ID: ${res.request_id}`)
+      emit('renderResultTable', res.data)
+    }
+  } finally {
+    data.tableLoading = false
+    data.queryResultMessage = resMsgs.join('<br>')
   }
 }
 
 // 格式化
 const formatSqlContent = () => {
-  codemirrorRef.value.formatContent();
+  codemirrorRef.value.formatContent()
   saveTabToCache()
 }
 
