@@ -1,14 +1,22 @@
 <template>
   <div>
     <div class="search-wrapper">
-      <a-input-search
-        v-model:value="searchValue"
-        placeholder="输入SQL内容"
-        style="width: 350px"
-        @search="onSearch"
-      />
+      <a-space>
+        <a-switch
+          v-model:checked="state.checked"
+          checked-children="我的工单"
+          un-checked-children="所有工单"
+          @change="fetchData"
+        />
+        <a-input-search
+          v-model:value="searchValue"
+          placeholder="输入SQL内容"
+          style="width: 350px"
+          @search="onSearch"
+        />
+      </a-space>
     </div>
-    <div style="margin-top: 14px">
+    <div style="margin-top: 12px">
       <a-table
         size="small"
         :columns="tableColumns"
@@ -21,28 +29,28 @@
         :scroll="{ x: 1500 }"
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'applicant'">
-            <div class="user-cell">
-              <div class="user-avatar" :style="{ backgroundColor: getUserColor(record.applicant) }">
-                {{ record.applicant.charAt(0).toUpperCase() }}
-              </div>
-              <span class="user-name">{{ record.applicant }}</span>
-            </div>
+          <template v-if="column.key === 'progress'">
+            <template v-if="progressInfo = getProgressAlias(record.progress)">
+              <a-tag :color="progressInfo.color">
+                {{ progressInfo.text }}
+              </a-tag>
+            </template>
           </template>
           <template v-if="column.key === 'title'">
             <router-link :to="{ name: 'orders.detail', params: { order_id: record.order_id } }">
               {{ record.title }}
             </router-link>
           </template>
+          <template v-if="column.key === 'instance'">
+            {{ record.instance }}
+          </template>
           <template v-if="column.key === 'schema'">
-            <span class="schema-tag">
-              <DatabaseOutlined />
-              {{ record.schema }}
-            </span>
+            <DatabaseOutlined />
+            {{ record.schema }}
           </template>
           <template v-else-if="column.key === 'created_at'">
             <div class="time-cell">
-              <div class="time-main">{{ formatDate(record.created_at) }}</div>
+              <div class="time-main"><FieldTimeOutlined /> {{ formatDate(record.created_at) }}</div>
               <div class="time-sub">{{ formatTime(record.created_at) }}</div>
             </div>
           </template>
@@ -54,30 +62,23 @@
 
 <script setup>
 import { getOrderListApi } from '@/api/order'
+import { DatabaseOutlined, FieldTimeOutlined } from '@ant-design/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
-
-import { DatabaseOutlined } from '@ant-design/icons-vue'
 
 // 搜索
 const searchValue = ref('')
-
 const onSearch = (value) => {
   searchValue.value = value
   pagination.current = 1
   fetchData()
 }
 
+// 我的工单开关
+const state = reactive({
+  checked: false,
+})
+
 const tableColumns = ref([
-  {
-    title: '申请人',
-    dataIndex: 'applicant',
-    key: 'applicant',
-    ellipsis: true,
-    fixed: 'left',
-    scopedSlots: {
-      customRender: 'applicant',
-    },
-  },
   {
     title: '进度',
     dataIndex: 'progress',
@@ -97,6 +98,15 @@ const tableColumns = ref([
     ellipsis: true,
     scopedSlots: {
       customRender: 'title',
+    },
+  },
+  {
+    title: '申请人',
+    dataIndex: 'applicant',
+    key: 'applicant',
+    ellipsis: true,
+    scopedSlots: {
+      customRender: 'applicant',
     },
   },
   {
@@ -126,11 +136,19 @@ const tableColumns = ref([
     },
   },
   {
-    title: '实例/库',
+    title: '实例',
     dataIndex: 'instance',
     key: 'instance',
     scopedSlots: {
       customRender: 'instance',
+    },
+  },
+  {
+    title: '库名',
+    dataIndex: 'schema',
+    key: 'schema',
+    scopedSlots: {
+      customRender: 'schema',
     },
   },
   {
@@ -162,6 +180,7 @@ const fetchData = async () => {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
+    only_my_orders: state.checked,
     search: searchValue.value,
   }
 
@@ -193,52 +212,20 @@ const formatTime = (dateStr) => {
   return dateStr.split(' ')[1]
 }
 
-const getUserColor = (username) => {
-  const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#6366f1']
-  let hash = 0
-  for (let i = 0; i < username.length; i++) {
-    hash = username.charCodeAt(i) + ((hash << 5) - hash)
+const getProgressAlias = (progress) => {
+  const statusMap = {
+    PENDING: { text: '待审批', color: 'default' },
+    APPROVED: { text: '已批准', color: 'blue' },
+    REJECTED: { text: '已驳回', color: 'red' },
+    CLAIMED: { text: '已认领', color: 'cyan' },
+    EXECUTING: { text: '执行中', color: 'orange' },
+    COMPLETED: { text: '已完成', color: 'green' },
+    REVIEWED: { text: '已复核', color: 'green' },
+    CLOSED: { text: '已关闭', color: 'gray' },
   }
-  return colors[Math.abs(hash) % colors.length]
+  return statusMap[progress] || { text: progress, color: 'default' }
 }
-
 onMounted(() => {
   fetchData()
 })
 </script>
-
-<style scoped>
-.user-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.user-avatar {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.user-name {
-  font-weight: 500;
-}
-
-.schema-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: #f0fdf4;
-  color: #166534;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-</style>

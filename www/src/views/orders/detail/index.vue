@@ -7,7 +7,11 @@
       @back="() => $router.go(-1)"
     >
       <template #tags>
-        <a-tag :color="progressInfo.color">{{ progressInfo.text }}</a-tag>
+        <template v-if="progressInfo = getProgressAlias(orderDetail.progress)">
+          <a-tag :color="progressInfo.color">
+            {{ progressInfo.text }}
+          </a-tag>
+        </template>
       </template>
       <template #extra>
         <header-extra :order-detail="orderDetail" @refresh="refresh" />
@@ -27,7 +31,7 @@
 import { getOrderApprovalApi, getOrderDetailApi } from '@/api/order'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import { useUserStore } from '@/store/user'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ApprovalSteps from './ApprovalSteps.vue'
 import HeaderContent from './HeaderContent.vue'
@@ -39,7 +43,6 @@ const route = useRoute()
 const orderId = route.params.order_id
 const orderDetail = ref({})
 const approvalData = ref([])
-const progressInfo = reactive({ text: '', color: '' })
 
 const getOrderDetail = async () => {
   const res = await getOrderDetailApi({
@@ -56,7 +59,7 @@ const getOrderApproval = async () => {
     order_id: orderId,
   }).catch((err) => {})
   if (res) {
-    console.log('res: ', res);
+    console.log('res: ', res)
     approvalData.value = res.data
   }
 }
@@ -80,14 +83,6 @@ const refresh = () => {
   getOrderApproval()
 }
 
-watch(
-  () => orderDetail.value.progress,
-  (newValue) => {
-    const p = getProgressAlias(newValue)
-    progressInfo.text = p.text
-    progressInfo.color = p.color
-  },
-)
 watch(
   () => orderDetail.value.content,
   (newValue) => {

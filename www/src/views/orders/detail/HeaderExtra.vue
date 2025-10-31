@@ -184,14 +184,5 @@ const handleBtnCancel = () => {
 | **CLOSED**    | 已关闭，非正常终止（例如人工关闭） | 任意角色（管理方） |
 
 
-| 枚举        | 显示文案 | 显示颜色    |
-| --------- | ---- | ------- |
-| PENDING   | 待审批  | default |
-| APPROVED  | 已批准  | blue    |
-| REJECTED  | 已驳回  | red     |
-| CLAIMED   | 已认领  | cyan    |
-| EXECUTING | 执行中  | orange  |
-| COMPLETED | 已完成  | green   |
-| REVIEWED  | 已复核  | green   |
-| CLOSED    | 已关闭  | gray    |
+
 -->

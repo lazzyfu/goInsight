@@ -61,7 +61,7 @@ func (s *GetOrderListServices) Run() (responseData interface{}, total int64, err
 		Joins("left join insight_db_config c on a.instance_id = c.instance_id").
 		Order("a.created_at desc")
 	// 仅加载我的工单
-	if s.OnlyMyOrders == 1 {
+	if s.OnlyMyOrders {
 		tx = tx.Where("a.applicant=?", s.Username)
 	}
 	// 搜索
