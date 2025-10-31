@@ -35,7 +35,14 @@ const confirmMsg = ref('')
 const btnOptions = reactive({
   loading: false,
   open: false,
-  tips: { okText: '确定', cancelText: '取消', action: 'approval', title: '', placeholder: '' },
+  tips: {
+    okText: '确定',
+    cancelText: '取消',
+    action: 'approval',
+    title: '',
+    placeholder: '',
+    currentClick: '', // 当前点击的按钮
+  },
   status: { btnShow: true, closeBtnDisabled: false }, // 默认显示btn,关闭按钮
 })
 
@@ -127,31 +134,40 @@ const showCloseModal = () => {
   btnOptions.open = true
 }
 
-const handleBtnOk = async () => {
-  btnOptions.loading = true
+const RequestApi = async ()=>{
   switch (btnOptions.tips.action) {
     case 'approval':
       const res = await approvalOrderApi({
         order_id: props.orderDetail?.order_id,
-        status: 'APPROVED',
+        status: btnOptions.tips.currentClick === 'ok' ? 'APPROVED' : 'REJECTED',
         msg: confirmMsg.value,
       }).catch((err) => {})
       if (res?.code === '0000') {
-        message.info('审批通过')
+        message.info('操作成功')
         emit('refresh')
       }
       break
-
     default:
       break
   }
+}
+
+
+const handleBtnOk = async () => {
+  btnOptions.loading = true
+  btnOptions.tips.currentClick = 'ok'
+  console.log('btnOptions.tips: ', btnOptions.tips)
+  RequestApi()
+
   console.log('btnOptions: ', btnOptions)
 
   btnOptions.loading = false
   btnOptions.open = false
 }
 const handleBtnCancel = () => {
+  RequestApi()
   btnOptions.open = false
+  btnOptions.tips.currentClick = 'cancel'
 }
 </script>
 

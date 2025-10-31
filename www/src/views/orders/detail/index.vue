@@ -10,13 +10,13 @@
         <a-tag :color="progressInfo.color">{{ progressInfo.text }}</a-tag>
       </template>
       <template #extra>
-        <extra-btn :order-detail="orderDetail" @refresh="refresh" />
+        <header-extra :order-detail="orderDetail" @refresh="refresh" />
       </template>
-      <content :order-detail="orderDetail" />
+      <header-content :order-detail="orderDetail" />
     </a-page-header>
   </div>
   <a-card title="审批流" style="margin-top: 12px">
-    <approver-steps :approval-list="approvalList" />
+    <approval-steps :approval-data="approvalData" />
   </a-card>
   <a-card title="工单内容" style="margin-top: 12px">
     <CodeMirror ref="codemirrorRef" />
@@ -29,16 +29,16 @@ import CodeMirror from '@/components/edit/Codemirror.vue'
 import { useUserStore } from '@/store/user'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import Content from './content.vue'
-import ExtraBtn from './extra.vue'
-import ApproverSteps from './steps.vue'
+import ApprovalSteps from './ApprovalSteps.vue'
+import HeaderContent from './HeaderContent.vue'
+import HeaderExtra from './HeaderExtra.vue'
 
 const userStore = useUserStore()
 const codemirrorRef = ref(null)
 const route = useRoute()
 const orderId = route.params.order_id
 const orderDetail = ref({})
-const approvalList = ref([])
+const approvalData = ref([])
 const progressInfo = reactive({ text: '', color: '' })
 
 const getOrderDetail = async () => {
@@ -57,7 +57,7 @@ const getOrderApproval = async () => {
   }).catch((err) => {})
   if (res) {
     console.log('res: ', res);
-    approvalList.value = res.data
+    approvalData.value = res.data
   }
 }
 
