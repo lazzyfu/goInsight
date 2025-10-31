@@ -57,7 +57,7 @@ const formatApprovalData = (data) => {
     if (!grouped[item.stage]) {
       grouped[item.stage] = {
         title: item.stage_name,
-        subTitle: item.approval_type === 'AND' ? '与签' : '或签（任一审批人通过即可）',
+        subTitle: item.approval_type === 'AND' ? '会签' : '或签（任一审批人通过即可）',
         items: [],
       }
     }
@@ -71,7 +71,7 @@ const formatApprovalData = (data) => {
     const items = step.items
     const approvedCount = items.filter((i) => i.approval_status === 'APPROVED').length
 
-    if (step.subTitle === '与签') {
+    if (step.subTitle === '会签') {
       if (approvedCount === items.length) current++
     } else {
       if (approvedCount > 0) current++

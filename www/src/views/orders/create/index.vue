@@ -121,7 +121,7 @@
         </div>
       </a-col>
     </a-row>
-    <InspectResultTable ref="inspectResultTableRef" />
+    <inspect-table ref="inspectResultTableRef" />
   </a-card>
 </template>
 
@@ -140,7 +140,7 @@ import { message } from 'ant-design-vue'
 import { debounce } from 'lodash-es'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import InspectResultTable from './table.vue'
+import InspectTable from './InspectTable.vue'
 
 const router = useRouter()
 const codemirrorRef = ref(null)

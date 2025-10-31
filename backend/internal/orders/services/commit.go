@@ -115,7 +115,7 @@ func (s *CreateOrderService) generateApprovalRecords(orderID uuid.UUID) error {
 		Joins("inner join insight_approval_flow b on a.approval_id = b.approval_id").
 		Where("a.username = ?", s.Username).Take(&record)
 	if tx.Error != nil || tx.RowsAffected == 0 {
-		return fmt.Errorf("查询审批流失败: %w", tx.Error)
+		return fmt.Errorf("没有查询到审批流配置，请联系系统管理员")
 	}
 	// [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND", "stage_name":"安全组审批"}]
 	var stages []FlowStage
