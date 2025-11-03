@@ -11,14 +11,35 @@ import (
 )
 
 // 审批
-func ApprovalView(c *gin.Context) {
+func ApprovalOrderView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
-	var form *forms.ApprovalForm = &forms.ApprovalForm{}
+	var form *forms.ApprovalOrderForm = &forms.ApprovalOrderForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.ApprovalService{
-			ApprovalForm: form,
-			C:            c,
-			Username:     username,
+		service := services.ApprovalOrderService{
+			ApprovalOrderForm: form,
+			C:                 c,
+			Username:          username,
+		}
+		err := service.Run()
+		if err != nil {
+			response.Fail(c, err.Error())
+		} else {
+			response.Success(c, nil, "success")
+		}
+	} else {
+		response.ValidateFail(c, err.Error())
+	}
+}
+
+// 认领
+func ClaimOrderView(c *gin.Context) {
+	username := jwt.ExtractClaims(c)["id"].(string)
+	var form *forms.ClaimOrderForm = &forms.ClaimOrderForm{}
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.ClaimOrderService{
+			ClaimOrderForm: form,
+			C:              c,
+			Username:       username,
 		}
 		err := service.Run()
 		if err != nil {
@@ -74,14 +95,14 @@ func ReviewView(c *gin.Context) {
 }
 
 // 关闭工单
-func CloseView(c *gin.Context) {
+func CloseOrderView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
-	var form *forms.CloseForm = &forms.CloseForm{}
+	var form *forms.CloseOrderForm = &forms.CloseOrderForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.CloseService{
-			CloseForm: form,
-			C:         c,
-			Username:  username,
+		service := services.CloseOrderService{
+			CloseOrderForm: form,
+			C:              c,
+			Username:       username,
 		}
 		err := service.Run()
 		if err != nil {

@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { approvalOrderApi } from '@/api/order'
+import { approvalOrderApi, claimOrderApi, closeOrderApi } from '@/api/order'
 import { message } from 'ant-design-vue'
 import { computed, reactive, ref, watch } from 'vue'
 
@@ -93,7 +93,7 @@ const getBtnConfig = (progress) => {
     case 'CLOSED':
       return {
         title: '',
-        tips: { okText: '确定', cancelText: '取消', action: 'none', title: '' },
+        tips: { okText: '确定', cancelText: '取消', action: 'close', title: '' },
         status: { btnShow: false, closeBtnDisabled: true },
       }
     default:
@@ -134,10 +134,11 @@ const showCloseModal = () => {
   btnOptions.open = true
 }
 
-const RequestApi = async ()=>{
+const RequestApi = async () => {
+  let res = null
   switch (btnOptions.tips.action) {
     case 'approval':
-      const res = await approvalOrderApi({
+      res = await approvalOrderApi({
         order_id: props.orderDetail?.order_id,
         status: btnOptions.tips.currentClick === 'ok' ? 'APPROVED' : 'REJECTED',
         msg: confirmMsg.value,
@@ -147,11 +148,28 @@ const RequestApi = async ()=>{
         emit('refresh')
       }
       break
+    case 'claim':
+      res = await claimOrderApi({
+        order_id: props.orderDetail?.order_id,
+        msg: confirmMsg.value,
+      }).catch((err) => {})
+      if (res?.code === '0000') {
+        message.info('操作成功')
+        emit('refresh')
+      }
+      case 'close':
+        res = await closeOrderApi({
+          order_id: props.orderDetail?.order_id,
+          msg: confirmMsg.value,
+        }).catch((err) => {})
+        if (res?.code === '0000') {
+          message.info('操作成功')
+          emit('refresh')
+        }
     default:
       break
   }
 }
-
 
 const handleBtnOk = async () => {
   btnOptions.loading = true

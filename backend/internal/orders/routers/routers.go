@@ -27,10 +27,15 @@ func Routers(r *gin.Engine) {
 		v1.GET(":order_id", views.GetOrderDetailView)
 		// 获取工单审批状态
 		v1.GET("approval/:order_id", views.GetOrderApprovalView)
-		v1.PUT("operate/approval", views.ApprovalView)
+		// 审批
+		v1.PUT("approval", views.ApprovalOrderView)
+		// 认领
+		v1.PUT("claim", views.ClaimOrderView)
+		// 关闭工单
+		v1.PUT("close", views.CloseOrderView)
+
 		v1.PUT("operate/feedback", views.FeedbackView)
 		v1.PUT("operate/review", views.ReviewView)
-		v1.PUT("operate/close", views.CloseView)
 		v1.POST("hook", views.HookOrdersView)
 		v1.POST("generate-tasks", views.GenerateTasksView)
 		v1.GET("tasks/:order_id", views.GetTasksView)

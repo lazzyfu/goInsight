@@ -1,9 +1,14 @@
 package forms
 
-type ApprovalForm struct {
+type ApprovalOrderForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 	Msg     string `form:"msg" json:"msg" binding:"max=256"`
 	Status  string `form:"status" json:"status" binding:"required,oneof=APPROVED REJECTED"`
+}
+
+type ClaimOrderForm struct {
+	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
+	Msg     string `form:"msg" json:"msg" binding:"max=256"`
 }
 
 type FeedbackForm struct {
@@ -17,7 +22,7 @@ type ReviewForm struct {
 	Msg     string `form:"msg" json:"msg" binding:"max=256"`
 }
 
-type CloseForm struct {
+type CloseOrderForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 	Msg     string `form:"msg" json:"msg" binding:"max=256"`
 }

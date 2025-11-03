@@ -44,14 +44,14 @@
 import { ref, watch } from 'vue'
 
 const props = defineProps({
-  approvalData: Array,
+  approvalStatus: Array,
 })
 
 const currentProgress = ref(0)
 const approvalStages = ref([])
 
 // 格式化审批数据，计算 current 进度
-const formatApprovalData = (data) => {
+const formatApprovalStatus = (data) => {
   const grouped = {}
   data.forEach((item) => {
     if (!grouped[item.stage]) {
@@ -101,9 +101,9 @@ const getStatusColor = (status) => {
 }
 
 watch(
-  () => props.approvalData,
+  () => props.approvalStatus,
   (newVal) => {
-    approvalStages.value = formatApprovalData(newVal)
+    approvalStages.value = formatApprovalStatus(newVal)
   },
   { immediate: true },
 )

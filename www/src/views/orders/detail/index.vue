@@ -20,7 +20,7 @@
     </a-page-header>
   </div>
   <a-card title="审批流" style="margin-top: 12px">
-    <approval-steps :approval-data="approvalData" />
+    <approval-steps :approval-status="approvalStatus" />
   </a-card>
   <a-card title="工单内容" style="margin-top: 12px">
     <CodeMirror ref="codemirrorRef" />
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { getOrderApprovalApi, getOrderDetailApi } from '@/api/order'
+import { getOrderApprovalStatusApi, getOrderDetailApi } from '@/api/order'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import { useUserStore } from '@/store/user'
 import { onMounted, ref, watch } from 'vue'
@@ -42,7 +42,7 @@ const codemirrorRef = ref(null)
 const route = useRoute()
 const orderId = route.params.order_id
 const orderDetail = ref({})
-const approvalData = ref([])
+const approvalStatus = ref([])
 
 const getOrderDetail = async () => {
   const res = await getOrderDetailApi({
@@ -54,13 +54,13 @@ const getOrderDetail = async () => {
   }
 }
 
-const getOrderApproval = async () => {
-  const res = await getOrderApprovalApi({
+const getOrderApprovalStatus = async () => {
+  const res = await getOrderApprovalStatusApi({
     order_id: orderId,
   }).catch((err) => {})
   if (res) {
     console.log('res: ', res)
-    approvalData.value = res.data
+    approvalStatus.value = res.data
   }
 }
 
@@ -97,7 +97,7 @@ watch(
 
 onMounted(async () => {
   getOrderDetail()
-  getOrderApproval()
+  getOrderApprovalStatus()
 })
 </script>
 
