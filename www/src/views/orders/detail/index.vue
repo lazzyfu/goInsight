@@ -80,7 +80,7 @@ const getProgressAlias = (progress) => {
 
 const refresh = () => {
   getOrderDetail()
-  getOrderApproval()
+  getOrderApprovalStatus()
 }
 
 watch(

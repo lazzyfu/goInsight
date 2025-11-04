@@ -3,10 +3,12 @@
     <a-button key="3" v-show="btnOptions.status.btnShow" @click="showBtnModal">
       {{ btnTitle }}</a-button
     >
-    <a-button key="2" :disabled="btnOptions.status.closeBtnDisabled" @click="showCloseModal"
+    <a-button key="2" v-show="props.orderDetail?.progress === 'CLAIMED'" @click="showBtnModal">
+      转交</a-button
+    >
+    <a-button key="1" v-show="!btnOptions.status.closeBtnDisabled" @click="showCloseModal"
       >关闭</a-button
     >
-    <a-button key="1" type="primary">Primary</a-button>
   </a-space>
 
   <!-- 审批等操作模态框 -->
@@ -79,7 +81,7 @@ const getBtnConfig = (progress) => {
     case 'EXECUTING': // 认领或执行中
       return {
         title: '执行',
-        tips: { okText: '执行完成', cancelText: '执行中', action: 'feedback', title: '执行' },
+        tips: { okText: '执行完成', cancelText: '执行中', action: 'execute', title: '执行' },
         status: { btnShow: true, closeBtnDisabled: false },
       }
     case 'COMPLETED': // 执行完成，待复核
@@ -157,15 +159,18 @@ const RequestApi = async () => {
         message.info('操作成功')
         emit('refresh')
       }
-      case 'close':
-        res = await closeOrderApi({
-          order_id: props.orderDetail?.order_id,
-          msg: confirmMsg.value,
-        }).catch((err) => {})
-        if (res?.code === '0000') {
-          message.info('操作成功')
-          emit('refresh')
-        }
+    case 'close':
+      if (btnOptions.tips.currentClick === 'cancel') {
+        return
+      }
+      res = await closeOrderApi({
+        order_id: props.orderDetail?.order_id,
+        msg: confirmMsg.value,
+      }).catch((err) => {})
+      if (res?.code === '0000') {
+        message.info('操作成功')
+        emit('refresh')
+      }
     default:
       break
   }
@@ -174,18 +179,14 @@ const RequestApi = async () => {
 const handleBtnOk = async () => {
   btnOptions.loading = true
   btnOptions.tips.currentClick = 'ok'
-  console.log('btnOptions.tips: ', btnOptions.tips)
   RequestApi()
-
-  console.log('btnOptions: ', btnOptions)
-
   btnOptions.loading = false
   btnOptions.open = false
 }
 const handleBtnCancel = () => {
+  btnOptions.tips.currentClick = 'cancel'
   RequestApi()
   btnOptions.open = false
-  btnOptions.tips.currentClick = 'cancel'
 }
 </script>
 

@@ -119,7 +119,7 @@ const getStepStatus = (index, step) => {
 
 <style scoped>
 .approval-steps-container {
-  padding: 12px;
+  padding: 4px;
   background: #fff;
 }
 
@@ -168,8 +168,8 @@ const getStepStatus = (index, step) => {
 .approval-msg {
   display: flex;
   gap: 4px;
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 2px;
+  padding-top: 2px;
 }
 
 .approval-msg .info-label {

@@ -31,6 +31,8 @@ func Routers(r *gin.Engine) {
 		v1.PUT("approval", views.ApprovalOrderView)
 		// 认领
 		v1.PUT("claim", views.ClaimOrderView)
+		// 转交
+		v1.PUT("transfer", views.TransferOrderView)
 		// 关闭工单
 		v1.PUT("close", views.CloseOrderView)
 

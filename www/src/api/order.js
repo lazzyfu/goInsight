@@ -12,3 +12,4 @@ export const getOrderApprovalStatusApi = (params) => get(`/api/v1/orders/approva
 export const approvalOrderApi = (data) =>  put(`/api/v1/orders/approval`, data)
 export const claimOrderApi = (data) => put(`/api/v1/orders/claim`, data)
 export const closeOrderApi = (data) => put(`/api/v1/orders/close`, data)
+export const transferOrderApi = (data) => put(`/api/v1/orders/transfer`, data)

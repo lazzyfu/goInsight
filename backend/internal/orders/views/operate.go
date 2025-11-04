@@ -52,6 +52,27 @@ func ClaimOrderView(c *gin.Context) {
 	}
 }
 
+// 转交工单给其他执行人
+func TransferOrderView(c *gin.Context) {
+	username := jwt.ExtractClaims(c)["id"].(string)
+	var form *forms.TransferOrderForm = &forms.TransferOrderForm{}
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.TransferOrderService{
+			TransferOrderForm: form,
+			C:                 c,
+			Username:          username,
+		}
+		err := service.Run()
+		if err != nil {
+			response.Fail(c, err.Error())
+		} else {
+			response.Success(c, nil, "success")
+		}
+	} else {
+		response.ValidateFail(c, err.Error())
+	}
+}
+
 // 更新状态未执行中或已完成
 func FeedbackView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
