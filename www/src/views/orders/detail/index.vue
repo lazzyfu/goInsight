@@ -19,16 +19,30 @@
       <header-content :order-detail="orderDetail" />
     </a-page-header>
   </div>
-  <a-card title="审批流" style="margin-top: 12px">
-    <approval-steps :approval-status="approvalStatus" />
-  </a-card>
-  <a-card title="工单内容" style="margin-top: 12px">
+  <a-row :gutter="[16, 16]">
+    <a-col :span="8" :push="16">
+      <a-card size="small" title="操作日志" style="margin-top: 12px">
+        <a-timeline>
+          <a-timeline-item v-for="(item, index) in orderLogs" :key="index">
+            {{ item.created_at }} {{ item.msg }}
+          </a-timeline-item>
+        </a-timeline>
+      </a-card>
+    </a-col>
+    <a-col :span="16" :pull="8">
+      <a-card size="small" title="审批流" style="margin-top: 12px">
+        <approval-steps :approval-status="approvalStatus" />
+      </a-card>
+    </a-col>
+  </a-row>
+
+  <a-card size="small" title="工单内容" style="margin-top: 12px">
     <CodeMirror ref="codemirrorRef" />
   </a-card>
 </template>
 
 <script setup>
-import { getOrderApprovalStatusApi, getOrderDetailApi } from '@/api/order'
+import { getOrderApprovalStatusApi, getOrderDetailApi, getOrderLogsApi } from '@/api/order'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import { useUserStore } from '@/store/user'
 import { onMounted, ref, watch } from 'vue'
@@ -43,13 +57,13 @@ const route = useRoute()
 const orderId = route.params.order_id
 const orderDetail = ref({})
 const approvalStatus = ref([])
+const orderLogs = ref([])
 
 const getOrderDetail = async () => {
   const res = await getOrderDetailApi({
     order_id: orderId,
   }).catch((err) => {})
   if (res) {
-    console.log('res: ', res)
     orderDetail.value = res.data
   }
 }
@@ -59,8 +73,16 @@ const getOrderApprovalStatus = async () => {
     order_id: orderId,
   }).catch((err) => {})
   if (res) {
-    console.log('res: ', res)
     approvalStatus.value = res.data
+  }
+}
+
+const getOrderLogs = async () => {
+  const res = await getOrderLogsApi({
+    order_id: orderId,
+  }).catch((err) => {})
+  if (res) {
+    orderLogs.value = res.data
   }
 }
 
@@ -98,6 +120,7 @@ watch(
 onMounted(async () => {
   getOrderDetail()
   getOrderApprovalStatus()
+  getOrderLogs()
 })
 </script>
 

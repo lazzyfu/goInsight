@@ -102,7 +102,7 @@ type CreateOrderService struct {
 	Audit    *parser.TiStmt
 }
 
-func (s *CreateOrderService) generateApprovalRecords(orderID uuid.UUID) error {
+func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.UUID) error {
 	type FlowStage struct {
 		Type      string   `json:"type"`
 		Stage     int      `json:"stage"`
@@ -111,13 +111,13 @@ func (s *CreateOrderService) generateApprovalRecords(orderID uuid.UUID) error {
 	}
 
 	var record models.InsightApprovalFlow
-	tx := global.App.DB.Table("insight_approval_maps a").Select(`b.definition`).
+	flow := tx.Table("insight_approval_maps a").Select(`b.definition`).
 		Joins("inner join insight_approval_flow b on a.approval_id = b.approval_id").
 		Where("a.username = ?", s.Username).Take(&record)
-	if tx.Error != nil || tx.RowsAffected == 0 {
+	if flow.Error != nil || flow.RowsAffected == 0 {
 		return fmt.Errorf("没有查询到审批流配置，请联系系统管理员")
 	}
-	// [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND", "stage_name":"安全组审批"}]
+	// [{"type": "OR", "stage": 1, "approvers": ["zhangsan", "lisi"], "stage_name": "安全组审批"}, {"type": "AND", "stage": 1, "approvers": ["admin"], "stage_name": "部门负责人审批"}]
 	var stages []FlowStage
 	if err := json.Unmarshal(record.Definition, &stages); err != nil {
 		return fmt.Errorf("解析审批流JSON失败: %w", err)
@@ -134,7 +134,7 @@ func (s *CreateOrderService) generateApprovalRecords(orderID uuid.UUID) error {
 				ApprovalType:   commonModels.EnumType(s.Type),
 			}
 
-			if err := global.App.DB.Create(&audit).Error; err != nil {
+			if err := tx.Create(&audit).Error; err != nil {
 				return fmt.Errorf("创建审批记录失败: %w", err)
 			}
 		}
@@ -219,23 +219,23 @@ func (s *CreateOrderService) Run() error {
 		First(&config)
 	// 检查DDL/DML工单语法检查是否通过
 	// 不对EXPORT工单进行语法检查，CheckSqlType已经要求EXPORT工单只能为SELECT语句
-	// if s.SQLType != "EXPORT" {
-	// 	returnData, err := s.inspectSQL(config)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	// status: 0表示语法检查通过，1表示语法检查不通过
-	// 	status := 0
-	// 	for _, row := range returnData {
-	// 		if row.Level != "INFO" {
-	// 			status = 1
-	// 			break
-	// 		}
-	// 	}
-	// 	if status == 1 {
-	// 		return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
-	// 	}
-	// }
+	if s.SQLType != "EXPORT" {
+		returnData, err := s.inspectSQL(config)
+		if err != nil {
+			return err
+		}
+		// status: 0表示语法检查通过，1表示语法检查不通过
+		status := 0
+		for _, row := range returnData {
+			if row.Level != "INFO" {
+				status = 1
+				break
+			}
+		}
+		if status == 1 {
+			return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
+		}
+	}
 	// 解析UUID
 	instance_id, err := utils.ParserUUID(s.InstanceID)
 	if err != nil {
@@ -277,10 +277,18 @@ func (s *CreateOrderService) Run() error {
 			global.App.Log.Error(err)
 			return err
 		}
-
 		// 生成审批流
-		err = s.generateApprovalRecords(orderID)
+		err = s.generateApprovalRecords(tx, orderID)
 		if err != nil {
+			return err
+		}
+		// 记录操作日志
+		if err := tx.Create(&models.InsightOrderLogs{
+			OrderID:  orderID,
+			Username: s.Username,
+			Msg:      fmt.Sprintf("用户%s提交了工单", s.Username),
+		}).Error; err != nil {
+			global.App.Log.Error("CreateOrderService.Run error:", err.Error())
 			return err
 		}
 		// 获取提交的环境

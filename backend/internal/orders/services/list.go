@@ -24,7 +24,7 @@ type GetOrderListServices struct {
 	Username string
 }
 
-func (s *GetOrderListServices) Run() (responseData interface{}, total int64, err error) {
+func (s *GetOrderListServices) Run() (responseData any, total int64, err error) {
 	type record struct {
 		Title            string           `json:"title"`
 		Progress         string           `json:"progress"`
@@ -97,7 +97,7 @@ func (s *GetOrderDetailServices) convertToList(data datatypes.JSON) (users []str
 	return
 }
 
-func (s *GetOrderDetailServices) Run() (responseData interface{}, err error) {
+func (s *GetOrderDetailServices) Run() (responseData any, err error) {
 	type record struct {
 		ordersModels.InsightOrderRecords
 		Environment string `json:"environment"`
@@ -134,7 +134,7 @@ type GetOrderApprovalServices struct {
 	Username string
 }
 
-func (s *GetOrderApprovalServices) Run() (responseData interface{}, err error) {
+func (s *GetOrderApprovalServices) Run() (responseData any, err error) {
 	var result []ordersModels.InsightApprovalRecords
 	// 返回记录
 	tx := global.App.DB.Table("`insight_approval_records` a").
@@ -144,5 +144,20 @@ func (s *GetOrderApprovalServices) Run() (responseData interface{}, err error) {
 		return result, fmt.Errorf("记录`%s`不存在", s.OrderID)
 	}
 
+	return result, nil
+}
+
+type GetOrderLogsServices struct {
+	C       *gin.Context
+	OrderID string
+}
+
+func (s *GetOrderLogsServices) Run() (responseData any, err error) {
+	var result []ordersModels.InsightOrderLogs
+	// 返回记录
+	global.App.DB.Table("`insight_order_logs` a").
+		Where("a.order_id=?", s.OrderID).
+		Order("a.created_at asc").
+		Scan(&result)
 	return result, nil
 }

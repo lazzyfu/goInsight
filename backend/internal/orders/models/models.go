@@ -108,6 +108,18 @@ func (InsightApprovalRecords) TableName() string {
 	return "insight_approval_records"
 }
 
+// 工单操作日志表
+type InsightOrderLogs struct {
+	*models.Model
+	Username string    `gorm:"type:varchar(32);not null;index:idx_username;comment:操作用户" json:"username"`
+	OrderID  uuid.UUID `gorm:"type:char(36);comment:工单ID;index:idx_order_id" json:"order_id"`
+	Msg      string    `gorm:"type:varchar(1024);null;;comment:操作信息" json:"msg"`
+}
+
+func (InsightOrderLogs) TableName() string {
+	return "insight_order_logs"
+}
+
 // 工单记录生成的执行任务
 type InsightOrderTasks struct {
 	*models.Model

@@ -3,7 +3,7 @@
     <a-button key="3" v-show="btnOptions.status.btnShow" @click="showBtnModal">
       {{ btnTitle }}</a-button
     >
-    <a-button key="2" v-show="props.orderDetail?.progress === 'CLAIMED'" @click="showBtnModal">
+    <a-button key="2" v-show="props.orderDetail?.progress === 'CLAIMED'" @click="showTransferModal">
       转交</a-button
     >
     <a-button key="1" v-show="!btnOptions.status.closeBtnDisabled" @click="showCloseModal"
@@ -19,12 +19,46 @@
         btnOptions.tips.okText
       }}</a-button>
     </template>
-    <a-textarea :placeholder="btnOptions.tips.placeholder" v-model:value="confirmMsg" :rows="3" />
+
+    <a-form ref="formRef" :model="formState" style="margin-top: 24px" autocomplete="off">
+      <a-form-item
+        v-show="btnOptions.tips.action === 'transfer'"
+        label="执行人"
+        :rules="
+          btnOptions.tips.action === 'transfer'
+            ? [{ required: true, message: '请选择新执行人' }]
+            : []
+        "
+        has-feedback
+        name="newExecutor"
+      >
+        <a-select
+          v-model:value="formState.newExecutor"
+          :options="users"
+          :field-names="{ label: 'nick_name', value: 'username' }"
+          allowClear
+        />
+      </a-form-item>
+      <a-form-item label="附加信息" has-feedback name="confirmMsg">
+        <a-textarea
+          :placeholder="btnOptions.tips.placeholder"
+          v-model:value="formState.confirmMsg"
+          :rows="3"
+          allow-clear
+        />
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 
 <script setup>
-import { approvalOrderApi, claimOrderApi, closeOrderApi } from '@/api/order'
+import {
+  approvalOrderApi,
+  claimOrderApi,
+  closeOrderApi,
+  getOrderUsersApi,
+  transferOrderApi,
+} from '@/api/order'
 import { message } from 'ant-design-vue'
 import { computed, reactive, ref, watch } from 'vue'
 
@@ -32,7 +66,13 @@ const props = defineProps({
   orderDetail: Object,
 })
 const emit = defineEmits(['refresh'])
-const confirmMsg = ref('')
+
+const users = ref([])
+const formRef = ref()
+const formState = reactive({
+  newExecutor: '',
+  confirmMsg: '',
+})
 
 const btnOptions = reactive({
   loading: false,
@@ -81,7 +121,7 @@ const getBtnConfig = (progress) => {
     case 'EXECUTING': // 认领或执行中
       return {
         title: '执行',
-        tips: { okText: '执行完成', cancelText: '执行中', action: 'execute', title: '执行' },
+        tips: { okText: '执行完成', cancelText: '执行中', action: 'execute', title: '执行工单' },
         status: { btnShow: true, closeBtnDisabled: false },
       }
     case 'COMPLETED': // 执行完成，待复核
@@ -119,13 +159,25 @@ watch(
   { immediate: true },
 )
 
-const showBtnModal = () => {
+const showBtnModal = async () => {
   const cfg = getBtnConfig(props.orderDetail?.progress)
   btnOptions.tips = { ...cfg.tips }
   btnOptions.open = true
 }
 
-const showCloseModal = () => {
+const showTransferModal = async () => {
+  btnOptions.tips = {
+    okText: '提交',
+    cancelText: '取消',
+    action: 'transfer',
+    title: '转交工单给其他执行人',
+    placeholder: '请输入转交工单原因...',
+  }
+  await getUsers()
+  btnOptions.open = true
+}
+
+const showCloseModal = async () => {
   btnOptions.tips = {
     okText: '确定',
     cancelText: '取消',
@@ -136,57 +188,76 @@ const showCloseModal = () => {
   btnOptions.open = true
 }
 
+const getUsers = async () => {
+  const res = await getOrderUsersApi().catch((err) => {})
+  if (res) {
+    users.value = res.data
+  }
+}
+
 const RequestApi = async () => {
-  let res = null
-  switch (btnOptions.tips.action) {
-    case 'approval':
-      res = await approvalOrderApi({
-        order_id: props.orderDetail?.order_id,
-        status: btnOptions.tips.currentClick === 'ok' ? 'APPROVED' : 'REJECTED',
-        msg: confirmMsg.value,
-      }).catch((err) => {})
-      if (res?.code === '0000') {
-        message.info('操作成功')
-        emit('refresh')
-      }
-      break
-    case 'claim':
-      res = await claimOrderApi({
-        order_id: props.orderDetail?.order_id,
-        msg: confirmMsg.value,
-      }).catch((err) => {})
-      if (res?.code === '0000') {
-        message.info('操作成功')
-        emit('refresh')
-      }
-    case 'close':
-      if (btnOptions.tips.currentClick === 'cancel') {
+  const { action, currentClick } = btnOptions.tips
+  const order_id = props.orderDetail?.order_id
+  const payload = { order_id, msg: formState.confirmMsg }
+
+  // 对于认领/关闭，点击取消意味着不发请求，直接关闭弹窗
+  if (
+    (action === 'claim' || action === 'close' || action === 'transfer') &&
+    currentClick === 'cancel'
+  ) {
+    btnOptions.open = false
+    formState.confirmMsg = ''
+    return
+  }
+
+  btnOptions.loading = true
+  try {
+    let res = null
+    switch (action) {
+      case 'approval':
+        res = await approvalOrderApi({
+          ...payload,
+          status: currentClick === 'ok' ? 'APPROVED' : 'REJECTED',
+        })
+        break
+      case 'claim':
+        res = await claimOrderApi(payload)
+        break
+      case 'transfer':
+        res = await transferOrderApi({
+          ...payload,
+          new_executor: formState.newExecutor,
+        })
+        break
+      case 'close':
+        res = await closeOrderApi(payload)
+        break
+      default:
         return
-      }
-      res = await closeOrderApi({
-        order_id: props.orderDetail?.order_id,
-        msg: confirmMsg.value,
-      }).catch((err) => {})
-      if (res?.code === '0000') {
-        message.info('操作成功')
-        emit('refresh')
-      }
-    default:
-      break
+    }
+
+    if (res?.code === '0000') {
+      message.info('操作成功')
+      formState.confirmMsg = ''
+      emit('refresh')
+    } else {
+      // 提示服务端返回的错误信息
+      message.error(res?.message || '操作失败')
+    }
+  } catch (err) {
+  } finally {
+    btnOptions.open = false
+    btnOptions.loading = false
   }
 }
 
 const handleBtnOk = async () => {
-  btnOptions.loading = true
   btnOptions.tips.currentClick = 'ok'
-  RequestApi()
-  btnOptions.loading = false
-  btnOptions.open = false
+  await RequestApi()
 }
-const handleBtnCancel = () => {
+const handleBtnCancel = async () => {
   btnOptions.tips.currentClick = 'cancel'
-  RequestApi()
-  btnOptions.open = false
+  await RequestApi()
 }
 </script>
 

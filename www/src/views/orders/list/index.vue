@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <a-card size="small">
     <div class="search-wrapper">
       <a-space>
         <a-switch
@@ -57,7 +57,7 @@
         </template>
       </a-table>
     </div>
-  </div>
+  </a-card>
 </template>
 
 <script setup>

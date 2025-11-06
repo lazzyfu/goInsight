@@ -27,6 +27,8 @@ func Routers(r *gin.Engine) {
 		v1.GET(":order_id", views.GetOrderDetailView)
 		// 获取工单审批状态
 		v1.GET("approval/:order_id", views.GetOrderApprovalView)
+		// 获取工单操作记录
+		v1.GET("logs/:order_id", views.GetOrderLogsView)
 		// 审批
 		v1.PUT("approval", views.ApprovalOrderView)
 		// 认领

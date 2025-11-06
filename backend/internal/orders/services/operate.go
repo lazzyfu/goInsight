@@ -71,6 +71,27 @@ func (s *ApprovalOrderService) Run() (err error) {
 			return err
 		}
 
+		// 记录操作日志
+		orderID, err := utils.ParserUUID(s.OrderID)
+		if err != nil {
+			return err
+		}
+		var action string
+		switch s.Status {
+		case "APPROVED":
+			action = "通过"
+		case "REJECTED":
+			action = "驳回"
+		}
+		if err := tx.Create(&models.InsightOrderLogs{
+			OrderID:  orderID,
+			Username: s.Username,
+			Msg:      fmt.Sprintf("用户%s%s了工单", s.Username, action),
+		}).Error; err != nil {
+			global.App.Log.Error("ApprovalOrderService.Run error:", err.Error())
+			return err
+		}
+
 		// 如果当前审核人驳回，直接驳回整个工单
 		if s.Status == "REJECTED" {
 			return tx.Model(&models.InsightOrderRecords{}).
@@ -163,6 +184,19 @@ func (s *ClaimOrderService) Run() (err error) {
 			}).Error; err != nil {
 			return err
 		}
+		// 记录操作日志
+		orderID, err := utils.ParserUUID(s.OrderID)
+		if err != nil {
+			return err
+		}
+		if err := tx.Create(&models.InsightOrderLogs{
+			OrderID:  orderID,
+			Username: s.Username,
+			Msg:      fmt.Sprintf("用户%s认领了工单", s.Username),
+		}).Error; err != nil {
+			global.App.Log.Error("ClaimOrderService.Run error:", err.Error())
+			return err
+		}
 		return nil
 	})
 }
@@ -198,6 +232,19 @@ func (s *TransferOrderService) Run() (err error) {
 			}).Error; err != nil {
 			return err
 		}
+		// 记录操作日志
+		orderID, err := utils.ParserUUID(s.OrderID)
+		if err != nil {
+			return err
+		}
+		if err := tx.Create(&models.InsightOrderLogs{
+			OrderID:  orderID,
+			Username: s.Username,
+			Msg:      fmt.Sprintf("用户%s转交工单给%s", s.Username, s.NewExecutor),
+		}).Error; err != nil {
+			global.App.Log.Error("TransferOrderService.Run error:", err.Error())
+			return err
+		}
 		return nil
 	})
 }
@@ -226,18 +273,31 @@ func (s *CloseOrderService) Run() (err error) {
 	}
 	// 更新状态为已关闭
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		return global.App.DB.Transaction(func(tx *gorm.DB) error {
-			if err := tx.Model(&models.InsightOrderRecords{}).
-				Where("order_id=?", s.OrderID).
-				Updates(map[string]any{
-					"closer":    s.Username,
-					"progress":  "CLOSED",
-					"closed_at": time.Now().Format("2006-01-02 15:04:05"),
-				}).Error; err != nil {
-				return err
-			}
-			return nil
-		})
+		if err := tx.Model(&models.InsightOrderRecords{}).
+			Where("order_id=?", s.OrderID).
+			Updates(map[string]any{
+				"closer":    s.Username,
+				"progress":  "CLOSED",
+				"closed_at": time.Now().Format("2006-01-02 15:04:05"),
+			}).Error; err != nil {
+			return err
+		}
+
+		// 记录操作日志
+		orderID, err := utils.ParserUUID(s.OrderID)
+		if err != nil {
+			return err
+		}
+		if err := tx.Create(&models.InsightOrderLogs{
+			OrderID:  orderID,
+			Username: s.Username,
+			Msg:      fmt.Sprintf("用户%s关闭了工单", s.Username),
+		}).Error; err != nil {
+			global.App.Log.Error("CloseOrderService.Run error:", err.Error())
+			return err
+		}
+
+		return nil
 
 		// 发送消息，发送给工单申请人
 		// receiver := []string{record.Applicant}

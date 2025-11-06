@@ -62,3 +62,16 @@ func GetOrderApprovalView(c *gin.Context) {
 		response.Success(c, returnData, "success")
 	}
 }
+
+func GetOrderLogsView(c *gin.Context) {
+	service := services.GetOrderLogsServices{
+		OrderID: c.Param("order_id"),
+		C:       c,
+	}
+	returnData, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+	} else {
+		response.Success(c, returnData, "success")
+	}
+}
