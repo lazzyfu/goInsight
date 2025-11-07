@@ -36,29 +36,25 @@ import (
 */
 type InsightOrderRecords struct {
 	*models.Model
-	Title            string           `gorm:"type:varchar(256);not null;default:'';comment:工单标题;index:idx_title" json:"title"`
-	OrderID          uuid.UUID        `gorm:"type:char(36);comment:工单ID;uniqueIndex:uniq_order_id" json:"order_id"`
-	HookOrderID      uuid.UUID        `gorm:"type:char(36);comment:HOOK源工单ID;index:idx_hook_order_id" json:"hook_order_id"`
-	Remark           string           `gorm:"type:varchar(2048);not null;default:'';comment:工单备注" json:"remark"`
-	IsRestrictAccess bool             `gorm:"type:tinyint(1);not null;default:0;comment:是否限制访问" json:"is_restrict_access"`
-	DBType           models.EnumType  `gorm:"type:ENUM('MySQL', 'TiDB', 'ClickHouse');default:'MySQL';comment:DB类型" json:"db_type"`
-	SQLType          models.EnumType  `gorm:"type:ENUM('DML', 'DDL', 'EXPORT');default:'DML';comment:SQL类型" json:"sql_type"`
-	Environment      int              `gorm:"type:int;null;default:null;comment:环境;index" json:"environment"`
-	Applicant        string           `gorm:"type:varchar(32);not null;default:'';comment:申请人;index" json:"applicant"`
-	Organization     string           `gorm:"type:varchar(256);not null;default:'';index;comment:组织" json:"organization"`
-	Claimer          string           `gorm:"type:varchar(32);not null;default:'';comment:认领人;index" json:"claimer"`
-	ClaimedAt        models.LocalTime `gorm:"comment:认领时间" json:"claimed_at"`
-	Closer           string           `gorm:"type:varchar(32);not null;default:'';comment:关闭人;index" json:"closer"`
-	ClosedAt         models.LocalTime `gorm:"comment:关闭时间" json:"closed_at"`
-	Executor         string           `gorm:"type:varchar(32);not null;default:'';comment:工单执行人;index" json:"executor"`
-
+	Title            string          `gorm:"type:varchar(256);not null;default:'';comment:工单标题;index:idx_title" json:"title"`
+	OrderID          uuid.UUID       `gorm:"type:char(36);comment:工单ID;uniqueIndex:uniq_order_id" json:"order_id"`
+	HookOrderID      uuid.UUID       `gorm:"type:char(36);comment:HOOK源工单ID;index:idx_hook_order_id" json:"hook_order_id"`
+	Remark           string          `gorm:"type:varchar(2048);not null;default:'';comment:工单备注" json:"remark"`
+	IsRestrictAccess bool            `gorm:"type:tinyint(1);not null;default:0;comment:是否限制访问" json:"is_restrict_access"`
+	DBType           models.EnumType `gorm:"type:ENUM('MySQL', 'TiDB', 'ClickHouse');default:'MySQL';comment:DB类型" json:"db_type"`
+	SQLType          models.EnumType `gorm:"type:ENUM('DML', 'DDL', 'EXPORT');default:'DML';comment:SQL类型" json:"sql_type"`
+	Environment      int             `gorm:"type:int;null;default:null;comment:环境;index" json:"environment"`
+	Applicant        string          `gorm:"type:varchar(32);not null;default:'';comment:申请人;index" json:"applicant"`
+	Organization     string          `gorm:"type:varchar(256);not null;default:'';index;comment:组织" json:"organization"`
+	Claimer          string          `gorm:"type:varchar(32);not null;default:'';comment:认领人;index" json:"claimer"`
+	Executor         string          `gorm:"type:varchar(32);not null;default:'';comment:工单执行人;index" json:"executor"`
 	Approver         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单审核人" json:"approver"`
 	Reviewer         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单复核人" json:"reviewer"`
 	CC               datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单抄送人" json:"cc"`
 	InstanceID       uuid.UUID       `gorm:"type:char(36);comment:关联insight_db_config的instance_id;index" json:"instance_id"`
 	Schema           string          `gorm:"type:varchar(128);not null;default:'';comment:库名" json:"schema"`
 	Stage            int             `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
-	Progress         models.EnumType `gorm:"type:ENUM('PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED','REVIEWED','CLOSED');default:'PENDING';comment:工单进度" json:"progress"`
+	Progress         models.EnumType `gorm:"type:ENUM('PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED', 'FAILED','REVIEWED','REVOKED');default:'PENDING';comment:工单进度" json:"progress"`
 	FixVersion       string          `gorm:"type:varchar(128);not null;default:'';comment:上线版本;index" json:"fix_version"`
 	Content          string          `gorm:"type:text;null;comment:工单内容" json:"content"`
 	ExportFileFormat models.EnumType `gorm:"type:ENUM('XLSX', 'CSV');default:'XLSX';comment:导出文件格式" json:"export_file_format"`

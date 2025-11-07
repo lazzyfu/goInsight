@@ -73,15 +73,15 @@ func TransferOrderView(c *gin.Context) {
 	}
 }
 
-// 更新状态未执行中或已完成
-func FeedbackView(c *gin.Context) {
+// 撤销工单
+func RevokeOrderView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
-	var form *forms.FeedbackForm = &forms.FeedbackForm{}
+	var form *forms.RevokeOrderForm = &forms.RevokeOrderForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.FeedbackService{
-			FeedbackForm: form,
-			C:            c,
-			Username:     username,
+		service := services.RevokeOrderService{
+			RevokeOrderForm: form,
+			C:               c,
+			Username:        username,
 		}
 		err := service.Run()
 		if err != nil {
@@ -94,15 +94,15 @@ func FeedbackView(c *gin.Context) {
 	}
 }
 
-// 更新状态未执行中或已完成
-func ReviewView(c *gin.Context) {
+// 手动更新工单为已完成
+func CompleteOrderView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
-	var form *forms.ReviewForm = &forms.ReviewForm{}
+	var form *forms.CompleteOrderForm = &forms.CompleteOrderForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.ReviewService{
-			ReviewForm: form,
-			C:          c,
-			Username:   username,
+		service := services.CompleteOrderService{
+			CompleteOrderForm: form,
+			C:                 c,
+			Username:          username,
 		}
 		err := service.Run()
 		if err != nil {
@@ -115,15 +115,36 @@ func ReviewView(c *gin.Context) {
 	}
 }
 
-// 关闭工单
-func CloseOrderView(c *gin.Context) {
+// 手动更新工单为失败
+func FailOrderView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
-	var form *forms.CloseOrderForm = &forms.CloseOrderForm{}
+	var form *forms.FailOrderForm = &forms.FailOrderForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.CloseOrderService{
-			CloseOrderForm: form,
-			C:              c,
-			Username:       username,
+		service := services.FailOrderService{
+			FailOrderForm: form,
+			C:             c,
+			Username:      username,
+		}
+		err := service.Run()
+		if err != nil {
+			response.Fail(c, err.Error())
+		} else {
+			response.Success(c, nil, "success")
+		}
+	} else {
+		response.ValidateFail(c, err.Error())
+	}
+}
+
+// 复核
+func ReviewOrderView(c *gin.Context) {
+	username := jwt.ExtractClaims(c)["id"].(string)
+	var form *forms.ReviewOrderForm = &forms.ReviewOrderForm{}
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.ReviewOrderService{
+			ReviewOrderForm: form,
+			C:               c,
+			Username:        username,
 		}
 		err := service.Run()
 		if err != nil {

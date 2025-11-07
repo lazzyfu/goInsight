@@ -1,13 +1,11 @@
 package services
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
 
-	"github.com/lazzyfu/goinsight/pkg/notifier"
 	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/orders/forms"
@@ -178,9 +176,8 @@ func (s *ClaimOrderService) Run() (err error) {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{
-				"claimer":    s.Username,
-				"progress":   "CLAIMED",
-				"claimed_at": time.Now().Format("2006-01-02 15:04:05"),
+				"claimer":  s.Username,
+				"progress": "CLAIMED",
 			}).Error; err != nil {
 			return err
 		}
@@ -219,6 +216,10 @@ func (s *TransferOrderService) Run() (err error) {
 	if !utils.IsContain([]string{"CLAIMED"}, string(orderRecord.Progress)) {
 		return fmt.Errorf("当前工单未被认领，无法转交")
 	}
+	// 判断当前工单认领人是否等于操作人
+	if orderRecord.Claimer != s.Username {
+		return fmt.Errorf("只有工单认领人才能转交工单")
+	}
 	// 转交操作
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 更新工单执行人
@@ -249,23 +250,23 @@ func (s *TransferOrderService) Run() (err error) {
 	})
 }
 
-// 关闭工单
-type CloseOrderService struct {
-	*forms.CloseOrderForm
+// 撤销工单
+type RevokeOrderService struct {
+	*forms.RevokeOrderForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *CloseOrderService) Run() (err error) {
+func (s *RevokeOrderService) Run() (err error) {
 	// 判断记录是否存在
 	var record models.InsightOrderRecords
 	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
 	if tx.RowsAffected == 0 {
 		return fmt.Errorf("记录`%s`不存在", s.OrderID)
 	}
-	// 只有工单申请人才允许关闭
+	// 只有工单申请人才允许撤销工单
 	if record.Applicant != s.Username {
-		return fmt.Errorf("只有工单申请人才能关闭工单")
+		return fmt.Errorf("只有工单申请人才能撤销工单")
 	}
 	// 判断进度
 	if !utils.IsContain([]string{"PENDING", "APPROVED", "CLAIMED"}, string(record.Progress)) {
@@ -276,9 +277,7 @@ func (s *CloseOrderService) Run() (err error) {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{
-				"closer":    s.Username,
-				"progress":  "CLOSED",
-				"closed_at": time.Now().Format("2006-01-02 15:04:05"),
+				"progress": "REVOKED",
 			}).Error; err != nil {
 			return err
 		}
@@ -291,9 +290,9 @@ func (s *CloseOrderService) Run() (err error) {
 		if err := tx.Create(&models.InsightOrderLogs{
 			OrderID:  orderID,
 			Username: s.Username,
-			Msg:      fmt.Sprintf("用户%s关闭了工单", s.Username),
+			Msg:      fmt.Sprintf("用户%s撤销了工单", s.Username),
 		}).Error; err != nil {
-			global.App.Log.Error("CloseOrderService.Run error:", err.Error())
+			global.App.Log.Error("RevokeOrderService.Run error:", err.Error())
 			return err
 		}
 
@@ -301,81 +300,18 @@ func (s *CloseOrderService) Run() (err error) {
 
 		// 发送消息，发送给工单申请人
 		// receiver := []string{record.Applicant}
-		// msg := fmt.Sprintf("您好，用户%s关闭了工单\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
+		// msg := fmt.Sprintf("您好，用户%s撤销了工单\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
 		// notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 	})
 }
 
-// 反馈
-type FeedbackService struct {
-	*forms.FeedbackForm
+type CompleteOrderService struct {
+	*forms.CompleteOrderForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *FeedbackService) Run() (err error) {
-	// 判断记录是否存在
-	var record models.InsightOrderRecords
-	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
-	if tx.RowsAffected == 0 {
-		return fmt.Errorf("记录`%s`不存在", s.OrderID)
-	}
-	// 已批准->已完成，已批准->执行中，执行中->已完成
-	if !utils.IsContain([]string{"已批准", "执行中"}, string(record.Progress)) {
-		return fmt.Errorf("非可操作状态，禁止操作")
-	}
-	// 用户点击反馈按钮
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&models.InsightOrderRecords{}).
-			Where("order_id=?", s.OrderID).
-			Updates(map[string]interface{}{"progress": s.Progress, "updated_at": time.Now().Format("2006-01-02 15:04:05")}).Error; err != nil {
-			global.App.Log.Error(err)
-			return err
-		}
-		// 发送消息，发送给工单申请人
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s更新工单状态为：%s\n>工单标题：%s\n>附加消息：%s", s.Username, s.Progress, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
-		return nil
-	})
-}
-
-// 复核
-type ReviewService struct {
-	*forms.ReviewForm
-	C        *gin.Context
-	Username string
-}
-
-func (s *ReviewService) updateProgress(tx *gorm.DB, progress string) error {
-	if err := tx.Model(&models.InsightOrderRecords{}).
-		Where("order_id=?", s.OrderID).
-		Updates(map[string]interface{}{
-			"progress":   progress,
-			"updated_at": time.Now().Format("2006-01-02 15:04:05"),
-		}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *ReviewService) updateReviewer(tx *gorm.DB, users []map[string]interface{}) error {
-	usersJson, err := json.Marshal(users)
-	if err != nil {
-		return err
-	}
-	if err := tx.Model(&models.InsightOrderRecords{}).
-		Where("order_id=?", s.OrderID).
-		Updates(map[string]interface{}{
-			"reviewer":   string(usersJson),
-			"updated_at": time.Now().Format("2006-01-02 15:04:05"),
-		}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *ReviewService) Run() (err error) {
+func (s *CompleteOrderService) Run() (err error) {
 	// 判断记录是否存在
 	var record models.InsightOrderRecords
 	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
@@ -383,50 +319,101 @@ func (s *ReviewService) Run() (err error) {
 		return fmt.Errorf("记录`%s`不存在", s.OrderID)
 	}
 	// 判断进度
-	if !utils.IsContain([]string{"已完成"}, string(record.Progress)) {
+	if !utils.IsContain([]string{"CLAIMED", "EXECUTING"}, string(record.Progress)) {
 		return fmt.Errorf("非可操作状态，禁止操作")
 	}
-	// 获取复核人
-	var reviewerList []map[string]interface{}
-	err = json.Unmarshal([]byte(record.Reviewer), &reviewerList)
-	if err != nil {
-		return err
+	// 判断当前工单认领人是否等于操作人
+	if record.Claimer != s.Username {
+		return fmt.Errorf("只有工单认领人才能更改工单状态")
 	}
-	// 更新复核人信息
-	var M int = 0
-	var passCount int = 0
-	for _, i := range reviewerList {
-		if i["user"] == s.Username {
-			M += 1
-			if i["status"] != "pending" {
-				return fmt.Errorf("您已复核过，请不要重复执行")
-			}
-			i["status"] = "pass"
-			i["user"] = s.Username
-		}
-		if i["status"] == "pass" {
-			// 计算为审核通过
-			passCount += 1
-		}
-	}
-	if M == 0 {
-		return fmt.Errorf("您没有当前工单的复核权限")
-	}
+	// 用户点击完成按钮
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		// 更新审批人信息
-		if err := s.updateReviewer(tx, reviewerList); err != nil {
+		if err := tx.Model(&models.InsightOrderRecords{}).
+			Where("order_id=?", s.OrderID).
+			Updates(map[string]any{"progress": "COMPLETED"}).Error; err != nil {
+			global.App.Log.Error(err)
 			return err
 		}
-		// 全部都通过了复核，设置为已复核
-		if len(reviewerList) == passCount {
-			if err := s.updateProgress(tx, "已复核"); err != nil {
-				return err
-			}
+		// 发送消息，发送给工单申请人
+		// receiver := []string{record.Applicant}
+		// msg := fmt.Sprintf("您好，用户%s完成了工单\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
+		// notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
+		return nil
+	})
+}
+
+// 手动更新工单为失败
+type FailOrderService struct {
+	*forms.FailOrderForm
+	C        *gin.Context
+	Username string
+}
+
+func (s *FailOrderService) Run() (err error) {
+	// 判断记录是否存在
+	var record models.InsightOrderRecords
+	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
+	if tx.RowsAffected == 0 {
+		return fmt.Errorf("记录`%s`不存在", s.OrderID)
+	}
+	// 判断进度
+	if !utils.IsContain([]string{"CLAIMED", "EXECUTING"}, string(record.Progress)) {
+		return fmt.Errorf("非可操作状态，禁止操作")
+	}
+	// 判断当前工单认领人是否等于操作人
+	if record.Claimer != s.Username {
+		return fmt.Errorf("只有工单认领人才能更改工单状态")
+	}
+	// 用户点击失败按钮
+	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&models.InsightOrderRecords{}).
+			Where("order_id=?", s.OrderID).
+			Updates(map[string]any{"progress": "FAILED"}).Error; err != nil {
+			global.App.Log.Error(err)
+			return err
 		}
 		// 发送消息，发送给工单申请人
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s更新工单状态为：已复核\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
+		// receiver := []string{record.Applicant}
+		// msg := fmt.Sprintf("您好，用户%s更新工单为失败状态\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
+		// notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
+		return nil
+	})
+}
+
+// 复核
+type ReviewOrderService struct {
+	*forms.ReviewOrderForm
+	C        *gin.Context
+	Username string
+}
+
+func (s *ReviewOrderService) Run() (err error) {
+	// 判断记录是否存在
+	var record models.InsightOrderRecords
+	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
+	if tx.RowsAffected == 0 {
+		return fmt.Errorf("记录`%s`不存在", s.OrderID)
+	}
+	// 判断进度
+	if !utils.IsContain([]string{"COMPLETED"}, string(record.Progress)) {
+		return fmt.Errorf("非可操作状态，禁止操作")
+	}
+	// 只有工单提交人才能复核
+	if record.Applicant != s.Username {
+		return fmt.Errorf("只有工单提交人才能复核工单")
+	}
+
+	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&models.InsightOrderRecords{}).
+			Where("order_id=?", s.OrderID).
+			Updates(map[string]any{"progress": "REVIEWED"}).Error; err != nil {
+			global.App.Log.Error(err)
+			return err
+		}
+		// 发送消息，发送给工单申请人
+		// receiver := []string{record.Applicant}
+		// msg := fmt.Sprintf("您好，用户%s更新工单状态为：已复核\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
+		// notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
 }

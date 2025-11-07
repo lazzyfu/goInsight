@@ -35,11 +35,15 @@ func Routers(r *gin.Engine) {
 		v1.PUT("claim", views.ClaimOrderView)
 		// 转交
 		v1.PUT("transfer", views.TransferOrderView)
-		// 关闭工单
-		v1.PUT("close", views.CloseOrderView)
+		// 撤销工单
+		v1.PUT("revoke", views.RevokeOrderView)
+		// 手动更新工单为已完成
+		v1.PUT("complete", views.CompleteOrderView)
+		// 手动更新工单为失败
+		v1.PUT("fail", views.FailOrderView)
+		// 复核
+		v1.PUT("review", views.ReviewOrderView)
 
-		v1.PUT("operate/feedback", views.FeedbackView)
-		v1.PUT("operate/review", views.ReviewView)
 		v1.POST("hook", views.HookOrdersView)
 		v1.POST("generate-tasks", views.GenerateTasksView)
 		v1.GET("tasks/:order_id", views.GetTasksView)

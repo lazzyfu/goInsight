@@ -219,9 +219,10 @@ const getProgressAlias = (progress) => {
     REJECTED: { text: '已驳回', color: 'red' },
     CLAIMED: { text: '已认领', color: 'cyan' },
     EXECUTING: { text: '执行中', color: 'orange' },
+    FAILED: { text: '已失败', color: 'red' },
     COMPLETED: { text: '已完成', color: 'green' },
     REVIEWED: { text: '已复核', color: 'green' },
-    CLOSED: { text: '已关闭', color: 'gray' },
+    REVOKED: { text: '已撤销', color: 'gray' },
   }
   return statusMap[progress] || { text: progress, color: 'default' }
 }
