@@ -13,7 +13,7 @@ type ClaimOrderForm struct {
 type TransferOrderForm struct {
 	OrderID     string `form:"order_id" json:"order_id" binding:"required,uuid"`
 	NewExecutor string `form:"new_executor" json:"new_executor" binding:"required,max=32"`
-	TransferMsg string `form:"transfer_msg" json:"transfer_msg" binding:"max=256"`
+	Msg         string `form:"msg" json:"msg" binding:"max=256"`
 }
 type RevokeOrderForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`

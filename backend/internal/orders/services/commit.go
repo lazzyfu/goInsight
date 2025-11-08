@@ -133,7 +133,6 @@ func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.U
 				ApprovalStatus: "PENDING",
 				ApprovalType:   commonModels.EnumType(s.Type),
 			}
-
 			if err := tx.Create(&audit).Error; err != nil {
 				return fmt.Errorf("创建审批记录失败: %w", err)
 			}
@@ -283,11 +282,7 @@ func (s *CreateOrderService) Run() error {
 			return err
 		}
 		// 记录操作日志
-		if err := tx.Create(&models.InsightOrderLogs{
-			OrderID:  orderID,
-			Username: s.Username,
-			Msg:      fmt.Sprintf("用户%s提交了工单", s.Username),
-		}).Error; err != nil {
+		if err := WriteOrderLog(tx, orderID.String(), s.Username, fmt.Sprintf("用户%s提交了工单", s.Username)); err != nil {
 			global.App.Log.Error("CreateOrderService.Run error:", err.Error())
 			return err
 		}
@@ -299,7 +294,6 @@ func (s *CreateOrderService) Run() error {
 		// 发送消息，发送给工单申请人
 		receiver := []string{record.Applicant}
 		receiver = append(receiver, s.CC...)
-
 		msg := fmt.Sprintf(
 			"您好，用户%s提交了工单\n"+
 				">工单标题：%s\n"+
@@ -313,7 +307,6 @@ func (s *CreateOrderService) Run() error {
 			strings.Join(s.CC, ","),
 			env.Name, s.DBType, s.SQLType, s.Schema,
 		)
-
 		notifier.SendMessage(title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
