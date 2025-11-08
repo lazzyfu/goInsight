@@ -104,6 +104,7 @@ const getProgressAlias = (progress) => {
 const refresh = () => {
   getOrderDetail()
   getOrderApprovalStatus()
+  getOrderLogs()
 }
 
 watch(
