@@ -20,7 +20,7 @@ database:
   port: 3306 # 数据库端口
   database: "goinsight" # 数据库名称
   username: "goinsight_rw" # 数据库用户名
-  password: "goinsight@1234.Com" # 数据库密码
+  password: "1234.Com!" # 数据库密码
   charset: "utf8mb4" # 数据库字符集
   max_idle_conns: 64 # 最大空闲连接数
   max_open_conns: 64 # 最大打开连接数
@@ -31,7 +31,7 @@ database:
 redis:
   host: "127.0.0.1" # Redis主机
   port: 6379 # Redis端口
-  password: "1234.com" # Redis密码
+  password: "" # Redis密码
   db: 0 
 
 # 远程实例DB账号，需要在目标数据库创建
@@ -41,8 +41,8 @@ redis:
 # grant select,insert,update,delete,Alter,Create,Create view,Drop,Index,Replication slave on *.* to 'goinsight_admin'@'%';
 # flush privileges;
 remotedb:
-  username: "goinsight_admin"
-  password: "goinsight@1234.Com"  # 建议更换为复杂的密码
+  username: "goinsight_rw"
+  password: "1234.Com!"  # 建议更换为复杂的密码
 
 # 数据查询配置
 das:

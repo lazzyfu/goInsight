@@ -1,5 +1,6 @@
 import Layout from '@/components/layout/Layout.vue'
 import ACCOUNT from '@/views/account/route.js'
+import ADMIN from '@/views/admin/route.js'
 import DAS from '@/views/das/route.js'
 import ORDERS from '@/views/orders/route.js'
 
@@ -11,6 +12,7 @@ export const arkRouter = [
     redirect: { name: 'account.basic' },
     meta: { title: '首页' },
     children: [
+      ADMIN,
       ACCOUNT,
       DAS,
       ORDERS

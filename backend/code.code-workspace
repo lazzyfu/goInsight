@@ -5,14 +5,12 @@
         }
     ],
     "settings": {
-        "editor.fontFamily": "Cousine For Powerline,Cascadia Code PL",
-        "editor.fontSize": 12,
         "go.inferGopath": true,
         "go.formatTool": "gofmt",
         "go.lintTool": "golangci-lint",
         "go.lintFlags": [],
         "go.coverOnSave": false,
-        "go.goroot": "/opt/homebrew/Cellar/go@1.23/1.23.11/libexec/",
+        "go.goroot": "/opt/homebrew/opt/go@1.23/libexec",
         "[go]": {
             "editor.insertSpaces": false,
             "editor.formatOnSave": true,
@@ -21,5 +19,6 @@
             },
             "editor.suggest.snippetsPreventQuickSuggestions": false
         },
+        "editor.fontFamily": "Maple Mono NF CN",
     },
 }

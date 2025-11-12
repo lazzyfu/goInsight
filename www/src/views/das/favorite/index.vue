@@ -269,17 +269,15 @@ const editRecord = (record) => {
 }
 
 const handleFavoritesSubmit = (data) => {
-
-UpdateFavoritesApi(data).then((res) => {
-      if (res.code == '0000') {
-        message.success('更新成功')
-      } else {
-        message.error(res.message)
-      }
-      isFavoritesOpen.value = false
-      fetchData()
-    })
-
+  UpdateFavoritesApi(data).then((res) => {
+    if (res.code == '0000') {
+      message.success('更新成功')
+    } else {
+      message.error(res.message)
+    }
+    isFavoritesOpen.value = false
+    fetchData()
+  })
 }
 
 const confirmDelete = (val) => {
