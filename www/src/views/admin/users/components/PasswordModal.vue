@@ -17,23 +17,23 @@
 </template>
 
 <script setup>
-import { changePasswordApi } from '@/api/admin'
 import { regPassword } from '@/utils/validate'
-import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
 const emit = defineEmits(['update:open', 'submit'])
+
 const props = defineProps({
   open: Boolean,
-  uid: Number,
 })
 
-// 表单
-const formRef = ref()
+// 不需要父组件传值
 const formState = reactive({
   password: '',
   verify_password: '',
 })
+
+// 表单
+const formRef = ref()
 
 // 有效性验证
 const validateNewPass = async (_rule, value) => {
@@ -77,14 +77,6 @@ const handleCancel = () => {
 
 // 提交
 const onSubmit = async () => {
-  const data = {
-    uid: props.uid,
-    ...formState,
-  }
-  const res = await changePasswordApi(data).catch(() => {})
-  if (res?.code === '0000') {
-    message.info('操作成功')
-  }
-  emit('update:open', false)
+  emit('submit', formState)
 }
 </script>

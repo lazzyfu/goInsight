@@ -15,9 +15,6 @@
       <a-form-item style="text-align: right">
         <a-button @click="handleCancel">取消</a-button>
         <a-button type="primary" html-type="submit" style="margin-left: 10px">
-          <template #icon>
-            <StarOutlined />
-          </template>
           {{ btnType }}
         </a-button>
       </a-form-item>
@@ -26,8 +23,6 @@
 </template>
 
 <script setup>
-import { StarOutlined } from '@ant-design/icons-vue'
-
 const emit = defineEmits(['update:open', 'submit'])
 
 const rules = {
