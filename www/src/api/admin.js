@@ -12,3 +12,6 @@ export const updateRolesApi = (data) => put(`/api/v1/admin/roles/${data.id}`, da
 export const deleteRolesApi = (data) => del(`/api/v1/admin/roles/${data}`, data)
 export const getOrganizationsApi = (data) => get('/api/v1/admin/organizations', data)
 export const createRootOrganizationsApi = (data) => post('/api/v1/admin/organizations/root-node', data)
+export const getOrganizationsUsersApi = (params) => get('/api/v1/admin/organizations/users', params)
+export const bindOrganizationsUsersApi = (data) => post('/api/v1/admin/organizations/users', data)
+export const deleteOrganizationsUsersApi = (data) => del(`/api/v1/admin/organizations/users`, data)
