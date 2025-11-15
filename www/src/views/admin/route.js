@@ -13,6 +13,20 @@ const route = {
       component: () => import('./users/index.vue'),
       meta: { title: '用户管理', keepAlive: true },
     },
+    {
+      name: `view.admin.roles`,
+      path: '/admin/roles',
+      icon: 'UserOutlined',
+      component: () => import('./roles/index.vue'),
+      meta: { title: '角色管理', keepAlive: true },
+    },
+    {
+      name: `view.admin.orgs`,
+      path: '/admin/orgs',
+      icon: 'UserOutlined',
+      component: () => import('./orgs/index.vue'),
+      meta: { title: '组织管理', keepAlive: true },
+    },
     // {
     //   path: 'system',
     //   name: `view.admin.systemManage`,

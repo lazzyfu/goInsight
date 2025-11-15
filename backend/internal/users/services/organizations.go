@@ -32,10 +32,8 @@ func (s *GetOrganizationsServices) getChildOrganizations(key string, level uint6
 	var data []map[string]interface{} = []map[string]interface{}{}
 	for _, row := range childNodes {
 		var childNode map[string]interface{} = map[string]interface{}{
-			"title":       row.Name,
-			"key":         row.Key,
-			"slots":       map[string]string{"icon": "dir"},
-			"scopedSlots": map[string]string{"title": "custom"},
+			"title": row.Name,
+			"key":   row.Key,
 		}
 		childData := s.getChildOrganizations(row.Key, row.Level+1)
 		if childData != nil {
@@ -61,10 +59,8 @@ func (s *GetOrganizationsServices) Run() (responseData interface{}) {
 	for _, row := range rootNodes {
 		// 迭代父节点
 		var rootNode map[string]interface{} = map[string]interface{}{
-			"title":       row.Name,
-			"key":         row.Key,
-			"slots":       map[string]string{"icon": "dir"},
-			"scopedSlots": map[string]string{"title": "custom"},
+			"title": row.Name,
+			"key":   row.Key,
 		}
 		// 迭代子节点
 		childData := s.getChildOrganizations(row.Key, row.Level+1)

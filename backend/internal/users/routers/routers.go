@@ -19,7 +19,7 @@ func AdminRoutes(v1 *gin.RouterGroup) {
 	admin.POST("/users", views.CreateUsersView)
 	admin.PUT("/users/:uid", views.UpdateUsersView)
 	admin.DELETE("/users/:uid", views.DeleteUsersView)
-	admin.POST("/users/change-password", views.ChangeUsersPasswordView)
+	admin.POST("/users/reset-password", views.ResetUsersPasswordView)
 	// 角色
 	admin.GET("/roles", views.GetRolesView)
 	admin.POST("/roles", views.CreateRolesView)

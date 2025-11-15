@@ -1,16 +1,16 @@
 <template>
-  <a-card size="small">
+  <a-card title="用户管理">
+    <template #extra>
+      <a-button type="primary" @click="handleAddUser"><PlusOutlined />新增用户</a-button>
+    </template>
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-space>
-        <a-input-search
-          v-model:value="searchValue"
-          placeholder="输入搜索的内容"
-          style="width: 350px"
-          @search="onSearch"
-        />
-        <a-button type="primary" @click="onAdd">新增</a-button>
-      </a-space>
+      <a-input-search
+        v-model:value="searchValue"
+        placeholder="搜索用户名、手机号、邮箱..."
+        style="width: 350px"
+        @search="handleSearch"
+      />
     </div>
     <!-- 表格 -->
     <div style="margin-top: 12px">
@@ -21,9 +21,9 @@
         :data-source="tableData"
         @resizeColumn="handleResizeColumn"
         :pagination="pagination"
-        :loading="loading"
+        :loading="state.loading"
         @change="handleTableChange"
-        :scroll="{ x: 1500 }"
+        :scroll="{ x: 1300 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'is_active'">
@@ -51,77 +51,80 @@
             </span>
           </template>
           <template v-if="column.key === 'action'">
-            <a-space wrap>
-              <a-tooltip title="编辑">
-                <a-button
-                  type="link"
-                  block
-                  shape="circle"
-                  :icon="h(EditOutlined)"
-                  @click="onEdit(record)"
-                />
-              </a-tooltip>
-              <a-tooltip title="修改密码">
-                <a-button
-                  type="link"
-                  block
-                  shape="circle"
-                  :icon="h(CopyOutlined)"
-                  @click="changePassword(record)"
-                />
-              </a-tooltip>
-              <a-popconfirm
-                title="确认删除吗？"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="onDelete(record)"
-              >
-                <a-button block type="link" shape="circle" :icon="h(DeleteOutlined)"> </a-button>
-              </a-popconfirm>
-            </a-space>
+            <a-dropdown>
+              <EllipsisOutlined />
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="1" @click="handleEditUser(record)">
+                    <EditOutlined style="margin-right: 6px" /> 编辑
+                  </a-menu-item>
+                  <a-menu-item key="2">
+                    <a-popconfirm
+                      title="确认删除吗？"
+                      ok-text="是"
+                      cancel-text="否"
+                      @confirm="handleDeleteUser(record)"
+                    >
+                      <DeleteOutlined style="margin-right: 6px" /> 删除
+                    </a-popconfirm>
+                  </a-menu-item>
+                  <a-menu-item key="3" @click="handleResetPassword(record)">
+                    <KeyOutlined style="margin-right: 6px" /> 重置密码
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </template>
         </template>
       </a-table>
     </div>
   </a-card>
-  <!-- 修改密码 -->
-  <ChangePassword
-    :open="isChangePasswordModalOpen"
-    @update:open="isChangePasswordModalOpen = $event"
-    @submit="handleChangePasswordSubmit"
+  <!-- 重置密码 -->
+  <ResetPasswordModal
+    :open="isResetPasswordModalOpen"
+    @update:open="isResetPasswordModalOpen = $event"
+    @submit="handleResetPasswordSubmit"
   />
   <!-- 新增/编辑弹窗 -->
   <UserModal
-    :open="modalOpen"
-    :formState="formState"
-    :title="isEditModal ? '编辑用户' : '新增用户'"
-    @update:open="modalOpen = $event"
-    @submit="handleSubmit"
+    :open="state.userModalOpen"
+    :formState="userFormState"
+    :title="state.isEditUserModal ? '编辑用户' : '新增用户'"
+    @update:open="state.userModalOpen = $event"
+    @submit="handleUserSubmit"
   />
 </template>
 
 <script setup>
 import {
   addUsersApi,
-  changePasswordApi,
   deleteUsersApi,
   getUsersApi,
+  ResetPasswordApi,
   updateUsersApi,
 } from '@/api/admin'
-import ChangePassword from '@/views/admin/users/components/PasswordModal.vue'
+import ResetPasswordModal from '@/views/admin/users/components/PasswordModal.vue'
 import UserModal from '@/views/admin/users/components/UserModal.vue'
-import { CopyOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  KeyOutlined,
+  PlusOutlined,
+} from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { h, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 
 // 状态管理
-const modalOpen = ref(false)
-const isEditModal = ref(false)
-const loading = ref(false)
-const searchValue = ref('')
-const uid = ref(0)
+const state = reactive({
+  loading: false,
+  isEditUserModal: false,
+  userModalOpen: false,
+})
 
-const defaultForm = {
+const searchValue = ref('')
+
+const defaultUserForm = {
   username: '',
   password: '',
   nick_name: '',
@@ -133,106 +136,76 @@ const defaultForm = {
   is_superuser: false,
 }
 
-const formState = ref({ ...defaultForm })
-const tableData = ref([])
-const isChangePasswordModalOpen = ref(false)
+const uid = ref(0)
+const userFormState = ref({ ...defaultUserForm })
+const isResetPasswordModalOpen = ref(false)
 
 // 搜索
-const onSearch = (value) => {
+const handleSearch = (value) => {
   searchValue.value = value
   pagination.current = 1
   fetchData()
 }
 
-// 表列
+// 表
+const tableData = ref([])
 const tableColumns = [
   {
     title: '用户',
     dataIndex: 'username',
     key: 'username',
-    scopedSlots: {
-      customRender: 'username',
-    },
+    fixed: 'left',
   },
   {
     title: '昵称',
     dataIndex: 'nick_name',
     key: 'nick_name',
-    scopedSlots: {
-      customRender: 'nick_name',
-    },
   },
   {
     title: '角色',
     dataIndex: 'role',
     key: 'role',
-    scopedSlots: {
-      customRender: 'role',
-    },
   },
   {
     title: '激活',
     dataIndex: 'is_active',
     key: 'is_active',
-    scopedSlots: {
-      customRender: 'is_active',
-    },
   },
   {
     title: '2FA认证',
     dataIndex: 'is_two_fa',
     key: 'is_two_fa',
-    scopedSlots: {
-      customRender: 'is_two_fa',
-    },
   },
   {
     title: '管理员',
     dataIndex: 'is_superuser',
     key: 'is_superuser',
-    scopedSlots: {
-      customRender: 'is_superuser',
-    },
   },
   {
     title: '邮箱',
     dataIndex: 'email',
     key: 'email',
-    scopedSlots: {
-      customRender: 'email',
-    },
   },
   {
     title: '手机号',
     dataIndex: 'mobile',
     key: 'mobile',
-    scopedSlots: {
-      customRender: 'mobile',
-    },
   },
   {
     title: '组织',
     dataIndex: 'organization',
     key: 'organization',
-    scopedSlots: {
-      customRender: 'organization',
-    },
   },
   {
     title: '加入时间',
     dataIndex: 'date_joined',
     key: 'date_joined',
-    scopedSlots: {
-      customRender: 'date_joined',
-    },
   },
   {
     title: '操作',
-    dataIndex: 'action',
     key: 'action',
-    scopedSlots: {
-      customRender: 'action',
-    },
+    fixed: 'right',
+    width: 120,
   },
 ]
 
@@ -247,19 +220,19 @@ const pagination = reactive({
 
 // 获取表数据
 const fetchData = async () => {
-  loading.value = true
+  state.loading = true
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
     search: searchValue.value,
   }
-  const res = await getUsersApi(params).catch(() => {})
+  const res = await getUsersApi(params)
   if (res) {
     pagination.total = res.total
     tableData.value = res.data
   }
-  loading.value = false
+  state.loading = false
 }
 
 // 翻页
@@ -273,55 +246,49 @@ function handleResizeColumn(w, col) {
   col.width = w
 }
 
-// 弹窗逻辑
-const onAdd = () => {
-  isEditModal.value = false
-  formState.value = { ...defaultForm }
-  modalOpen.value = true
+// 新增用户
+const handleAddUser = () => {
+  state.isEditUserModal = false
+  userFormState.value = { ...defaultUserForm }
+  state.userModalOpen = true
 }
 
-const onEdit = (record) => {
-  isEditModal.value = true
-  formState.value = { ...record }
-  modalOpen.value = true
+// 编辑用户
+const handleEditUser = (record) => {
+  state.isEditUserModal = true
+  userFormState.value = { ...record }
+  state.userModalOpen = true
 }
 
-const handleSubmit = async (data) => {
-  if (isEditModal.value) {
-    const res = await updateUsersApi(data)
-    if (res?.code === '0000') {
-      message.info('操作成功')
-    }
-  } else {
-    const res = await addUsersApi(data).catch(() => {})
-    if (res?.code === '0000') {
-      message.info('操作成功')
-    }
+const handleUserSubmit = async (data) => {
+  const res = state.isEditUserModal ? await updateUsersApi(data) : await addUsersApi(data)
+  if (res?.code === '0000') {
+    message.success('操作成功')
+    state.userModalOpen = false
+    fetchData()
   }
-  modalOpen.value = false
-  fetchData()
 }
 
-// 修改密码
-const changePassword = (record) => {
+// 重置密码
+const handleResetPassword = (record) => {
   uid.value = record.uid
-  isChangePasswordModalOpen.value = true
+  isResetPasswordModalOpen.value = true
 }
 
-const handleChangePasswordSubmit = async (data) => {
+const handleResetPasswordSubmit = async (data) => {
   const payload = {
     uid: uid.value,
     ...data,
   }
-  const res = await changePasswordApi(payload).catch(() => {})
+  const res = await ResetPasswordApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
   }
-  isChangePasswordModalOpen.value = false
+  isResetPasswordModalOpen.value = false
 }
 
 // 删除用户
-const onDelete = async (record) => {
+const handleDeleteUser = async (record) => {
   const res = await deleteUsersApi(record.uid).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')

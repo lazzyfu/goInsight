@@ -34,7 +34,7 @@ type UpdateUsersForm struct {
 	IsActive    bool   `form:"is_active" json:"is_active" validate:"boolean"`
 }
 
-type ChangeUsersPasswordForm struct {
+type ResetUsersPasswordForm struct {
 	UID            uint64 `form:"uid" json:"uid" binding:"required"`
 	Password       string `form:"password" json:"password" binding:"required,min=7,max=32"`
 	VerifyPassword string `form:"verify_password" json:"verify_password" binding:"required,min=7,max=32"`

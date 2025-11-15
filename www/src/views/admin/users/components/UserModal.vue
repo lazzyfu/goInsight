@@ -16,7 +16,7 @@
         <a-input v-model:value="localFormState.nick_name" placeholder="请输入昵称" allow-clear />
       </a-form-item>
 
-      <a-form-item v-if="title === '新增用户'" label="密码" name="password" has-feedback>
+      <a-form-item v-if="isCreate" label="密码" name="password" has-feedback>
         <a-input v-model:value="localFormState.password" type="password" placeholder="请输入密码" />
       </a-form-item>
 
@@ -60,7 +60,7 @@
 <script setup>
 import { getRolesApi } from '@/api/admin'
 import { regEmail, regPassword, regPhone } from '@/utils/validate'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
@@ -68,6 +68,9 @@ const props = defineProps({
   title: String,
   formState: Object,
 })
+
+// 判断是否是新增用户
+const isCreate = computed(() => props.title === '新增用户')
 
 // formState父组件传值，子组件修改，需要重新赋值
 const localFormState = reactive({ ...props.formState })
@@ -83,18 +86,27 @@ watch(
 const roles = ref([])
 const formRef = ref()
 
-const validatePassword = (_r, v) => {
-  if (!v) return Promise.reject('请输入密码')
-  if (!regPassword.test(v)) return Promise.reject('密码至少7个字符，包含大小写字母、数字和特殊字符')
-  return Promise.resolve()
-}
 
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  username: [{ required: true, min: 2, max: 32, message: '请输入用户名', trigger: 'blur' }],
   nick_name: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
   email: [{ required: true, pattern: regEmail, message: '请输入合法邮箱', trigger: 'blur' }],
   mobile: [{ required: true, pattern: regPhone, message: '请输入合法手机号', trigger: 'blur' }],
-  password: [{ required: true, validator: validatePassword, trigger: 'blur' }],
+  password: [
+      {
+        validator: (_, value) => {
+          // 编辑用户不必填密码
+          if (!isCreate.value && !value) return Promise.resolve()
+          if (!value) return Promise.reject(new Error('请输入密码'))
+          if (!regPassword.test(value))
+            return Promise.reject(
+              new Error('密码至少7个字符，包含大小写字母、数字和特殊字符')
+            )
+          return Promise.resolve()
+        },
+        trigger: 'blur',
+      },
+    ],
 }
 
 const handleCancel = () => {

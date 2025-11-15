@@ -154,12 +154,12 @@ func (s *DeleteUsersService) Run() error {
 	return nil
 }
 
-type ChangeUsersPasswordService struct {
-	*forms.ChangeUsersPasswordForm
+type ResetUsersPasswordService struct {
+	*forms.ResetUsersPasswordForm
 	C *gin.Context
 }
 
-func (s *ChangeUsersPasswordService) Run() error {
+func (s *ResetUsersPasswordService) Run() error {
 	if s.Password != s.VerifyPassword {
 		return errors.New("您两次输入的密码不一致")
 	}

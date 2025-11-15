@@ -82,10 +82,10 @@ func DeleteUsersView(c *gin.Context) {
 	}
 }
 
-func ChangeUsersPasswordView(c *gin.Context) {
-	var form *forms.ChangeUsersPasswordForm = &forms.ChangeUsersPasswordForm{}
+func ResetUsersPasswordView(c *gin.Context) {
+	var form *forms.ResetUsersPasswordForm = &forms.ResetUsersPasswordForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.ChangeUsersPasswordService{ChangeUsersPasswordForm: form, C: c}
+		service := services.ResetUsersPasswordService{ResetUsersPasswordForm: form, C: c}
 		err := service.Run()
 		if err != nil {
 			response.Fail(c, err.Error())
