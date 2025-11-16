@@ -1,11 +1,6 @@
 <template>
   <a-modal :open="open" title="新增组织" :footer="null" @cancel="handleCancel">
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      @finish="onSubmit"
-    >
+    <a-form ref="formRef" :model="formState" :rules="rules" @finish="onSubmit">
       <a-form-item label="组织名" name="name" has-feedback>
         <a-input v-model:value="formState.name" placeholder="请输入组织名" allow-clear />
       </a-form-item>
