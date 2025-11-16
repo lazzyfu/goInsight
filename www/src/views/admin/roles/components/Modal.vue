@@ -2,8 +2,6 @@
   <a-modal :open="open" :title="title" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
       :model="localFormState"
       :rules="rules"
       @finish="onSubmit"

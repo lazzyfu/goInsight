@@ -1,9 +1,7 @@
 <template>
-  <a-modal :open="open" title="编辑节点" :footer="null" @cancel="handleCancel">
+  <a-modal :open="open" title="新增组织" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
       :model="formState"
       :rules="rules"
       @finish="onSubmit"
@@ -11,6 +9,7 @@
       <a-form-item label="组织名" name="name" has-feedback>
         <a-input v-model:value="formState.name" placeholder="请输入组织名" allow-clear />
       </a-form-item>
+
       <a-form-item style="text-align: right">
         <a-button @click="handleCancel">取消</a-button>
         <a-button type="primary" html-type="submit" style="margin-left: 10px">确定</a-button>
@@ -20,14 +19,13 @@
 </template>
 
 <script setup>
-import { updateOrganizationsApi } from '@/api/admin'
+import { createRootOrganizationsApi } from '@/api/admin'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
   open: Boolean,
-  nodeKey: String,
 })
 
 const formRef = ref()
@@ -53,13 +51,7 @@ const handleCancel = () => {
 }
 
 const onSubmit = async () => {
-  const payload = {
-   key: props.nodeKey,
-    ...formState,
-  }
-  console.log('payload: ', payload)
-
-  const res = await updateOrganizationsApi(payload).catch(() => {})
+  const res = await createRootOrganizationsApi(formState).catch((err) => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     emit('update:open', false)

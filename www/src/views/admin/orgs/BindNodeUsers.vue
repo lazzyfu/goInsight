@@ -1,13 +1,7 @@
 <template>
   <a-modal :open="open" title="绑定用户" :footer="null" @cancel="handleCancel">
-    <a-form
-      ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
-      :model="formState"
-      @finish="onSubmit"
-    >
-      <a-form-item label="用户" name="username" has-feedback>
+    <a-form ref="formRef" :model="formState" @finish="onSubmit">
+      <a-form-item label="用户" name="users" has-feedback>
         <a-select
           ref="select"
           mode="multiple"
@@ -28,9 +22,8 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
-
 import { getUsersApi } from '@/api/admin'
+import { onMounted, reactive, ref } from 'vue'
 
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
@@ -52,12 +45,12 @@ const handleCancel = () => {
 const onSubmit = () => {
   const payload = {
     key: props.nodeKey,
-    ...formState
+    ...formState,
   }
   emit('submit', payload)
 }
 
-onMounted( async() => {
+onMounted(async () => {
   const res = await getUsersApi().catch(() => {})
   users.value = res.data || []
 })

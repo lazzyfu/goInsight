@@ -3,7 +3,7 @@
   <a-card title="用户管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />拉选用户</a-button>
+      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />绑定用户</a-button>
     </template>
     <!-- 搜索区域 -->
     <div class="search-wrapper">
@@ -25,7 +25,6 @@
         :pagination="pagination"
         :loading="state.loading"
         @change="handleTableChange"
-        :scroll="{ x: 1300 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
@@ -34,9 +33,9 @@
                 title="确认移除吗？"
                 ok-text="是"
                 cancel-text="否"
-                @confirm="handleDeleteRecord(dataRef)"
+                @confirm="handleDeleteRecord(record)"
               >
-                <a-button type="text" size="small" danger @click.stop>
+                <a-button type="text" size="small" @click.stop>
                   <template #icon><DeleteOutlined /></template>
                 </a-button>
               </a-popconfirm>
@@ -46,7 +45,8 @@
       </a-table>
     </div>
   </a-card>
-  <AddNodeUsersModal
+  <!-- 绑定节点用户 -->
+  <BindNodeUsers
     :open="state.isModalOpen"
     :nodeKey="props.nodeKey"
     @update:open="state.isModalOpen = $event"
@@ -60,22 +60,15 @@ import {
   deleteOrganizationsUsersApi,
   getOrganizationsUsersApi,
 } from '@/api/admin'
-import AddNodeUsersModal from '@/views/admin/orgs/AddNodeUsersModal.vue'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
-
-// 状态管理
-const state = reactive({
-  loading: false,
-  isModalOpen: false,
-})
+import BindNodeUsers from './BindNodeUsers.vue'
 
 const props = defineProps({
   open: Boolean,
   nodeKey: String,
 })
-const searchValue = ref('')
 
 watch(
   () => props.nodeKey,
@@ -85,6 +78,15 @@ watch(
     }
   },
 )
+
+// 状态管理
+const state = reactive({
+  loading: false,
+  isModalOpen: false,
+})
+
+const searchValue = ref('')
+
 // 搜索
 const handleSearch = (value) => {
   searchValue.value = value
@@ -154,8 +156,7 @@ const handleAddRecord = () => {
 }
 
 const handleSubmit = async (data) => {
-  console.log('data: ', data)
-  const res = await bindOrganizationsUsersApi(data)
+  const res = await bindOrganizationsUsersApi(data).catch(()=>{})
   if (res?.code === '0000') {
     message.success('操作成功')
     state.isModalOpen = false
@@ -165,7 +166,11 @@ const handleSubmit = async (data) => {
 
 // 删除记录
 const handleDeleteRecord = async (record) => {
-  const res = await deleteOrganizationsUsersApi(record.id).catch(() => {})
+  const payload = {
+    key: props.nodeKey,
+    uid: record.uid,
+  }
+  const res = await deleteOrganizationsUsersApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()

@@ -2,8 +2,6 @@
   <a-modal :open="open" title="新增子节点" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
       :model="formState"
       :rules="rules"
       @finish="onSubmit"
@@ -63,8 +61,6 @@ const onSubmit = async () => {
     parent_node_name: props.parent_node_name,
     ...formState,
   }
-  console.log('payload: ', payload)
-
   const res = await createChildOrganizationsApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
