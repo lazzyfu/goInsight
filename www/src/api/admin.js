@@ -15,3 +15,6 @@ export const createRootOrganizationsApi = (data) => post('/api/v1/admin/organiza
 export const getOrganizationsUsersApi = (params) => get('/api/v1/admin/organizations/users', params)
 export const bindOrganizationsUsersApi = (data) => post('/api/v1/admin/organizations/users', data)
 export const deleteOrganizationsUsersApi = (data) => del(`/api/v1/admin/organizations/users`, data)
+export const createChildOrganizationsApi = (data) => post('/api/v1/admin/organizations/child-node', data)
+export const updateOrganizationsApi = (data) => put(`/api/v1/admin/organizations`, data)
+export const deleteOrganizationsApi = (data) => del(`/api/v1/admin/organizations`, data)

@@ -29,15 +29,18 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
-            <EllipsisOutlined />
-            <a-popconfirm
-              title="确认删除吗？"
-              ok-text="是"
-              cancel-text="否"
-              @confirm="handleDeleteRecord(record)"
-            >
-              <DeleteOutlined style="margin-right: 6px" /> 删除
-            </a-popconfirm>
+            <a-tooltip title="移除当前用户">
+              <a-popconfirm
+                title="确认移除吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDeleteRecord(dataRef)"
+              >
+                <a-button type="text" size="small" danger @click.stop>
+                  <template #icon><DeleteOutlined /></template>
+                </a-button>
+              </a-popconfirm>
+            </a-tooltip>
           </template>
         </template>
       </a-table>
@@ -58,7 +61,7 @@ import {
   getOrganizationsUsersApi,
 } from '@/api/admin'
 import AddNodeUsersModal from '@/views/admin/orgs/AddNodeUsersModal.vue'
-import { DeleteOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
 
