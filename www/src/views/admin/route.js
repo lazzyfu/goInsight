@@ -27,6 +27,20 @@ const route = {
       component: () => import('./orgs/index.vue'),
       meta: { title: '组织管理', keepAlive: true },
     },
+    {
+      name: `view.admin.environments`,
+      path: '/admin/environements',
+      icon: 'UserOutlined',
+      component: () => import('./environments/index.vue'),
+      meta: { title: '环境管理', keepAlive: true },
+    },
+    {
+      name: `view.admin.dbconfig`,
+      path: '/admin/dbconfig',
+      icon: 'UserOutlined',
+      component: () => import('./dbconfig/index.vue'),
+      meta: { title: '数据库管理', keepAlive: true },
+    },
     // {
     //   path: 'system',
     //   name: `view.admin.systemManage`,

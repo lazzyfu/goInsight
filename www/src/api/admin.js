@@ -6,7 +6,6 @@ export const updateUsersApi = (data) => put(`/api/v1/admin/users/${data.uid}`, d
 export const deleteUsersApi = (data) => del(`/api/v1/admin/users/${data}`, data)
 export const ResetPasswordApi = (params) => post('/api/v1/admin/users/reset-password', params)
 export const getRolesApi = (params) => get('/api/v1/admin/roles', params)
-
 export const createRolesApi = (data) => post('/api/v1/admin/roles', data)
 export const updateRolesApi = (data) => put(`/api/v1/admin/roles/${data.id}`, data)
 export const deleteRolesApi = (data) => del(`/api/v1/admin/roles/${data}`, data)
@@ -18,3 +17,13 @@ export const deleteOrganizationsUsersApi = (data) => del(`/api/v1/admin/organiza
 export const createChildOrganizationsApi = (data) => post('/api/v1/admin/organizations/child-node', data)
 export const updateOrganizationsApi = (data) => put(`/api/v1/admin/organizations`, data)
 export const deleteOrganizationsApi = (data) => del(`/api/v1/admin/organizations`, data)
+// dbconfig
+export const getDBConfigApi = (params) => get('/api/v1/admin/dbconfig', params)
+export const createDBConfigApi = (data) => post('/api/v1/admin/dbconfig', data)
+export const updateDBConfigApi = (data) => put(`/api/v1/admin/dbconfig/${data.id}`, data)
+export const deleteDBConfigApi = (data) => del(`/api/v1/admin/dbconfig/${data}`, data)
+// 环境
+export const getEnvironmentsApi = (params) => get('/api/v1/admin/environment', params)
+export const createEnvironmentsApi = (data) => post('/api/v1/admin/environment', data)
+export const updateEnvironmentsApi = (data) => put(`/api/v1/admin/environment/${data.id}`, data)
+export const deleteEnvironmentsApi = (data) => del(`/api/v1/admin/environment/${data}`, data)
