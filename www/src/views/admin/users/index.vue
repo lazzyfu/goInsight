@@ -55,8 +55,8 @@
               <EllipsisOutlined />
               <template #overlay>
                 <a-menu>
-                  <a-menu-item key="1" @click="handleEditUser(record)">
-                    <EditOutlined style="margin-right: 6px" /> 编辑
+                  <a-menu-item key="1">
+                    <a @click="handleEditUser(record)"> <EditOutlined /> 编辑 </a>
                   </a-menu-item>
                   <a-menu-item key="2">
                     <a-popconfirm
@@ -65,11 +65,11 @@
                       cancel-text="否"
                       @confirm="handleDeleteUser(record)"
                     >
-                      <DeleteOutlined style="margin-right: 6px" /> 删除
+                      <a><DeleteOutlined /> 删除</a>
                     </a-popconfirm>
                   </a-menu-item>
-                  <a-menu-item key="3" @click="handleResetPassword(record)">
-                    <KeyOutlined style="margin-right: 6px" /> 重置密码
+                  <a-menu-item key="3">
+                    <a @click="handleResetPassword(record)"><KeyOutlined /> 重置密码</a>
                   </a-menu-item>
                 </a-menu>
               </template>

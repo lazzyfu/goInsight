@@ -27,3 +27,6 @@ export const getEnvironmentsApi = (params) => get('/api/v1/admin/environment', p
 export const createEnvironmentsApi = (data) => post('/api/v1/admin/environment', data)
 export const updateEnvironmentsApi = (data) => put(`/api/v1/admin/environment/${data.id}`, data)
 export const deleteEnvironmentsApi = (data) => del(`/api/v1/admin/environment/${data}`, data)
+// inspect
+export const getInspectParamsApi = (params) => get('/api/v1/admin/inspect/params',params)
+export const updateInspectParamsApi = (data) => put(`/api/v1/admin/inspect/params/${data.id}`, data)

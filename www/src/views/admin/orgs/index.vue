@@ -13,28 +13,24 @@
               <div class="tree-node">
                 <span class="tree-node-title">{{ dataRef.title }}</span>
                 <div class="actions">
-                  <a-tooltip title="新增子节点">
-                    <a-button type="text" size="small" @click.stop="addChildNode(dataRef)">
-                      <template #icon><PlusOutlined /></template>
-                    </a-button>
-                  </a-tooltip>
-                  <a-tooltip title="编辑当前节点">
-                    <a-button type="text" size="small" @click.stop="editCurrentNode(dataRef)">
-                      <template #icon><EditOutlined /></template>
-                    </a-button>
-                  </a-tooltip>
-                  <a-tooltip title="删除当前节点">
-                    <a-popconfirm
-                      title="确认删除吗？"
-                      ok-text="是"
-                      cancel-text="否"
-                      @confirm="DeleteConfirm(dataRef)"
-                    >
-                      <a-button type="text" size="small" @click.stop>
-                        <template #icon><DeleteOutlined /></template>
-                      </a-button>
-                    </a-popconfirm>
-                  </a-tooltip>
+                  <a-space>
+                    <a-tooltip title="新增子节点">
+                      <a @click="addChildNode(dataRef)"> <PlusOutlined /> 新增 </a>
+                    </a-tooltip>
+                    <a-tooltip title="编辑当前节点">
+                      <a @click="editCurrentNode(dataRef)"> <EditOutlined /> 编辑 </a>
+                    </a-tooltip>
+                    <a-tooltip title="删除当前节点">
+                      <a-popconfirm
+                        title="确认删除吗？"
+                        ok-text="是"
+                        cancel-text="否"
+                        @confirm="DeleteConfirm(dataRef)"
+                      >
+                        <a> <DeleteOutlined /> 删除 </a>
+                      </a-popconfirm>
+                    </a-tooltip>
+                  </a-space>
                 </div>
               </div>
             </template>

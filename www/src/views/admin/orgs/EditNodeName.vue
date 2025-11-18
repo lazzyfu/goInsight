@@ -2,6 +2,8 @@
   <a-modal :open="open" title="编辑节点名" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 18 }"
       :model="formState"
       :rules="rules"
       @finish="onSubmit"
@@ -9,9 +11,11 @@
       <a-form-item label="组织名" name="name" has-feedback>
         <a-input v-model:value="formState.name" placeholder="请输入新的组织名" allow-clear />
       </a-form-item>
-      <a-form-item style="text-align: right">
-        <a-button @click="handleCancel">取消</a-button>
-        <a-button type="primary" html-type="submit" style="margin-left: 10px">确定</a-button>
+      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
+        <a-space>
+          <a-button @click="handleCancel">取消</a-button>
+          <a-button type="primary" html-type="submit">确定</a-button>
+        </a-space>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -52,7 +56,7 @@ const handleCancel = () => {
 
 const onSubmit = async () => {
   const payload = {
-   key: props.nodeKey,
+    key: props.nodeKey,
     ...formState,
   }
   const res = await updateOrganizationsApi(payload).catch(() => {})

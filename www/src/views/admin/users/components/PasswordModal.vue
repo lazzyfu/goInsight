@@ -1,6 +1,13 @@
 <template>
-  <a-modal :open="open" title="修改密码" width="45%" :footer="null" @cancel="handleCancel">
-    <a-form ref="formRef" layout="vertical" :model="formState" :rules="rules" @finish="onSubmit">
+  <a-modal :open="open" title="修改密码" :footer="null" @cancel="handleCancel">
+    <a-form
+      ref="formRef"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 18 }"
+      :model="formState"
+      :rules="rules"
+      @finish="onSubmit"
+    >
       <a-form-item label="新密码" has-feedback name="password">
         <a-input v-model:value="formState.password" autocomplete="off" type="password"> </a-input>
       </a-form-item>
@@ -8,9 +15,11 @@
         <a-input v-model:value="formState.verify_password" autocomplete="off" type="password">
         </a-input>
       </a-form-item>
-      <a-form-item style="text-align: right">
-        <a-button @click="handleCancel">取消</a-button>
-        <a-button type="primary" html-type="submit" style="margin-left: 10px"> 确认 </a-button>
+      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
+        <a-space>
+          <a-button @click="handleCancel">取消</a-button>
+          <a-button type="primary" html-type="submit">确定</a-button>
+        </a-space>
       </a-form-item>
     </a-form>
   </a-modal>

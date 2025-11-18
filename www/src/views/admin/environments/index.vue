@@ -28,26 +28,17 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
-            <a-dropdown>
-              <EllipsisOutlined />
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="1" @click="handleEditRecord(record)">
-                    <EditOutlined style="margin-right: 6px" /> 编辑
-                  </a-menu-item>
-                  <a-menu-item key="2">
-                    <a-popconfirm
-                      title="确认删除吗？"
-                      ok-text="是"
-                      cancel-text="否"
-                      @confirm="handleDeleteRecord(record)"
-                    >
-                      <DeleteOutlined style="margin-right: 6px" /> 删除
-                    </a-popconfirm>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+            <s-space>
+              <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
+              <a-popconfirm
+                title="确认删除吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDeleteRecord(record)"
+              >
+                <a><DeleteOutlined /> 删除</a>
+              </a-popconfirm>
+            </s-space>
           </template>
         </template>
       </a-table>
@@ -64,9 +55,14 @@
 </template>
 
 <script setup>
-import { createEnvironmentsApi, deleteEnvironmentsApi, getEnvironmentsApi, updateEnvironmentsApi } from '@/api/admin'
+import {
+  createEnvironmentsApi,
+  deleteEnvironmentsApi,
+  getEnvironmentsApi,
+  updateEnvironmentsApi,
+} from '@/api/admin'
 import Modal from '@/views/admin/roles/components/Modal.vue'
-import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 

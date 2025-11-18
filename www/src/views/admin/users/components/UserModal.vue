@@ -49,9 +49,11 @@
         <a-switch v-model:checked="localFormState.is_superuser" />
       </a-form-item>
 
-      <a-form-item style="text-align: right">
-        <a-button @click="handleCancel">取消</a-button>
-        <a-button type="primary" html-type="submit" style="margin-left: 10px">确定</a-button>
+      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
+        <a-space>
+          <a-button @click="handleCancel">取消</a-button>
+          <a-button type="primary" html-type="submit">确定</a-button>
+        </a-space>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -86,27 +88,24 @@ watch(
 const roles = ref([])
 const formRef = ref()
 
-
 const rules = {
   username: [{ required: true, min: 2, max: 32, message: '请输入用户名', trigger: 'blur' }],
   nick_name: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
   email: [{ required: true, pattern: regEmail, message: '请输入合法邮箱', trigger: 'blur' }],
   mobile: [{ required: true, pattern: regPhone, message: '请输入合法手机号', trigger: 'blur' }],
   password: [
-      {
-        validator: (_, value) => {
-          // 编辑用户不必填密码
-          if (!isCreate.value && !value) return Promise.resolve()
-          if (!value) return Promise.reject(new Error('请输入密码'))
-          if (!regPassword.test(value))
-            return Promise.reject(
-              new Error('密码至少7个字符，包含大小写字母、数字和特殊字符')
-            )
-          return Promise.resolve()
-        },
-        trigger: 'blur',
+    {
+      validator: (_, value) => {
+        // 编辑用户不必填密码
+        if (!isCreate.value && !value) return Promise.resolve()
+        if (!value) return Promise.reject(new Error('请输入密码'))
+        if (!regPassword.test(value))
+          return Promise.reject(new Error('密码至少7个字符，包含大小写字母、数字和特殊字符'))
+        return Promise.resolve()
       },
-    ],
+      trigger: 'blur',
+    },
+  ],
 }
 
 const handleCancel = () => {

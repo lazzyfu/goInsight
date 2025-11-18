@@ -35,8 +35,8 @@
               <EllipsisOutlined />
               <template #overlay>
                 <a-menu>
-                  <a-menu-item key="1" @click="handleEditRecord(record)">
-                    <EditOutlined style="margin-right: 6px" /> 编辑
+                  <a-menu-item key="1">
+                    <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
                   </a-menu-item>
                   <a-menu-item key="2">
                     <a-popconfirm
@@ -45,7 +45,7 @@
                       cancel-text="否"
                       @confirm="handleDeleteRecord(record)"
                     >
-                      <DeleteOutlined style="margin-right: 6px" /> 删除
+                      <a><DeleteOutlined /> 删除</a>
                     </a-popconfirm>
                   </a-menu-item>
                 </a-menu>

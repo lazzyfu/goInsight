@@ -41,6 +41,13 @@ const route = {
       component: () => import('./dbconfig/index.vue'),
       meta: { title: '数据库管理', keepAlive: true },
     },
+    {
+      name: `view.admin.inspect`,
+      path: '/admin/inspect',
+      icon: 'UserOutlined',
+      component: () => import('./inspect/index.vue'),
+      meta: { title: '审核参数', keepAlive: true },
+    },
     // {
     //   path: 'system',
     //   name: `view.admin.systemManage`,
