@@ -34,9 +34,7 @@
                 cancel-text="否"
                 @confirm="handleDeleteRecord(record)"
               >
-                <a-button type="text" size="small" @click.stop>
-                  <template #icon><DeleteOutlined /></template>
-                </a-button>
+                <a><DeleteOutlined /> 删除</a>
               </a-popconfirm>
             </a-tooltip>
           </template>
@@ -155,7 +153,7 @@ const handleAddRecord = () => {
 }
 
 const handleSubmit = async (data) => {
-  const res = await bindOrganizationsUsersApi(data).catch(()=>{})
+  const res = await bindOrganizationsUsersApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     state.isModalOpen = false
