@@ -28,5 +28,15 @@ export const createEnvironmentsApi = (data) => post('/api/v1/admin/environment',
 export const updateEnvironmentsApi = (data) => put(`/api/v1/admin/environment/${data.id}`, data)
 export const deleteEnvironmentsApi = (data) => del(`/api/v1/admin/environment/${data}`, data)
 // inspect
-export const getInspectParamsApi = (params) => get('/api/v1/admin/inspect/params',params)
+export const getInspectParamsApi = (params) => get('/api/v1/admin/inspect/params', params)
 export const updateInspectParamsApi = (data) => put(`/api/v1/admin/inspect/params/${data.id}`, data)
+// das
+export const getSchemasListGrantApi = (params) => get('/api/v1/das/admin/schemas/grant', params)
+export const createSchemasGrantApi = (data) => post('/api/v1/das/admin/schemas/grant', data)
+export const deleteSchemasGrantApi = (data) => del(`/api/v1/das/admin/schemas/grant/${data}`, data)
+export const getTablesGrantApi = (params) => get('/api/v1/das/admin/tables/grant', params)
+export const createTablesGrantApi = (data) => post('/api/v1/das/admin/tables/grant', data)
+export const deleteTablesGrantApi = (data) => del(`/api/v1/das/admin/tables/grant/${data}`, data)
+export const getInstancesListApi = (params) => get('/api/v1/das/admin/instances/list', params)
+export const getSchemasListApi = (params) => get('/api/v1/das/admin/schemas/list', params)
+export const getTablesListApi = (params) => get('/api/v1/das/admin/tables/list', params)

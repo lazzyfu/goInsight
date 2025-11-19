@@ -41,7 +41,7 @@ const route = {
       path: '/admin/system',
       icon: 'ToolOutlined',
       component: () => import('./system/index.vue'),
-      meta: { title: '系统管理', keepAlive: true },
+      meta: { title: '系统配置', keepAlive: true },
       children: [
         {
           name: `view.admin.environments`,
@@ -63,6 +63,13 @@ const route = {
           icon: 'CheckCircleOutlined',
           component: () => import('./system/inspect/index.vue'),
           meta: { title: '审核参数', keepAlive: true },
+        },
+        {
+          name: `view.admin.das`,
+          path: '/admin/das',
+          icon: 'CheckCircleOutlined',
+          component: () => import('./system/das/index.vue'),
+          meta: { title: '数据访问', keepAlive: true },
         }
       ]
     }
