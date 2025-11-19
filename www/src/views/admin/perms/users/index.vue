@@ -103,8 +103,6 @@ import {
   ResetPasswordApi,
   updateUsersApi,
 } from '@/api/admin'
-import ResetPasswordModal from '@/views/admin/users/components/PasswordModal.vue'
-import UserModal from '@/views/admin/users/components/UserModal.vue'
 import {
   DeleteOutlined,
   EditOutlined,
@@ -114,6 +112,8 @@ import {
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import ResetPasswordModal from './components/PasswordModal.vue'
+import UserModal from './components/UserModal.vue'
 
 // 状态管理
 const state = reactive({

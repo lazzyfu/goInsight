@@ -107,8 +107,6 @@ const formRef = ref()
 // formState父组件传值，子组件修改，需要重新赋值
 const localFormState = reactive({ ...props.formState })
 
-console.log('localFormState: ', localFormState)
-
 watch(
   () => props.formState,
   (newVal) => {

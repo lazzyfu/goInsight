@@ -117,6 +117,23 @@ const handleSearch = (value) => {
 const tableData = ref([])
 const tableColumns = [
   {
+    title: '描述',
+    dataIndex: 'remark',
+    key: 'remark',
+    fixed: 'left',
+  },
+
+  {
+    title: '主机名',
+    dataIndex: 'hostname',
+    key: 'hostname',
+  },
+  {
+    title: '端口',
+    dataIndex: 'port',
+    key: 'port',
+  },
+  {
     title: '用途',
     dataIndex: 'use_type',
     key: 'use_type',
@@ -132,24 +149,9 @@ const tableColumns = [
     key: 'db_type',
   },
   {
-    title: '主机名',
-    dataIndex: 'hostname',
-    key: 'hostname',
-  },
-  {
-    title: '端口',
-    dataIndex: 'port',
-    key: 'port',
-  },
-  {
     title: '组织',
     dataIndex: 'organization_name',
     key: 'organization_name',
-  },
-  {
-    title: '备注',
-    dataIndex: 'remark',
-    key: 'remark',
   },
   {
     title: '创建时间',
@@ -165,6 +167,7 @@ const tableColumns = [
     title: '操作',
     dataIndex: 'action',
     key: 'action',
+    fixed: 'right',
   },
 ]
 

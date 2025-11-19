@@ -28,7 +28,7 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
-            <s-space>
+            <a-space>
               <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
               <a-popconfirm
                 title="确认删除吗？"
@@ -38,7 +38,7 @@
               >
                 <a><DeleteOutlined /> 删除</a>
               </a-popconfirm>
-            </s-space>
+            </a-space>
           </template>
         </template>
       </a-table>
@@ -61,10 +61,10 @@ import {
   getEnvironmentsApi,
   updateEnvironmentsApi,
 } from '@/api/admin'
-import Modal from '@/views/admin/roles/components/Modal.vue'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import Modal from './components/Modal.vue'
 
 // 状态管理
 const state = reactive({

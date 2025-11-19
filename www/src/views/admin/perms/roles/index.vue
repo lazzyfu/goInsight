@@ -1,11 +1,15 @@
 <template>
   <a-card title="角色管理">
+    <!-- 卡片右上角的新增按钮 -->
+    <template #extra>
+      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />新增角色</a-button>
+    </template>
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
       <a-input-search
         v-model:value="searchValue"
-        placeholder="搜索参数名..."
+        placeholder="搜索角色名..."
         style="width: 350px"
         @search="handleSearch"
       />
@@ -15,7 +19,7 @@
       <a-table
         size="small"
         :columns="tableColumns"
-        :row-key="(record) => record.id"
+        :row-key="(record) => record.key"
         :data-source="tableData"
         :pagination="pagination"
         :loading="state.loading"
@@ -23,16 +27,18 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
-            <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
+            <a-space>
+              <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
+              <a-popconfirm
+                title="确认删除吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDeleteRecord(record)"
+              >
+                <a><DeleteOutlined /> 删除</a>
+              </a-popconfirm>
+            </a-space>
           </template>
-        </template>
-        <template #expandedRowRender="{ record }">
-          <p style="margin: 0">
-            <highlightjs language="sql" :code="JSON.stringify(record.params, null, 2)" />
-          </p>
-        </template>
-        <template #expandColumnTitle>
-          <span style="color: red">More</span>
         </template>
       </a-table>
     </div>
@@ -41,29 +47,30 @@
   <Modal
     :open="state.isModalOpen"
     :formState="formState"
+    :title="state.isEditModal ? '编辑角色' : '新增角色'"
     @update:open="state.isModalOpen = $event"
     @submit="handleSubmit"
   />
 </template>
 
 <script setup>
-import { getInspectParamsApi, updateInspectParamsApi } from '@/api/admin'
-import Modal from '@/views/admin/inspect/components/Modal.vue'
-import { EditOutlined } from '@ant-design/icons-vue'
+import { createRolesApi, deleteRolesApi, getRolesApi, updateRolesApi } from '@/api/admin'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import Modal from './components/Modal.vue'
 
 // 状态管理
 const state = reactive({
   loading: false,
+  isEditModal: false,
   isModalOpen: false,
 })
 
 const searchValue = ref('')
 
 const defaultForm = {
-  params: '{}',
-  remark: '',
+  name: '',
 }
 
 const formState = ref({ ...defaultForm })
@@ -79,9 +86,14 @@ const handleSearch = (value) => {
 const tableData = ref([])
 const tableColumns = [
   {
-    title: '描述',
-    dataIndex: 'remark',
-    key: 'remark',
+    title: '角色',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'created_at',
+    key: 'created_at',
   },
   {
     title: '更新时间',
@@ -92,6 +104,7 @@ const tableColumns = [
     title: '操作',
     dataIndex: 'action',
     key: 'action',
+    fixed: 'right',
   },
 ]
 
@@ -113,7 +126,7 @@ const fetchData = async () => {
     is_page: true,
     search: searchValue.value,
   }
-  const res = await getInspectParamsApi(params)
+  const res = await getRolesApi(params)
   if (res) {
     pagination.total = res.total
     tableData.value = res.data
@@ -128,27 +141,34 @@ const handleTableChange = (pager) => {
   fetchData()
 }
 
+// 新增记录
+const handleAddRecord = () => {
+  state.isEditModal = false
+  formState.value = { ...defaultForm }
+  state.isModalOpen = true
+}
+
 // 编辑记录
 const handleEditRecord = (record) => {
-  console.log('record: ', record)
-
-  record.params = JSON.stringify(record.params || {}, null, 2)
-
+  state.isEditModal = true
   formState.value = { ...record }
   state.isModalOpen = true
 }
 
 const handleSubmit = async (data) => {
-  console.log('data: ', data)
-  // 将 inspect_params 转换为 JSON 对象
-  const payload = {
-    ...data,
-    params: JSON.parse(data.params),
-  }
-  const res = await updateInspectParamsApi(payload)
+  const res = state.isEditModal ? await updateRolesApi(data) : await createRolesApi(data)
   if (res?.code === '0000') {
     message.success('操作成功')
     state.isModalOpen = false
+    fetchData()
+  }
+}
+
+// 删除记录
+const handleDeleteRecord = async (record) => {
+  const res = await deleteRolesApi(record.id).catch(() => {})
+  if (res?.code === '0000') {
+    message.info('操作成功')
     fetchData()
   }
 }
