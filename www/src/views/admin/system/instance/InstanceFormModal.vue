@@ -1,17 +1,17 @@
 <template>
-  <a-modal :open="open" :title="title" :footer="null" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 18 }"
-      :model="localFormState"
+      :model="formData"
       :rules="rules"
       @finish="onSubmit"
     >
       <a-form-item label="环境" name="environment" has-feedback>
         <a-select
           ref="select"
-          v-model:value="localFormState.environment"
+          v-model:value="formData.environment"
           :options="props.environments"
           :field-names="{ label: 'name', value: 'id' }"
           allowClear
@@ -19,7 +19,7 @@
       </a-form-item>
       <a-form-item label="组织" name="organization_key" has-feedback>
         <a-cascader
-          v-model:value="localFormState.organization_key"
+          v-model:value="formData.organization_key"
           :field-names="{ label: 'title', value: 'key', children: 'children' }"
           :options="props.organizations"
           change-on-select
@@ -32,7 +32,7 @@
       <a-form-item label="类型" name="db_type" has-feedback>
         <a-select
           ref="select"
-          v-model:value="localFormState.db_type"
+          v-model:value="formData.db_type"
           :options="[
             { value: 'MySQL', label: 'MySQL' },
             { value: 'TiDB', label: 'TiDB' },
@@ -46,7 +46,7 @@
       <a-form-item label="用途" name="use_type" has-feedback>
         <a-select
           ref="select"
-          v-model:value="localFormState.use_type"
+          v-model:value="formData.use_type"
           :options="[
             { value: '查询', label: '查询' },
             { value: '工单', label: '工单' },
@@ -57,11 +57,11 @@
       </a-form-item>
 
       <a-form-item label="主机名" name="hostname" has-feedback>
-        <a-input v-model:value="localFormState.hostname" placeholder="请输入主机名" allow-clear />
+        <a-input v-model:value="formData.hostname" placeholder="请输入主机名" allow-clear />
       </a-form-item>
 
       <a-form-item label="端口" name="port" has-feedback>
-        <a-input-number v-model:value="localFormState.port" placeholder="请输入端口" allow-clear />
+        <a-input-number v-model:value="formData.port" placeholder="请输入端口" allow-clear />
       </a-form-item>
 
       <a-form-item
@@ -71,13 +71,13 @@
         help="格式要求为JSON类型，默认为{}，表示继承全局审核参数"
       >
         <a-textarea
-          v-model:value="localFormState.inspect_params"
+          v-model:value="formData.inspect_params"
           placeholder=" 请输入自定义审核参数，默认为{}"
         />
       </a-form-item>
 
       <a-form-item label="备注" name="remark" has-feedback>
-        <a-input v-model:value="localFormState.remark" placeholder="请输入备注" allow-clear />
+        <a-input v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
       </a-form-item>
 
       <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
@@ -91,30 +91,28 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { ref } from 'vue'
 
-const emit = defineEmits(['update:open', 'submit'])
+// 定义props和emits
 const props = defineProps({
   open: Boolean,
   title: String,
   environments: Array,
   organizations: Array,
-  formState: Object,
+})
+const emit = defineEmits(['update:open', 'submit'])
+
+// 使用defineModel接收 v-model:modelValue
+// 它自动创建了一个名为modelValue的prop，并提供了一个value来读取，以及一个自动触发update:modelValue的setter
+const formData = defineModel('modelValue', {
+  type: Object,
+  required: true,
 })
 
+// 表单引用
 const formRef = ref()
 
-// formState父组件传值，子组件修改，需要重新赋值
-const localFormState = reactive({ ...props.formState })
-
-watch(
-  () => props.formState,
-  (newVal) => {
-    Object.assign(localFormState, newVal)
-  },
-  { immediate: true, deep: true },
-)
-
+// 表单校验规则
 const rules = {
   environment: [{ required: true, message: '请选择环境', trigger: 'blur' }],
   organization_key: [{ required: true, message: '请选择组织', trigger: 'blur' }],
@@ -144,12 +142,14 @@ const rules = {
   ],
 }
 
+// 取消按钮处理函数
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
 }
 
-const onSubmit = () => {
-  emit('submit', localFormState)
+// 提交表单处理函数
+const onSubmit = async () => {
+  emit('submit', formData.value)
 }
 </script>

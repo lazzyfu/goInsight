@@ -2,7 +2,7 @@
   <a-card title="数据库实例管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />新增数据库实例</a-button>
+      <a-button type="primary" @click="handleAdd"><PlusOutlined />新增数据库实例</a-button>
     </template>
     <!-- 搜索区域 -->
     <div class="search-wrapper">
@@ -19,7 +19,7 @@
       <a-table
         size="small"
         :columns="tableColumns"
-        :row-key="(record) => record.key"
+        :row-key="(record) => record.id"
         :data-source="tableData"
         :pagination="pagination"
         :loading="state.loading"
@@ -30,20 +30,21 @@
           <template v-if="column.key === 'inspect_params'">
             <pre>{{ JSON.stringify(record.inspect_params, null, 2) }}</pre>
           </template>
+
           <template v-if="column.key === 'action'">
             <a-dropdown>
               <EllipsisOutlined />
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
+                    <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
                   </a-menu-item>
                   <a-menu-item key="2">
                     <a-popconfirm
                       title="确认删除吗？"
                       ok-text="是"
                       cancel-text="否"
-                      @confirm="handleDeleteRecord(record)"
+                      @confirm="handleDelete(record)"
                     >
                       <a><DeleteOutlined /> 删除</a>
                     </a-popconfirm>
@@ -53,18 +54,26 @@
             </a-dropdown>
           </template>
         </template>
+        <template #expandedRowRender="{ record }">
+          <p style="margin: 0">
+            <highlightjs language="json" :code="JSON.stringify(record.inspect_params, null, 2)" />
+          </p>
+        </template>
+        <template #expandColumnTitle>
+          <span style="color: red">More</span>
+        </template>
       </a-table>
     </div>
   </a-card>
   <!-- 新增/编辑弹窗 -->
-  <Modal
+  <InstanceFormModal
     :open="state.isModalOpen"
-    :formState="formState"
+    v-model:modelValue="formState"
     :environments="state.environments"
     :organizations="state.organizations"
-    :title="state.isEditModal ? '编辑数据库实例' : '新增数据库实例'"
+    :title="state.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
     @update:open="state.isModalOpen = $event"
-    @submit="handleSubmit"
+    @submit="onSubmit"
   />
 </template>
 
@@ -80,19 +89,17 @@ import {
 import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import Modal from './components/Modal.vue'
+import InstanceFormModal from './InstanceFormModal.vue'
 
 // 状态管理
 const state = reactive({
   loading: false,
-  isEditModal: false,
+  isEditMode: false,
   isModalOpen: false,
   environments: [],
   organizations: [],
 })
-
 const searchValue = ref('')
-
 const defaultForm = {
   environment: '',
   organization_key: '',
@@ -103,15 +110,7 @@ const defaultForm = {
   inspect_params: '{}',
   remark: '',
 }
-
 const formState = ref({ ...defaultForm })
-
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
 
 // 表
 const tableData = ref([])
@@ -171,6 +170,13 @@ const tableColumns = [
   },
 ]
 
+// 搜索
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
 // 分页
 const pagination = reactive({
   current: 1,
@@ -179,6 +185,13 @@ const pagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100'],
   showSizeChanger: true,
 })
+
+// 翻页
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
 
 // 获取表数据
 const fetchData = async () => {
@@ -197,43 +210,41 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
 // 新增记录
-const handleAddRecord = () => {
-  state.isEditModal = false
+const handleAdd = () => {
+  state.isEditMode = false
   formState.value = { ...defaultForm }
+  // 在打开 Modal 之前加载数据
+  getEnvironments()
+  getOrganizations()
   state.isModalOpen = true
 }
 
 // 编辑记录
-const handleEditRecord = (record) => {
-  state.isEditModal = true
-  record.inspect_params = JSON.stringify(
-    (record.inspect_params =
-      JSON.stringify(formState.inspect_params || {}, null, 2).inspect_params || {}),
-    null,
-    2,
-  )
+const handleEdit = (record) => {
+  state.isEditMode = true
+  let paramsString = '{}'
+  // 确保 record.inspect_params 存在且是对象，然后转换为 JSON 字符串
+  if (record.inspect_params && typeof record.inspect_params === 'object') {
+    paramsString = JSON.stringify(record.inspect_params, null, 2)
+  }
+  record.inspect_params = paramsString
   record.organization_key = record.organization_path
   formState.value = { ...record }
+  // 在打开 Modal 之前加载数据
+  getEnvironments()
+  getOrganizations()
   state.isModalOpen = true
 }
 
-const handleSubmit = async (data) => {
+// 提交表单
+const onSubmit = async (data) => {
   // 将 inspect_params 转换为 JSON 对象
   const payload = {
     ...data,
     inspect_params: JSON.parse(data.inspect_params),
   }
-  const res = state.isEditModal
-    ? await updateDBConfigApi(payload)
-    : await createDBConfigApi(payload)
+  const res = state.isEditMode ? await updateDBConfigApi(payload) : await createDBConfigApi(payload)
   if (res?.code === '0000') {
     message.success('操作成功')
     state.isModalOpen = false
@@ -242,7 +253,7 @@ const handleSubmit = async (data) => {
 }
 
 // 删除记录
-const handleDeleteRecord = async (record) => {
+const handleDelete = async (record) => {
   const res = await deleteDBConfigApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
@@ -263,7 +274,5 @@ const getOrganizations = async () => {
 // 生命周期
 onMounted(() => {
   fetchData()
-  getEnvironments()
-  getOrganizations()
 })
 </script>

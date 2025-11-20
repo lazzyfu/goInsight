@@ -24,7 +24,7 @@ const route = {
           name: `view.admin.roles`,
           path: '/admin/roles',
           icon: 'IdcardOutlined',
-          component: () => import('./perms/roles/index.vue'),
+          component: () => import('./perms/roles/RoleManager.vue'),
           meta: { title: '角色管理', keepAlive: true },
         },
         {
@@ -34,7 +34,7 @@ const route = {
           component: () => import('./perms/orgs/index.vue'),
           meta: { title: '组织管理', keepAlive: true },
         },
-      ]
+      ],
     },
     {
       name: `view.admin.system`,
@@ -44,18 +44,18 @@ const route = {
       meta: { title: '系统配置', keepAlive: true },
       children: [
         {
-          name: `view.admin.environments`,
-          path: '/admin/environements',
+          name: `view.admin.environment`,
+          path: '/admin/environement',
           icon: 'ClusterOutlined',
-          component: () => import('./system/environments/index.vue'),
+          component: () => import('./system/environment/EnvironmentManager.vue'),
           meta: { title: '环境管理', keepAlive: true },
         },
         {
-          name: `view.admin.dbconfig`,
-          path: '/admin/dbconfig',
+          name: `view.admin.instance`,
+          path: '/admin/instance',
           icon: 'DatabaseOutlined',
-          component: () => import('./system/dbconfig/index.vue'),
-          meta: { title: '数据库管理', keepAlive: true },
+          component: () => import('./system/instance/InstanceManager.vue'),
+          meta: { title: '实例配置', keepAlive: true },
         },
         {
           name: `view.admin.inspect`,
@@ -70,9 +70,16 @@ const route = {
           icon: 'CheckCircleOutlined',
           component: () => import('./system/das/index.vue'),
           meta: { title: '数据访问', keepAlive: true },
-        }
-      ]
-    }
-  ]
+        },
+        {
+          name: `view.admin.das.tables`,
+          path: '/admin/das/:username/:schema/:instance_id',
+          icon: 'CheckCircleOutlined',
+          component: () => import('./system/das/tablePerms.vue'),
+          meta: { title: '数据访问', keepAlive: true, hidden: true },
+        },
+      ],
+    },
+  ],
 }
 export default route

@@ -2,7 +2,7 @@
   <a-card title="环境管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />新增环境</a-button>
+      <a-button type="primary" @click="handleAdd"><PlusOutlined />新增环境</a-button>
     </template>
     <!-- 搜索区域 -->
     <div class="search-wrapper">
@@ -29,12 +29,12 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
+              <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
               <a-popconfirm
                 title="确认删除吗？"
                 ok-text="是"
                 cancel-text="否"
-                @confirm="handleDeleteRecord(record)"
+                @confirm="handleDelete(record)"
               >
                 <a><DeleteOutlined /> 删除</a>
               </a-popconfirm>
@@ -45,12 +45,12 @@
     </div>
   </a-card>
   <!-- 新增/编辑弹窗 -->
-  <Modal
+  <EnvironmentFormModal
     :open="state.isModalOpen"
-    :formState="formState"
-    :title="state.isEditModal ? '编辑环境' : '新增环境'"
+    v-model:modelValue="formState"
+    :title="state.isEditMode ? '编辑环境' : '新增环境'"
     @update:open="state.isModalOpen = $event"
-    @submit="handleSubmit"
+    @submit="onSubmit"
   />
 </template>
 
@@ -64,12 +64,12 @@ import {
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import Modal from './components/Modal.vue'
+import EnvironmentFormModal from './EnvironmentFormModal.vue'
 
 // 状态管理
 const state = reactive({
   loading: false,
-  isEditModal: false,
+  isEditMode: false,
   isModalOpen: false,
 })
 const searchValue = ref('')
@@ -77,13 +77,6 @@ const defaultForm = {
   name: '',
 }
 const formState = ref({ ...defaultForm })
-
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
 
 // 表
 const tableData = ref([])
@@ -107,8 +100,17 @@ const tableColumns = [
     title: '操作',
     dataIndex: 'action',
     key: 'action',
+    fixed: 'right',
+    width: 150,
   },
 ]
+
+// 搜索
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
 
 // 分页
 const pagination = reactive({
@@ -118,6 +120,27 @@ const pagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100'],
   showSizeChanger: true,
 })
+
+// 翻页
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
+
+// 新增记录
+const handleAdd = () => {
+  state.isEditMode = false
+  formState.value = { ...defaultForm }
+  state.isModalOpen = true
+}
+
+// 编辑记录
+const handleEdit = (record) => {
+  state.isEditMode = true
+  formState.value = { ...record }
+  state.isModalOpen = true
+}
 
 // 获取表数据
 const fetchData = async () => {
@@ -136,29 +159,9 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
-// 新增记录
-const handleAddRecord = () => {
-  state.isEditModal = false
-  formState.value = { ...defaultForm }
-  state.isModalOpen = true
-}
-
-// 编辑记录
-const handleEditRecord = (record) => {
-  state.isEditModal = true
-  formState.value = { ...record }
-  state.isModalOpen = true
-}
-
-const handleSubmit = async (data) => {
-  const res = state.isEditModal
+// 提交表单
+const onSubmit = async (data) => {
+  const res = state.isEditMode
     ? await updateEnvironmentsApi(data)
     : await createEnvironmentsApi(data)
   if (res?.code === '0000') {
@@ -169,7 +172,7 @@ const handleSubmit = async (data) => {
 }
 
 // 删除记录
-const handleDeleteRecord = async (record) => {
+const handleDelete = async (record) => {
   const res = await deleteEnvironmentsApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')

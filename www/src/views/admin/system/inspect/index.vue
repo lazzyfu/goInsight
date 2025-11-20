@@ -28,7 +28,7 @@
         </template>
         <template #expandedRowRender="{ record }">
           <p style="margin: 0">
-            <highlightjs language="sql" :code="JSON.stringify(record.params, null, 2)" />
+            <highlightjs language="json" :code="JSON.stringify(record.params, null, 2)" />
           </p>
         </template>
         <template #expandColumnTitle>

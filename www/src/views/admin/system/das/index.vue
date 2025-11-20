@@ -27,6 +27,20 @@
         :scroll="{ x: 1300 }"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'schema'">
+            <router-link
+              :to="{
+                name: 'view.admin.das.tables',
+                params: {
+                  username: record.username,
+                  schema: record.schema,
+                  instance_id: record.instance_id,
+                },
+              }"
+            >
+              {{ record.schema }}
+            </router-link>
+          </template>
           <template v-if="column.key === 'action'">
             <a-popconfirm
               title="确认删除吗？"
