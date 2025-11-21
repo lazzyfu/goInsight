@@ -23,7 +23,7 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
-            <a @click="handleEditRecord(record)"> <EditOutlined /> 编辑 </a>
+            <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
           </template>
         </template>
         <template #expandedRowRender="{ record }">
@@ -31,18 +31,16 @@
             <highlightjs language="json" :code="JSON.stringify(record.params, null, 2)" />
           </p>
         </template>
-        <template #expandColumnTitle>
-          <span style="color: red">More</span>
-        </template>
       </a-table>
     </div>
   </a-card>
   <!-- 新增/编辑弹窗 -->
-  <Modal
+  <InspectFormModal
     :open="state.isModalOpen"
-    :formState="formState"
+    title="配置审核参数"
+    v-model:modelValue="formState"
     @update:open="state.isModalOpen = $event"
-    @submit="handleSubmit"
+    @submit="onSubmit"
   />
 </template>
 
@@ -51,29 +49,21 @@ import { getInspectParamsApi, updateInspectParamsApi } from '@/api/admin'
 import { EditOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import Modal from './components/Modal.vue'
+import InspectFormModal from './InspectFormModal.vue'
+
+// TODO 修复JSON重复转义BUG
 
 // 状态管理
 const state = reactive({
   loading: false,
   isModalOpen: false,
 })
-
 const searchValue = ref('')
-
 const defaultForm = {
   params: '{}',
   remark: '',
 }
-
 const formState = ref({ ...defaultForm })
-
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
 
 // 表
 const tableData = ref([])
@@ -95,6 +85,13 @@ const tableColumns = [
   },
 ]
 
+// 搜索
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
 // 分页
 const pagination = reactive({
   current: 1,
@@ -103,6 +100,13 @@ const pagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100'],
   showSizeChanger: true,
 })
+
+// 翻页
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
 
 // 获取表数据
 const fetchData = async () => {
@@ -121,25 +125,15 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
 // 编辑记录
-const handleEditRecord = (record) => {
-  console.log('record: ', record)
-
+const handleEdit = (record) => {
   record.params = JSON.stringify(record.params || {}, null, 2)
-
   formState.value = { ...record }
   state.isModalOpen = true
 }
 
-const handleSubmit = async (data) => {
-  console.log('data: ', data)
+// 提交表单
+const onSubmit = async (data) => {
   // 将 inspect_params 转换为 JSON 对象
   const payload = {
     ...data,

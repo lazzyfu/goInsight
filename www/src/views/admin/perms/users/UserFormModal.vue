@@ -1,54 +1,45 @@
 <template>
-  <a-modal :open="open" :title="title" :footer="null" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 18 }"
-      :model="localFormState"
+      :model="formData"
       :rules="rules"
       @finish="onSubmit"
     >
       <a-form-item label="用户名" name="username" has-feedback>
-        <a-input v-model:value="localFormState.username" placeholder="请输入用户名" allow-clear />
+        <a-input v-model:value="formData.username" placeholder="请输入用户名" allow-clear />
       </a-form-item>
-
       <a-form-item label="昵称" name="nick_name" has-feedback>
-        <a-input v-model:value="localFormState.nick_name" placeholder="请输入昵称" allow-clear />
+        <a-input v-model:value="formData.nick_name" placeholder="请输入昵称" allow-clear />
       </a-form-item>
-
       <a-form-item v-if="isCreate" label="密码" name="password" has-feedback>
-        <a-input v-model:value="localFormState.password" type="password" placeholder="请输入密码" />
+        <a-input v-model:value="formData.password" type="password" placeholder="请输入密码" />
       </a-form-item>
-
       <a-form-item label="邮箱" name="email" has-feedback>
-        <a-input v-model:value="localFormState.email" placeholder="请输入邮箱" allow-clear />
+        <a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
       </a-form-item>
-
       <a-form-item label="手机号" name="mobile" has-feedback>
-        <a-input v-model:value="localFormState.mobile" placeholder="请输入手机号" allow-clear />
+        <a-input v-model:value="formData.mobile" placeholder="请输入手机号" allow-clear />
       </a-form-item>
-
-      <a-form-item label="角色" name="role" has-feedback>
+      <a-form-item label="角色" name="role_id" has-feedback>
         <a-select
-          v-model:value="localFormState.role"
-          :options="roles"
+          v-model:value="formData.role_id"
+          :options="props.roles"
           :field-names="{ label: 'name', value: 'id' }"
           allowClear
         />
       </a-form-item>
-
       <a-form-item label="激活状态" name="is_active" has-feedback>
-        <a-switch v-model:checked="localFormState.is_active" />
+        <a-switch v-model:checked="formData.is_active" />
       </a-form-item>
-
       <a-form-item label="开启2FA" name="is_two_fa" has-feedback>
-        <a-switch v-model:checked="localFormState.is_two_fa" />
+        <a-switch v-model:checked="formData.is_two_fa" />
       </a-form-item>
-
       <a-form-item label="管理员" name="is_superuser" has-feedback>
-        <a-switch v-model:checked="localFormState.is_superuser" />
+        <a-switch v-model:checked="formData.is_superuser" />
       </a-form-item>
-
       <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
         <a-space>
           <a-button @click="handleCancel">取消</a-button>
@@ -60,32 +51,31 @@
 </template>
 
 <script setup>
-import { getRolesApi } from '@/api/admin'
+import {} from '@/api/admin'
 import { regEmail, regPassword, regPhone } from '@/utils/validate'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
-const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
   open: Boolean,
   title: String,
-  formState: Object,
+  roles: {
+    type: Array,
+    default: () => [],
+  },
+})
+const emit = defineEmits(['update:open', 'submit'])
+
+// 使用defineModel接收 v-model:modelValue
+// 它自动创建了一个名为modelValue的prop，并提供了一个value来读取，以及一个自动触发update:modelValue的setter
+const formData = defineModel('modelValue', {
+  type: Object,
+  required: true,
 })
 
 // 判断是否是新增用户
 const isCreate = computed(() => props.title === '新增用户')
 
-// formState父组件传值，子组件修改，需要重新赋值
-const localFormState = reactive({ ...props.formState })
-
-watch(
-  () => props.formState,
-  (newVal) => {
-    Object.assign(localFormState, newVal)
-  },
-  { immediate: true, deep: true },
-)
-
-const roles = ref([])
+// 表单引用
 const formRef = ref()
 
 const rules = {
@@ -94,6 +84,7 @@ const rules = {
   email: [{ required: true, pattern: regEmail, message: '请输入合法邮箱', trigger: 'blur' }],
   mobile: [{ required: true, pattern: regPhone, message: '请输入合法手机号', trigger: 'blur' }],
   password: [
+    { required: true },
     {
       validator: (_, value) => {
         // 编辑用户不必填密码
@@ -108,17 +99,14 @@ const rules = {
   ],
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
 }
 
-const onSubmit = () => {
-  emit('submit', localFormState)
+// 提交表单
+const onSubmit = async () => {
+  emit('submit', formData.value)
 }
-
-onMounted(async () => {
-  const res = await getRolesApi().catch(() => {})
-  roles.value = res?.data || []
-})
 </script>

@@ -12,7 +12,7 @@
           ref="select"
           mode="multiple"
           v-model:value="formState.users"
-          :options="users"
+          :options="props.users"
           :field-names="{ label: 'nick_name', value: 'uid' }"
           allowClear
         >
@@ -30,36 +30,32 @@
 </template>
 
 <script setup>
-import { getUsersApi } from '@/api/admin'
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
   open: Boolean,
   nodeKey: String,
+  users: Array,
 })
 
 const formRef = ref()
-const users = ref([])
 const formState = reactive({
   users: [],
 })
 
+// 关闭弹窗
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
 }
 
-const onSubmit = () => {
+// 提交表单
+const onSubmit = async () => {
   const payload = {
     key: props.nodeKey,
     ...formState,
   }
   emit('submit', payload)
 }
-
-onMounted(async () => {
-  const res = await getUsersApi().catch(() => {})
-  users.value = res.data || []
-})
 </script>

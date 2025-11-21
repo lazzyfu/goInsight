@@ -2,7 +2,7 @@
   <a-card title="用户管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />绑定用户</a-button>
+      <a-button type="primary" @click="handleAdd"><PlusOutlined />绑定用户</a-button>
     </template>
     <!-- 搜索区域 -->
     <div class="search-wrapper">
@@ -32,7 +32,7 @@
                 title="确认移除吗？"
                 ok-text="是"
                 cancel-text="否"
-                @confirm="handleDeleteRecord(record)"
+                @confirm="handleDelete(record)"
               >
                 <a><DeleteOutlined /> 删除</a>
               </a-popconfirm>
@@ -43,11 +43,12 @@
     </div>
   </a-card>
   <!-- 绑定节点用户 -->
-  <BindNodeUsers
+  <BindOrgUsers
     :open="state.isModalOpen"
     :nodeKey="props.nodeKey"
+    :users="state.users"
     @update:open="state.isModalOpen = $event"
-    @submit="handleSubmit"
+    @submit="onSubmit"
   />
 </template>
 
@@ -56,11 +57,12 @@ import {
   bindOrganizationsUsersApi,
   deleteOrganizationsUsersApi,
   getOrganizationsUsersApi,
+  getUsersApi,
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
-import BindNodeUsers from './BindNodeUsers.vue'
+import BindOrgUsers from './BindOrgUsers.vue'
 
 const props = defineProps({
   open: Boolean,
@@ -80,16 +82,10 @@ watch(
 const state = reactive({
   loading: false,
   isModalOpen: false,
+  users: [],
 })
 
 const searchValue = ref('')
-
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
 
 // 表
 const tableData = ref([])
@@ -111,6 +107,13 @@ const tableColumns = [
   },
 ]
 
+// 搜索
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
 // 分页
 const pagination = reactive({
   current: 1,
@@ -119,6 +122,18 @@ const pagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100'],
   showSizeChanger: true,
 })
+
+// 翻页
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
+
+const getUsers = async () => {
+  const res = await getUsersApi().catch(() => {})
+  state.users = res.data || []
+}
 
 // 获取表数据
 const fetchData = async () => {
@@ -140,19 +155,13 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
 // 新增记录
-const handleAddRecord = () => {
+const handleAdd = () => {
+  getUsers()
   state.isModalOpen = true
 }
 
-const handleSubmit = async (data) => {
+const onSubmit = async (data) => {
   const res = await bindOrganizationsUsersApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
@@ -162,7 +171,7 @@ const handleSubmit = async (data) => {
 }
 
 // 删除记录
-const handleDeleteRecord = async (record) => {
+const handleDelete = async (record) => {
   const payload = {
     key: props.nodeKey,
     uid: record.uid,

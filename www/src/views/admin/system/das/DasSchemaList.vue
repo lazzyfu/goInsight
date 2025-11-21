@@ -2,7 +2,7 @@
   <a-card title="库表权限管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAddRecord"><PlusOutlined />新增库访问权限</a-button>
+      <a-button type="primary" @click="handleAdd"><PlusOutlined />新增库访问权限</a-button>
     </template>
     <!-- 搜索区域 -->
     <div class="search-wrapper">
@@ -46,7 +46,7 @@
               title="确认删除吗？"
               ok-text="是"
               cancel-text="否"
-              @confirm="handleDeleteRecord(record)"
+              @confirm="handleDelete(record)"
             >
               <a><DeleteOutlined /> 删除</a>
             </a-popconfirm>
@@ -56,19 +56,19 @@
     </div>
   </a-card>
   <!-- 新增弹窗 -->
-  <Modal
+  <DasSchemaFormModal
     :open="state.isModalOpen"
     @update:open="state.isModalOpen = $event"
-    @submit="handleSubmit"
+    @submit="onSubmit"
   />
 </template>
 
 <script setup>
-import { createSchemasGrantApi, getSchemasListGrantApi } from '@/api/admin'
+import { createSchemasGrantApi, deleteSchemasGrantApi, getSchemasListGrantApi } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import Modal from './components/Modal.vue'
+import DasSchemaFormModal from './DasSchemaFormModal.vue'
 
 // 状态管理
 const state = reactive({
@@ -77,13 +77,6 @@ const state = reactive({
 })
 
 const searchValue = ref('')
-
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
 
 // 表
 const tableData = ref([])
@@ -98,6 +91,7 @@ const tableColumns = [
     title: '库名',
     dataIndex: 'schema',
     key: 'schema',
+    fixed: 'left',
   },
   {
     title: '环境',
@@ -137,6 +131,13 @@ const tableColumns = [
   },
 ]
 
+// 搜索
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
 // 分页
 const pagination = reactive({
   current: 1,
@@ -145,6 +146,13 @@ const pagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100'],
   showSizeChanger: true,
 })
+
+// 翻页
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
 
 // 获取表数据
 const fetchData = async () => {
@@ -163,19 +171,13 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
 // 新增记录
-const handleAddRecord = () => {
+const handleAdd = () => {
   state.isModalOpen = true
 }
 
-const handleSubmit = async (data) => {
+// 提交表单
+const onSubmit = async (data) => {
   const res = await createSchemasGrantApi(data)
   if (res?.code === '0000') {
     message.success('操作成功')
@@ -185,7 +187,7 @@ const handleSubmit = async (data) => {
 }
 
 // 删除记录
-const handleDeleteRecord = async (record) => {
+const handleDelete = async (record) => {
   const res = await deleteSchemasGrantApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')

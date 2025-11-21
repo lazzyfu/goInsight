@@ -1,7 +1,7 @@
 <template>
   <a-card title="用户管理">
     <template #extra>
-      <a-button type="primary" @click="handleAddUser"><PlusOutlined />新增用户</a-button>
+      <a-button type="primary" @click="handleAdd"><PlusOutlined />新增用户</a-button>
     </template>
     <div class="search-wrapper">
       <!-- 搜索 -->
@@ -19,7 +19,6 @@
         :columns="tableColumns"
         :row-key="(record) => record.key"
         :data-source="tableData"
-        @resizeColumn="handleResizeColumn"
         :pagination="pagination"
         :loading="state.loading"
         @change="handleTableChange"
@@ -56,14 +55,14 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a @click="handleEditUser(record)"> <EditOutlined /> 编辑 </a>
+                    <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
                   </a-menu-item>
                   <a-menu-item key="2">
                     <a-popconfirm
                       title="确认删除吗？"
                       ok-text="是"
                       cancel-text="否"
-                      @confirm="handleDeleteUser(record)"
+                      @confirm="handleDelete(record)"
                     >
                       <a><DeleteOutlined /> 删除</a>
                     </a-popconfirm>
@@ -80,18 +79,20 @@
     </div>
   </a-card>
   <!-- 重置密码 -->
-  <ResetPasswordModal
-    :open="isResetPasswordModalOpen"
-    @update:open="isResetPasswordModalOpen = $event"
+  <PasswordFormModal
+    :open="state.passwordModalOpen"
+    title="重置密码"
+    @update:open="state.passwordModalOpen = $event"
     @submit="handleResetPasswordSubmit"
   />
   <!-- 新增/编辑弹窗 -->
-  <UserModal
+  <UserFormModal
     :open="state.userModalOpen"
-    :formState="userFormState"
-    :title="state.isEditUserModal ? '编辑用户' : '新增用户'"
+    v-model:modelValue="formState"
+    :roles="state.roles"
+    :title="state.isEditMode ? '编辑用户' : '新增用户'"
     @update:open="state.userModalOpen = $event"
-    @submit="handleUserSubmit"
+    @submit="onSubmit"
   />
 </template>
 
@@ -99,6 +100,7 @@
 import {
   addUsersApi,
   deleteUsersApi,
+  getRolesApi,
   getUsersApi,
   ResetPasswordApi,
   updateUsersApi,
@@ -112,40 +114,32 @@ import {
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import ResetPasswordModal from './components/PasswordModal.vue'
-import UserModal from './components/UserModal.vue'
+import PasswordFormModal from './PasswordFormModal.vue'
+import UserFormModal from './UserFormModal.vue'
 
 // 状态管理
 const state = reactive({
   loading: false,
-  isEditUserModal: false,
+  isEditMode: false,
   userModalOpen: false,
+  passwordModalOpen: false,
+  roles: [],
 })
 
 const searchValue = ref('')
-
+const uid = ref(0)
 const defaultUserForm = {
   username: '',
   password: '',
   nick_name: '',
   email: '',
   mobile: '',
-  role: '',
+  role_id: '',
   is_active: true,
   is_two_fa: true,
   is_superuser: false,
 }
-
-const uid = ref(0)
-const userFormState = ref({ ...defaultUserForm })
-const isResetPasswordModalOpen = ref(false)
-
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
+const formState = ref({ ...defaultUserForm })
 
 // 表
 const tableData = ref([])
@@ -209,6 +203,13 @@ const tableColumns = [
   },
 ]
 
+// 搜索
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
 // 分页
 const pagination = reactive({
   current: 1,
@@ -217,6 +218,18 @@ const pagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100'],
   showSizeChanger: true,
 })
+
+// 翻页
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
+
+const getRoles = async () => {
+  const res = await getRolesApi().catch(() => {})
+  state.roles = res?.data || []
+}
 
 // 获取表数据
 const fetchData = async () => {
@@ -235,33 +248,26 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
-function handleResizeColumn(w, col) {
-  col.width = w
-}
-
-// 新增用户
-const handleAddUser = () => {
-  state.isEditUserModal = false
-  userFormState.value = { ...defaultUserForm }
+// 新增记录
+const handleAdd = () => {
+  state.isEditMode = false
+  formState.value = { ...defaultUserForm }
+  getRoles()
   state.userModalOpen = true
 }
 
-// 编辑用户
-const handleEditUser = (record) => {
-  state.isEditUserModal = true
-  userFormState.value = { ...record }
+// 编辑记录
+const handleEdit = (record) => {
+  state.isEditMode = true
+  formState.value = { ...record }
+  getRoles()
   state.userModalOpen = true
 }
 
-const handleUserSubmit = async (data) => {
-  const res = state.isEditUserModal ? await updateUsersApi(data) : await addUsersApi(data)
+// 提交表单
+const onSubmit = async (data) => {
+  console.log('data: ', data)
+  const res = state.isEditMode ? await updateUsersApi(data) : await addUsersApi(data)
   if (res?.code === '0000') {
     message.success('操作成功')
     state.userModalOpen = false
@@ -272,7 +278,7 @@ const handleUserSubmit = async (data) => {
 // 重置密码
 const handleResetPassword = (record) => {
   uid.value = record.uid
-  isResetPasswordModalOpen.value = true
+  state.passwordModalOpen = true
 }
 
 const handleResetPasswordSubmit = async (data) => {
@@ -284,11 +290,11 @@ const handleResetPasswordSubmit = async (data) => {
   if (res?.code === '0000') {
     message.info('操作成功')
   }
-  isResetPasswordModalOpen.value = false
+  state.passwordModalOpen = false
 }
 
 // 删除用户
-const handleDeleteUser = async (record) => {
+const handleDelete = async (record) => {
   const res = await deleteUsersApi(record.uid).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')

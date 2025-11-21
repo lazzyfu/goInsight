@@ -59,9 +59,6 @@
             <highlightjs language="json" :code="JSON.stringify(record.inspect_params, null, 2)" />
           </p>
         </template>
-        <template #expandColumnTitle>
-          <span style="color: red">More</span>
-        </template>
       </a-table>
     </div>
   </a-card>

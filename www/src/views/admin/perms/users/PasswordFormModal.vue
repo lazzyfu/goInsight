@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="open" title="修改密码" :footer="null" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
@@ -33,9 +33,9 @@ const emit = defineEmits(['update:open', 'submit'])
 
 const props = defineProps({
   open: Boolean,
+  title: String,
 })
 
-// 不需要父组件传值
 const formState = reactive({
   password: '',
   verify_password: '',

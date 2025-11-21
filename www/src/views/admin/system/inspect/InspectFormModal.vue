@@ -1,20 +1,21 @@
 <template>
-  <a-modal :open="open" title="编辑审核参数" width="50%" :footer="null" @cancel="handleCancel">
+  <a-modal
+    :open="props.open"
+    :title="props.title"
+    width="50%"
+    :footer="null"
+    @cancel="handleCancel"
+  >
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 18 }"
-      :model="localFormState"
+      :model="formData"
       :rules="rules"
       @finish="onSubmit"
     >
       <a-form-item label="描述" name="remark" has-feedback>
-        <a-input
-          disabled
-          v-model:value="localFormState.remark"
-          placeholder="请输入备注"
-          allow-clear
-        />
+        <a-input disabled v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
       </a-form-item>
       <a-form-item
         label="审核参数"
@@ -24,7 +25,7 @@
       >
         <a-textarea
           :rows="5"
-          v-model:value="localFormState.params"
+          v-model:value="formData.params"
           placeholder=" 请输入自定义审核参数，默认为{}"
         />
       </a-form-item>
@@ -39,28 +40,26 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { ref } from 'vue'
 
-const emit = defineEmits(['update:open', 'submit'])
+// 定义props和emits
 const props = defineProps({
   open: Boolean,
   title: String,
-  formState: Object,
+})
+const emit = defineEmits(['update:open', 'submit'])
+
+// 使用defineModel接收 v-model:modelValue
+// 它自动创建了一个名为modelValue的prop，并提供了一个value来读取，以及一个自动触发update:modelValue的setter
+const formData = defineModel('modelValue', {
+  type: Object,
+  required: true,
 })
 
+// 表单引用
 const formRef = ref()
 
-// formState父组件传值，子组件修改，需要重新赋值
-const localFormState = reactive({ ...props.formState })
-
-watch(
-  () => props.formState,
-  (newVal) => {
-    Object.assign(localFormState, newVal)
-  },
-  { immediate: true, deep: true },
-)
-
+// 表单校验规则
 const rules = {
   name: [
     { required: true, message: '请输入角色名', trigger: 'blur' },
@@ -73,12 +72,14 @@ const rules = {
   ],
 }
 
+// 取消按钮处理函数
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
 }
 
-const onSubmit = () => {
-  emit('submit', localFormState)
+// 提交表单
+const onSubmit = async () => {
+  emit('submit', formData.value)
 }
 </script>

@@ -40,28 +40,28 @@
       </a-col>
       <!-- 右侧详情区/用户列表 -->
       <a-col v-show="state.visible" class="gutter-row" :span="state.visible ? 14 : 0">
-        <NodeUsers
+        <OrgUsers
           :open="state.isNodeUsersOpen"
           @update:open="state.isNodeUsersOpen = $event"
           :nodeKey="selectedNodeKey"
-        ></NodeUsers>
+        ></OrgUsers>
       </a-col>
     </a-row>
     <!-- 增加root节点 -->
-    <AddRootNode :open="state.isAddRootNodeOpen" @update:open="state.isAddRootNodeOpen = $event" />
+    <AddRootOrg :open="state.isAddRootNodeOpen" @update:open="state.isAddRootNodeOpen = $event" />
     <!-- 增加子节点 -->
-    <AddChildNode
+    <AddChildOrg
       :open="state.isAddChildNodeOpen"
       @update:open="state.isAddChildNodeOpen = $event"
       :parent_node_key="selectedNodeKey"
       :parent_node_name="selectedNode"
-    ></AddChildNode>
+    ></AddChildOrg>
     <!-- 编辑节点名 -->
-    <EditNodeName
+    <EditOrgName
       :open="state.isEditNodeNameOpen"
       @update:open="state.isEditNodeNameOpen = $event"
       :nodeKey="selectedNodeKey"
-    ></EditNodeName>
+    ></EditOrgName>
   </a-card>
 </template>
 
@@ -70,10 +70,10 @@ import { deleteOrganizationsApi, getOrganizationsApi } from '@/api/admin'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import AddChildNode from './AddChildNode.vue'
-import AddRootNode from './AddRootNode.vue'
-import EditNodeName from './EditNodeName.vue'
-import NodeUsers from './NodeUsers.vue'
+import AddChildOrg from './AddChildOrg.vue'
+import AddRootOrg from './AddRootOrg.vue'
+import EditOrgName from './EditOrgName.vue'
+import OrgUsers from './OrgUsers.vue'
 
 const state = reactive({
   visible: false,
