@@ -27,7 +27,7 @@ import { createRootOrganizationsApi } from '@/api/admin'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
-const emit = defineEmits(['update:open', 'submit'])
+const emit = defineEmits(['update:open', 'submit', 'refresh'])
 const props = defineProps({
   open: Boolean,
 })
@@ -59,6 +59,7 @@ const onSubmit = async () => {
   if (res?.code === '0000') {
     message.success('操作成功')
     emit('update:open', false)
+    emit('refresh')
   }
 }
 </script>

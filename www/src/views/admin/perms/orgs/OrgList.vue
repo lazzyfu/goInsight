@@ -13,24 +13,35 @@
               <div class="tree-node">
                 <span class="tree-node-title">{{ dataRef.title }}</span>
                 <div class="actions">
-                  <a-space>
-                    <a-tooltip title="新增子节点">
-                      <a @click="addChildNode(dataRef)"> <PlusOutlined /> 新增 </a>
-                    </a-tooltip>
-                    <a-tooltip title="编辑当前节点">
-                      <a @click="editCurrentNode(dataRef)"> <EditOutlined /> 编辑 </a>
-                    </a-tooltip>
-                    <a-tooltip title="删除当前节点">
-                      <a-popconfirm
-                        title="确认删除吗？"
-                        ok-text="是"
-                        cancel-text="否"
-                        @confirm="DeleteConfirm(dataRef)"
-                      >
-                        <a> <DeleteOutlined /> 删除 </a>
-                      </a-popconfirm>
-                    </a-tooltip>
-                  </a-space>
+                  <a-dropdown>
+                    <EllipsisOutlined />
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item key="1">
+                          <a-tooltip title="新增子节点">
+                            <a @click="addChildNode(dataRef)"> <PlusOutlined /> 新增 </a>
+                          </a-tooltip>
+                        </a-menu-item>
+                        <a-menu-item key="2">
+                          <a-tooltip title="编辑当前节点">
+                            <a @click="editCurrentNode(dataRef)"> <EditOutlined /> 编辑 </a>
+                          </a-tooltip>
+                        </a-menu-item>
+                        <a-menu-item key="3">
+                          <a-tooltip title="删除当前节点">
+                            <a-popconfirm
+                              title="确认删除吗？"
+                              ok-text="是"
+                              cancel-text="否"
+                              @confirm="handleDelete(dataRef)"
+                            >
+                              <a> <DeleteOutlined /> 删除 </a>
+                            </a-popconfirm>
+                          </a-tooltip>
+                        </a-menu-item>
+                      </a-menu>
+                    </template>
+                  </a-dropdown>
                 </div>
               </div>
             </template>
@@ -48,26 +59,32 @@
       </a-col>
     </a-row>
     <!-- 增加root节点 -->
-    <AddRootOrg :open="state.isAddRootNodeOpen" @update:open="state.isAddRootNodeOpen = $event" />
+    <AddRootOrg
+      :open="state.isAddRootNodeOpen"
+      @update:open="state.isAddRootNodeOpen = $event"
+      @refresh="fetchData"
+    />
     <!-- 增加子节点 -->
     <AddChildOrg
       :open="state.isAddChildNodeOpen"
       @update:open="state.isAddChildNodeOpen = $event"
       :parent_node_key="selectedNodeKey"
       :parent_node_name="selectedNode"
+      @refresh="fetchData"
     ></AddChildOrg>
     <!-- 编辑节点名 -->
     <EditOrgName
       :open="state.isEditNodeNameOpen"
       @update:open="state.isEditNodeNameOpen = $event"
       :nodeKey="selectedNodeKey"
+      @refresh="fetchData"
     ></EditOrgName>
   </a-card>
 </template>
 
 <script setup>
 import { deleteOrganizationsApi, getOrganizationsApi } from '@/api/admin'
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import AddChildOrg from './AddChildOrg.vue'
@@ -109,7 +126,7 @@ const editCurrentNode = (item) => {
   state.isEditNodeNameOpen = true
 }
 
-const DeleteConfirm = async (item) => {
+const handleDelete = async (item) => {
   if (item.key !== selectedNodeKey.value) {
     message.warning('请先鼠标选中需要删除的节点')
     return
@@ -146,57 +163,67 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 根容器 */
 .tree-node {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-right: 8px;
   border-radius: 4px;
-  transition: background-color 0.12s;
-  gap: 6px;
 }
 
-.tree-node:hover {
-  background-color: #f6f6f6;
-}
-
-/* 左侧结构：图标 + 文本 */
-.node-left {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-}
-
-/* 标题（重要：长文本避免撑开） */
-.node-title {
-  max-width: 200px;
+.tree-node-title {
+  flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 28px;
+  padding-right: 16px;
+  color: #333;
 }
 
-/* 操作区 */
-.node-actions {
+.actions {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.15s ease-in-out,
+    visibility 0.15s;
   display: flex;
   align-items: center;
-  gap: 4px;
+  margin-left: 8px;
 }
 
-:deep(.node-actions .ant-btn) {
-  padding: 0;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.action-icon {
+  font-size: 16px;
+  color: #999;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.action-icon:hover {
+  color: #1890ff;
+  background-color: #f0f2f5;
 }
 
-/* 图标垂直居中 */
-:deep(.node-actions .ant-btn .anticon) {
-  font-size: 14px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
+:deep(.ant-tree-node-content-wrapper:hover .actions) {
+  opacity: 1;
+  visibility: visible;
+}
+
+:deep(.ant-tree-node-content-wrapper.ant-tree-node-selected) {
+  background-color: #e6f7ff !important;
+  border-left: 3px solid #1890ff;
+  padding-left: 5px !important;
+}
+
+:deep(.ant-tree-node-content-wrapper.ant-tree-node-selected:hover) {
+  background-color: #e6f7ff !important;
+}
+
+:deep(.ant-tree-list-holder-inner) {
+  padding-right: 0 !important;
+}
+
+:deep(.ant-tree-treenode) {
+  padding: 4px 0;
 }
 </style>
