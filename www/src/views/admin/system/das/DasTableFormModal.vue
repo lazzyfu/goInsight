@@ -1,11 +1,5 @@
 <template>
-  <a-modal
-    :open="props.open"
-    :title="props.title"
-    width="50%"
-    :footer="null"
-    @cancel="handleCancel"
-  >
+  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
@@ -14,21 +8,31 @@
       :rules="rules"
       @finish="onSubmit"
     >
-      <a-form-item label="描述" name="remark" has-feedback>
-        <a-input disabled v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
+      <a-form-item label="表名" name="tables" has-feedback>
+        <a-select
+          ref="select"
+          v-model:value="formData.tables"
+          :options="props.tables"
+          mode="multiple"
+          :field-names="{ label: 'table_name', value: 'table_name' }"
+          allowClear
+        >
+        </a-select>
       </a-form-item>
-      <a-form-item
-        label="审核参数"
-        name="params"
-        has-feedback
-        help="格式要求为JSON类型，默认为{}，表示继承全局审核参数"
-      >
-        <a-textarea
-          :rows="8"
-          v-model:value="formData.params"
-          placeholder=" 请输入自定义审核参数，默认为{}"
-        />
+
+      <a-form-item label="规则" name="rule" has-feedback>
+        <a-select
+          ref="select"
+          v-model:value="formData.rule"
+          :options="[
+            { value: 'allow', label: '允许' },
+            { value: 'deny', label: '拒绝' },
+          ]"
+          allowClear
+        >
+        </a-select>
       </a-form-item>
+
       <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
         <a-space>
           <a-button @click="handleCancel">取消</a-button>
@@ -46,6 +50,7 @@ import { ref } from 'vue'
 const props = defineProps({
   open: Boolean,
   title: String,
+  tables: Array,
 })
 const emit = defineEmits(['update:open', 'submit'])
 
@@ -61,13 +66,18 @@ const formRef = ref()
 
 // 表单校验规则
 const rules = {
-  name: [
-    { required: true, message: '请输入角色名', trigger: 'blur' },
-    { min: 2, max: 32, message: '角色名长度应在2~32个字符', trigger: 'blur' },
+  tables: [
     {
-      pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_]+$/,
-      message: '角色名只能包含字母、数字、中文或下划线',
-      trigger: 'blur',
+      required: true,
+      message: '不能为空，请输入环境名',
+      trigger: 'change',
+    },
+  ],
+  rule: [
+    {
+      required: true,
+      message: '不能为空，请选择规则',
+      trigger: 'change',
     },
   ],
 }
@@ -78,7 +88,7 @@ const handleCancel = () => {
   formRef.value?.resetFields()
 }
 
-// 提交表单
+// 提交表单处理函数
 const onSubmit = async () => {
   emit('submit', formData.value)
 }

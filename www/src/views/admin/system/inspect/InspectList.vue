@@ -127,8 +127,10 @@ const fetchData = async () => {
 
 // 编辑记录
 const handleEdit = (record) => {
-  record.params = JSON.stringify(record.params || {}, null, 2)
-  formState.value = { ...record }
+  formState.value = {
+    ...record,
+    params: JSON.stringify(record.params || {}, null, 2), // 仅修改 formState，原 record 保持 Object
+  }
   state.isModalOpen = true
 }
 

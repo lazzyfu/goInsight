@@ -97,7 +97,6 @@ const state = reactive({
   schemas: [],
 })
 
-// formState父组件传值，子组件修改，需要重新赋值
 const formState = reactive({
   username: '',
   db_type: '',

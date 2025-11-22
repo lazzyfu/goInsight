@@ -1,5 +1,11 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
+  <a-modal
+    :open="props.open"
+    :title="props.title"
+    width="50%"
+    :footer="null"
+    @cancel="handleCancel"
+  >
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
@@ -65,12 +71,13 @@
       </a-form-item>
 
       <a-form-item
-        label="自定义审核参数"
+        label="审核参数"
         name="inspect_params"
         has-feedback
         help="格式要求为JSON类型，默认为{}，表示继承全局审核参数"
       >
         <a-textarea
+          :rows="8"
           v-model:value="formData.inspect_params"
           placeholder=" 请输入自定义审核参数，默认为{}"
         />

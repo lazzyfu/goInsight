@@ -220,14 +220,13 @@ const handleAdd = () => {
 // 编辑记录
 const handleEdit = (record) => {
   state.isEditMode = true
-  let paramsString = '{}'
-  // 确保 record.inspect_params 存在且是对象，然后转换为 JSON 字符串
-  if (record.inspect_params && typeof record.inspect_params === 'object') {
-    paramsString = JSON.stringify(record.inspect_params, null, 2)
-  }
-  record.inspect_params = paramsString
   record.organization_key = record.organization_path
-  formState.value = { ...record }
+
+  formState.value = {
+    ...record,
+    inspect_params: JSON.stringify(record.inspect_params || {}, null, 2), // 仅修改 formState，原 record 保持 Object
+  }
+
   // 在打开 Modal 之前加载数据
   getEnvironments()
   getOrganizations()
