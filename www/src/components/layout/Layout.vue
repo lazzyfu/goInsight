@@ -13,8 +13,10 @@
           <a-col :flex="200">
             <a-breadcrumb style="margin-top: 22px">
               <a-breadcrumb-item v-for="(item, index) in $route.matched" :key="item.name">
-                <router-link v-if="item.meta.title && index !== $route.matched.length - 1"
-                  :to="{ path: item.path === '' ? '/' : item.path }">{{ item.meta.title }}
+                <router-link
+                  v-if="item.meta.title && index !== $route.matched.length - 1"
+                  :to="{ path: item.path === '' ? '/' : item.path }"
+                  >{{ item.meta.title }}
                 </router-link>
                 <a-breadcrumb-item v-else>{{ item.meta.title }}</a-breadcrumb-item>
               </a-breadcrumb-item>
@@ -27,31 +29,36 @@
                   <a-avatar v-if="userStore.avatar" :src="userStore.avatar" icon="user" />
                   <a-avatar v-else src="/assets/account.png" icon="user" />
                 </a-badge>
-                <span style="padding-left: 8px;"> {{ userStore.nickname }}</span>
+                <span style="padding-left: 8px"> {{ userStore.nickname }}</span>
               </span>
               <template v-slot:overlay>
-                <a-menu mode="inline">
-                  <!-- <a-menu-item @click="userCenter">
-                    <UserOutlined />个人中心
-                  </a-menu-item> -->
-                  <!-- <a-menu-item @click="changePwd">
-                    <RedoOutlined />修改密码
-                  </a-menu-item> -->
-                  <a-menu-item @click="Logout()">
-                    <LogoutOutlined /> 注销登录
+                <a-menu>
+                  <a-menu-item @click="userCenter"> <UserOutlined /> 个人中心 </a-menu-item>
+                  <a-menu-item @click="state.openPasswordModal = true">
+                    <SafetyOutlined /> 修改密码
                   </a-menu-item>
+                  <a-menu-item @click="Logout()"> <LogoutOutlined /> 注销登录 </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
           </a-col>
         </a-row>
       </a-layout-header>
-      <a-layout :style="{ background: '#fff', padding: '14px', marginTop: '60px', minHeight: '360px' }">
+      <a-layout
+        :style="{ background: '#fff', padding: '14px', marginTop: '60px', minHeight: '360px' }"
+      >
         <div class="layout-sider-bar" v-show="!data.collapsed"></div>
         <a-layout-sider class="layout-sider" :collapsed="data.collapsed">
           <div style="padding-top: 20px"></div>
-          <a-menu theme="light" mode="inline" :openKeys="data.openKeys" :selectedKeys="[$route.path]"
-            :items="data.menus" @select="select" @openChange="openChange">
+          <a-menu
+            theme="light"
+            mode="inline"
+            :openKeys="data.openKeys"
+            :selectedKeys="[$route.path]"
+            :items="data.menus"
+            @select="select"
+            @openChange="openChange"
+          >
           </a-menu>
         </a-layout-sider>
         <a-layout-content>
@@ -59,28 +66,45 @@
         </a-layout-content>
       </a-layout>
     </a-layout>
+
+    <UserPassword
+      :open="state.openPasswordModal"
+      @update:open="state.openPasswordModal = $event"
+    ></UserPassword>
   </div>
 </template>
 
 <script setup>
-import { GetUserProfileApi } from "@/api/login"
-import router from "@/router"
+import { GetUserProfileApi } from '@/api/login'
+import router from '@/router'
 import { useAsyncRouterStore } from '@/store/static-router'
 import { useUserStore } from '@/store/user'
-import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue'
+import {
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  SafetyOutlined,
+  UserOutlined,
+} from '@ant-design/icons-vue'
 import { defineAsyncComponent, h, onMounted, reactive, ref } from 'vue'
+
+import UserPassword from '@/views/account/settings/UserPassword.vue'
 
 // 动态加载图标组件
 const renderIcon = (iconName) => {
   if (!iconName) return undefined
   const iconComponent = defineAsyncComponent(() =>
-    import('@ant-design/icons-vue').then(module => module[iconName])
+    import('@ant-design/icons-vue').then((module) => module[iconName]),
   )
   return h(iconComponent)
 }
 
 const userStore = useUserStore()
 const asyncRouterStore = useAsyncRouterStore()
+
+const state = reactive({
+  openPasswordModal: false,
+})
 
 const data = reactive({
   menus: [],
@@ -91,21 +115,22 @@ const data = reactive({
 
 // 转换路由数据为菜单项
 const transformRoutesToMenuItems = (routes) => {
-  return routes
-    // 过滤 hidden 路由
-    .filter(route => !route.meta?.hidden)
-    .map(route => ({
-      key: route.path,
-      label: route.meta?.title,
-      title: route.meta?.title,
-      icon: route.icon ? renderIcon(route.icon) : undefined,
-      children: route.children?.length ? transformRoutesToMenuItems(route.children) : undefined
-    }))
+  return (
+    routes
+      // 过滤 hidden 路由
+      .filter((route) => !route.meta?.hidden)
+      .map((route) => ({
+        key: route.path,
+        label: route.meta?.title,
+        title: route.meta?.title,
+        icon: route.icon ? renderIcon(route.icon) : undefined,
+        children: route.children?.length ? transformRoutesToMenuItems(route.children) : undefined,
+      }))
+  )
 }
 
-
 const initializeLayoutData = async () => {
-  await GetUserProfileApi().then(res => {
+  await GetUserProfileApi().then((res) => {
     if (res.code === '0000') {
       userStore.setUid(res.data.uid)
       userStore.setUserName(res.data.username)
@@ -124,7 +149,7 @@ const initializeLayoutData = async () => {
   const rootRoutes = (routes && routes.children) || []
 
   data.menus = transformRoutesToMenuItems(rootRoutes)
-  const storedOpenKeys = sessionStorage.getItem("openKeys")
+  const storedOpenKeys = sessionStorage.getItem('openKeys')
   if (storedOpenKeys && storedOpenKeys !== null) {
     data.openKeys = JSON.parse(storedOpenKeys)
   }
@@ -137,7 +162,7 @@ const select = (value) => {
 const openChange = (openKeys) => {
   if (openKeys?.length > 0) {
     data.openKeys = openKeys
-    sessionStorage.setItem("openKeys", JSON.stringify(data.openKeys))
+    sessionStorage.setItem('openKeys', JSON.stringify(data.openKeys))
   }
 }
 
@@ -149,10 +174,10 @@ const clickScope = () => {
 
 const userCenter = () => {
   router.push({
-    name: 'UserProfile',
+    name: 'account.basic',
     query: {
-      type: "info",
-    }
+      type: 'info',
+    },
   })
 }
 
@@ -164,7 +189,6 @@ const Logout = () => {
 onMounted(async () => {
   await initializeLayoutData()
 })
-
 </script>
 
 <style scoped>
