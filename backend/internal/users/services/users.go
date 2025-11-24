@@ -107,7 +107,6 @@ func (s *CreateUsersService) Run() error {
 		}
 		return nil
 	})
-
 }
 
 type UpdateUsersService struct {

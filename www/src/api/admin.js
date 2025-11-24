@@ -1,4 +1,4 @@
-import { del, get, post, put } from "@/utils/request"
+import { del, get, post, put } from '@/utils/request'
 
 export const getUsersApi = (params) => get('/api/v1/admin/users', params)
 export const addUsersApi = (data) => post('/api/v1/admin/users', data)
@@ -10,11 +10,13 @@ export const createRolesApi = (data) => post('/api/v1/admin/roles', data)
 export const updateRolesApi = (data) => put(`/api/v1/admin/roles/${data.id}`, data)
 export const deleteRolesApi = (data) => del(`/api/v1/admin/roles/${data}`, data)
 export const getOrganizationsApi = (data) => get('/api/v1/admin/organizations', data)
-export const createRootOrganizationsApi = (data) => post('/api/v1/admin/organizations/root-node', data)
+export const createRootOrganizationsApi = (data) =>
+  post('/api/v1/admin/organizations/root-node', data)
 export const getOrganizationsUsersApi = (params) => get('/api/v1/admin/organizations/users', params)
 export const bindOrganizationsUsersApi = (data) => post('/api/v1/admin/organizations/users', data)
 export const deleteOrganizationsUsersApi = (data) => del(`/api/v1/admin/organizations/users`, data)
-export const createChildOrganizationsApi = (data) => post('/api/v1/admin/organizations/child-node', data)
+export const createChildOrganizationsApi = (data) =>
+  post('/api/v1/admin/organizations/child-node', data)
 export const updateOrganizationsApi = (data) => put(`/api/v1/admin/organizations`, data)
 export const deleteOrganizationsApi = (data) => del(`/api/v1/admin/organizations`, data)
 // dbconfig
@@ -40,3 +42,10 @@ export const deleteTablesGrantApi = (data) => del(`/api/v1/das/admin/tables/gran
 export const getInstancesListApi = (params) => get('/api/v1/das/admin/instances/list', params)
 export const getSchemasListApi = (params) => get('/api/v1/das/admin/schemas/list', params)
 export const getTablesListApi = (params) => get('/api/v1/das/admin/tables/list', params)
+// 审批流
+export const getApprovalFlowsApi = (params) => get('/api/v1/orders/admin/approval-flows', params)
+export const createApprovalFlowsApi = (data) => post('/api/v1/orders/admin/approval-flows', data)
+export const updateApprovalFlowsApi = (data) =>
+  put(`/api/v1/orders/admin/approval-flows/${data.id}`, data)
+export const deleteApprovalFlowsApi = (data) =>
+  del(`/api/v1/orders/admin/approval-flows/${data}`, data)

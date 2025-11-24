@@ -34,6 +34,13 @@ const route = {
           component: () => import('./perms/orgs/OrgList.vue'),
           meta: { title: '组织管理', keepAlive: true },
         },
+        {
+          name: `view.admin.flows`,
+          path: '/admin/flows',
+          icon: 'AuditOutlined',
+          component: () => import('./perms/flows/index.vue'),
+          meta: { title: '审批流', keepAlive: true },
+        },
       ],
     },
     {

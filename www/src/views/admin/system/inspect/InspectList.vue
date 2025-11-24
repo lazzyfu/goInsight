@@ -51,8 +51,6 @@ import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import InspectFormModal from './InspectFormModal.vue'
 
-// TODO 修复JSON重复转义BUG
-
 // 状态管理
 const state = reactive({
   loading: false,

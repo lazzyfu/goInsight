@@ -2,11 +2,22 @@ package routers
 
 import (
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/middleware"
 
 	"github.com/lazzyfu/goinsight/internal/orders/views"
 
 	"github.com/gin-gonic/gin"
 )
+
+func AdminRoutes(v1 *gin.RouterGroup) {
+	admin := v1.Group("/admin")
+	admin.Use(middleware.HasAdminPermission())
+
+	admin.GET("/approval-flows", views.AdminGetApprovalFlowsView)
+	admin.PUT("/approval-flows/:id", views.AdminUpdateApprovalFlowsView)
+	admin.POST("/approval-flows", views.AdminCreateApprovalFlowsView)
+	admin.DELETE("/approval-flows/:id", views.AdminDeleteApprovalFlowsView)
+}
 
 func Routers(r *gin.Engine) {
 	r.GET("/ws/:channel", views.WebSocketHandler)
@@ -51,5 +62,7 @@ func Routers(r *gin.Engine) {
 		v1.POST("tasks/execute-single", views.ExecuteSingleTaskView)
 		v1.POST("tasks/execute-all", views.ExecuteAllTaskView)
 		v1.GET("download/exportfile/:task_id", views.DownloadExportFileView)
+
+		AdminRoutes(v1)
 	}
 }
