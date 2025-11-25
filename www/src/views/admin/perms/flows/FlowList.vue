@@ -191,7 +191,6 @@ const handleEdit = (record) => {
 
 const onSubmit = async (data) => {
   const payload = { ...data }
-  console.log('payload: ', payload)
   const res = state.isEditMode
     ? await updateApprovalFlowsApi(payload)
     : await createApprovalFlowsApi(payload)

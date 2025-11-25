@@ -1,12 +1,15 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
+    <template #footer>
+      <a-button @click="handleCancel">取消</a-button>
+      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+    </template>
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
+      :wrapper-col="{ span: 20 }"
       :model="formData"
       :rules="rules"
-      @finish="onSubmit"
     >
       <a-form-item label="表名" name="tables" has-feedback>
         <a-select
@@ -32,13 +35,6 @@
         >
         </a-select>
       </a-form-item>
-
-      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
-        <a-space>
-          <a-button @click="handleCancel">取消</a-button>
-          <a-button type="primary" html-type="submit">确定</a-button>
-        </a-space>
-      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -63,6 +59,7 @@ const formData = defineModel('modelValue', {
 
 // 表单引用
 const formRef = ref()
+const loading = ref(false)
 
 // 表单校验规则
 const rules = {
@@ -90,6 +87,13 @@ const handleCancel = () => {
 
 // 提交表单处理函数
 const onSubmit = async () => {
-  emit('submit', formData.value)
+  try {
+    await formRef.value.validateFields()
+    loading.value = true
+    emit('submit', formData.value)
+  } catch (err) {
+  } finally {
+    loading.value = false
+  }
 }
 </script>

@@ -1,18 +1,15 @@
 <template>
-  <a-modal
-    :open="props.open"
-    :title="props.title"
-    width="800px"
-    :footer="null"
-    @cancel="handleCancel"
-  >
+  <a-modal :open="props.open" :title="props.title" width="800px" @cancel="handleCancel">
+    <template #footer>
+      <a-button @click="handleCancel">取消</a-button>
+      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+    </template>
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
+      :wrapper-col="{ span: 20 }"
       :model="formData"
       :rules="rules"
-      @finish="onSubmit"
     >
       <a-form-item label="审批流名称" name="name" has-feedback>
         <a-input v-model:value="formData.name" placeholder="请输入审批流名称" allow-clear />
@@ -37,7 +34,6 @@
                 placeholder="阶段名称 (如：部门经理审批)"
                 style="width: 250px; margin-right: 16px"
               />
-
               <a-button
                 v-if="formData.definition.length > 1"
                 type="danger"
@@ -48,7 +44,6 @@
                 <DeleteOutlined /> 删除
               </a-button>
             </div>
-
             <a-row :gutter="16">
               <a-col :span="6">
                 <a-form-item label="审批类型" class="inner-form-item">
@@ -58,7 +53,6 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-
               <a-col :span="18">
                 <a-form-item label="审批人 (用户名列表)" class="inner-form-item">
                   <a-select
@@ -76,17 +70,9 @@
             </a-row>
           </div>
         </div>
-
         <a-button type="dashed" style="width: 100%; margin-top: 16px" @click="addStage">
           <PlusOutlined /> 增加审批阶段
         </a-button>
-      </a-form-item>
-
-      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
-        <a-space>
-          <a-button @click="handleCancel">取消</a-button>
-          <a-button type="primary" html-type="submit">确定</a-button>
-        </a-space>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -114,6 +100,7 @@ const formData = defineModel('formData', {
 })
 
 const formRef = ref()
+const loading = ref(false)
 
 // 审批流名称校验规则
 const rules = {
@@ -175,6 +162,7 @@ const validateDefinition = () => {
 }
 
 const onSubmit = async () => {
+  // TODO：这里进行有效性验证，也能过，分析下原因
   validateDefinition()
   emit('submit', formData.value)
 }

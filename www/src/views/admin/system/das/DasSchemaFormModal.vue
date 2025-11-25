@@ -1,12 +1,15 @@
 <template>
-  <a-modal :open="open" title="数据访问权限" :footer="null" @cancel="handleCancel">
+  <a-modal :open="open" title="数据访问权限" @cancel="handleCancel">
+    <template #footer>
+      <a-button @click="handleCancel">取消</a-button>
+      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+    </template>
     <a-form
       ref="formRef"
       :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
+      :wrapper-col="{ span: 20 }"
       :model="formState"
       :rules="rules"
-      @finish="onSubmit"
     >
       <a-form-item label="用户" name="username" has-feedback>
         <a-select
@@ -64,13 +67,6 @@
           allowClear
         ></a-select>
       </a-form-item>
-
-      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
-        <a-space>
-          <a-button @click="handleCancel">取消</a-button>
-          <a-button type="primary" html-type="submit">确定</a-button>
-        </a-space>
-      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -90,7 +86,7 @@ const props = defineProps({
 })
 
 const formRef = ref()
-
+const loading = ref(false)
 const state = reactive({
   users: [],
   instances: [],
@@ -147,8 +143,15 @@ const handleCancel = () => {
   formRef.value?.resetFields()
 }
 
-const onSubmit = () => {
-  emit('submit', formState)
+const onSubmit = async () => {
+  try {
+    await formRef.value.validateFields()
+    loading.value = true
+    emit('submit', formState)
+  } catch (err) {
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(async () => {

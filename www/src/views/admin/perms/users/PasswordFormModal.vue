@@ -1,12 +1,15 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" :footer="null" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
+    <template #footer>
+      <a-button @click="handleCancel">取消</a-button>
+      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+    </template>
     <a-form
       ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
       :model="formState"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 20 }"
       :rules="rules"
-      @finish="onSubmit"
     >
       <a-form-item label="新密码" has-feedback name="password">
         <a-input v-model:value="formState.password" autocomplete="off" type="password"> </a-input>
@@ -14,12 +17,6 @@
       <a-form-item label="确认密码" has-feedback name="verify_password">
         <a-input v-model:value="formState.verify_password" autocomplete="off" type="password">
         </a-input>
-      </a-form-item>
-      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
-        <a-space>
-          <a-button @click="handleCancel">取消</a-button>
-          <a-button type="primary" html-type="submit">确定</a-button>
-        </a-space>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -43,6 +40,8 @@ const formState = reactive({
 
 // 表单
 const formRef = ref()
+
+const loading = ref(false)
 
 // 有效性验证
 const validateNewPass = async (_rule, value) => {
@@ -86,6 +85,13 @@ const handleCancel = () => {
 
 // 提交
 const onSubmit = async () => {
-  emit('submit', formState)
+  try {
+    await formRef.value.validateFields()
+    loading.value = true
+    emit('submit', formState)
+  } catch (err) {
+  } finally {
+    loading.value = false
+  }
 }
 </script>

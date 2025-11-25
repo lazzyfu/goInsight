@@ -1,25 +1,22 @@
 <template>
   <a-card title="用户管理">
-    <!-- 卡片右上角的新增按钮 -->
     <template #extra>
       <a-button type="primary" @click="handleAdd"><PlusOutlined />绑定用户</a-button>
     </template>
-    <!-- 搜索区域 -->
     <div class="search-wrapper">
-      <!-- 搜索 -->
       <a-input-search
         v-model:value="searchValue"
         placeholder="搜索用户..."
         style="width: 350px"
+        size="small"
         @search="handleSearch"
       />
     </div>
-    <!-- 表格 -->
     <div style="margin-top: 12px">
       <a-table
         size="small"
         :columns="tableColumns"
-        :row-key="(record) => record.key"
+        :row-key="(record) => record.uid"
         :data-source="tableData"
         :pagination="pagination"
         :loading="state.loading"
@@ -34,7 +31,7 @@
                 cancel-text="否"
                 @confirm="handleDelete(record)"
               >
-                <a><DeleteOutlined /> 删除</a>
+                <a><DeleteOutlined /> 移除</a>
               </a-popconfirm>
             </a-tooltip>
           </template>
@@ -42,11 +39,10 @@
       </a-table>
     </div>
   </a-card>
-  <!-- 绑定节点用户 -->
   <BindOrgUsers
     :open="state.isModalOpen"
     :nodeKey="props.nodeKey"
-    :users="state.users"
+    :users="state.allUsers"
     @update:open="state.isModalOpen = $event"
     @submit="onSubmit"
   />
@@ -61,60 +57,26 @@ import {
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import BindOrgUsers from './BindOrgUsers.vue'
 
 const props = defineProps({
-  open: Boolean,
-  nodeKey: String,
+  nodeKey: {
+    type: String,
+    required: true,
+  },
 })
 
-watch(
-  () => props.nodeKey,
-  (val) => {
-    if (val) {
-      fetchData()
-    }
-  },
-)
-
-// 状态管理
+// --- 状态和分页定义 ---
 const state = reactive({
   loading: false,
   isModalOpen: false,
-  users: [],
+  allUsers: [],
 })
 
 const searchValue = ref('')
-
-// 表
 const tableData = ref([])
-const tableColumns = [
-  {
-    title: '用户',
-    dataIndex: 'username',
-    key: 'username',
-  },
-  {
-    title: '组织',
-    dataIndex: 'organization_name',
-    key: 'organization_name',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    key: 'action',
-  },
-]
 
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
-
-// 分页
 const pagination = reactive({
   current: 1,
   pageSize: 10,
@@ -123,19 +85,30 @@ const pagination = reactive({
   showSizeChanger: true,
 })
 
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
+const tableColumns = [
+  {
+    title: '用户名',
+    dataIndex: 'username',
+    key: 'username',
+    width: 150,
+  },
+  {
+    title: '昵称',
+    dataIndex: 'nick_name',
+    key: 'nick_name',
+    width: 150,
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    key: 'action',
+    width: 80,
+  },
+]
 
-const getUsers = async () => {
-  const res = await getUsersApi().catch(() => {})
-  state.users = res.data || []
-}
+// --- 核心函数定义 (放在 watch 之前，修复 ReferenceError) ---
 
-// 获取表数据
+// 获取当前组织的用户列表
 const fetchData = async () => {
   if (!props.nodeKey) return
   state.loading = true
@@ -155,22 +128,57 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 新增记录
+// 获取所有用户列表
+const getAllUsers = async () => {
+  const res = await getUsersApi().catch(() => {})
+  state.allUsers = res.data || []
+}
+
+// --- watch 监听 ---
+
+watch(
+  () => props.nodeKey,
+  (val) => {
+    if (val) {
+      // 切换组织时，重置分页和搜索条件
+      pagination.current = 1
+      searchValue.value = ''
+      fetchData() // ✅ 此时 fetchData 已定义
+    } else {
+      tableData.value = []
+      pagination.total = 0
+    }
+  },
+  { immediate: true },
+)
+
+// --- 操作逻辑 ---
+
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
+}
+
 const handleAdd = () => {
-  getUsers()
   state.isModalOpen = true
 }
 
 const onSubmit = async (data) => {
   const res = await bindOrganizationsUsersApi(data).catch(() => {})
   if (res?.code === '0000') {
-    message.success('操作成功')
+    message.success('用户绑定成功')
     state.isModalOpen = false
     fetchData()
   }
 }
 
-// 删除记录
 const handleDelete = async (record) => {
   const payload = {
     key: props.nodeKey,
@@ -178,8 +186,14 @@ const handleDelete = async (record) => {
   }
   const res = await deleteOrganizationsUsersApi(payload).catch(() => {})
   if (res?.code === '0000') {
-    message.info('操作成功')
+    message.info('用户移除成功')
     fetchData()
   }
 }
+
+// --- 生命周期 ---
+
+onMounted(() => {
+  getAllUsers()
+})
 </script>

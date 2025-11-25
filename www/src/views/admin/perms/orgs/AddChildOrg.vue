@@ -1,31 +1,38 @@
 <template>
-  <a-modal :open="open" title="新增子节点" :footer="null" @cancel="handleCancel">
-    <a-form
-      ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
-      :model="formState"
-      :rules="rules"
-      @finish="onSubmit"
-    >
-      <a-form-item label="父节点" name="parent_node_name" has-feedback>
-        <a-input v-model:value="props.parent_node_name" allow-clear disabled />
-      </a-form-item>
-      <a-form-item label="组织名" name="name" has-feedback>
-        <a-input v-model:value="formState.name" placeholder="请输入组织名" allow-clear />
-      </a-form-item>
-      <a-form-item :wrapper-col="{ offset: 4, span: 18 }" style="text-align: right">
-        <a-space>
-          <a-button @click="handleCancel">取消</a-button>
-          <a-button type="primary" html-type="submit">确定</a-button>
-        </a-space>
-      </a-form-item>
-    </a-form>
+  <a-modal :open="open" title="新增子组织" :width="480" centered @cancel="handleCancel">
+    <template #footer>
+      <a-button @click="handleCancel">取消</a-button>
+      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+    </template>
+    <div class="modal-content">
+      <div class="parent-info">
+        <span class="parent-label">父级组织</span>
+        <a-tag color="blue" class="parent-tag">
+          <template #icon><FolderOutlined /></template>
+          {{ parent_node_name }}
+        </a-tag>
+      </div>
+      <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical" class="org-form">
+        <a-form-item label="组织名称" name="name">
+          <a-input
+            v-model:value="formState.name"
+            placeholder="请输入子组织名称"
+            :maxlength="32"
+            show-count
+          >
+            <template #prefix>
+              <FolderOutlined style="color: #bfbfbf" />
+            </template>
+          </a-input>
+        </a-form-item>
+      </a-form>
+    </div>
   </a-modal>
 </template>
 
 <script setup>
 import { createChildOrganizationsApi } from '@/api/admin'
+import { FolderOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
@@ -37,6 +44,8 @@ const props = defineProps({
 })
 
 const formRef = ref()
+const loading = ref(false)
+
 const formState = reactive({
   name: '',
 })
@@ -59,16 +68,57 @@ const handleCancel = () => {
 }
 
 const onSubmit = async () => {
-  const payload = {
-    parent_node_key: props.parent_node_key,
-    parent_node_name: props.parent_node_name,
-    ...formState,
-  }
-  const res = await createChildOrganizationsApi(payload).catch(() => {})
-  if (res?.code === '0000') {
-    message.success('操作成功')
-    emit('update:open', false)
-    emit('refresh')
+  try {
+    await formRef.value.validateFields()
+    loading.value = true
+    const payload = {
+      parent_node_key: props.parent_node_key,
+      parent_node_name: props.parent_node_name,
+      ...formState,
+    }
+    const res = await createChildOrganizationsApi(payload).catch(() => {})
+    if (res?.code === '0000') {
+      message.success('创建成功')
+      emit('update:open', false)
+      emit('refresh')
+      formRef.value?.resetFields()
+    }
+  } catch (err) {
+  } finally {
+    loading.value = false
   }
 }
 </script>
+
+<style scoped>
+.modal-content {
+  padding: 8px 0;
+}
+
+.parent-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.parent-label {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.parent-tag {
+  font-size: 14px;
+}
+
+.org-form {
+  text-align: left;
+}
+
+:deep(.ant-form-item-label > label) {
+  font-weight: 500;
+}
+</style>

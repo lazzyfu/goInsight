@@ -219,6 +219,7 @@ func (s *GetOrganizationsUsersServices) Run() (responseData interface{}, total i
 		Select(`
             a.uid,
             a.username,
+			a.nick_name,
             ifnull(
                 concat(
                     (
