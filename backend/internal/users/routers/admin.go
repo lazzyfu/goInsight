@@ -5,25 +5,25 @@ import (
 	"github.com/lazzyfu/goinsight/internal/users/views"
 )
 
-func RegisterAdminRoutes(admin *gin.RouterGroup) {
+func RegisterAdminRoutes(v1 *gin.RouterGroup) {
 	// 用户
-	admin.GET("/users", views.GetUsersView)
-	admin.POST("/users", views.CreateUsersView)
-	admin.PUT("/users/:uid", views.UpdateUsersView)
-	admin.DELETE("/users/:uid", views.DeleteUsersView)
-	admin.POST("/users/reset-password", views.ResetUsersPasswordView)
+	v1.GET("/users", views.GetUsersView)
+	v1.POST("/users", views.CreateUsersView)
+	v1.PUT("/users/:uid", views.UpdateUsersView)
+	v1.DELETE("/users/:uid", views.DeleteUsersView)
+	v1.POST("/users/reset-password", views.ResetUsersPasswordView)
 	// 角色
-	admin.GET("/roles", views.GetRolesView)
-	admin.POST("/roles", views.CreateRolesView)
-	admin.PUT("/roles/:id", views.UpdateRolesView)
-	admin.DELETE("/roles/:id", views.DeleteRolesView)
+	v1.GET("/roles", views.GetRolesView)
+	v1.POST("/roles", views.CreateRolesView)
+	v1.PUT("/roles/:id", views.UpdateRolesView)
+	v1.DELETE("/roles/:id", views.DeleteRolesView)
 	// 组织
-	admin.GET("/organizations", views.GetOrganizationsView)
-	admin.PUT("/organizations", views.UpdateOrganizationsView)
-	admin.DELETE("/organizations", views.DeleteOrganizationsView)
-	admin.POST("/organizations/root-node", views.CreateRootOrganizationsView)
-	admin.POST("/organizations/child-node", views.CreateChildOrganizationsView)
-	admin.GET("/organizations/users", views.GetOrganizationsUsersView)
-	admin.POST("/organizations/users", views.BindOrganizationsUsersView)
-	admin.DELETE("/organizations/users", views.DeleteOrganizationsUsersView)
+	v1.GET("/organizations", views.GetOrganizationsView)
+	v1.PUT("/organizations", views.UpdateOrganizationsView)
+	v1.DELETE("/organizations", views.DeleteOrganizationsView)
+	v1.POST("/organizations/root-node", views.CreateRootOrganizationsView)
+	v1.POST("/organizations/child-node", views.CreateChildOrganizationsView)
+	v1.GET("/organizations/users", views.GetOrganizationsUsersView)
+	v1.POST("/organizations/users", views.BindOrganizationsUsersView)
+	v1.DELETE("/organizations/users", views.DeleteOrganizationsUsersView)
 }

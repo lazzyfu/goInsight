@@ -24,7 +24,7 @@ type AdminGetApprovalFlowsService struct {
 func (s *AdminGetApprovalFlowsService) Run() (responseData any, total int64, err error) {
 	var records []models.InsightApprovalFlow
 	tx := global.App.DB.Table("`insight_approval_flow` a").
-		Select("a.`id`, a.`name`, a.`definition`, a.`created_at`, a.`updated_at`").
+		Select("a.`id`, a.`name`, a.`definition`, a.`approval_id`, a.`created_at`, a.`updated_at`").
 		Scan(&records)
 	// 搜索
 	if s.Search != "" {
@@ -90,4 +90,53 @@ func (s *AdminDeleteApprovalFlowsService) Run() error {
 		return tx.Error
 	}
 	return nil
+}
+
+type AdminBindUsersToApprovalFlowService struct {
+	*forms.AdminBindUsersToApprovalFlowForm
+	C *gin.Context
+}
+
+func (s *AdminBindUsersToApprovalFlowService) Run() error {
+	// 判断当前用户是否绑定审批流
+	for _, username := range s.Users {
+		var record models.InsightApprovalMaps
+		tx := global.App.DB.Table("insight_approval_maps").Where("username=?", username).First(&record)
+		if tx.RowsAffected != 0 {
+			return fmt.Errorf("用户%s已经绑定审批流", username)
+		}
+	}
+
+	// 批量构造写入数据
+	records := make([]models.InsightApprovalMaps, 0, len(s.Users))
+	for _, u := range s.Users {
+		records = append(records, models.InsightApprovalMaps{
+			ApprovalID: s.ApprovalID,
+			Username:   u,
+		})
+	}
+
+	// 批量写入（事务内）
+	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+		return tx.CreateInBatches(&records, 100).Error
+	})
+
+}
+
+type AdminGetApprovalFlowUsersService struct {
+	C *gin.Context
+	*forms.AdminGetApprovalFlowUsersForm
+	ApprovalID string
+}
+
+func (s *AdminGetApprovalFlowUsersService) Run() (responseData any, total int64, err error) {
+	var records []models.InsightApprovalMaps
+	tx := global.App.DB.Table("insight_approval_maps").Where("approval_id=?", s.ApprovalID).Scan(&records)
+
+	// 搜索
+	if s.Search != "" {
+		tx = tx.Where("a.username like ?", "%"+s.Search+"%")
+	}
+	total = pagination.Pager(&s.PaginationQ, tx, &records)
+	return &records, total, nil
 }

@@ -47,3 +47,7 @@ export const getApprovalFlowsApi = (params) => get('/api/v1/admin/approval-flows
 export const createApprovalFlowsApi = (data) => post('/api/v1/admin/approval-flows', data)
 export const updateApprovalFlowsApi = (data) => put(`/api/v1/admin/approval-flows/${data.id}`, data)
 export const deleteApprovalFlowsApi = (data) => del(`/api/v1/admin/approval-flows/${data}`, data)
+export const bindUsersToApprovalFlowApi = (data) =>
+  post(`/api/v1/admin/approval-flows/bind-users`, data)
+export const getApprovalFlowUsersApi = (data) =>
+  get(`/api/v1/admin/approval-flows/bind-users/${data}`)

@@ -1,7 +1,10 @@
 <template>
   <a-card title="审批流管理" class="flow-manager-card">
     <template #extra>
-      <a-button type="primary" @click="handleAdd"> <PlusOutlined /> 新增审批流 </a-button>
+      <a-space>
+        <a-button @click="handleBind"> <DeploymentUnitOutlined /> 绑定流程到用户 </a-button>
+        <a-button type="primary" @click="handleAdd"> <PlusOutlined /> 新增审批流 </a-button>
+      </a-space>
     </template>
 
     <div class="search-wrapper">
@@ -30,6 +33,8 @@
 
           <template v-if="column.key === 'action'">
             <a-space>
+              <a @click="handleViewUsers(record)"> <EyeOutlined /> 查看用户 </a>
+
               <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
               <a-popconfirm
                 title="确认删除该审批流吗？"
@@ -61,27 +66,57 @@
     @update:open="state.isModalOpen = $event"
     @submit="onSubmit"
   />
+
+  <BindToUserFormModal
+    :open="state.isBindModalOpen"
+    :flow-options="state.flows"
+    :user-options="state.users"
+    @update:open="state.isBindModalOpen = $event"
+    @submit="onSubmitBind"
+  />
+
+  <FlowBoundUsersDetail
+    :open="state.isViewUsersOpen"
+    :flow-id="state.viewApprvalFlowID"
+    :flow-name="state.viewFlowName"
+    @update:open="state.isViewUsersOpen = $event"
+  />
 </template>
 
 <script setup>
 import {
+  bindUsersToApprovalFlowApi,
   createApprovalFlowsApi,
   deleteApprovalFlowsApi,
   getApprovalFlowsApi,
   getUsersApi,
   updateApprovalFlowsApi,
 } from '@/api/admin'
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import {
+  DeleteOutlined,
+  DeploymentUnitOutlined,
+  EditOutlined,
+  EyeOutlined, // 导入查看图标
+  PlusOutlined,
+} from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+// 假设这些组件已存在
 import ApprovalFlowFormModal from './ApprovalFlowFormModal.vue'
 import ApprovalFlowStages from './ApprovalFlowStages.vue'
+import BindToUserFormModal from './BindToUserFormModal.vue'
+import FlowBoundUsersDetail from './FlowBoundUsersDetail.vue' // 导入新组件
 
 const state = reactive({
   loading: false,
   isEditMode: false,
   isModalOpen: false,
-  users: [],
+  isBindModalOpen: false,
+  isViewUsersOpen: false, // 控制查看绑定用户模态框
+  viewApprvalFlowID: null, // 当前查看的审批流ID
+  viewFlowName: '', // 当前查看的审批流名称
+  users: [], // 用户选项 (用于流程配置和绑定)
+  flows: [], // 审批流选项 (用于绑定)
 })
 const searchValue = ref('')
 
@@ -98,45 +133,22 @@ const defaultForm = {
 }
 const formState = ref({ ...defaultForm })
 
-// 表格列定义 (保持不变)
+// 表格列定义
 const tableColumns = [
   { title: '审批流名称', dataIndex: 'name', key: 'name', width: 150 },
   { title: '流程阶段数', dataIndex: 'definition', key: 'flow', width: 120 },
   { title: '创建时间', dataIndex: 'created_at', key: 'created_at' },
   { title: '更新时间', dataIndex: 'updated_at', key: 'updated_at' },
-  { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 120 },
+  { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 150 },
 ]
 const tableData = ref([])
 
-// 搜索
-const handleSearch = (value) => {
-  searchValue.value = value
-  pagination.current = 1
-  fetchData()
-}
+// --- 数据获取与准备 ---
 
-// 分页
-const pagination = reactive({
-  current: 1,
-  pageSize: 10,
-  total: 0,
-  pageSizeOptions: ['10', '20', '50', '100'],
-  showSizeChanger: true,
-})
-
-// 翻页
-const handleTableChange = (pager) => {
-  pagination.current = pager.current
-  pagination.pageSize = pager.pageSize
-  fetchData()
-}
-
-// 获取用户列表的方法
+// 获取用户列表的方法 (用于流程配置和绑定)
 const getUsers = async () => {
   const res = await getUsersApi().catch(() => {})
   if (res && res.data) {
-    // 假设后端返回的用户数据是 [{ username: 'zhangsan', nickname: '张三' }, ...]
-    // 转换为 Ant Design Select Options 格式: [{ label: '张三 (zhangsan)', value: 'zhangsan' }]
     state.users = res.data.map((u) => ({
       label: `${u.nickname || u.username} (${u.username})`,
       value: u.username,
@@ -158,14 +170,44 @@ const fetchData = async () => {
     pagination.total = res.total
     tableData.value = res.data.map((item) => ({
       ...item,
+      // 确保 definition 是数组对象，以供子组件和扩展行使用
       definition: Array.isArray(item.definition)
         ? item.definition
         : item.definition
           ? JSON.parse(item.definition)
           : [],
     }))
+
+    // 为绑定模态框准备 flows 选项
+    console.log('res.data: ', res.data)
+
+    state.flows = res.data.map((flow) => ({
+      label: flow.name,
+      value: flow.approval_id, // 假设审批流ID字段是 id
+    }))
   }
   state.loading = false
+}
+
+// --- 流程 CURD 操作 (保持不变) ---
+const handleSearch = (value) => {
+  searchValue.value = value
+  pagination.current = 1
+  fetchData()
+}
+
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  pageSizeOptions: ['10', '20', '50', '100'],
+  showSizeChanger: true,
+})
+
+const handleTableChange = (pager) => {
+  pagination.current = pager.current
+  pagination.pageSize = pager.pageSize
+  fetchData()
 }
 
 const handleAdd = () => {
@@ -210,7 +252,41 @@ const handleDelete = async (record) => {
   }
 }
 
-// 生命周期
+// --- 绑定操作 (新增/修改) ---
+
+// 打开绑定审批流模态框
+const handleBind = () => {
+  if (state.flows.length === 0) {
+    message.warning('当前没有可用的审批流，请先创建。')
+    return
+  }
+  if (state.users.length === 0) {
+    message.warning('用户列表未加载，请稍候重试。')
+    return
+  }
+  state.isBindModalOpen = true
+}
+
+// 提交绑定审批流到用户的请求
+const onSubmitBind = async (data) => {
+  console.log('data: ', data)
+
+  const res = await bindUsersToApprovalFlowApi(data).catch(() => {})
+
+  if (res?.code === '0000') {
+    message.success('操作成功')
+    state.isBindModalOpen = false
+  }
+}
+
+// 🌟 查看绑定了该审批流的用户列表
+const handleViewUsers = (record) => {
+  state.viewApprvalFlowID = record.approval_id
+  state.viewFlowName = record.name
+  state.isViewUsersOpen = true
+}
+
+// --- 生命周期 ---
 onMounted(() => {
   fetchData()
   getUsers() // 获取用户列表

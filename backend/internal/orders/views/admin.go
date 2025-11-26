@@ -82,3 +82,42 @@ func AdminDeleteApprovalFlowsView(c *gin.Context) {
 	}
 	response.Success(c, nil, "success")
 }
+
+func AdminBindUsersToApprovalFlowView(c *gin.Context) {
+	var form forms.AdminBindUsersToApprovalFlowForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminBindUsersToApprovalFlowService{
+		AdminBindUsersToApprovalFlowForm: &form,
+		C:                                c,
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
+}
+
+func AdminGetApprovalFlowUsersView(c *gin.Context) {
+	var form forms.AdminGetApprovalFlowUsersForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminGetApprovalFlowUsersService{
+		AdminGetApprovalFlowUsersForm: &form,
+		C:                             c,
+		ApprovalID:                    c.Param("approval_id"),
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
+}
