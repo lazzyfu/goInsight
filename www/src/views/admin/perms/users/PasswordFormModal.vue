@@ -1,16 +1,11 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 20 }"
-      :rules="rules"
-    >
+
+    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
       <a-form-item label="新密码" has-feedback name="password">
         <a-input v-model:value="formState.password" autocomplete="off" type="password"> </a-input>
       </a-form-item>
@@ -26,22 +21,26 @@
 import { regPassword } from '@/utils/validate'
 import { reactive, ref } from 'vue'
 
-const emit = defineEmits(['update:open', 'submit'])
-
+// 定义props和emits
 const props = defineProps({
   open: Boolean,
   title: String,
 })
+const emit = defineEmits(['update:open', 'submit'])
 
+// 表单数据
 const formState = reactive({
   password: '',
   verify_password: '',
 })
 
-// 表单
+// 表单引用
 const formRef = ref()
 
-const loading = ref(false)
+// 状态
+const uiState = reactive({
+  loading: false
+})
 
 // 有效性验证
 const validateNewPass = async (_rule, value) => {
@@ -60,6 +59,7 @@ const validateVerifyPass = async (_rule, value) => {
   return Promise.resolve()
 }
 
+// 表单校验规则
 const rules = {
   password: [
     {
@@ -77,21 +77,20 @@ const rules = {
   ],
 }
 
-// 关闭窗口
+// 取消按钮
 const handleCancel = () => {
-  formRef.value.resetFields()
   emit('update:open', false)
 }
 
-// 提交
+// 提交表单
 const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
-    loading.value = true
+    uiState.loading = true
     emit('submit', formState)
   } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>

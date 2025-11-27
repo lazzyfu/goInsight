@@ -3,24 +3,26 @@
     <template #extra>
       <a-button type="primary" @click="handleAdd"><PlusOutlined />新增用户</a-button>
     </template>
+
     <div class="search-wrapper">
       <!-- 搜索 -->
       <a-input-search
-        v-model:value="searchValue"
-        placeholder="搜索用户名、手机号、邮箱..."
+        v-model:value="uiData.searchValue"
+        placeholder="搜索用户名、昵称、手机号、邮箱..."
         style="width: 350px"
         @search="handleSearch"
       />
     </div>
+
     <!-- 表格 -->
     <div style="margin-top: 12px">
       <a-table
         size="small"
-        :columns="tableColumns"
+        :columns="uiData.tableColumns"
         :row-key="(record) => record.key"
-        :data-source="tableData"
+        :data-source="uiData.tableData"
         :pagination="pagination"
-        :loading="state.loading"
+        :loading="uiState.loading"
         @change="handleTableChange"
         :scroll="{ x: 1300 }"
       >
@@ -78,20 +80,22 @@
       </a-table>
     </div>
   </a-card>
+
   <!-- 重置密码 -->
   <PasswordFormModal
-    :open="state.passwordModalOpen"
+    :open="uiState.passwordModalOpen"
     title="重置密码"
-    @update:open="state.passwordModalOpen = $event"
+    @update:open="uiState.passwordModalOpen = $event"
     @submit="handleResetPasswordSubmit"
   />
+
   <!-- 新增/编辑弹窗 -->
   <UserFormModal
-    :open="state.userModalOpen"
+    :open="uiState.userModalOpen"
     v-model:modelValue="formState"
-    :roles="state.roles"
-    :title="state.isEditMode ? '编辑用户' : '新增用户'"
-    @update:open="state.userModalOpen = $event"
+    :roles="uiData.roles"
+    :title="uiState.isEditMode ? '编辑用户' : '新增用户'"
+    @update:open="uiState.userModalOpen = $event"
     @submit="onSubmit"
   />
 </template>
@@ -118,32 +122,19 @@ import PasswordFormModal from './PasswordFormModal.vue'
 import UserFormModal from './UserFormModal.vue'
 
 // 状态管理
-const state = reactive({
+const uiState = reactive({
   loading: false,
   isEditMode: false,
   userModalOpen: false,
   passwordModalOpen: false,
-  roles: [],
 })
 
-const searchValue = ref('')
-const uid = ref(0)
-const defaultUserForm = {
-  username: '',
-  password: '',
-  nick_name: '',
-  email: '',
-  mobile: '',
-  role_id: '',
-  is_active: true,
-  is_two_fa: true,
-  is_superuser: false,
-}
-const formState = ref({ ...defaultUserForm })
-
-// 表
-const tableData = ref([])
-const tableColumns = [
+// 数据
+const uiData = reactive({
+  searchValue: '',
+  roles: [],
+  tableData: [],
+  tableColumns: [
   {
     title: '用户',
     dataIndex: 'username',
@@ -202,10 +193,28 @@ const tableColumns = [
     width: 120,
   },
 ]
+})
+
+// uid
+const uid = ref(0)
+
+// form表单
+const defaultUserForm = {
+  username: '',
+  password: '',
+  nick_name: '',
+  email: '',
+  mobile: '',
+  role_id: '',
+  is_active: true,
+  is_two_fa: true,
+  is_superuser: false,
+}
+const formState = ref({ ...defaultUserForm })
 
 // 搜索
 const handleSearch = (value) => {
-  searchValue.value = value
+  uiData.searchValue = value
   pagination.current = 1
   fetchData()
 }
@@ -226,51 +235,51 @@ const handleTableChange = (pager) => {
   fetchData()
 }
 
+// 获取角色
 const getRoles = async () => {
   const res = await getRolesApi().catch(() => {})
-  state.roles = res?.data || []
+  uiData.roles = res?.data || []
 }
 
-// 获取表数据
+// 获取列表数据
 const fetchData = async () => {
-  state.loading = true
+  uiState.loading = true
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
-    search: searchValue.value,
+    search: uiData.searchValue,
   }
-  const res = await getUsersApi(params)
+  const res = await getUsersApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
-    tableData.value = res.data
+    uiData.tableData = res.data
   }
-  state.loading = false
+  uiState.loading = false
 }
 
-// 新增记录
+// 新增
 const handleAdd = () => {
-  state.isEditMode = false
+  uiState.isEditMode = false
   formState.value = { ...defaultUserForm }
   getRoles()
-  state.userModalOpen = true
+  uiState.userModalOpen = true
 }
 
-// 编辑记录
+// 编辑
 const handleEdit = (record) => {
-  state.isEditMode = true
+  uiState.isEditMode = true
   formState.value = { ...record }
   getRoles()
-  state.userModalOpen = true
+  uiState.userModalOpen = true
 }
 
-// 提交表单
+// 提交
 const onSubmit = async (data) => {
-  console.log('data: ', data)
-  const res = state.isEditMode ? await updateUsersApi(data) : await addUsersApi(data)
+  const res = uiState.isEditMode ? await updateUsersApi(data).catch(() => {}) : await addUsersApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
-    state.userModalOpen = false
+    uiState.userModalOpen = false
     fetchData()
   }
 }
@@ -278,9 +287,10 @@ const onSubmit = async (data) => {
 // 重置密码
 const handleResetPassword = (record) => {
   uid.value = record.uid
-  state.passwordModalOpen = true
+  uiState.passwordModalOpen = true
 }
 
+// 提交重置密码
 const handleResetPasswordSubmit = async (data) => {
   const payload = {
     uid: uid.value,
@@ -290,10 +300,10 @@ const handleResetPasswordSubmit = async (data) => {
   if (res?.code === '0000') {
     message.info('操作成功')
   }
-  state.passwordModalOpen = false
+  uiState.passwordModalOpen = false
 }
 
-// 删除用户
+// 删除
 const handleDelete = async (record) => {
   const res = await deleteUsersApi(record.uid).catch(() => {})
   if (res?.code === '0000') {
@@ -302,7 +312,7 @@ const handleDelete = async (record) => {
   }
 }
 
-// 生命周期
+// 初始化
 onMounted(() => {
   fetchData()
 })
