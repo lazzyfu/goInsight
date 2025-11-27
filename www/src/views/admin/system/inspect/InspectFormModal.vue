@@ -1,15 +1,16 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="50%" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" width="50%" destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
+
     <a-form
       ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 20 }"
       :model="formData"
       :rules="rules"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 20 }"
     >
       <a-form-item label="描述" name="remark" has-feedback>
         <a-input disabled v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
@@ -70,7 +71,6 @@ const rules = {
 // 取消按钮处理函数
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
 }
 
 // 提交表单
