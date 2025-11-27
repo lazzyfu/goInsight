@@ -2,7 +2,7 @@
   <a-modal :open="props.open" :title="props.title" width="50%" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
     <a-form
       ref="formRef"
@@ -40,8 +40,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:open', 'submit'])
 
-// 使用defineModel接收 v-model:modelValue
-// 它自动创建了一个名为modelValue的prop，并提供了一个value来读取，以及一个自动触发update:modelValue的setter
+// 表单数据
 const formData = defineModel('modelValue', {
   type: Object,
   required: true,
@@ -49,7 +48,11 @@ const formData = defineModel('modelValue', {
 
 // 表单引用
 const formRef = ref()
-const loading = ref(false)
+
+// 状态
+const uiState = reactive({
+  loading: false
+})
 
 // 表单校验规则
 const rules = {
@@ -74,11 +77,11 @@ const handleCancel = () => {
 const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
-    loading.value = true
+    uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>

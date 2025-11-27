@@ -9,7 +9,7 @@
     <div class="search-wrapper">
       <!-- 搜索 -->
       <a-input-search
-        v-model:value="data.searchValue"
+        v-model:value="uiData.searchValue"
         placeholder="搜索环境名..."
         style="width: 350px"
         @search="handleSearch"
@@ -20,11 +20,11 @@
     <div style="margin-top: 12px">
       <a-table
         size="small"
-        :columns="tableColumns"
+        :columns="uiData.tableColumns"
         :row-key="(record) => record.key"
-        :data-source="tableData"
+        :data-source="uiData.tableData"
         :pagination="pagination"
-        :loading="state.loading"
+        :loading="uiState.loading"
         @change="handleTableChange"
         :scroll="{ x: 1300 }"
       >
@@ -49,10 +49,10 @@
 
   <!-- 新增/编辑弹窗 -->
   <EnvironmentFormModal
-    :open="state.isModalOpen"
+    :open="uiState.isModalOpen"
     v-model:modelValue="formState"
-    :title="state.isEditMode ? '编辑环境' : '新增环境'"
-    @update:open="state.isModalOpen = $event"
+    :title="uiState.isEditMode ? '编辑环境' : '新增环境'"
+    @update:open="uiState.isModalOpen = $event"
     @submit="onSubmit"
   />
 </template>
@@ -69,27 +69,18 @@ import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import EnvironmentFormModal from './EnvironmentFormModal.vue'
 
-// 状态管理
-const state = reactive({
+// 状态
+const uiState = reactive({
   loading: false,
   isEditMode: false,
   isModalOpen: false,
 })
 
 // 数据
-const data = reactive({
+const uiData = reactive({
   searchValue: '',
-  tableData: []
-})
-
-// form表单
-const defaultForm = {
-  name: '',
-}
-const formState = ref({ ...defaultForm })
-
-// 表列
-const tableColumns = [
+  tableData: [],
+  tableColumns: [
   {
     title: '环境',
     dataIndex: 'name',
@@ -113,10 +104,17 @@ const tableColumns = [
     width: 150,
   },
 ]
+})
+
+// form表单
+const defaultForm = {
+  name: '',
+}
+const formState = ref({ ...defaultForm })
 
 // 搜索
 const handleSearch = (value) => {
-  data.searchValue = value
+  uiData.searchValue = value
   pagination.current = 1
   fetchData()
 }
@@ -139,43 +137,43 @@ const handleTableChange = (pager) => {
 
 // 新增
 const handleAdd = () => {
-  state.isEditMode = false
+  uiState.isEditMode = false
   formState.value = { ...defaultForm }
-  state.isModalOpen = true
+  uiState.isModalOpen = true
 }
 
 // 编辑
 const handleEdit = (record) => {
-  state.isEditMode = true
+  uiState.isEditMode = true
   formState.value = { ...record }
-  state.isModalOpen = true
+  uiState.isModalOpen = true
 }
 
 // 获取列表数据
 const fetchData = async () => {
-  state.loading = true
+  uiState.loading = true
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
-    search: data.searchValue,
+    search: uiData.searchValue,
   }
   const res = await getEnvironmentsApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
-    tableData.value = res.data
+    uiData.tableData = res.data
   }
-  state.loading = false
+  uiState.loading = false
 }
 
 // 提交（新增或编辑）
 const onSubmit = async (data) => {
-  const res = state.isEditMode
-    ? await updateEnvironmentsApi(data)
-    : await createEnvironmentsApi(data)
+  const res = uiState.isEditMode
+    ? await updateEnvironmentsApi(data).catch(() => {})
+    : await createEnvironmentsApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
-    state.isModalOpen = false
+    uiState.isModalOpen = false
     fetchData()
   }
 }

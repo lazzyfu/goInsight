@@ -4,21 +4,22 @@
     <div class="search-wrapper">
       <!-- 搜索 -->
       <a-input-search
-        v-model:value="searchValue"
+        v-model:value="uiData.searchValue"
         placeholder="搜索参数名..."
         style="width: 350px"
         @search="handleSearch"
       />
     </div>
+
     <!-- 表格 -->
     <div style="margin-top: 12px">
       <a-table
         size="small"
-        :columns="tableColumns"
+        :columns="uiData.tableColumns"
         :row-key="(record) => record.id"
-        :data-source="tableData"
+        :data-source="uiData.tableData"
         :pagination="pagination"
-        :loading="state.loading"
+        :loading="uiState.loading"
         @change="handleTableChange"
       >
         <template #bodyCell="{ column, record }">
@@ -34,12 +35,13 @@
       </a-table>
     </div>
   </a-card>
+
   <!-- 新增/编辑弹窗 -->
   <InspectFormModal
-    :open="state.isModalOpen"
+    :open="uiState.isModalOpen"
     title="配置审核参数"
     v-model:modelValue="formState"
-    @update:open="state.isModalOpen = $event"
+    @update:open="uiState.isModalOpen = $event"
     @submit="onSubmit"
   />
 </template>
@@ -51,21 +53,17 @@ import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import InspectFormModal from './InspectFormModal.vue'
 
-// 状态管理
-const state = reactive({
+// 状态
+const uiState = reactive({
   loading: false,
   isModalOpen: false,
 })
-const searchValue = ref('')
-const defaultForm = {
-  params: '{}',
-  remark: '',
-}
-const formState = ref({ ...defaultForm })
 
-// 表
-const tableData = ref([])
-const tableColumns = [
+// 数据
+const uiData = reactive({
+  searchValue: '',
+  tableData: [],
+  tableColumns: [
   {
     title: '描述',
     dataIndex: 'remark',
@@ -82,10 +80,18 @@ const tableColumns = [
     key: 'action',
   },
 ]
+})
+
+// form表单
+const defaultForm = {
+  params: '{}',
+  remark: '',
+}
+const formState = ref({ ...defaultForm })
 
 // 搜索
 const handleSearch = (value) => {
-  searchValue.value = value
+  uiData.searchValue = value
   pagination.current = 1
   fetchData()
 }
@@ -106,43 +112,43 @@ const handleTableChange = (pager) => {
   fetchData()
 }
 
-// 获取表数据
+// 获取列表数据
 const fetchData = async () => {
-  state.loading = true
+  uiState.loading = true
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
-    search: searchValue.value,
+    search: uiData.searchValue,
   }
-  const res = await getInspectParamsApi(params)
+  const res = await getInspectParamsApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
-    tableData.value = res.data
+    uiData.tableData = res.data
   }
-  state.loading = false
+  uiState.loading = false
 }
 
-// 编辑记录
+// 编辑
 const handleEdit = (record) => {
   formState.value = {
     ...record,
     params: JSON.stringify(record.params || {}, null, 2), // 仅修改 formState，原 record 保持 Object
   }
-  state.isModalOpen = true
+  uiState.isModalOpen = true
 }
 
-// 提交表单
+// 提交
 const onSubmit = async (data) => {
   // 将 inspect_params 转换为 JSON 对象
   const payload = {
     ...data,
     params: JSON.parse(data.params),
   }
-  const res = await updateInspectParamsApi(payload)
+  const res = await updateInspectParamsApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
-    state.isModalOpen = false
+    uiState.isModalOpen = false
     fetchData()
   }
 }
