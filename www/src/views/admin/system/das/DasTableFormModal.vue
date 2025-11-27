@@ -1,38 +1,22 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
-    <a-form
-      ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 20 }"
-      :model="formData"
-      :rules="rules"
-    >
+
+    <a-form ref="formRef" :model="formData" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
       <a-form-item label="表名" name="tables" has-feedback>
-        <a-select
-          ref="select"
-          v-model:value="formData.tables"
-          :options="props.tables"
-          mode="multiple"
-          :field-names="{ label: 'table_name', value: 'table_name' }"
-          allowClear
-        >
+        <a-select ref="select" v-model:value="formData.tables" :options="props.tables" mode="multiple"
+          :field-names="{ label: 'table_name', value: 'table_name' }" allowClear>
         </a-select>
       </a-form-item>
 
       <a-form-item label="规则" name="rule" has-feedback>
-        <a-select
-          ref="select"
-          v-model:value="formData.rule"
-          :options="[
-            { value: 'allow', label: '允许' },
-            { value: 'deny', label: '拒绝' },
-          ]"
-          allowClear
-        >
+        <a-select ref="select" v-model:value="formData.rule" :options="[
+          { value: 'allow', label: '允许' },
+          { value: 'deny', label: '拒绝' },
+        ]" allowClear>
         </a-select>
       </a-form-item>
     </a-form>
@@ -40,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 
 // 定义props和emits
 const props = defineProps({
@@ -50,8 +34,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:open', 'submit'])
 
-// 使用defineModel接收 v-model:modelValue
-// 它自动创建了一个名为modelValue的prop，并提供了一个value来读取，以及一个自动触发update:modelValue的setter
+// 表单数据
 const formData = defineModel('modelValue', {
   type: Object,
   required: true,
@@ -59,7 +42,11 @@ const formData = defineModel('modelValue', {
 
 // 表单引用
 const formRef = ref()
-const loading = ref(false)
+
+// 状态
+const uiState = reactive({
+  loading: false
+})
 
 // 表单校验规则
 const rules = {
@@ -79,21 +66,20 @@ const rules = {
   ],
 }
 
-// 取消按钮处理函数
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
 }
 
-// 提交表单处理函数
+// 提交表单
 const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
-    loading.value = true
+    uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>

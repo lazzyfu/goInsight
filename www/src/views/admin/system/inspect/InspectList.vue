@@ -153,7 +153,7 @@ const onSubmit = async (data) => {
   }
 }
 
-// 生命周期
+// 初始化
 onMounted(() => {
   fetchData()
 })
