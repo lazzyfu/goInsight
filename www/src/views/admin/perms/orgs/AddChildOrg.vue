@@ -1,9 +1,10 @@
 <template>
-  <a-modal :open="open" title="新增子组织" :width="480" centered @cancel="handleCancel">
+  <a-modal :open="open" title="新增子组织" :width="480" centered destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
+
     <div class="modal-content">
       <div class="parent-info">
         <span class="parent-label">父级组织</span>
@@ -12,6 +13,7 @@
           {{ parent_node_name }}
         </a-tag>
       </div>
+
       <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical" class="org-form">
         <a-form-item label="组织名称" name="name">
           <a-input
@@ -36,6 +38,7 @@ import { FolderOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
+// 定义props和emits
 const emit = defineEmits(['update:open', 'submit', 'refresh'])
 const props = defineProps({
   open: Boolean,
@@ -43,13 +46,21 @@ const props = defineProps({
   parent_node_name: String,
 })
 
+// 表单引用
 const formRef = ref()
-const loading = ref(false)
 
+
+// 状态
+const uiState = reactive({
+  loading: false
+})
+
+// 表单数据
 const formState = reactive({
   name: '',
 })
 
+// 表单校验规则
 const rules = {
   name: [
     { required: true, message: '请输入组织名', trigger: 'blur' },
@@ -62,15 +73,16 @@ const rules = {
   ],
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
 }
 
+// 提交表单
 const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
-    loading.value = true
+    uiState.loading = true
     const payload = {
       parent_node_key: props.parent_node_key,
       parent_node_name: props.parent_node_name,
@@ -81,11 +93,10 @@ const onSubmit = async () => {
       message.success('创建成功')
       emit('update:open', false)
       emit('refresh')
-      formRef.value?.resetFields()
     }
   } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>

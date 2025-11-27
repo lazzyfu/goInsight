@@ -1,9 +1,10 @@
 <template>
-  <a-modal :open="open" title="新增根组织" :width="480" centered @cancel="handleCancel">
+  <a-modal :open="open" title="新增根组织" :width="480" centered destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
+    
     <div class="modal-content">
       <div class="modal-icon">
         <ApartmentOutlined />
@@ -33,18 +34,26 @@ import { ApartmentOutlined, FolderOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
+// 定义props和emits
 const emit = defineEmits(['update:open', 'submit', 'refresh'])
 const props = defineProps({
   open: Boolean,
 })
 
+// 表单引用
 const formRef = ref()
-const loading = ref(false)
 
+// 状态
+const uiState = reactive({
+  loading: false
+})
+
+// 表单数据
 const formState = reactive({
   name: '',
 })
 
+// 表单校验规则
 const rules = {
   name: [
     { required: true, message: '请输入组织名', trigger: 'blur' },
@@ -57,25 +66,25 @@ const rules = {
   ],
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
 }
 
+// 提交表单
 const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
-    loading.value = true
+    uiState.loading = true
     const res = await createRootOrganizationsApi(formState).catch(() => {})
     if (res?.code === '0000') {
       message.success('创建成功')
       emit('update:open', false)
       emit('refresh')
-      formRef.value?.resetFields()
     }
   } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>

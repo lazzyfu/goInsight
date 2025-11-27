@@ -7,7 +7,9 @@
           <p class="header-desc">管理组织架构和用户分配</p>
         </div>
         <a-button type="primary" @click="addRootNode">
-          <template #icon><PlusOutlined /></template>
+          <template #icon>
+            <PlusOutlined />
+          </template>
           新增根组织
         </a-button>
       </div>
@@ -20,62 +22,35 @@
             <ApartmentOutlined class="panel-icon" />
             组织架构
           </span>
-          <a-input-search
-            v-model:value="searchValue"
-            placeholder="搜索组织"
-            style="width: 160px"
-            size="small"
-            allow-clear
-          />
+          <a-input-search v-model:value="uiData.searchValue" placeholder="搜索组织" style="width: 160px" size="small"
+            allow-clear />
         </div>
         <div class="tree-container">
-          <a-empty v-if="treeData.length === 0" description="暂无组织数据">
+          <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
             <a-button type="primary" size="small" @click="addRootNode"> 创建第一个组织 </a-button>
           </a-empty>
-          <a-tree
-            v-else
-            :tree-data="filteredTreeData"
-            :selected-keys="selectedKeys"
-            :expanded-keys="expandedKeys"
-            :auto-expand-parent="autoExpandParent"
-            block-node
-            @select="handleTreeSelect"
-            @expand="handleExpand"
-          >
+          <a-tree v-else :tree-data="filteredTreeData" :selected-keys="uiData.selectedKeys"
+            :expanded-keys="uiData.expandedKeys" :auto-expand-parent="uiData.autoExpandParent" block-node
+            @select="handleTreeSelect" @expand="handleExpand">
             <template #title="{ key: nodeKey, title, dataRef }">
-              <div class="tree-node" :class="{ 'is-selected': selectedKeys.includes(nodeKey) }">
+              <div class="tree-node" :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }">
                 <span class="tree-node-title" :title="title">
                   <FolderOutlined class="folder-icon" />
                   {{ title }}
                 </span>
                 <div class="tree-actions">
                   <a-tooltip title="新增子组织">
-                    <a-button
-                      type="text"
-                      size="small"
-                      class="action-btn"
-                      @click.stop="addChildNode(dataRef)"
-                    >
+                    <a-button type="text" size="small" class="action-btn" @click.stop="addChildNode(dataRef)">
                       <PlusOutlined />
                     </a-button>
                   </a-tooltip>
                   <a-tooltip title="编辑">
-                    <a-button
-                      type="text"
-                      size="small"
-                      class="action-btn"
-                      @click.stop="editCurrentNode(dataRef)"
-                    >
+                    <a-button type="text" size="small" class="action-btn" @click.stop="editCurrentNode(dataRef)">
                       <EditOutlined />
                     </a-button>
                   </a-tooltip>
-                  <a-popconfirm
-                    title="确定要删除该组织吗？"
-                    description="删除后将无法恢复"
-                    @confirm="handleDelete(dataRef)"
-                    ok-text="确定"
-                    cancel-text="取消"
-                  >
+                  <a-popconfirm title="确定要删除该组织吗？" description="删除后将无法恢复" @confirm="handleDelete(dataRef)" ok-text="确定"
+                    cancel-text="取消">
                     <a-tooltip title="删除">
                       <a-button type="text" size="small" class="action-btn danger" @click.stop>
                         <DeleteOutlined />
@@ -90,8 +65,8 @@
       </div>
 
       <div class="users-panel">
-        <template v-if="selectedNodeKey">
-          <OrgUsers :node-key="selectedNodeKey" />
+        <template v-if="uiData.selectedNodeKey">
+          <OrgUsers :node-key="uiData.selectedNodeKey" />
         </template>
         <template v-else>
           <div class="empty-state">
@@ -105,18 +80,12 @@
       </div>
     </div>
 
-    <AddRootOrg v-model:open="state.isAddRootNodeOpen" @refresh="fetchData" />
-    <AddChildOrg
-      v-model:open="state.isAddChildNodeOpen"
-      :parent_node_key="selectedNodeKey"
-      :parent_node_name="selectedNode"
-      @refresh="fetchData"
-    />
-    <EditOrgName
-      v-model:open="state.isEditNodeNameOpen"
-      :node-key="selectedNodeKey"
-      @refresh="fetchData"
-    />
+    <AddRootOrg v-model:open="uiState.isAddRootNodeOpen" @refresh="fetchData" />
+
+    <AddChildOrg v-model:open="uiState.isAddChildNodeOpen" :parent_node_key="uiData.uiData.selectedNodeKey"
+      :parent_node_name="uiData.selectedNode" @refresh="fetchData" />
+
+    <EditOrgName v-model:open="uiState.isEditNodeNameOpen" :node-key="uiData.selectedNodeKey" @refresh="fetchData" />
   </div>
 </template>
 
@@ -131,36 +100,37 @@ import {
   TeamOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import AddChildOrg from './AddChildOrg.vue'
 import AddRootOrg from './AddRootOrg.vue'
 import EditOrgName from './EditOrgName.vue'
 import OrgUsers from './OrgUsers.vue'
 
-const state = reactive({
-  visible: false,
+// 状态
+const uiState = reactive({
   isAddRootNodeOpen: false,
-  // 修复：移除 isNodeUsersOpen 状态
   isAddChildNodeOpen: false,
   isEditNodeNameOpen: false,
 })
 
-const treeData = ref([])
-const selectedKeys = ref([])
-const expandedKeys = ref([])
-const autoExpandParent = ref(true)
-const selectedNodeKey = ref('')
-const selectedNode = ref('')
-const searchValue = ref('')
+// 数据
+const uiData = reactive({
+  treeData: [],
+  selectedKeys: [],
+  expandedKeys: [],
+  autoExpandParent: true,
+  selectedNodeKey: '',
+  selectedNode: '',
+  searchValue: ''
+})
 
-// --- 数据获取和处理 ---
-
+// 获取列表数据
 const fetchData = async () => {
-  const res = await getOrganizationsApi().catch(() => {})
-  treeData.value = res?.data || []
-  if (treeData.value.length > 0) {
-    const allKeys = getAllKeys(treeData.value)
-    expandedKeys.value = allKeys
+  const res = await getOrganizationsApi().catch(() => { })
+  uiData.treeData = res?.data || []
+  if (uiData.treeData.length > 0) {
+    const allKeys = getAllKeys(uiData.treeData)
+    uiData.expandedKeys = allKeys
   }
 }
 
@@ -177,8 +147,8 @@ const getAllKeys = (data) => {
 
 // 搜索过滤树数据
 const filteredTreeData = computed(() => {
-  if (!searchValue.value) return treeData.value
-  return filterTree(treeData.value, searchValue.value.toLowerCase())
+  if (!uiData.searchValue) return uiData.treeData
+  return filterTree(uiData.treeData, uiData.searchValue.toLowerCase())
 })
 
 const filterTree = (data, keyword) => {
@@ -193,41 +163,39 @@ const filterTree = (data, keyword) => {
     .filter(Boolean)
 }
 
-// --- 组织树操作 ---
-
+// 组织树操作
 const handleExpand = (keys) => {
-  expandedKeys.value = keys
-  autoExpandParent.value = false
+  uiData.expandedKeys = keys
+  uiData.autoExpandParent = false
 }
 
 const handleTreeSelect = (keys, { node, selected }) => {
   if (selected) {
-    selectedKeys.value = keys
-    selectedNodeKey.value = keys[0]
-    selectedNode.value = node.title
-    // 修复：这里只更新 selectedNodeKey，OrgUsers 组件会通过 watch 自动加载
+    uiData.selectedKeys = keys
+    uiData.selectedNodeKey = keys[0]
+    uiData.selectedNode = node.title
   } else {
-    selectedNodeKey.value = ''
-    selectedNode.value = ''
+    uiData.selectedNodeKey = ''
+    uiData.selectedNode = ''
   }
 }
 
 const addRootNode = () => {
-  state.isAddRootNodeOpen = true
+  uiState.isAddRootNodeOpen = true
 }
 
 const addChildNode = (item) => {
-  selectedNodeKey.value = item.key
-  selectedNode.value = item.title
-  selectedKeys.value = [item.key]
-  state.isAddChildNodeOpen = true
+  uiData.selectedNodeKey = item.key
+  uiData.selectedNode = item.title
+  uiData.selectedKeys = [item.key]
+  uiState.isAddChildNodeOpen = true
 }
 
 const editCurrentNode = (item) => {
-  selectedNodeKey.value = item.key
-  selectedNode.value = item.title
-  selectedKeys.value = [item.key]
-  state.isEditNodeNameOpen = true
+  uiData.selectedNodeKey = item.key
+  uiData.selectedNode = item.title
+  uiData.selectedKeys = [item.key]
+  uiState.isEditNodeNameOpen = true
 }
 
 const handleDelete = async (item) => {
@@ -235,23 +203,23 @@ const handleDelete = async (item) => {
     key: item.key,
     name: item.title,
   }
-  const res = await deleteOrganizationsApi(payload).catch(() => {})
+  const res = await deleteOrganizationsApi(payload).catch(() => { })
   if (res?.code === '0000') {
     message.success('删除成功')
-    selectedNodeKey.value = ''
-    selectedNode.value = ''
-    selectedKeys.value = []
+    uiData.selectedNodeKey = ''
+    uiData.selectedNode = ''
+    uiData.selectedKeys = []
     await fetchData()
   }
 }
 
+// 初始化
 onMounted(async () => {
   await fetchData()
 })
 </script>
 
 <style scoped>
-/* 样式保持不变 */
 .org-management {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);

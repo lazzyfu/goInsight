@@ -1,9 +1,10 @@
 <template>
-  <a-modal :open="open" title="绑定用户" :width="520" centered @cancel="handleCancel">
+  <a-modal :open="open" title="绑定用户" :width="520" centered destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
+
     <div class="modal-content">
       <div class="modal-icon">
         <UserAddOutlined />
@@ -44,6 +45,7 @@
 import { InfoCircleOutlined, UserAddOutlined } from '@ant-design/icons-vue'
 import { computed, reactive, ref } from 'vue'
 
+// 定义props和emits
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
   open: Boolean,
@@ -51,13 +53,20 @@ const props = defineProps({
   users: Array,
 })
 
+// 表单引用
 const formRef = ref()
-const loading = ref(false)
 
+// 状态
+const uiState = reactive({
+  loading: false
+})
+
+// 表单数据
 const formState = reactive({
   users: [],
 })
 
+// TODO：优化掉
 const userOptions = computed(() => {
   return (props.users || []).map((user) => ({
     value: user.uid || user.id,
@@ -69,23 +78,25 @@ const filterOption = (input, option) => {
   return option.label.toLowerCase().includes(input.toLowerCase())
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
   formState.users = []
 }
 
+// 提交表单
 const onSubmit = async () => {
   if (formState.users.length === 0) {
     return
   }
-  loading.value = true
+  uiState.loading = true
   const payload = {
     key: props.nodeKey,
     ...formState,
   }
   emit('submit', payload)
-  loading.value = false
+  uiState.loading = false
 }
 </script>
 

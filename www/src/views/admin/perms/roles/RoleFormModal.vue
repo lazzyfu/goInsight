@@ -1,15 +1,16 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
+
     <a-form
       ref="formRef"
       :model="formData"
+      :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
-      :rules="rules"
     >
       <a-form-item label="角色名" name="name" has-feedback>
         <a-input v-model:value="formData.name" placeholder="请输入角色名" allow-clear />
@@ -19,24 +20,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 
+// 定义props和emits
 const props = defineProps({
   open: Boolean,
   title: String,
 })
 const emit = defineEmits(['update:open', 'submit'])
 
-const loading = ref(false)
-
-// 使用defineModel接收 v-model:modelValue
-// 它自动创建了一个名为modelValue的prop，并提供了一个value来读取，以及一个自动触发update:modelValue的setter
+// 表单数据
 const formData = defineModel('modelValue', {
   type: Object,
   required: true,
 })
+
 // 表单引用
 const formRef = ref()
+
+// 状态
+const uiState = reactive({
+  loading: false
+})
 
 // 表单校验规则
 const rules = {
@@ -60,19 +65,21 @@ const rules = {
   ],
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
 }
 
+// 提交表单
 const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
-    loading.value = true
+    uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>
