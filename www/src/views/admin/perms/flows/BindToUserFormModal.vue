@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="props.open" title="绑定审批流到用户" :width="560" centered @cancel="handleCancel">
+  <a-modal :open="props.open" title="绑定审批流到用户" :width="560" centered destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="loading" @click="onSubmit">确定绑定</a-button>
@@ -7,31 +7,16 @@
 
     <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical" class="bind-form">
       <a-form-item label="审批流" name="approval_id">
-        <a-select
-          v-model:value="formState.approval_id"
-          placeholder="请选择要分配的审批流"
-          :options="props.flowOptions"
-          show-search
-          :filter-option="filterOption"
-          allow-clear
-          style="width: 100%"
-        />
+        <a-select v-model:value="formState.approval_id" placeholder="请选择要分配的审批流" :options="props.flowOptions"
+          show-search :filter-option="filterOption" allow-clear style="width: 100%" />
         <template #extra>
           <p>请选择一个已经定义好的审批流程。</p>
         </template>
       </a-form-item>
 
       <a-form-item label="选择用户" name="users">
-        <a-select
-          v-model:value="formState.users"
-          mode="multiple"
-          placeholder="请选择要绑定的用户"
-          :options="props.userOptions"
-          show-search
-          :filter-option="filterOption"
-          allow-clear
-          style="width: 100%"
-        />
+        <a-select v-model:value="formState.users" mode="multiple" placeholder="请选择要绑定的用户" :options="props.userOptions"
+          show-search :filter-option="filterOption" allow-clear style="width: 100%" />
         <template #extra>
           <p>这些用户发起审批时，将默认使用以上流程。</p>
         </template>
@@ -41,19 +26,25 @@
 </template>
 
 <script setup>
-import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
-const emit = defineEmits(['update:open', 'submit'])
+// 定义props和emits
 const props = defineProps({
   open: Boolean,
   flowOptions: { type: Array, default: () => [] },
   userOptions: { type: Array, default: () => [] },
 })
+const emit = defineEmits(['update:open', 'submit'])
 
+// 表单引用
 const formRef = ref()
-const loading = ref(false)
 
+// 状态
+const uiState = reactive({
+  loading: false
+})
+
+// form表单
 const formState = reactive({
   approval_id: undefined,
   users: [],
@@ -84,17 +75,16 @@ const filterOption = (input, option) => {
   )
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
-  formState.approval_id = undefined
-  formState.users = []
 }
 
+// 提交表单
 const onSubmit = async () => {
   try {
     await formRef.value.validate()
-    loading.value = true
+    uiState.loading = true
 
     const payload = {
       users: formState.users,
@@ -102,14 +92,9 @@ const onSubmit = async () => {
     }
 
     emit('submit', payload)
-  } catch (errorInfo) {
-    if (errorInfo.errorFields) {
-      message.error('请检查表单输入。')
-    } else {
-      console.error(errorInfo)
-    }
+  } catch (err) {
   } finally {
-    loading.value = false
+    uiState.loading = false
   }
 }
 </script>

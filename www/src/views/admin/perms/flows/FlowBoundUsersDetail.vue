@@ -4,15 +4,16 @@
     :title="`绑定用户列表 - 《${props.flowName}》`"
     :width="650"
     :footer="null"
+    destroyOnClose
     @cancel="handleCancel"
   >
-    <a-spin :spinning="loading">
+    <a-spin :spinning="uiState.loading">
       <div class="user-list-container">
-        <a-list :data-source="userList" size="small" :split="false">
+        <a-list :data-source="uiData.userList" size="small" :split="false">
           <template #header>
             <div class="list-header">
               <UserOutlined />
-              共有 <strong>{{ userList.length }}</strong> 位用户绑定了此审批流
+              共有 <strong>{{ uiData.userList.length }}</strong> 位用户绑定了此审批流
             </div>
           </template>
           <template #renderItem="{ item }">
@@ -42,25 +43,32 @@
 <script setup>
 import { getApprovalFlowUsersApi } from '@/api/admin'
 import { UserOutlined } from '@ant-design/icons-vue'
-import { ref, watch } from 'vue'
+import { reactive, watch } from 'vue'
 
-const emit = defineEmits(['update:open'])
+// 定义props和emits
 const props = defineProps({
   open: Boolean,
   flowId: { type: [Number, String], default: null }, // 审批流ID
   flowName: { type: String, default: '' }, // 审批流名称
 })
+const emit = defineEmits(['update:open'])
 
-const loading = ref(false)
-const userList = ref([])
+// 状态
+const uiState = reactive({
+  loading: false
+})
+
+// 数据
+const uiData = reactive({
+  userList: []
+})
 
 const fetchData = async (approval_id) => {
-  console.log('approval_id: ', approval_id)
-  loading.value = true
-  userList.value = []
-  const res = await getApprovalFlowUsersApi(approval_id)
-  userList.value = res.data
-  loading.value = false
+  uiState.loading = true
+  uiData.userList = []
+  const res = await getApprovalFlowUsersApi(approval_id).catch(() => {})
+  uiData.userList = res.data
+  uiState.loading = false
 }
 
 watch(
@@ -72,9 +80,9 @@ watch(
   },
 )
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  userList.value = []
 }
 </script>
 

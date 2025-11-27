@@ -2,30 +2,23 @@
   <a-card title="审批流管理" class="flow-manager-card">
     <template #extra>
       <a-space>
-        <a-button @click="handleBind"> <DeploymentUnitOutlined /> 绑定流程到用户 </a-button>
-        <a-button type="primary" @click="handleAdd"> <PlusOutlined /> 新增审批流 </a-button>
+        <a-button @click="handleBind">
+          <DeploymentUnitOutlined /> 绑定流程到用户
+        </a-button>
+        <a-button type="primary" @click="handleAdd">
+          <PlusOutlined /> 新增审批流
+        </a-button>
       </a-space>
     </template>
 
     <div class="search-wrapper">
-      <a-input-search
-        v-model:value="searchValue"
-        placeholder="搜索审批流名称..."
-        style="width: 350px"
-        @search="handleSearch"
-      />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索审批流名称..." style="width: 350px"
+        @search="handleSearch" />
     </div>
 
     <div style="margin-top: 16px">
-      <a-table
-        size="middle"
-        :columns="tableColumns"
-        :row-key="(record) => record.id"
-        :data-source="tableData"
-        :pagination="pagination"
-        :loading="state.loading"
-        @change="handleTableChange"
-      >
+      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.id"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'flow'">
             <a-tag color="blue">{{ record.definition.length }} 个阶段</a-tag>
@@ -33,16 +26,17 @@
 
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleViewUsers(record)"> <EyeOutlined /> 查看用户 </a>
+              <a @click="handleViewUsers(record)">
+                <EyeOutlined /> 查看用户
+              </a>
 
-              <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
-              <a-popconfirm
-                title="确认删除该审批流吗？"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="handleDelete(record)"
-              >
-                <a class="text-danger"><DeleteOutlined /> 删除</a>
+              <a @click="handleEdit(record)">
+                <EditOutlined /> 编辑
+              </a>
+              <a-popconfirm title="确认删除该审批流吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
+                <a class="text-danger">
+                  <DeleteOutlined /> 删除
+                </a>
               </a-popconfirm>
             </a-space>
           </template>
@@ -58,29 +52,15 @@
     </div>
   </a-card>
 
-  <ApprovalFlowFormModal
-    :open="state.isModalOpen"
-    v-model:formData="formState"
-    :title="state.isEditMode ? '编辑审批流' : '新增审批流'"
-    :user-options="state.users"
-    @update:open="state.isModalOpen = $event"
-    @submit="onSubmit"
-  />
+  <ApprovalFlowFormModal :open="uiState.isModalOpen" v-model:formData="formState"
+    :title="uiState.isEditMode ? '编辑审批流' : '新增审批流'" :user-options="uiData.users"
+    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
 
-  <BindToUserFormModal
-    :open="state.isBindModalOpen"
-    :flow-options="state.flows"
-    :user-options="state.users"
-    @update:open="state.isBindModalOpen = $event"
-    @submit="onSubmitBind"
-  />
+  <BindToUserFormModal :open="uiState.isBindModalOpen" :flow-options="uiData.flows" :user-options="uiData.users"
+    @update:open="uiState.isBindModalOpen = $event" @submit="onSubmitBind" />
 
-  <FlowBoundUsersDetail
-    :open="state.isViewUsersOpen"
-    :flow-id="state.viewApprvalFlowID"
-    :flow-name="state.viewFlowName"
-    @update:open="state.isViewUsersOpen = $event"
-  />
+  <FlowBoundUsersDetail :open="uiState.isViewUsersOpen" :flow-id="uiData.viewApprvalFlowID"
+    :flow-name="uiData.viewFlowName" @update:open="uiState.isViewUsersOpen = $event" />
 </template>
 
 <script setup>
@@ -96,7 +76,7 @@ import {
   DeleteOutlined,
   DeploymentUnitOutlined,
   EditOutlined,
-  EyeOutlined, 
+  EyeOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
@@ -106,19 +86,32 @@ import ApprovalFlowStages from './ApprovalFlowStages.vue'
 import BindToUserFormModal from './BindToUserFormModal.vue'
 import FlowBoundUsersDetail from './FlowBoundUsersDetail.vue' // 导入新组件
 
-const state = reactive({
+const uiState = reactive({
   loading: false,
   isEditMode: false,
   isModalOpen: false,
   isBindModalOpen: false,
-  isViewUsersOpen: false, // 控制查看绑定用户模态框
-  viewApprvalFlowID: null, // 当前查看的审批流ID
-  viewFlowName: '', // 当前查看的审批流名称
-  users: [], // 用户选项 (用于流程配置和绑定)
-  flows: [], // 审批流选项 (用于绑定)
+  isViewUsersOpen: false,
 })
-const searchValue = ref('')
 
+// 数据
+const uiData = reactive({
+  searchValue: '',
+  viewApprvalFlowID: null, 
+  viewFlowName: '', 
+  users: [], 
+  flows: [], 
+  tableData: [],
+  tableColumns: [
+    { title: '审批流名称', dataIndex: 'name', key: 'name', width: 150 },
+    { title: '流程阶段数', dataIndex: 'definition', key: 'flow', width: 120 },
+    { title: '创建时间', dataIndex: 'created_at', key: 'created_at' },
+    { title: '更新时间', dataIndex: 'updated_at', key: 'updated_at' },
+    { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 150 },
+  ]
+})
+
+// form表单
 const defaultForm = {
   name: '',
   definition: [
@@ -132,44 +125,32 @@ const defaultForm = {
 }
 const formState = ref({ ...defaultForm })
 
-// 表格列定义
-const tableColumns = [
-  { title: '审批流名称', dataIndex: 'name', key: 'name', width: 150 },
-  { title: '流程阶段数', dataIndex: 'definition', key: 'flow', width: 120 },
-  { title: '创建时间', dataIndex: 'created_at', key: 'created_at' },
-  { title: '更新时间', dataIndex: 'updated_at', key: 'updated_at' },
-  { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 150 },
-]
-const tableData = ref([])
 
-// --- 数据获取与准备 ---
-
-// 获取用户列表的方法 (用于流程配置和绑定)
+// 获取用户
 const getUsers = async () => {
-  const res = await getUsersApi().catch(() => {})
+  const res = await getUsersApi().catch(() => { })
   if (res && res.data) {
-    state.users = res.data.map((u) => ({
+    uiData.users = res.data.map((u) => ({
       label: `${u.nickname || u.username} (${u.username})`,
       value: u.username,
     }))
   }
 }
 
-// 获取审批流列表的方法
+// 获取列表数据
 const fetchData = async () => {
-  state.loading = true
+  uiState.loading = true
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
-    search: searchValue.value,
+    search: uiData.searchValue,
   }
   const res = await getApprovalFlowsApi(params)
   if (res) {
     pagination.total = res.total
-    tableData.value = res.data.map((item) => ({
+    uiData.tableData = res.data.map((item) => ({
       ...item,
-      // 确保 definition 是数组对象，以供子组件和扩展行使用
       definition: Array.isArray(item.definition)
         ? item.definition
         : item.definition
@@ -177,24 +158,22 @@ const fetchData = async () => {
           : [],
     }))
 
-    // 为绑定模态框准备 flows 选项
-    console.log('res.data: ', res.data)
-
-    state.flows = res.data.map((flow) => ({
+    uiData.flows = res.data.map((flow) => ({
       label: flow.name,
-      value: flow.approval_id, // 假设审批流ID字段是 id
+      value: flow.approval_id,
     }))
   }
-  state.loading = false
+  uiState.loading = false
 }
 
-// --- 流程 CURD 操作 (保持不变) ---
+// 搜索
 const handleSearch = (value) => {
-  searchValue.value = value
+  uiData.searchValue = value
   pagination.current = 1
   fetchData()
 }
 
+// 分页
 const pagination = reactive({
   current: 1,
   pageSize: 10,
@@ -203,20 +182,23 @@ const pagination = reactive({
   showSizeChanger: true,
 })
 
+// 翻页
 const handleTableChange = (pager) => {
   pagination.current = pager.current
   pagination.pageSize = pager.pageSize
   fetchData()
 }
 
+// 新增
 const handleAdd = () => {
-  state.isEditMode = false
+  uiState.isEditMode = false
   formState.value = JSON.parse(JSON.stringify(defaultForm))
-  state.isModalOpen = true
+  uiState.isModalOpen = true
 }
 
+// 编辑
 const handleEdit = (record) => {
-  state.isEditMode = true
+  uiState.isEditMode = true
   const definition = Array.isArray(record.definition)
     ? record.definition
     : typeof record.definition === 'string'
@@ -227,65 +209,60 @@ const handleEdit = (record) => {
     ...record,
     definition: definition.length > 0 ? definition : defaultForm.definition,
   }
-  state.isModalOpen = true
+  uiState.isModalOpen = true
 }
 
+// 提交（
 const onSubmit = async (data) => {
   const payload = { ...data }
-  const res = state.isEditMode
-    ? await updateApprovalFlowsApi(payload)
-    : await createApprovalFlowsApi(payload)
+  const res = uiState.isEditMode
+    ? await updateApprovalFlowsApi(payload).catch(() => { })
+    : await createApprovalFlowsApi(payload).catch(() => { })
 
   if (res?.code === '0000') {
     message.success('操作成功')
-    state.isModalOpen = false
+    uiState.isModalOpen = false
     fetchData()
   }
 }
 
 const handleDelete = async (record) => {
-  const res = await deleteApprovalFlowsApi(record.id).catch(() => {})
+  const res = await deleteApprovalFlowsApi(record.id).catch(() => { })
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()
   }
 }
 
-// --- 绑定操作 (新增/修改) ---
-
 // 打开绑定审批流模态框
 const handleBind = () => {
-  if (state.flows.length === 0) {
+  if (uiData.flows.length === 0) {
     message.warning('当前没有可用的审批流，请先创建。')
     return
   }
-  if (state.users.length === 0) {
+  if (uiData.users.length === 0) {
     message.warning('用户列表未加载，请稍候重试。')
     return
   }
-  state.isBindModalOpen = true
+  uiState.isBindModalOpen = true
 }
 
 // 提交绑定审批流到用户的请求
 const onSubmitBind = async (data) => {
-  console.log('data: ', data)
-
-  const res = await bindUsersToApprovalFlowApi(data).catch(() => {})
-
+  const res = await bindUsersToApprovalFlowApi(data).catch(() => { })
   if (res?.code === '0000') {
     message.success('操作成功')
-    state.isBindModalOpen = false
+    uiState.isBindModalOpen = false
   }
 }
 
-// 🌟 查看绑定了该审批流的用户列表
+// 查看绑定了该审批流的用户列表
 const handleViewUsers = (record) => {
-  state.viewApprvalFlowID = record.approval_id
-  state.viewFlowName = record.name
-  state.isViewUsersOpen = true
+  uiData.viewApprvalFlowID = record.approval_id
+  uiData.viewFlowName = record.name
+  uiState.isViewUsersOpen = true
 }
 
-// --- 生命周期 ---
 onMounted(() => {
   fetchData()
   getUsers() // 获取用户列表
@@ -296,6 +273,7 @@ onMounted(() => {
 .flow-manager-card {
   min-height: 80vh;
 }
+
 .text-danger {
   color: #ff4d4f;
 }

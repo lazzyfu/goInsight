@@ -1,8 +1,8 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="800px" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" width="800px" destroyOnClose @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
     <a-form
       ref="formRef"
@@ -82,10 +82,10 @@
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { ref } from 'vue'
 
+// props
 const props = defineProps({
   open: Boolean,
   title: String,
-  // 接收用户选项
   userOptions: {
     type: Array,
     default: () => [],
@@ -93,16 +93,21 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:open', 'submit'])
 
-// 使用 defineModel 接收 v-model:formData
+// 表单数据
 const formData = defineModel('formData', {
   type: Object,
   required: true,
 })
 
+// 表单引用
 const formRef = ref()
-const loading = ref(false)
 
-// 审批流名称校验规则
+// 状态
+const uiState = reactive({
+  loading: false
+})
+
+// 表单校验规则
 const rules = {
   name: [
     {
@@ -139,12 +144,12 @@ const removeStage = (index) => {
   })
 }
 
+// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
 }
 
-const validateDefinition = () => {
+const validateDefinition = async () => {
   const definition = formData.value.definition
   if (!definition || definition.length === 0) {
     throw new Error('请至少配置一个审批阶段。')
@@ -161,10 +166,16 @@ const validateDefinition = () => {
   return true
 }
 
+// 提交表单
 const onSubmit = async () => {
-  // TODO：这里进行有效性验证，也能过，分析下原因
-  validateDefinition()
-  emit('submit', formData.value)
+   try {
+    await validateDefinition()
+    uiState.loading = true
+    emit('submit', formData.value)
+  } catch (err) {
+  } finally {
+    uiState.loading = false
+  }
 }
 </script>
 

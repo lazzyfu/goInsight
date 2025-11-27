@@ -16,7 +16,7 @@
             v-model:value="formState.users"
             mode="multiple"
             placeholder="请选择用户"
-            :options="userOptions"
+            :options="props.users"
             show-search
             :filter-option="filterOption"
             allow-clear
@@ -64,14 +64,6 @@ const uiState = reactive({
 // 表单数据
 const formState = reactive({
   users: [],
-})
-
-// TODO：优化掉
-const userOptions = computed(() => {
-  return (props.users || []).map((user) => ({
-    value: user.uid || user.id,
-    label: user.username || user.name,
-  }))
 })
 
 const filterOption = (input, option) => {

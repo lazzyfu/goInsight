@@ -68,7 +68,6 @@ const rules = {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
 }
 
 // 提交表单
