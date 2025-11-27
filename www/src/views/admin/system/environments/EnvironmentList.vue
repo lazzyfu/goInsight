@@ -4,16 +4,18 @@
     <template #extra>
       <a-button type="primary" @click="handleAdd"><PlusOutlined />新增环境</a-button>
     </template>
+
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
       <a-input-search
-        v-model:value="searchValue"
+        v-model:value="data.searchValue"
         placeholder="搜索环境名..."
         style="width: 350px"
         @search="handleSearch"
       />
     </div>
+    
     <!-- 表格 -->
     <div style="margin-top: 12px">
       <a-table
@@ -44,6 +46,7 @@
       </a-table>
     </div>
   </a-card>
+
   <!-- 新增/编辑弹窗 -->
   <EnvironmentFormModal
     :open="state.isModalOpen"
@@ -72,14 +75,20 @@ const state = reactive({
   isEditMode: false,
   isModalOpen: false,
 })
-const searchValue = ref('')
+
+// 数据
+const data = reactive({
+  searchValue: '',
+  tableData: []
+})
+
+// form表单
 const defaultForm = {
   name: '',
 }
 const formState = ref({ ...defaultForm })
 
-// 表
-const tableData = ref([])
+// 表列
 const tableColumns = [
   {
     title: '环境',
@@ -107,7 +116,7 @@ const tableColumns = [
 
 // 搜索
 const handleSearch = (value) => {
-  searchValue.value = value
+  data.searchValue = value
   pagination.current = 1
   fetchData()
 }
@@ -128,30 +137,30 @@ const handleTableChange = (pager) => {
   fetchData()
 }
 
-// 新增记录
+// 新增
 const handleAdd = () => {
   state.isEditMode = false
   formState.value = { ...defaultForm }
   state.isModalOpen = true
 }
 
-// 编辑记录
+// 编辑
 const handleEdit = (record) => {
   state.isEditMode = true
   formState.value = { ...record }
   state.isModalOpen = true
 }
 
-// 获取表数据
+// 获取列表数据
 const fetchData = async () => {
   state.loading = true
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
-    search: searchValue.value,
+    search: data.searchValue,
   }
-  const res = await getEnvironmentsApi(params)
+  const res = await getEnvironmentsApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
     tableData.value = res.data
@@ -159,7 +168,7 @@ const fetchData = async () => {
   state.loading = false
 }
 
-// 提交表单
+// 提交（新增或编辑）
 const onSubmit = async (data) => {
   const res = state.isEditMode
     ? await updateEnvironmentsApi(data)
@@ -171,7 +180,7 @@ const onSubmit = async (data) => {
   }
 }
 
-// 删除记录
+// 删除
 const handleDelete = async (record) => {
   const res = await deleteEnvironmentsApi(record.id).catch(() => {})
   if (res?.code === '0000') {
@@ -180,7 +189,7 @@ const handleDelete = async (record) => {
   }
 }
 
-// 生命周期
+// 初始化
 onMounted(() => {
   fetchData()
 })
