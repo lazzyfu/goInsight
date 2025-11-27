@@ -1,26 +1,39 @@
 <template>
   <a-card title="用户管理">
     <template #extra>
-      <a-button type="primary" @click="handleAdd">
-        <PlusOutlined />绑定用户
-      </a-button>
+      <a-button type="primary" @click="handleAdd"> <PlusOutlined />绑定用户 </a-button>
     </template>
 
     <div class="search-wrapper">
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索用户..." style="width: 350px" size="small"
-        @search="handleSearch" />
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索用户..."
+        style="width: 350px"
+        size="small"
+        @search="handleSearch"
+      />
     </div>
 
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.uid"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
+      <a-table
+        size="small"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.uid"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-tooltip title="移除当前用户">
-              <a-popconfirm title="确认移除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
-                <a>
-                  <DeleteOutlined /> 移除
-                </a>
+              <a-popconfirm
+                title="确认移除吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDelete(record)"
+              >
+                <a> <DeleteOutlined /> 移除 </a>
               </a-popconfirm>
             </a-tooltip>
           </template>
@@ -28,8 +41,13 @@
       </a-table>
     </div>
   </a-card>
-  <BindOrgUsers :open="uiState.isModalOpen" :nodeKey="props.nodeKey" :users="state.allUsers"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <BindOrgUsers
+    :open="uiState.isModalOpen"
+    :nodeKey="props.nodeKey"
+    :users="uiData.users"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
@@ -41,7 +59,7 @@ import {
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import BindOrgUsers from './BindOrgUsers.vue'
 
 // props
@@ -62,27 +80,29 @@ const uiState = reactive({
 const uiData = reactive({
   searchValue: '',
   tableData: [],
-  allUsers: [],
+  users: [],
   tableColumns: [
     {
       title: '用户名',
       dataIndex: 'username',
       key: 'username',
-      width: 150,
     },
     {
       title: '昵称',
       dataIndex: 'nick_name',
       key: 'nick_name',
-      width: 150,
+    },
+    {
+      title: '组织',
+      dataIndex: 'organization_name',
+      key: 'organization_name',
     },
     {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 80,
     },
-  ]
+  ],
 })
 
 // 分页
@@ -106,18 +126,12 @@ const fetchData = async () => {
     search: uiData.searchValue,
   }
 
-  const res = await getOrganizationsUsersApi(params).catch(() => { })
+  const res = await getOrganizationsUsersApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
   }
   uiState.loading = false
-}
-
-// 获取所有用户列表
-const getAllUsers = async () => {
-  const res = await getUsersApi().catch(() => { })
-  state.allUsers = res.data || []
 }
 
 // watch
@@ -127,7 +141,7 @@ watch(
     if (val) {
       pagination.current = 1
       uiData.searchValue = ''
-      fetchData() 
+      fetchData()
     } else {
       uiData.tableData = []
       pagination.total = 0
@@ -152,12 +166,13 @@ const handleTableChange = (pager) => {
 
 // 新增
 const handleAdd = () => {
+  getUsers()
   uiState.isModalOpen = true
 }
 
 // 提交
 const onSubmit = async (data) => {
-  const res = await bindOrganizationsUsersApi(data).catch(() => { })
+  const res = await bindOrganizationsUsersApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('用户绑定成功')
     uiState.isModalOpen = false
@@ -171,14 +186,17 @@ const handleDelete = async (record) => {
     key: props.nodeKey,
     uid: record.uid,
   }
-  const res = await deleteOrganizationsUsersApi(payload).catch(() => { })
+  const res = await deleteOrganizationsUsersApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.info('用户移除成功')
     fetchData()
   }
 }
 
-onMounted(() => {
-  getAllUsers()
-})
+// 获取所有用户列表
+const getUsers = async () => {
+  const res = await getUsersApi().catch(() => {})
+  uiData.users = res.data || []
+  console.log('res.data: ', res.data)
+}
 </script>

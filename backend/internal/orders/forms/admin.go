@@ -29,4 +29,5 @@ type AdminBindUsersToApprovalFlowForm struct {
 type AdminGetApprovalFlowUsersForm struct {
 	PaginationQ pagination.Pagination
 	Search      string `form:"search"`
+	ApprovalID  string `form:"approval_id"  json:"approval_id" binding:"required"`
 }

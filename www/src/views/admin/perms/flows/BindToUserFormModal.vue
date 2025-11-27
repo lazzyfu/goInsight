@@ -1,22 +1,44 @@
 <template>
-  <a-modal :open="props.open" title="绑定审批流到用户" :width="560" centered destroyOnClose @cancel="handleCancel">
+  <a-modal
+    :open="props.open"
+    title="绑定审批流到用户"
+    :width="560"
+    centered
+    destroyOnClose
+    @cancel="handleCancel"
+  >
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="loading" @click="onSubmit">确定绑定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
 
     <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical" class="bind-form">
       <a-form-item label="审批流" name="approval_id">
-        <a-select v-model:value="formState.approval_id" placeholder="请选择要分配的审批流" :options="props.flowOptions"
-          show-search :filter-option="filterOption" allow-clear style="width: 100%" />
+        <a-select
+          v-model:value="formState.approval_id"
+          placeholder="请选择要分配的审批流"
+          :options="props.flowOptions"
+          show-search
+          :filter-option="filterOption"
+          allow-clear
+          style="width: 100%"
+        />
         <template #extra>
           <p>请选择一个已经定义好的审批流程。</p>
         </template>
       </a-form-item>
 
       <a-form-item label="选择用户" name="users">
-        <a-select v-model:value="formState.users" mode="multiple" placeholder="请选择要绑定的用户" :options="props.userOptions"
-          show-search :filter-option="filterOption" allow-clear style="width: 100%" />
+        <a-select
+          v-model:value="formState.users"
+          mode="multiple"
+          placeholder="请选择要绑定的用户"
+          :options="props.userOptions"
+          show-search
+          :filter-option="filterOption"
+          allow-clear
+          style="width: 100%"
+        />
         <template #extra>
           <p>这些用户发起审批时，将默认使用以上流程。</p>
         </template>
@@ -41,7 +63,7 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // form表单

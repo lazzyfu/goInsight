@@ -11,5 +11,6 @@ func RegisterAdminRoutes(v1 *gin.RouterGroup) {
 	v1.PUT(":id", views.AdminUpdateApprovalFlowsView)
 	v1.DELETE(":id", views.AdminDeleteApprovalFlowsView)
 	v1.POST("/bind-users", views.AdminBindUsersToApprovalFlowView)
-	v1.GET("/bind-users/:approval_id", views.AdminGetApprovalFlowUsersView)
+	v1.GET("/bind-users", views.AdminGetApprovalFlowUsersView)
+	v1.DELETE("/bind-users/:id", views.AdminDeleteUsersFromApprovalFlowView)
 }

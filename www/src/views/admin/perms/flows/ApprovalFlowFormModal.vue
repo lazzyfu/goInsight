@@ -1,5 +1,11 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="800px" destroyOnClose @cancel="handleCancel">
+  <a-modal
+    :open="props.open"
+    :title="props.title"
+    width="800px"
+    destroyOnClose
+    @cancel="handleCancel"
+  >
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -80,7 +86,7 @@
 
 <script setup>
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 
 // props
 const props = defineProps({
@@ -104,7 +110,7 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // 表单校验规则
@@ -168,7 +174,7 @@ const validateDefinition = async () => {
 
 // 提交表单
 const onSubmit = async () => {
-   try {
+  try {
     await validateDefinition()
     uiState.loading = true
     emit('submit', formData.value)

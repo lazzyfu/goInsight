@@ -2,23 +2,30 @@
   <a-card title="审批流管理" class="flow-manager-card">
     <template #extra>
       <a-space>
-        <a-button @click="handleBind">
-          <DeploymentUnitOutlined /> 绑定流程到用户
-        </a-button>
-        <a-button type="primary" @click="handleAdd">
-          <PlusOutlined /> 新增审批流
-        </a-button>
+        <a-button @click="handleBind"> <DeploymentUnitOutlined /> 绑定流程到用户 </a-button>
+        <a-button type="primary" @click="handleAdd"> <PlusOutlined /> 新增审批流 </a-button>
       </a-space>
     </template>
 
     <div class="search-wrapper">
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索审批流名称..." style="width: 350px"
-        @search="handleSearch" />
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索审批流名称..."
+        style="width: 350px"
+        @search="handleSearch"
+      />
     </div>
 
     <div style="margin-top: 16px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.id"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.id"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'flow'">
             <a-tag color="blue">{{ record.definition.length }} 个阶段</a-tag>
@@ -26,17 +33,16 @@
 
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleViewUsers(record)">
-                <EyeOutlined /> 查看用户
-              </a>
+              <a @click="handleViewUsers(record)"> <EyeOutlined /> 查看用户 </a>
 
-              <a @click="handleEdit(record)">
-                <EditOutlined /> 编辑
-              </a>
-              <a-popconfirm title="确认删除该审批流吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
-                <a class="text-danger">
-                  <DeleteOutlined /> 删除
-                </a>
+              <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
+              <a-popconfirm
+                title="确认删除该审批流吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDelete(record)"
+              >
+                <a class="text-danger"> <DeleteOutlined /> 删除 </a>
               </a-popconfirm>
             </a-space>
           </template>
@@ -52,15 +58,29 @@
     </div>
   </a-card>
 
-  <ApprovalFlowFormModal :open="uiState.isModalOpen" v-model:formData="formState"
-    :title="uiState.isEditMode ? '编辑审批流' : '新增审批流'" :user-options="uiData.users"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <ApprovalFlowFormModal
+    :open="uiState.isModalOpen"
+    v-model:formData="formState"
+    :title="uiState.isEditMode ? '编辑审批流' : '新增审批流'"
+    :user-options="uiData.users"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 
-  <BindToUserFormModal :open="uiState.isBindModalOpen" :flow-options="uiData.flows" :user-options="uiData.users"
-    @update:open="uiState.isBindModalOpen = $event" @submit="onSubmitBind" />
+  <BindToUserFormModal
+    :open="uiState.isBindModalOpen"
+    :flow-options="uiData.flows"
+    :user-options="uiData.users"
+    @update:open="uiState.isBindModalOpen = $event"
+    @submit="onSubmitBind"
+  />
 
-  <FlowBoundUsersDetail :open="uiState.isViewUsersOpen" :flow-id="uiData.viewApprvalFlowID"
-    :flow-name="uiData.viewFlowName" @update:open="uiState.isViewUsersOpen = $event" />
+  <FlowBoundUsersDetail
+    :open="uiState.isViewUsersOpen"
+    :flow-id="uiData.viewApprovalFlowID"
+    :flow-name="uiData.viewFlowName"
+    @update:open="uiState.isViewUsersOpen = $event"
+  />
 </template>
 
 <script setup>
@@ -97,18 +117,18 @@ const uiState = reactive({
 // 数据
 const uiData = reactive({
   searchValue: '',
-  viewApprvalFlowID: null, 
-  viewFlowName: '', 
-  users: [], 
-  flows: [], 
+  viewApprovalFlowID: null,
+  viewFlowName: '',
+  users: [],
+  flows: [],
   tableData: [],
   tableColumns: [
     { title: '审批流名称', dataIndex: 'name', key: 'name', width: 150 },
     { title: '流程阶段数', dataIndex: 'definition', key: 'flow', width: 120 },
     { title: '创建时间', dataIndex: 'created_at', key: 'created_at' },
     { title: '更新时间', dataIndex: 'updated_at', key: 'updated_at' },
-    { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 150 },
-  ]
+    { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 250 },
+  ],
 })
 
 // form表单
@@ -125,10 +145,9 @@ const defaultForm = {
 }
 const formState = ref({ ...defaultForm })
 
-
 // 获取用户
 const getUsers = async () => {
-  const res = await getUsersApi().catch(() => { })
+  const res = await getUsersApi().catch(() => {})
   if (res && res.data) {
     uiData.users = res.data.map((u) => ({
       label: `${u.nickname || u.username} (${u.username})`,
@@ -216,8 +235,8 @@ const handleEdit = (record) => {
 const onSubmit = async (data) => {
   const payload = { ...data }
   const res = uiState.isEditMode
-    ? await updateApprovalFlowsApi(payload).catch(() => { })
-    : await createApprovalFlowsApi(payload).catch(() => { })
+    ? await updateApprovalFlowsApi(payload).catch(() => {})
+    : await createApprovalFlowsApi(payload).catch(() => {})
 
   if (res?.code === '0000') {
     message.success('操作成功')
@@ -227,7 +246,7 @@ const onSubmit = async (data) => {
 }
 
 const handleDelete = async (record) => {
-  const res = await deleteApprovalFlowsApi(record.id).catch(() => { })
+  const res = await deleteApprovalFlowsApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()
@@ -249,7 +268,7 @@ const handleBind = () => {
 
 // 提交绑定审批流到用户的请求
 const onSubmitBind = async (data) => {
-  const res = await bindUsersToApprovalFlowApi(data).catch(() => { })
+  const res = await bindUsersToApprovalFlowApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     uiState.isBindModalOpen = false
@@ -258,7 +277,7 @@ const onSubmitBind = async (data) => {
 
 // 查看绑定了该审批流的用户列表
 const handleViewUsers = (record) => {
-  uiData.viewApprvalFlowID = record.approval_id
+  uiData.viewApprovalFlowID = record.approval_id
   uiData.viewFlowName = record.name
   uiState.isViewUsersOpen = true
 }

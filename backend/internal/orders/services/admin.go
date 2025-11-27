@@ -126,7 +126,6 @@ func (s *AdminBindUsersToApprovalFlowService) Run() error {
 type AdminGetApprovalFlowUsersService struct {
 	C *gin.Context
 	*forms.AdminGetApprovalFlowUsersForm
-	ApprovalID string
 }
 
 func (s *AdminGetApprovalFlowUsersService) Run() (responseData any, total int64, err error) {
@@ -135,8 +134,21 @@ func (s *AdminGetApprovalFlowUsersService) Run() (responseData any, total int64,
 
 	// 搜索
 	if s.Search != "" {
-		tx = tx.Where("a.username like ?", "%"+s.Search+"%")
+		tx = tx.Where("username like ?", "%"+s.Search+"%")
 	}
 	total = pagination.Pager(&s.PaginationQ, tx, &records)
 	return &records, total, nil
+}
+
+type AdminDeleteUsersFromApprovalFlowService struct {
+	C  *gin.Context
+	ID uint64
+}
+
+func (s *AdminDeleteUsersFromApprovalFlowService) Run() error {
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightApprovalMaps{})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }

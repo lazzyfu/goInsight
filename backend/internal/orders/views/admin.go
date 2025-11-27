@@ -112,7 +112,6 @@ func AdminGetApprovalFlowUsersView(c *gin.Context) {
 	service := services.AdminGetApprovalFlowUsersService{
 		AdminGetApprovalFlowUsersForm: &form,
 		C:                             c,
-		ApprovalID:                    c.Param("approval_id"),
 	}
 	returnData, total, err := service.Run()
 	if err != nil {
@@ -120,4 +119,18 @@ func AdminGetApprovalFlowUsersView(c *gin.Context) {
 		return
 	}
 	response.PaginationSuccess(c, total, returnData)
+}
+
+func AdminDeleteUsersFromApprovalFlowView(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	service := services.AdminDeleteUsersFromApprovalFlowService{
+		C:  c,
+		ID: uint64(id),
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
 }

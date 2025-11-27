@@ -22,35 +22,65 @@
             <ApartmentOutlined class="panel-icon" />
             组织架构
           </span>
-          <a-input-search v-model:value="uiData.searchValue" placeholder="搜索组织" style="width: 160px" size="small"
-            allow-clear />
+          <a-input-search
+            v-model:value="uiData.searchValue"
+            placeholder="搜索组织"
+            style="width: 160px"
+            size="small"
+            allow-clear
+          />
         </div>
         <div class="tree-container">
           <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
             <a-button type="primary" size="small" @click="addRootNode"> 创建第一个组织 </a-button>
           </a-empty>
-          <a-tree v-else :tree-data="filteredTreeData" :selected-keys="uiData.selectedKeys"
-            :expanded-keys="uiData.expandedKeys" :auto-expand-parent="uiData.autoExpandParent" block-node
-            @select="handleTreeSelect" @expand="handleExpand">
+          <a-tree
+            v-else
+            :tree-data="filteredTreeData"
+            :selected-keys="uiData.selectedKeys"
+            :expanded-keys="uiData.expandedKeys"
+            :auto-expand-parent="uiData.autoExpandParent"
+            block-node
+            @select="handleTreeSelect"
+            @expand="handleExpand"
+          >
             <template #title="{ key: nodeKey, title, dataRef }">
-              <div class="tree-node" :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }">
+              <div
+                class="tree-node"
+                :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }"
+              >
                 <span class="tree-node-title" :title="title">
                   <FolderOutlined class="folder-icon" />
                   {{ title }}
                 </span>
                 <div class="tree-actions">
                   <a-tooltip title="新增子组织">
-                    <a-button type="text" size="small" class="action-btn" @click.stop="addChildNode(dataRef)">
+                    <a-button
+                      type="text"
+                      size="small"
+                      class="action-btn"
+                      @click.stop="addChildNode(dataRef)"
+                    >
                       <PlusOutlined />
                     </a-button>
                   </a-tooltip>
                   <a-tooltip title="编辑">
-                    <a-button type="text" size="small" class="action-btn" @click.stop="editCurrentNode(dataRef)">
+                    <a-button
+                      type="text"
+                      size="small"
+                      class="action-btn"
+                      @click.stop="editCurrentNode(dataRef)"
+                    >
                       <EditOutlined />
                     </a-button>
                   </a-tooltip>
-                  <a-popconfirm title="确定要删除该组织吗？" description="删除后将无法恢复" @confirm="handleDelete(dataRef)" ok-text="确定"
-                    cancel-text="取消">
+                  <a-popconfirm
+                    title="确定要删除该组织吗？"
+                    description="删除后将无法恢复"
+                    @confirm="handleDelete(dataRef)"
+                    ok-text="确定"
+                    cancel-text="取消"
+                  >
                     <a-tooltip title="删除">
                       <a-button type="text" size="small" class="action-btn danger" @click.stop>
                         <DeleteOutlined />
@@ -82,10 +112,18 @@
 
     <AddRootOrg v-model:open="uiState.isAddRootNodeOpen" @refresh="fetchData" />
 
-    <AddChildOrg v-model:open="uiState.isAddChildNodeOpen" :parent_node_key="uiData.uiData.selectedNodeKey"
-      :parent_node_name="uiData.selectedNode" @refresh="fetchData" />
+    <AddChildOrg
+      v-model:open="uiState.isAddChildNodeOpen"
+      :parent_node_key="uiData.selectedNodeKey"
+      :parent_node_name="uiData.selectedNode"
+      @refresh="fetchData"
+    />
 
-    <EditOrgName v-model:open="uiState.isEditNodeNameOpen" :node-key="uiData.selectedNodeKey" @refresh="fetchData" />
+    <EditOrgName
+      v-model:open="uiState.isEditNodeNameOpen"
+      :node-key="uiData.selectedNodeKey"
+      @refresh="fetchData"
+    />
   </div>
 </template>
 
@@ -121,12 +159,12 @@ const uiData = reactive({
   autoExpandParent: true,
   selectedNodeKey: '',
   selectedNode: '',
-  searchValue: ''
+  searchValue: '',
 })
 
 // 获取列表数据
 const fetchData = async () => {
-  const res = await getOrganizationsApi().catch(() => { })
+  const res = await getOrganizationsApi().catch(() => {})
   uiData.treeData = res?.data || []
   if (uiData.treeData.length > 0) {
     const allKeys = getAllKeys(uiData.treeData)
@@ -203,7 +241,7 @@ const handleDelete = async (item) => {
     key: item.key,
     name: item.title,
   }
-  const res = await deleteOrganizationsApi(payload).catch(() => { })
+  const res = await deleteOrganizationsApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.success('删除成功')
     uiData.selectedNodeKey = ''

@@ -1,5 +1,12 @@
 <template>
-  <a-modal :open="open" title="绑定用户" :width="520" centered destroyOnClose @cancel="handleCancel">
+  <a-modal
+    :open="open"
+    title="绑定用户"
+    :width="520"
+    centered
+    destroyOnClose
+    @cancel="handleCancel"
+  >
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -16,18 +23,18 @@
             v-model:value="formState.users"
             mode="multiple"
             placeholder="请选择用户"
-            :options="props.users"
+            :options="userOptions"
             show-search
             :filter-option="filterOption"
             allow-clear
             style="width: 100%"
           >
-            <template #option="{ value, label }">
+            <template #option="{ username, nick_name }">
               <div class="user-option">
                 <a-avatar :size="24" class="option-avatar">
-                  {{ label?.charAt(0)?.toUpperCase() }}
+                  {{ username?.charAt(0)?.toUpperCase() }}
                 </a-avatar>
-                <span>{{ label }}</span>
+                <span>{{ nick_name }}</span>
               </div>
             </template>
           </a-select>
@@ -43,14 +50,18 @@
 
 <script setup>
 import { InfoCircleOutlined, UserAddOutlined } from '@ant-design/icons-vue'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue' // 引入 computed
 
 // 定义props和emits
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
   open: Boolean,
   nodeKey: String,
-  users: Array,
+  // 假设 users 原始结构包含 uid/id, username, nick_name 等字段
+  users: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 // 表单引用
@@ -58,16 +69,34 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // 表单数据
 const formState = reactive({
-  users: [],
+  users: [], // 存储的是用户的 value (uid 或 username)
+})
+
+// 🚀 核心优化：将原始用户数组转换为 Select 期望的 label/value 结构
+const userOptions = computed(() => {
+  return props.users.map((user) => ({
+    // value 必须是 v-model 存储的唯一标识符
+    value: user.uid || user.id || user.username,
+    // label 用于 Select 的默认搜索和展示
+    label: `${user.nick_name} (${user.username})`,
+    // 保留原始字段供自定义渲染模板 #option 使用
+    username: user.username,
+    nick_name: user.nick_name,
+    uid: user.uid,
+  }))
 })
 
 const filterOption = (input, option) => {
-  return option.label.toLowerCase().includes(input.toLowerCase())
+  // 搜索 label (昵称+用户名) 和 value (ID/用户名)
+  return (
+    option.label.toLowerCase().includes(input.toLowerCase()) ||
+    option.value.toString().toLowerCase().includes(input.toLowerCase())
+  )
 }
 
 // 取消按钮
@@ -80,15 +109,19 @@ const handleCancel = () => {
 // 提交表单
 const onSubmit = async () => {
   if (formState.users.length === 0) {
+    // 可以添加 message 提示用户
     return
   }
   uiState.loading = true
+
   const payload = {
     key: props.nodeKey,
-    ...formState,
+    // 假设后端接口需要 users 字段存储 ID/username 列表
+    users: formState.users,
   }
+
   emit('submit', payload)
-  uiState.loading = false
+  // uiState.loading = false 应该在父组件 API 调用完成后处理
 }
 </script>
 

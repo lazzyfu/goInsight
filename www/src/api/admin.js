@@ -50,4 +50,6 @@ export const deleteApprovalFlowsApi = (data) => del(`/api/v1/admin/approval-flow
 export const bindUsersToApprovalFlowApi = (data) =>
   post(`/api/v1/admin/approval-flows/bind-users`, data)
 export const getApprovalFlowUsersApi = (data) =>
-  get(`/api/v1/admin/approval-flows/bind-users/${data}`)
+  get('/api/v1/admin/approval-flows/bind-users', data)
+export const deleteUsersFromApprovalFlowApi = (data) =>
+  del('/api/v1/admin/approval-flows/bind-users/${data.id}', data)

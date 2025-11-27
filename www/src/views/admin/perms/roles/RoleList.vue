@@ -2,31 +2,42 @@
   <a-card title="角色管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAdd">
-        <PlusOutlined />新增角色
-      </a-button>
+      <a-button type="primary" @click="handleAdd"> <PlusOutlined />新增角色 </a-button>
     </template>
 
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索角色名..." style="width: 350px" @search="handleSearch" />
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索角色名..."
+        style="width: 350px"
+        @search="handleSearch"
+      />
     </div>
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key" :data-source="uiData.tableData"
-        :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
+      <a-table
+        size="small"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.key"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEdit(record)">
-                <EditOutlined /> 编辑
-              </a>
-              <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
-                <a>
-                  <DeleteOutlined /> 删除
-                </a>
+              <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
+              <a-popconfirm
+                title="确认删除吗？"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDelete(record)"
+              >
+                <a> <DeleteOutlined /> 删除 </a>
               </a-popconfirm>
             </a-space>
           </template>
@@ -36,8 +47,13 @@
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <RoleFormModal :open="uiState.isModalOpen" v-model:modelValue="formState"
-    :title="uiState.isEditMode ? '编辑角色' : '新增角色'" @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <RoleFormModal
+    :open="uiState.isModalOpen"
+    v-model:modelValue="formState"
+    :title="uiState.isEditMode ? '编辑角色' : '新增角色'"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
@@ -80,7 +96,7 @@ const uiData = reactive({
       key: 'action',
       fixed: 'right',
     },
-  ]
+  ],
 })
 
 // form表单
@@ -135,7 +151,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await getRolesApi(params)
+  const res = await getRolesApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -145,7 +161,9 @@ const fetchData = async () => {
 
 // 提交表单
 const onSubmit = async (data) => {
-  const res = uiState.isEditMode ? await updateRolesApi(data).catch(() => { }) : await createRolesApi(data).catch(() => { })
+  const res = uiState.isEditMode
+    ? await updateRolesApi(data).catch(() => {})
+    : await createRolesApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     uiState.isModalOpen = false
@@ -155,7 +173,7 @@ const onSubmit = async (data) => {
 
 // 删除记录
 const handleDelete = async (record) => {
-  const res = await deleteRolesApi(record.id).catch(() => { })
+  const res = await deleteRolesApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()
