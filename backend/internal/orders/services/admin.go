@@ -9,11 +9,33 @@ import (
 
 	"github.com/lazzyfu/goinsight/internal/orders/forms"
 	"github.com/lazzyfu/goinsight/internal/orders/models"
+	userModels "github.com/lazzyfu/goinsight/internal/users/models"
 	"github.com/lazzyfu/goinsight/pkg/pagination"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
+
+type AdminGetApprovalFlowUnboundService struct {
+	C *gin.Context
+	*forms.AdminGetApprovalFlowUnboundUsersForm
+}
+
+func (s *AdminGetApprovalFlowUnboundService) Run() (responseData any, total int64, err error) {
+	var records []userModels.InsightUsers
+
+	tx := global.App.DB.Table("insight_users a").
+		Where("NOT EXISTS (SELECT 1 FROM insight_approval_maps b WHERE b.username = a.username)")
+
+	// 搜索（精确/模糊看你需要）
+	if s.Search != "" {
+		like := "%" + s.Search + "%"
+		tx = tx.Where("a.username LIKE ? OR a.nick_name LIKE ?", like, like)
+	}
+
+	total = pagination.Pager(&s.PaginationQ, tx, &records)
+	return &records, total, nil
+}
 
 // 获取环境
 type AdminGetApprovalFlowsService struct {
@@ -23,14 +45,21 @@ type AdminGetApprovalFlowsService struct {
 
 func (s *AdminGetApprovalFlowsService) Run() (responseData any, total int64, err error) {
 	var records []models.InsightApprovalFlow
-	tx := global.App.DB.Table("`insight_approval_flow` a").
-		Select("a.`id`, a.`name`, a.`definition`, a.`approval_id`, a.`created_at`, a.`updated_at`").
-		Scan(&records)
-	// 搜索
+
+	// 基础查询（默认不 JOIN）
+	base := global.App.DB.Table("insight_approval_flow a")
+
+	// 有搜索时才 JOIN maps
 	if s.Search != "" {
-		tx = tx.Where("a.title like ?", "%"+s.Search+"%")
+		base = base.Joins("LEFT JOIN insight_approval_maps b ON a.approval_id = b.approval_id").
+			Where("a.name LIKE ? OR b.username = ?", "%"+s.Search+"%", s.Search)
 	}
-	total = pagination.Pager(&s.PaginationQ, tx, &records)
+
+	// 固定字段 + 去重
+	base = base.Select("a.id, a.name, a.definition, a.approval_id, a.created_at, a.updated_at").
+		Group("a.id")
+
+	total = pagination.Pager(&s.PaginationQ, base, &records)
 	return &records, total, nil
 }
 

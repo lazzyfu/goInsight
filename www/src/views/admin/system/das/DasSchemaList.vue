@@ -2,40 +2,55 @@
   <a-card title="库表权限管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAdd">
-        <PlusOutlined />新增库访问权限
-      </a-button>
+      <a-button type="primary" @click="handleAdd"> <PlusOutlined />新增库访问权限 </a-button>
     </template>
 
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索..." style="width: 350px"
-        @search="handleSearch" />
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索..."
+        style="width: 350px"
+        @search="handleSearch"
+      />
     </div>
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="tableColumns" :row-key="(record) => record.key" :data-source="uiData.tableData"
-        :pagination="pagination" :loading="uiState.loading" @change="handleTableChange" :scroll="{ x: 1300 }">
+      <a-table
+        size="small"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.key"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1300 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'schema'">
-            <router-link :to="{
-              name: 'view.admin.das.tables',
-              params: {
-                username: record.username,
-                schema: record.schema,
-                instance_id: record.instance_id,
-              },
-            }">
+            <router-link
+              :to="{
+                name: 'view.admin.das.tables',
+                params: {
+                  username: record.username,
+                  schema: record.schema,
+                  instance_id: record.instance_id,
+                },
+              }"
+            >
               {{ record.schema }}
             </router-link>
           </template>
           <template v-if="column.key === 'action'">
-            <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
-              <a>
-                <DeleteOutlined /> 删除
-              </a>
+            <a-popconfirm
+              title="确认删除吗？"
+              ok-text="是"
+              cancel-text="否"
+              @confirm="handleDelete(record)"
+            >
+              <a> <DeleteOutlined /> 删除 </a>
             </a-popconfirm>
           </template>
         </template>
@@ -44,12 +59,24 @@
   </a-card>
 
   <!-- 新增弹窗 -->
-  <DasSchemaFormModal :users="uiData.users" :environments="uiData.environments" :open="uiState.isModalOpen" title="新增库权限"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <DasSchemaFormModal
+    :users="uiData.users"
+    :environments="uiData.environments"
+    :open="uiState.isModalOpen"
+    title="新增库权限"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
-import { createSchemasGrantApi, deleteSchemasGrantApi, getSchemasListGrantApi, getEnvironmentsApi, getUsersApi } from '@/api/admin'
+import {
+  createSchemasGrantApi,
+  deleteSchemasGrantApi,
+  getEnvironmentsApi,
+  getSchemasListGrantApi,
+  getUsersApi,
+} from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive } from 'vue'
@@ -116,7 +143,7 @@ const uiData = reactive({
       key: 'action',
       fixed: 'right',
     },
-  ]
+  ],
 })
 
 // 搜索
@@ -151,10 +178,10 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await getSchemasListGrantApi(params).catch(() => { })
+  const res = await getSchemasListGrantApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
-    uiData.searchValue = res.data
+    uiData.tableData = res.data
   }
   uiState.loading = false
 }
@@ -168,7 +195,7 @@ const handleAdd = () => {
 
 // 提交
 const onSubmit = async (data) => {
-  const res = await createSchemasGrantApi(data).catch(() => { })
+  const res = await createSchemasGrantApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     uiState.isModalOpen = false
@@ -178,7 +205,7 @@ const onSubmit = async (data) => {
 
 // 删除
 const handleDelete = async (record) => {
-  const res = await deleteSchemasGrantApi(record.id).catch(() => { })
+  const res = await deleteSchemasGrantApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()
@@ -187,13 +214,13 @@ const handleDelete = async (record) => {
 
 // 获取用户
 const getUsers = async () => {
-  const res = await getUsersApi().catch(() => { })
+  const res = await getUsersApi().catch(() => {})
   uiData.users = res.data || []
 }
 
 // 获取环境
 const getEnvironments = async () => {
-  const res = await getEnvironmentsApi().catch(() => { })
+  const res = await getEnvironmentsApi().catch(() => {})
   uiData.environments = res.data || []
 }
 

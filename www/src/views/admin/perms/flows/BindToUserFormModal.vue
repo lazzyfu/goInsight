@@ -1,12 +1,5 @@
 <template>
-  <a-modal
-    :open="props.open"
-    title="绑定审批流到用户"
-    :width="560"
-    centered
-    destroyOnClose
-    @cancel="handleCancel"
-  >
+  <a-modal :open="props.open" title="绑定审批流到用户" :width="560" centered @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -28,7 +21,7 @@
         </template>
       </a-form-item>
 
-      <a-form-item label="选择用户" name="users">
+      <a-form-item label="选择未绑定的用户" name="users">
         <a-select
           v-model:value="formState.users"
           mode="multiple"
@@ -100,6 +93,7 @@ const filterOption = (input, option) => {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
+  formRef.value?.resetFields()
 }
 
 // 提交表单

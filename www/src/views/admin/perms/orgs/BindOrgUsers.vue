@@ -1,12 +1,5 @@
 <template>
-  <a-modal
-    :open="open"
-    title="绑定用户"
-    :width="520"
-    centered
-    destroyOnClose
-    @cancel="handleCancel"
-  >
+  <a-modal :open="open" title="绑定用户" :width="520" centered @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -77,7 +70,7 @@ const formState = reactive({
   users: [], // 存储的是用户的 value (uid 或 username)
 })
 
-// 🚀 核心优化：将原始用户数组转换为 Select 期望的 label/value 结构
+// 核心优化：将原始用户数组转换为 Select 期望的 label/value 结构
 const userOptions = computed(() => {
   return props.users.map((user) => ({
     // value 必须是 v-model 存储的唯一标识符
@@ -103,7 +96,6 @@ const filterOption = (input, option) => {
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
-  formState.users = []
 }
 
 // 提交表单

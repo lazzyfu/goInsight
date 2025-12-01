@@ -11,6 +11,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func AdminGetApprovalFlowUnboundUsersView(c *gin.Context) {
+	var form forms.AdminGetApprovalFlowUnboundUsersForm
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminGetApprovalFlowUnboundService{
+		AdminGetApprovalFlowUnboundUsersForm: &form,
+		C:                                    c,
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
+}
+
 func AdminGetApprovalFlowsView(c *gin.Context) {
 	var form forms.AdminGetApprovalFlowsForm
 	if err := c.ShouldBind(&form); err != nil {

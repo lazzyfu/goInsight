@@ -2,22 +2,32 @@
   <a-card title="数据库实例管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAdd">
-        <PlusOutlined />新增数据库实例
-      </a-button>
+      <a-button type="primary" @click="handleAdd"> <PlusOutlined />新增数据库实例 </a-button>
     </template>
 
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-input-search v-model:value="searchValue" placeholder="搜索实例..." style="width: 350px" @search="handleSearch" />
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索实例..."
+        style="width: 350px"
+        @search="handleSearch"
+      />
     </div>
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.id"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1300 }">
+      <a-table
+        size="small"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.id"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1300 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'inspect_params'">
             <pre>{{ JSON.stringify(record.inspect_params, null, 2) }}</pre>
@@ -28,15 +38,16 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a @click="handleEdit(record)">
-                      <EditOutlined /> 编辑
-                    </a>
+                    <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
                   </a-menu-item>
                   <a-menu-item key="2">
-                    <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
-                      <a>
-                        <DeleteOutlined /> 删除
-                      </a>
+                    <a-popconfirm
+                      title="确认删除吗？"
+                      ok-text="是"
+                      cancel-text="否"
+                      @confirm="handleDelete(record)"
+                    >
+                      <a> <DeleteOutlined /> 删除 </a>
                     </a-popconfirm>
                   </a-menu-item>
                 </a-menu>
@@ -54,9 +65,15 @@
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <InstanceFormModal :open="uiState.isModalOpen" v-model:modelValue="formState" :environments="uiData.environments"
-    :organizations="uiData.environments" :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <InstanceFormModal
+    :open="uiState.isModalOpen"
+    v-model:modelValue="formState"
+    :environments="uiData.environments"
+    :organizations="uiData.environments"
+    :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
@@ -139,7 +156,7 @@ const uiData = reactive({
       key: 'action',
       fixed: 'right',
     },
-  ]
+  ],
 })
 
 // form表单
@@ -154,7 +171,6 @@ const defaultForm = {
   remark: '',
 }
 const formState = ref({ ...defaultForm })
-
 
 // 搜索
 const handleSearch = (value) => {
@@ -188,7 +204,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await getDBConfigApi(params).catch(() => { })
+  const res = await getDBConfigApi(params).catch(() => {})
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -229,7 +245,9 @@ const onSubmit = async (data) => {
     ...data,
     inspect_params: JSON.parse(data.inspect_params),
   }
-  const res = uiState.isEditMode ? await updateDBConfigApi(payload).catch(() => { }) : await createDBConfigApi(payload).catch(() => { })
+  const res = uiState.isEditMode
+    ? await updateDBConfigApi(payload).catch(() => {})
+    : await createDBConfigApi(payload).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     uiState.isModalOpen = false
@@ -239,7 +257,7 @@ const onSubmit = async (data) => {
 
 // 删除
 const handleDelete = async (record) => {
-  const res = await deleteDBConfigApi(record.id).catch(() => { })
+  const res = await deleteDBConfigApi(record.id).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()
@@ -248,13 +266,13 @@ const handleDelete = async (record) => {
 
 // 获取环境
 const getEnvironments = async () => {
-  const res = await getEnvironmentsApi().catch(() => { })
+  const res = await getEnvironmentsApi().catch(() => {})
   uiData.environments = res?.data || []
 }
 
 // 获取组织
 const getOrganizations = async () => {
-  const res = await getOrganizationsApi().catch(() => { })
+  const res = await getOrganizationsApi().catch(() => {})
   uiData.environments = res?.data || []
 }
 

@@ -1,10 +1,10 @@
 <template>
-  <a-modal :open="open" title="新增根组织" :width="480" centered destroyOnClose @cancel="handleCancel">
+  <a-modal :open="open" title="新增根组织" :width="480" centered @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
-    
+
     <div class="modal-content">
       <div class="modal-icon">
         <ApartmentOutlined />
@@ -45,7 +45,7 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // 表单数据
@@ -69,6 +69,7 @@ const rules = {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
+  formRef.value?.resetFields()
 }
 
 // 提交表单

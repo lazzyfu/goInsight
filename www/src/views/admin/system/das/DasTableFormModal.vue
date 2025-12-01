@@ -1,22 +1,39 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" destroyOnClose @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
 
-    <a-form ref="formRef" :model="formData" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
+    <a-form
+      ref="formRef"
+      :model="formData"
+      :rules="rules"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 20 }"
+    >
       <a-form-item label="表名" name="tables" has-feedback>
-        <a-select ref="select" v-model:value="formData.tables" :options="props.tables" mode="multiple"
-          :field-names="{ label: 'table_name', value: 'table_name' }" allowClear>
+        <a-select
+          ref="select"
+          v-model:value="formData.tables"
+          :options="props.tables"
+          mode="multiple"
+          :field-names="{ label: 'table_name', value: 'table_name' }"
+          allowClear
+        >
         </a-select>
       </a-form-item>
 
       <a-form-item label="规则" name="rule" has-feedback>
-        <a-select ref="select" v-model:value="formData.rule" :options="[
-          { value: 'allow', label: '允许' },
-          { value: 'deny', label: '拒绝' },
-        ]" allowClear>
+        <a-select
+          ref="select"
+          v-model:value="formData.rule"
+          :options="[
+            { value: 'allow', label: '允许' },
+            { value: 'deny', label: '拒绝' },
+          ]"
+          allowClear
+        >
         </a-select>
       </a-form-item>
     </a-form>
@@ -45,7 +62,7 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // 表单校验规则
@@ -69,6 +86,7 @@ const rules = {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
+  formRef.value?.resetFields()
 }
 
 // 提交表单

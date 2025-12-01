@@ -171,7 +171,7 @@ const onSubmit = async (data) => {
   }
 }
 
-// 删除记录
+// 删除
 const handleDelete = async (record) => {
   const res = await deleteRolesApi(record.id).catch(() => {})
   if (res?.code === '0000') {

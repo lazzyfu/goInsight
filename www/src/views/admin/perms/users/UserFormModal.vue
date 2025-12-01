@@ -1,11 +1,17 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" destroyOnClose @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
 
-    <a-form ref="formRef" :model="formData" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
+    <a-form
+      ref="formRef"
+      :model="formData"
+      :rules="rules"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 20 }"
+    >
       <a-form-item label="用户名" name="username" has-feedback>
         <a-input v-model:value="formData.username" placeholder="请输入用户名" allow-clear />
       </a-form-item>
@@ -22,8 +28,12 @@
         <a-input v-model:value="formData.mobile" placeholder="请输入手机号" allow-clear />
       </a-form-item>
       <a-form-item label="角色" name="role_id" has-feedback>
-        <a-select v-model:value="formData.role_id" :options="props.roles" :field-names="{ label: 'name', value: 'id' }"
-          allowClear />
+        <a-select
+          v-model:value="formData.role_id"
+          :options="props.roles"
+          :field-names="{ label: 'name', value: 'id' }"
+          allowClear
+        />
       </a-form-item>
       <a-form-item label="激活状态" name="is_active" has-feedback>
         <a-switch v-model:checked="formData.is_active" />
@@ -39,7 +49,7 @@
 </template>
 
 <script setup>
-import { } from '@/api/admin'
+import {} from '@/api/admin'
 import { regEmail, regPassword, regPhone } from '@/utils/validate'
 import { computed, ref, reactive } from 'vue'
 
@@ -68,7 +78,7 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // 表单校验规则
@@ -96,6 +106,7 @@ const rules = {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
+  formRef.value?.resetFields()
 }
 
 // 提交表单

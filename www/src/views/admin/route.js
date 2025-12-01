@@ -38,7 +38,7 @@ const route = {
           name: `view.admin.flows`,
           path: '/admin/flows',
           icon: 'AuditOutlined',
-          component: () => import('./perms/flows/index.vue'),
+          component: () => import('./perms/flows/ApprovalFlowList.vue'),
           meta: { title: '审批流', keepAlive: true },
         },
       ],
@@ -74,7 +74,7 @@ const route = {
         {
           name: `view.admin.das`,
           path: '/admin/das',
-          icon: 'CheckCircleOutlined',
+          icon: 'SafetyOutlined',
           component: () => import('./system/das/DasSchemaList.vue'),
           meta: { title: '数据访问', keepAlive: true },
         },

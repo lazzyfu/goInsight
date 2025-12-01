@@ -4,7 +4,6 @@
     :title="`审批流：${props.flowName}`"
     :width="650"
     :footer="null"
-    destroyOnClose
     @cancel="handleCancel"
   >
     <div class="search-wrapper">
@@ -145,8 +144,7 @@ const handleCancel = () => {
 
 // 删除
 const handleDelete = async (record) => {
-  console.log('record: ', record)
-  const res = await deleteUsersFromApprovalFlowApi(record.id).catch(() => {})
+  const res = await deleteUsersFromApprovalFlowApi(record).catch(() => {})
   if (res?.code === '0000') {
     message.info('操作成功')
     fetchData()

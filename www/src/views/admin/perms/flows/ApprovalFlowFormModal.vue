@@ -2,13 +2,13 @@
   <a-modal
     :open="props.open"
     :title="props.title"
-    width="800px"
-    destroyOnClose
+    width="65%"
     @cancel="handleCancel"
+    :bodyStyle="{ padding: '24px' }"
   >
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
+      <a-button type="primary" :loading="uiState.loading" @click="onSubmit"> 确定 </a-button>
     </template>
     <a-form
       ref="formRef"
@@ -21,9 +21,17 @@
         <a-input v-model:value="formData.name" placeholder="请输入审批流名称" allow-clear />
       </a-form-item>
 
-      <a-divider orientation="left">
-        审批阶段定义 (共 {{ formData.definition ? formData.definition.length : 0 }} 个阶段)
-      </a-divider>
+      <div class="divider-section">
+        <div class="divider-title">
+          <span class="divider-icon">📋</span>
+          <span>审批阶段定义</span>
+          <a-badge
+            :count="formData.definition ? formData.definition.length : 0"
+            :number-style="{ backgroundColor: '#1890ff' }"
+            style="margin-left: 12px"
+          />
+        </div>
+      </div>
 
       <a-form-item
         label=""
@@ -34,49 +42,60 @@
         <div class="stage-list">
           <div v-for="(stage, index) in formData.definition" :key="index" class="stage-item">
             <div class="stage-header">
-              <span class="stage-title">阶段 {{ index + 1 }}</span>
+              <div class="stage-number">{{ index + 1 }}</div>
               <a-input
                 v-model:value="stage.stage_name"
                 placeholder="阶段名称 (如：部门经理审批)"
-                style="width: 250px; margin-right: 16px"
+                class="stage-name-input"
               />
               <a-button
                 v-if="formData.definition.length > 1"
-                type="danger"
-                size="small"
-                @click="removeStage(index)"
+                type="text"
                 danger
+                @click="removeStage(index)"
+                class="delete-btn"
               >
-                <DeleteOutlined /> 删除
+                <DeleteOutlined />
               </a-button>
             </div>
-            <a-row :gutter="16">
-              <a-col :span="6">
-                <a-form-item label="审批类型" class="inner-form-item">
-                  <a-select v-model:value="stage.type">
-                    <a-select-option value="AND">AND (会签)</a-select-option>
-                    <a-select-option value="OR">OR (或签)</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="18">
-                <a-form-item label="审批人 (用户名列表)" class="inner-form-item">
-                  <a-select
-                    v-model:value="stage.approvers"
-                    mode="multiple"
-                    show-search
-                    :filter-option="filterUserOption"
-                    style="width: 100%"
-                    placeholder="请选择审批人"
-                    :options="props.userOptions"
-                    option-label-prop="label"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
+
+            <div class="stage-content">
+              <a-row :gutter="16">
+                <a-col :span="8">
+                  <div class="form-field">
+                    <label class="field-label">审批类型</label>
+                    <a-select v-model:value="stage.type" style="width: 100%">
+                      <a-select-option value="AND">
+                        <span class="option-text">🤝 AND (会签)</span>
+                      </a-select-option>
+                      <a-select-option value="OR">
+                        <span class="option-text">✅ OR (或签)</span>
+                      </a-select-option>
+                    </a-select>
+                  </div>
+                </a-col>
+                <a-col :span="16">
+                  <div class="form-field">
+                    <label class="field-label">审批人</label>
+                    <a-select
+                      v-model:value="stage.approvers"
+                      mode="multiple"
+                      show-search
+                      :filter-option="filterUserOption"
+                      style="width: 100%"
+                      placeholder="请选择审批人"
+                      :options="props.userOptions"
+                      option-label-prop="label"
+                      :max-tag-count="3"
+                    />
+                  </div>
+                </a-col>
+              </a-row>
+            </div>
           </div>
         </div>
-        <a-button type="dashed" style="width: 100%; margin-top: 16px" @click="addStage">
+
+        <a-button type="dashed" block class="add-stage-btn" @click="addStage">
           <PlusOutlined /> 增加审批阶段
         </a-button>
       </a-form-item>
@@ -97,6 +116,7 @@ const props = defineProps({
     default: () => [],
   },
 })
+
 const emit = defineEmits(['update:open', 'submit'])
 
 // 表单数据
@@ -153,6 +173,7 @@ const removeStage = (index) => {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
+  formRef.value?.resetFields()
 }
 
 const validateDefinition = async () => {
@@ -160,7 +181,6 @@ const validateDefinition = async () => {
   if (!definition || definition.length === 0) {
     throw new Error('请至少配置一个审批阶段。')
   }
-
   for (const [index, stage] of definition.entries()) {
     if (!stage.stage_name || stage.stage_name.trim() === '') {
       throw new Error(`阶段 ${index + 1}：阶段名称不能为空。`)
@@ -179,6 +199,7 @@ const onSubmit = async () => {
     uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
+    console.error(err)
   } finally {
     uiState.loading = false
   }
@@ -190,35 +211,174 @@ const onSubmit = async () => {
   padding: 0;
 }
 
+.divider-section {
+  margin: 32px 0 24px;
+  padding: 0 0 16px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.divider-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.divider-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
 .stage-list {
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
-  padding-right: 8px;
+  padding: 4px;
 }
+
+.stage-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.stage-list::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.stage-list::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.stage-list::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
 .stage-item {
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
-  padding: 16px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 0;
   margin-bottom: 16px;
-  background-color: #fafafa;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
+
+.stage-item:hover {
+  border-color: #1890ff;
+  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.15);
+  transform: translateY(-2px);
+}
+
 .stage-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed #e0e0e0;
-}
-.stage-title {
-  font-weight: 600;
-  color: #333;
-  margin-right: 16px;
-  white-space: nowrap;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(90deg, #f5f7fa 0%, #ffffff 100%);
+  border-bottom: 2px solid #f0f0f0;
 }
 
-/* 调整动态阶段内嵌的 form-item 样式，去除上下边距 */
-.inner-form-item :deep(.ant-form-item) {
-  margin-bottom: 0px;
+.stage-number {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+.stage-name-input {
+  flex: 1;
+  border-radius: 8px;
+}
+
+.delete-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+  background: #fff1f0;
+  transform: scale(1.1);
+}
+
+.stage-content {
+  padding: 20px;
+}
+
+.form-field {
+  margin-bottom: 0;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #595959;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.option-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.add-stage-btn {
+  margin-top: 16px;
+  height: 48px;
+  border: 2px dashed #d9d9d9;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #595959;
+  transition: all 0.3s ease;
+}
+
+.add-stage-btn:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+  background: #f0f7ff;
+  transform: translateY(-1px);
+}
+
+/* Ant Design 组件样式覆盖 */
+:deep(.ant-input),
+:deep(.ant-select-selector) {
+  border-radius: 8px;
+}
+
+:deep(.ant-badge-count) {
+  box-shadow: none;
+  font-weight: 600;
+}
+
+:deep(.ant-modal-header) {
+  border-bottom: 2px solid #f0f0f0;
+  padding: 20px 24px;
+}
+
+:deep(.ant-modal-title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+}
+
+:deep(.ant-modal-footer) {
+  border-top: 2px solid #f0f0f0;
+  padding: 16px 24px;
 }
 </style>

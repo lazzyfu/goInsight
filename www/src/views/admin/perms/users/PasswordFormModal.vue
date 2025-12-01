@@ -1,11 +1,17 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" destroyOnClose @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
     </template>
 
-    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
+    <a-form
+      ref="formRef"
+      :model="formState"
+      :rules="rules"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 20 }"
+    >
       <a-form-item label="新密码" has-feedback name="password">
         <a-input v-model:value="formState.password" autocomplete="off" type="password"> </a-input>
       </a-form-item>
@@ -39,7 +45,7 @@ const formRef = ref()
 
 // 状态
 const uiState = reactive({
-  loading: false
+  loading: false,
 })
 
 // 有效性验证
@@ -80,6 +86,7 @@ const rules = {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
+  formRef.value?.resetFields()
 }
 
 // 提交表单

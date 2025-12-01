@@ -6,6 +6,11 @@ import (
 	"gorm.io/datatypes"
 )
 
+type AdminGetApprovalFlowUnboundUsersForm struct {
+	PaginationQ pagination.Pagination
+	Search      string `form:"search"`
+}
+
 type AdminGetApprovalFlowsForm struct {
 	PaginationQ pagination.Pagination
 	Search      string `form:"search"`

@@ -6,6 +6,7 @@ import (
 )
 
 func RegisterAdminRoutes(v1 *gin.RouterGroup) {
+	v1.GET("/unbound-users", views.AdminGetApprovalFlowUnboundUsersView)
 	v1.GET("", views.AdminGetApprovalFlowsView)
 	v1.POST("", views.AdminCreateApprovalFlowsView)
 	v1.PUT(":id", views.AdminUpdateApprovalFlowsView)

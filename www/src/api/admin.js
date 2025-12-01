@@ -43,6 +43,8 @@ export const getInstancesListApi = (params) => get('/api/v1/admin/das/instances/
 export const getSchemasListApi = (params) => get('/api/v1/admin/das/schemas/list', params)
 export const getTablesListApi = (params) => get('/api/v1/admin/das/tables/list', params)
 // 审批流
+export const getApprovalFlowUnboundUsersApi = (params) =>
+  get('/api/v1/admin/approval-flows/unbound-users', params)
 export const getApprovalFlowsApi = (params) => get('/api/v1/admin/approval-flows', params)
 export const createApprovalFlowsApi = (data) => post('/api/v1/admin/approval-flows', data)
 export const updateApprovalFlowsApi = (data) => put(`/api/v1/admin/approval-flows/${data.id}`, data)
@@ -52,4 +54,4 @@ export const bindUsersToApprovalFlowApi = (data) =>
 export const getApprovalFlowUsersApi = (data) =>
   get('/api/v1/admin/approval-flows/bind-users', data)
 export const deleteUsersFromApprovalFlowApi = (data) =>
-  del('/api/v1/admin/approval-flows/bind-users/${data.id}', data)
+  del(`/api/v1/admin/approval-flows/bind-users/${data.id}`, data)

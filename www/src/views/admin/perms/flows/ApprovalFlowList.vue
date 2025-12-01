@@ -10,7 +10,7 @@
     <div class="search-wrapper">
       <a-input-search
         v-model:value="uiData.searchValue"
-        placeholder="搜索审批流名称..."
+        placeholder="搜索审批流名称、用户名"
         style="width: 350px"
         @search="handleSearch"
       />
@@ -70,7 +70,7 @@
   <BindToUserFormModal
     :open="uiState.isBindModalOpen"
     :flow-options="uiData.flows"
-    :user-options="uiData.users"
+    :user-options="uiData.unBoundUsers"
     @update:open="uiState.isBindModalOpen = $event"
     @submit="onSubmitBind"
   />
@@ -89,6 +89,7 @@ import {
   createApprovalFlowsApi,
   deleteApprovalFlowsApi,
   getApprovalFlowsApi,
+  getApprovalFlowUnboundUsersApi,
   getUsersApi,
   updateApprovalFlowsApi,
 } from '@/api/admin'
@@ -120,6 +121,7 @@ const uiData = reactive({
   viewApprovalFlowID: null,
   viewFlowName: '',
   users: [],
+  unBoundUsers: [],
   flows: [],
   tableData: [],
   tableColumns: [
@@ -145,11 +147,21 @@ const defaultForm = {
 }
 const formState = ref({ ...defaultForm })
 
-// 获取用户
+// 获取所有用户
 const getUsers = async () => {
   const res = await getUsersApi().catch(() => {})
   if (res && res.data) {
     uiData.users = res.data.map((u) => ({
+      label: `${u.nickname || u.username} (${u.username})`,
+      value: u.username,
+    }))
+  }
+}
+// 获取未绑定审批流的用户
+const getUnBoundUsers = async () => {
+  const res = await getApprovalFlowUnboundUsersApi().catch(() => {})
+  if (res && res.data) {
+    uiData.unBoundUsers = res.data.map((u) => ({
       label: `${u.nickname || u.username} (${u.username})`,
       value: u.username,
     }))
@@ -255,14 +267,7 @@ const handleDelete = async (record) => {
 
 // 打开绑定审批流模态框
 const handleBind = () => {
-  if (uiData.flows.length === 0) {
-    message.warning('当前没有可用的审批流，请先创建。')
-    return
-  }
-  if (uiData.users.length === 0) {
-    message.warning('用户列表未加载，请稍候重试。')
-    return
-  }
+  getUnBoundUsers()
   uiState.isBindModalOpen = true
 }
 
