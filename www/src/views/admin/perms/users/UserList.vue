@@ -5,6 +5,16 @@
     </template>
 
     <div class="search-wrapper">
+      <a-cascader
+        v-model:value="uiData.searchOrganizationKey"
+        :field-names="{ label: 'title', value: 'key', children: 'children' }"
+        :options="uiData.organizations"
+        change-on-select
+        expand-trigger="hover"
+        placeholder="请选择组织"
+      >
+      </a-cascader>
+
       <!-- 搜索 -->
       <a-input-search
         v-model:value="uiData.searchValue"
@@ -104,6 +114,7 @@
 import {
   addUsersApi,
   deleteUsersApi,
+  getOrganizationsApi,
   getRolesApi,
   getUsersApi,
   ResetPasswordApi,
@@ -132,67 +143,69 @@ const uiState = reactive({
 // 数据
 const uiData = reactive({
   searchValue: '',
+  searchOrganizationKey: '',
   roles: [],
+  organizations: [],
   tableData: [],
   tableColumns: [
-  {
-    title: '用户',
-    dataIndex: 'username',
-    key: 'username',
-    fixed: 'left',
-  },
-  {
-    title: '昵称',
-    dataIndex: 'nick_name',
-    key: 'nick_name',
-  },
-  {
-    title: '角色',
-    dataIndex: 'role',
-    key: 'role',
-  },
-  {
-    title: '激活',
-    dataIndex: 'is_active',
-    key: 'is_active',
-  },
-  {
-    title: '2FA认证',
-    dataIndex: 'is_two_fa',
-    key: 'is_two_fa',
-  },
-  {
-    title: '管理员',
-    dataIndex: 'is_superuser',
-    key: 'is_superuser',
-  },
-  {
-    title: '邮箱',
-    dataIndex: 'email',
-    key: 'email',
-  },
-  {
-    title: '手机号',
-    dataIndex: 'mobile',
-    key: 'mobile',
-  },
-  {
-    title: '组织',
-    dataIndex: 'organization',
-    key: 'organization',
-  },
-  {
-    title: '加入时间',
-    dataIndex: 'date_joined',
-    key: 'date_joined',
-  },
-  {
-    title: '操作',
-    key: 'action',
-    fixed: 'right',
-    width: 120,
-  },
-]
+    {
+      title: '用户',
+      dataIndex: 'username',
+      key: 'username',
+      fixed: 'left',
+    },
+    {
+      title: '昵称',
+      dataIndex: 'nick_name',
+      key: 'nick_name',
+    },
+    {
+      title: '角色',
+      dataIndex: 'role',
+      key: 'role',
+    },
+    {
+      title: '激活',
+      dataIndex: 'is_active',
+      key: 'is_active',
+    },
+    {
+      title: '2FA认证',
+      dataIndex: 'is_two_fa',
+      key: 'is_two_fa',
+    },
+    {
+      title: '管理员',
+      dataIndex: 'is_superuser',
+      key: 'is_superuser',
+    },
+    {
+      title: '邮箱',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: '手机号',
+      dataIndex: 'mobile',
+      key: 'mobile',
+    },
+    {
+      title: '组织',
+      dataIndex: 'organization',
+      key: 'organization',
+    },
+    {
+      title: '加入时间',
+      dataIndex: 'date_joined',
+      key: 'date_joined',
+    },
+    {
+      title: '操作',
+      key: 'action',
+      fixed: 'right',
+      width: 120,
+    },
+  ],
 })
 
 // uid
@@ -241,14 +254,25 @@ const getRoles = async () => {
   uiData.roles = res?.data || []
 }
 
+// 获取组织
+const getOrganizations = async () => {
+  const res = await getOrganizationsApi().catch(() => {})
+  uiData.organizations = res?.data || []
+}
+
 // 获取列表数据
 const fetchData = async () => {
   uiState.loading = true
+  let organization_key = ''
+  if (uiData.searchOrganizationKey != undefined) {
+    organization_key = uiData.searchOrganizationKey[uiData.searchOrganizationKey.length - 1]
+  }
   const params = {
     page_size: pagination.pageSize,
     page: pagination.current,
     is_page: true,
     search: uiData.searchValue,
+    organization_key: organization_key,
   }
   const res = await getUsersApi(params).catch(() => {})
   if (res) {
@@ -276,7 +300,9 @@ const handleEdit = (record) => {
 
 // 提交
 const onSubmit = async (data) => {
-  const res = uiState.isEditMode ? await updateUsersApi(data).catch(() => {}) : await addUsersApi(data).catch(() => {})
+  const res = uiState.isEditMode
+    ? await updateUsersApi(data).catch(() => {})
+    : await addUsersApi(data).catch(() => {})
   if (res?.code === '0000') {
     message.success('操作成功')
     uiState.userModalOpen = false
@@ -315,5 +341,6 @@ const handleDelete = async (record) => {
 // 初始化
 onMounted(() => {
   fetchData()
+  getOrganizations()
 })
 </script>
