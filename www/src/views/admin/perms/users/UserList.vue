@@ -5,23 +5,25 @@
     </template>
 
     <div class="search-wrapper">
-      <a-cascader
-        v-model:value="uiData.searchOrganizationKey"
-        :field-names="{ label: 'title', value: 'key', children: 'children' }"
-        :options="uiData.organizations"
-        change-on-select
-        expand-trigger="hover"
-        placeholder="请选择组织"
-      >
-      </a-cascader>
+      <a-space>
+        <a-cascader
+          v-model:value="uiData.searchOrganizationKey"
+          :field-names="{ label: 'title', value: 'key', children: 'children' }"
+          :options="uiData.organizations"
+          change-on-select
+          expand-trigger="hover"
+          placeholder="请选择组织"
+        >
+        </a-cascader>
 
-      <!-- 搜索 -->
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="搜索用户名、昵称、手机号、邮箱..."
-        style="width: 350px"
-        @search="handleSearch"
-      />
+        <!-- 搜索 -->
+        <a-input-search
+          v-model:value="uiData.searchValue"
+          placeholder="搜索用户名、昵称、手机号、邮箱..."
+          style="width: 350px"
+          @search="handleSearch"
+        />
+      </a-space>
     </div>
 
     <!-- 表格 -->
