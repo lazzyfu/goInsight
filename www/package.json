@@ -43,6 +43,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
+    "qrcode": "^1.5.4",
     "sass": "^1.91.0",
     "sass-loader": "^16.0.5",
     "sql-formatter": "^15.6.6",

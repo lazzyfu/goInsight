@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/lazzyfu/goinsight/internal/global"
 
@@ -69,6 +70,8 @@ func OTPMiddleware() gin.HandlerFunc {
 		var loginVals login
 		if err := c.ShouldBind(&loginVals); err != nil {
 			response.Fail(c, "missing Username or Password")
+			// stop the handler chain so the jwt.LoginHandler won't run after we've written a response
+			c.Abort()
 			return
 		}
 		username := loginVals.Username
@@ -90,19 +93,35 @@ func OTPMiddleware() gin.HandlerFunc {
 		// 用户是否开启2FA认证
 		otpCode := loginVals.OtpCode
 		needsOTP := check.checkIfUserNeedsOTP()
+
 		if needsOTP && otpCode == "" {
+			var (
+				code    string
+				message string
+				data    any
+			)
+
 			if check.checkIfOtpSecretNullString() {
-				// 秘钥为空，提醒用户重新绑定otpCode
-				err := errors.New("OtpSecret为空，请重新绑定OTP码")
-				global.App.Log.WithFields(logrus.Fields{"request_id": requestid.Get(c), "username": username, "error": err}).Error(err.Error())
-				c.AbortWithStatusJSON(401, gin.H{"status": "otp_rebind", "message": err.Error()})
-				return
+				code = "4001"
+				message = "需要重新绑定 OTP"
+				data = gin.H{"action": "bind_otp"}
+			} else {
+				code = "4002"
+				message = "需要输入 OTP"
+				data = gin.H{"action": "input_otp"}
 			}
-			err := errors.New("OTP required")
-			global.App.Log.WithFields(logrus.Fields{"request_id": requestid.Get(c), "username": username, "error": err}).Error(err.Error())
-			c.AbortWithStatusJSON(401, gin.H{"status": "otp_required", "message": err.Error()})
+
+			c.JSON(http.StatusOK, response.Response{
+				RequestID: requestid.Get(c),
+				Code:      code,
+				Message:   message,
+				Data:      data,
+			})
+			// stop the handler chain so the jwt.LoginHandler won't run after we've written a response
+			c.Abort()
 			return
 		}
+
 		c.Set("loginUserName", username)
 		c.Set("loginOtpCode", loginVals.OtpCode)
 		if needsOTP {

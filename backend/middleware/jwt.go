@@ -85,10 +85,10 @@ func InitAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			if loginNeedsOTP == "YES" {
 				otpCode := c.GetString("loginOtpCode")
 				if len(otpCode) == 0 {
-					return nil, errors.New("otp code is empty")
+					return nil, errors.New("OTP验证码不能为空")
 				}
 				if ok := VerifyOTPCode(username, otpCode); !ok {
-					return nil, errors.New("otp code error")
+					return nil, errors.New("OTP验证失败，请检查验证码是否正确")
 				}
 			}
 			// 更新登录时间

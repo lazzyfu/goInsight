@@ -1,7 +1,7 @@
 import router from '@/router'
 import { useUserStore } from '@/store/user'
-import { message } from "ant-design-vue"
-import axios from "axios"
+import { message } from 'ant-design-vue'
+import axios from 'axios'
 import Nprogress from 'nprogress'
 
 // 请求头
@@ -11,10 +11,10 @@ axios.defaults.headers.put['Content-Type'] = 'application/json;charset=UTF-8'
 // 跳转登录页
 const toLogin = () => {
   router.push({
-    path: "/login",
+    path: '/login',
     query: {
-      redirect: router.currentRoute.fullPath
-    }
+      redirect: router.currentRoute.fullPath,
+    },
   })
 }
 
@@ -29,7 +29,7 @@ const errorHandle = (response) => {
       message.error(msg)
       break
     case 401:
-      message.error('登录过期，请重新登录!')
+      message.error(msg)
       localStorage.clear()
       toLogin()
       break
@@ -40,21 +40,21 @@ const errorHandle = (response) => {
       message.error('请求的资源不存在!')
       break
     case 400:
-      message.error("token验证失败!")
+      message.error('token验证失败!')
       localStorage.clear()
       toLogin()
       break
     case 429:
-      message.warning("当前访问太过频繁,请稍等再试!")
+      message.warning('当前访问太过频繁,请稍等再试!')
       break
     case 500:
-      message.error("服务端错误,请稍后再试!")
+      message.error('服务端错误,请稍后再试!')
       break
     case 502:
-      message.error("网关错误,请稍后再试!")
+      message.error('网关错误,请稍后再试!')
       break
     case 504:
-      message.error("响应超时,请刷新后再试!")
+      message.error('响应超时,请刷新后再试!')
       break
     default:
       message.error(`服务繁忙(${status})`)
@@ -77,7 +77,7 @@ service.interceptors.request.use(
     Nprogress.start()
     return config
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 )
 
 //  响应拦截器
@@ -85,15 +85,12 @@ service.interceptors.response.use(
   (response) => {
     Nprogress.done()
     if (response.status === 200) {
-      if (response?.data?.code && response.data.code !== '0000') {
-        message.error(response?.data?.message || "请求失败")
-        return Promise.reject(response)
-      }
       return Promise.resolve(response)
     } else {
       return Promise.reject(response)
     }
-  }, (error) => {
+  },
+  (error) => {
     Nprogress.done()
     const { response } = error
     if (response) {
@@ -101,33 +98,38 @@ service.interceptors.response.use(
       return Promise.reject(response)
     }
     if (!window.navigator.onLine) {
-      message.warn("网络已断开,请检查网络后重试！")
+      message.warn('网络已断开,请检查网络后重试！')
       router.push({ name: 'refresh' })
     } else {
-      message.error("系统异常")
+      message.error('系统异常')
       return Promise.reject(error)
     }
-  })
+  },
+)
 
 export const get = (url, params) => {
   return new Promise((resolve, reject) => {
-    service.get(url, {
-      params: params
-    }).then(res => {
-      resolve(res.data)
-    }).catch(err => {
-      reject(err.data)
-    })
+    service
+      .get(url, {
+        params: params,
+      })
+      .then((res) => {
+        resolve(res.data)
+      })
+      .catch((err) => {
+        reject(err.data)
+      })
   })
 }
 
 export function post(url, params, headers = {}) {
   return new Promise((resolve, reject) => {
-    service.post(url, params, headers)
-      .then(res => {
+    service
+      .post(url, params, headers)
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
@@ -135,22 +137,24 @@ export function post(url, params, headers = {}) {
 
 export function del(url, params) {
   return new Promise((resolve, reject) => {
-    service.delete(url, { data: params })
-      .then(res => {
+    service
+      .delete(url, { data: params })
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
 }
 export function put(url, params) {
   return new Promise((resolve, reject) => {
-    service.put(url, params)
-      .then(res => {
+    service
+      .put(url, params)
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
