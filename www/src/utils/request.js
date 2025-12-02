@@ -85,6 +85,15 @@ service.interceptors.response.use(
   (response) => {
     Nprogress.done()
     if (response.status === 200) {
+      if (response?.data?.code) {
+        if (response.data.code === '4001' || response.data.code === '4002') {
+          return Promise.resolve(response)
+        }
+        if (response.data.code !== '0000') {
+          message.error(response?.data?.message || '请求失败')
+          return Promise.reject(response)
+        }
+      }
       return Promise.resolve(response)
     } else {
       return Promise.reject(response)
