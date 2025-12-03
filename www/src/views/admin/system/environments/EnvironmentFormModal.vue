@@ -11,6 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="环境名" name="name" has-feedback>
         <a-input v-model:value="formData.name" placeholder="请输入环境名" allow-clear />
@@ -48,19 +49,23 @@ const rules = {
   name: [
     {
       required: true,
-      message: '不能为空，请输入环境名',
-      trigger: 'blur',
+      message: '请输入环境名',
+      trigger: ['blur', 'change'],
     },
     {
-      min: 2,
-      max: 32,
-      message: `长度应在2~32个字符`,
-      trigger: 'blur',
-    },
-    {
-      pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_]+$/,
-      message: '只能包含字母、数字、中文或下划线',
-      trigger: 'blur',
+      validator: (_rule, value) => {
+        const v = (value ?? '').trim()
+        if (!v) return Promise.reject('环境名不能为空')
+        if (v.length < 2 || v.length > 32) return Promise.reject('长度需为 2~32 个字符')
+        if (!/^[a-zA-Z0-9\u4e00-\u9fa5_]+$/.test(v)) {
+          return Promise.reject('仅可使用字母、数字、中文或下划线')
+        }
+        if (/^_/.test(v) || /_$/.test(v)) {
+          return Promise.reject('不允许以下划线开头或结尾')
+        }
+        return Promise.resolve()
+      },
+      trigger: ['blur', 'change'],
     },
   ],
 }

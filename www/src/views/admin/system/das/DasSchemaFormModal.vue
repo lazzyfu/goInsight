@@ -11,6 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="用户" name="username" has-feedback>
         <a-select
@@ -109,11 +110,11 @@ const formState = reactive({
 
 // 表单校验规则
 const rules = {
-  username: [{ required: true, message: '请选择用户', trigger: 'blur' }],
+  username: [{ required: true, message: '用户是必填项', trigger: 'blur' }],
   db_type: [{ required: true, message: '请选择数据库类型', trigger: 'blur' }],
-  environment: [{ required: true, message: '请选择环境', trigger: 'blur' }],
-  instance: [{ required: true, message: '请选择实例', trigger: 'blur' }],
-  schema: [{ required: true, message: '请选择库名', trigger: 'blur' }],
+  environment: [{ required: true, message: '环境不能为空', trigger: 'blur' }],
+  instance_id: [{ required: true, message: '实例不能为空', trigger: 'blur' }],
+  schema: [{ required: true, message: '库名不能为空', trigger: 'blur' }],
 }
 
 // 更改环境

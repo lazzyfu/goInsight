@@ -11,6 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="表名" name="tables" has-feedback>
         <a-select
@@ -70,14 +71,14 @@ const rules = {
   tables: [
     {
       required: true,
-      message: '不能为空，请输入环境名',
+      message: '请选择至少一个表名',
       trigger: 'change',
     },
   ],
   rule: [
     {
       required: true,
-      message: '不能为空，请选择规则',
+      message: '请选择规则',
       trigger: 'change',
     },
   ],

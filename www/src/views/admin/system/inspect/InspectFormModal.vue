@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="50%" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" width="35%" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -11,6 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="描述" name="remark" has-feedback>
         <a-input disabled v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
@@ -57,13 +58,22 @@ const uiState = reactive({
 
 // 表单校验规则
 const rules = {
-  name: [
-    { required: true, message: '请输入角色名', trigger: 'blur' },
-    { min: 2, max: 32, message: '角色名长度应在2~32个字符', trigger: 'blur' },
+  params: [
     {
-      pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_]+$/,
-      message: '角色名只能包含字母、数字、中文或下划线',
-      trigger: 'blur',
+      validator: (_rule, value) => {
+        const text = (value ?? '').trim()
+        if (text === '') return Promise.resolve() // 为空表示继承全局参数
+        try {
+          const parsed = JSON.parse(text)
+          if (parsed === null || typeof parsed !== 'object') {
+            return Promise.reject('审核参数必须是有效的 JSON 对象，例如 {}')
+          }
+          return Promise.resolve()
+        } catch {
+          return Promise.reject('请输入合法的 JSON，示例：{"enable": true}')
+        }
+      },
+      trigger: ['blur', 'change'],
     },
   ],
 }

@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="50%" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" width="35%" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -11,6 +11,7 @@
       :wrapper-col="{ span: 20 }"
       :model="formData"
       :rules="rules"
+      style="margin-top: 24px"
     >
       <a-form-item label="环境" name="environment" has-feedback>
         <a-select
@@ -116,22 +117,56 @@ const uiState = reactive({
 
 // 表单校验规则
 const rules = {
-  environment: [{ required: true, message: '请选择环境', trigger: 'blur' }],
-  organization_key: [{ required: true, message: '请选择组织', trigger: 'blur' }],
-  db_type: [{ required: true, message: '请选择数据库类型', trigger: 'blur' }],
-  use_type: [{ required: true, message: '请选择用途', trigger: 'blur' }],
+  environment: [{ required: true, message: '请选择所属环境', trigger: 'change' }],
+  organization_key: [{ required: true, message: '请选择组织/部门', trigger: 'change' }],
+  db_type: [{ required: true, message: '请选择数据库类型', trigger: 'change' }],
+  use_type: [{ required: true, message: '请选择实例用途', trigger: 'change' }],
   hostname: [
-    { required: true, message: '请输入主机名', trigger: 'blur' },
-    { min: 3, max: 256, message: '长度应在3~256个字符', trigger: 'blur' },
+    { required: true, message: '请输入主机名', trigger: ['blur', 'change'] },
+    {
+      validator: (_, value) => {
+        const v = (value || '').trim()
+        if (v.length < 3 || v.length > 256) {
+          return Promise.reject(new Error('主机名长度需在 3 到 256 个字符之间'))
+        }
+        // 允许字母数字、点、短横线，且不能包含空格
+        const hostRe = /^[A-Za-z0-9.-]+$/
+        if (!hostRe.test(v)) {
+          return Promise.reject(new Error('主机名仅支持字母、数字、点(.)、短横线(-)'))
+        }
+        return Promise.resolve()
+      },
+      trigger: 'blur',
+    },
   ],
-  port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
+  port: [
+    { required: true, message: '请输入端口号', trigger: ['blur', 'change'] },
+    {
+      validator: (_, value) => {
+        const num = Number(value)
+        if (!Number.isInteger(num)) {
+          return Promise.reject(new Error('端口号必须为整数'))
+        }
+        if (num < 1 || num > 65535) {
+          return Promise.reject(new Error('端口号范围为 1-65535'))
+        }
+        return Promise.resolve()
+      },
+      trigger: 'blur',
+    },
+  ],
   inspect_params: [
     {
       validator: (_, value) => {
+        const v = (value || '').trim()
+        if (!v) return Promise.resolve() // 空表示继承全局参数
         try {
-          JSON.parse(value)
-        } catch (error) {
-          return Promise.reject(new Error('请输入合法的JSON格式'))
+          const parsed = JSON.parse(v)
+          if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return Promise.reject(new Error('审核参数需为 JSON 对象，如 {}'))
+          }
+        } catch {
+          return Promise.reject(new Error('请输入合法的 JSON 格式，如 {"key":"value"}'))
         }
         return Promise.resolve()
       },
@@ -139,8 +174,17 @@ const rules = {
     },
   ],
   remark: [
-    { required: true, message: '请输入备注', trigger: 'blur' },
-    { min: 3, max: 256, message: '长度应在3~256个字符', trigger: 'blur' },
+    { required: true, message: '请输入备注', trigger: ['blur', 'change'] },
+    {
+      validator: (_, value) => {
+        const v = (value || '').trim()
+        if (v.length < 3 || v.length > 256) {
+          return Promise.reject(new Error('备注长度需在 3 到 256 个字符之间'))
+        }
+        return Promise.resolve()
+      },
+      trigger: 'blur',
+    },
   ],
 }
 

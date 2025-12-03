@@ -69,7 +69,7 @@
     :open="uiState.isModalOpen"
     v-model:modelValue="formState"
     :environments="uiData.environments"
-    :organizations="uiData.environments"
+    :organizations="uiData.organizations"
     :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
     @update:open="uiState.isModalOpen = $event"
     @submit="onSubmit"
@@ -273,7 +273,7 @@ const getEnvironments = async () => {
 // 获取组织
 const getOrganizations = async () => {
   const res = await getOrganizationsApi().catch(() => {})
-  uiData.environments = res?.data || []
+  uiData.organizations = res?.data || []
 }
 
 // 初始化
