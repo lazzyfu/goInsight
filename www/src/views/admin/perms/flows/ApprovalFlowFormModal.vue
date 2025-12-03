@@ -1,23 +1,21 @@
 <template>
-  <a-modal
-    :open="props.open"
-    :title="props.title"
-    width="65%"
-    @cancel="handleCancel"
-    :bodyStyle="{ padding: '24px' }"
-  >
+  <a-modal :open="props.open" :title="props.title" width="45%" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit"> 确定 </a-button>
     </template>
-    <a-form
-      ref="formRef"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 20 }"
-      :model="formData"
-      :rules="rules"
-    >
-      <a-form-item label="审批流名称" name="name" has-feedback>
+    <a-form ref="formRef" layout="vertical" :model="formData" style="margin-top: 24px">
+      <a-form-item
+        label="审批流名称"
+        name="name"
+        :rules="[
+          {
+            required: true,
+            message: '请输入审批流名称',
+          }
+        ]"
+        has-feedback
+      >
         <a-input v-model:value="formData.name" placeholder="请输入审批流名称" allow-clear />
       </a-form-item>
 
@@ -62,8 +60,16 @@
             <div class="stage-content">
               <a-row :gutter="16">
                 <a-col :span="8">
-                  <div class="form-field">
-                    <label class="field-label">审批类型</label>
+                  <a-form-item
+                    label="审批类型"
+                    :rules="[
+                      {
+                        required: true,
+                        message: '请选择审批类型',
+                      }
+                    ]"
+                    class="form-field"
+                  >
                     <a-select v-model:value="stage.type" style="width: 100%">
                       <a-select-option value="AND">
                         <span class="option-text">🤝 AND (会签)</span>
@@ -72,11 +78,19 @@
                         <span class="option-text">✅ OR (或签)</span>
                       </a-select-option>
                     </a-select>
-                  </div>
+                  </a-form-item>
                 </a-col>
                 <a-col :span="16">
-                  <div class="form-field">
-                    <label class="field-label">审批人</label>
+                  <a-form-item
+                    label="审批人"
+                    :rules="[
+                      {
+                        required: true,
+                        message: '请选择审批人',
+                      }
+                    ]"
+                    class="form-field"
+                  >
                     <a-select
                       v-model:value="stage.approvers"
                       mode="multiple"
@@ -88,7 +102,7 @@
                       option-label-prop="label"
                       :max-tag-count="3"
                     />
-                  </div>
+                  </a-form-item>
                 </a-col>
               </a-row>
             </div>
@@ -106,6 +120,7 @@
 <script setup>
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { ref, reactive } from 'vue'
+import { message } from 'ant-design-vue'
 
 // props
 const props = defineProps({
@@ -119,7 +134,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:open', 'submit'])
 
-// 表单数据
+// 表单数据 (保持你现有的 defineModel 用法)
 const formData = defineModel('formData', {
   type: Object,
   required: true,
@@ -133,22 +148,12 @@ const uiState = reactive({
   loading: false,
 })
 
-// 表单校验规则
-const rules = {
-  name: [
-    {
-      required: true,
-      message: '请输入审批流名称',
-      trigger: 'blur',
-    },
-  ],
-}
-
+// 过滤器：增加健壮性，防止 option 或 label 未定义时报错
 const filterUserOption = (input, option) => {
-  return (
-    option.label.toLowerCase().includes(input.toLowerCase()) ||
-    option.value.toLowerCase().includes(input.toLowerCase())
-  )
+  if (!option) return false
+  const label = (option.label || '').toString()
+  const value = (option.value || '').toString()
+  return label.toLowerCase().includes(input.toLowerCase()) || value.toLowerCase().includes(input.toLowerCase())
 }
 
 const addStage = () => {
@@ -173,20 +178,22 @@ const removeStage = (index) => {
 // 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  formRef.value?.resetFields()
+  // 如果表单实例存在则重置（保持兼容）
+  formRef.value?.resetFields?.()
 }
 
+// 自定义校验（对动态数组字段使用自定义校验更可控）
 const validateDefinition = async () => {
   const definition = formData.value.definition
   if (!definition || definition.length === 0) {
-    throw new Error('请至少配置一个审批阶段。')
+    return Promise.reject('请至少配置一个审批阶段。')
   }
   for (const [index, stage] of definition.entries()) {
     if (!stage.stage_name || stage.stage_name.trim() === '') {
-      throw new Error(`阶段 ${index + 1}：阶段名称不能为空。`)
+      return Promise.reject(`阶段 ${index + 1}：阶段名称不能为空。`)
     }
     if (!stage.approvers || stage.approvers.length === 0) {
-      throw new Error(`阶段 ${index + 1}：至少需要指定一个审批人。`)
+      return Promise.reject(`阶段 ${index + 1}：至少需要指定一个审批人。`)
     }
   }
   return true
@@ -199,7 +206,7 @@ const onSubmit = async () => {
     uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
-    console.error(err)
+    message.error(err)
   } finally {
     uiState.loading = false
   }

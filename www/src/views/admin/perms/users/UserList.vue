@@ -96,7 +96,7 @@
   <!-- 重置密码 -->
   <PasswordFormModal
     :open="uiState.passwordModalOpen"
-    title="重置密码"
+    :title="uiData.passwordFormTitle"
     @update:open="uiState.passwordModalOpen = $event"
     @submit="handleResetPasswordSubmit"
   />
@@ -148,6 +148,7 @@ const uiData = reactive({
   searchOrganizationKey: '',
   roles: [],
   organizations: [],
+  passwordFormTitle: '',
   tableData: [],
   tableColumns: [
     {
@@ -315,6 +316,7 @@ const onSubmit = async (data) => {
 // 重置密码
 const handleResetPassword = (record) => {
   uid.value = record.uid
+  uiData.passwordFormTitle = `重置用户${record.username}密码`
   uiState.passwordModalOpen = true
 }
 

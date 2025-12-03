@@ -11,13 +11,14 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="新密码" has-feedback name="password">
-        <a-input v-model:value="formState.password" autocomplete="off" type="password"> </a-input>
+        <a-input-password v-model:value="formState.password" autocomplete="off"> </a-input-password>
       </a-form-item>
       <a-form-item label="确认密码" has-feedback name="verify_password">
-        <a-input v-model:value="formState.verify_password" autocomplete="off" type="password">
-        </a-input>
+        <a-input-password v-model:value="formState.verify_password" autocomplete="off">
+        </a-input-password>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -50,18 +51,26 @@ const uiState = reactive({
 
 // 有效性验证
 const validateNewPass = async (_rule, value) => {
-  if (!value) return Promise.reject('请输入密码')
-  if (!regPassword.test(value))
-    return Promise.reject('密码至少7个字符,必须包含大写字母、小写字母、数字和特殊字符')
-  if (formState.verify_password) formRef.value.validateFields('verify_password')
+  if (!value) {
+    return Promise.reject('请输入新密码')
+  }
+  if (!regPassword.test(value)) {
+    return Promise.reject('密码格式不正确：至少7个字符，必须包含大写字母、小写字母、数字和特殊字符')
+  }
+  // 如果确认密码已填写，触发确认密码的验证
+  if (formState.verify_password) {
+    formRef.value.validateFields('verify_password')
+  }
   return Promise.resolve()
 }
 
 const validateVerifyPass = async (_rule, value) => {
-  if (!value) return Promise.reject('请输入密码')
-  if (!regPassword.test(value))
-    return Promise.reject('密码至少7个字符,必须包含大写字母、小写字母、数字和特殊字符')
-  if (value !== formState.password) return Promise.reject('两次输入的密码不一致')
+  if (!value) {
+    return Promise.reject('请再次输入密码')
+  }
+  if (value !== formState.password) {
+    return Promise.reject('两次输入的密码不一致，请重新输入')
+  }
   return Promise.resolve()
 }
 

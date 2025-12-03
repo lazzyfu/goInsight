@@ -11,6 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="用户名" name="username" has-feedback>
         <a-input v-model:value="formData.username" placeholder="请输入用户名" allow-clear />
@@ -19,7 +20,7 @@
         <a-input v-model:value="formData.nick_name" placeholder="请输入昵称" allow-clear />
       </a-form-item>
       <a-form-item v-if="isCreate" label="密码" name="password" has-feedback>
-        <a-input-password v-model:value="formData.password" type="password" placeholder="请输入密码" />
+        <a-input-password v-model:value="formData.password" type="password" placeholder="请输入密码" autocomplete="off" />
       </a-form-item>
       <a-form-item label="邮箱" name="email" has-feedback>
         <a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />

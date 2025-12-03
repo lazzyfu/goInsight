@@ -11,6 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
+      style="margin-top: 24px"
     >
       <a-form-item label="角色名" name="name" has-feedback>
         <a-input v-model:value="formData.name" placeholder="请输入角色名" allow-clear />

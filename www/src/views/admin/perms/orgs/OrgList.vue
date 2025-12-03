@@ -25,8 +25,7 @@
           <a-input-search
             v-model:value="uiData.searchValue"
             placeholder="搜索组织"
-            style="width: 160px"
-            size="small"
+            style="width: 180px"
             allow-clear
           />
         </div>
@@ -207,15 +206,12 @@ const handleExpand = (keys) => {
   uiData.autoExpandParent = false
 }
 
-const handleTreeSelect = (keys, { node, selected }) => {
-  if (selected) {
-    uiData.selectedKeys = keys
-    uiData.selectedNodeKey = keys[0]
-    uiData.selectedNode = node.title
-  } else {
-    uiData.selectedNodeKey = ''
-    uiData.selectedNode = ''
-  }
+const handleTreeSelect = (keys, { node }) => {
+  // 始终保持节点选中状态，不允许取消选中
+  const nodeKey = keys.length > 0 ? keys[0] : node.key
+  uiData.selectedKeys = [nodeKey]
+  uiData.selectedNodeKey = nodeKey
+  uiData.selectedNode = node.title
 }
 
 const addRootNode = () => {
@@ -261,11 +257,11 @@ onMounted(async () => {
 .org-management {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-  padding: 24px;
+  padding: 12px;
 }
 
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .header-content {
@@ -273,7 +269,7 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   background: #fff;
-  padding: 24px 32px;
+  padding: 12px 32px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }

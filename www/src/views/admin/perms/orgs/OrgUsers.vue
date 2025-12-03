@@ -9,7 +9,6 @@
         v-model:value="uiData.searchValue"
         placeholder="搜索用户..."
         style="width: 350px"
-        size="small"
         @search="handleSearch"
       />
     </div>
