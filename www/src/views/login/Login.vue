@@ -131,7 +131,6 @@ const onSubmit = async () => {
     } else if (res?.code === '4002') {
       // 需要输入 OTP
       uiState.showOTP = true
-      message.info(res.message || '请输入 OTP 验证码')
     }
   } finally {
     uiState.loading = false

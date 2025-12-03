@@ -121,7 +121,7 @@
         </div>
       </a-col>
     </a-row>
-    <inspect-table ref="inspectResultTableRef" />
+    <order-inspect ref="inspectResultTableRef" />
   </a-card>
 </template>
 
@@ -140,7 +140,7 @@ import { message } from 'ant-design-vue'
 import { debounce } from 'lodash-es'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import InspectTable from './InspectTable.vue'
+import OrderInspect from './OrderInspect.vue'
 
 const router = useRouter()
 const codemirrorRef = ref(null)
@@ -214,8 +214,6 @@ const onSubmit = debounce(async () => {
     message.warning('SQL内容不能为空')
     return
   }
-
-  console.log('values', formState)
 
   const res = await createOrderApi(formState).catch((err) => {})
   if (res) {

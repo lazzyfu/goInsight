@@ -9,23 +9,23 @@ const route = {
       name: 'orders.create',
       path: '/orders/create',
       icon: 'FormOutlined',
-      component: () => import('./create/index.vue'),
+      component: () => import('./create/OrderCreate.vue'),
       meta: { title: '新建工单', keepAlive: true },
     },
     {
       name: 'orders.list',
       path: '/orders',
       icon: 'UnorderedListOutlined',
-      component: () => import('./list/index.vue'),
+      component: () => import('./list/OrderList.vue'),
       meta: { title: '工单列表', keepAlive: true },
     },
     {
       name: 'orders.detail',
       path: '/orders/:order_id',
-      component: () => import('./detail/index.vue'),
+      component: () => import('./detail/OrderDetail.vue'),
       meta: { title: '工单详情', keepAlive: true, hidden: true },
-    }
-  ]
+    },
+  ],
 }
 
 export default route
