@@ -21,7 +21,7 @@ export const arkRouter = [
   {
     name: 'Login',
     path: '/login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('@/views/login/Login.vue'),
     meta: {
       title: '用户登录',
       module: "用户登录"

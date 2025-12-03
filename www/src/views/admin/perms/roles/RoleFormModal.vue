@@ -48,18 +48,18 @@ const rules = {
   name: [
     {
       required: true,
-      message: '不能为空，请输入角色名',
+      message: '角色名不能为空',
       trigger: 'blur',
     },
     {
       min: 2,
       max: 32,
-      message: `长度应在2~32个字符`,
+      message: '角色名长度应在2到32个字符之间',
       trigger: 'blur',
     },
     {
       pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_]+$/,
-      message: '只能包含字母、数字、中文或下划线',
+      message: '角色名只能包含字母、数字、中文或下划线',
       trigger: 'blur',
     },
   ],

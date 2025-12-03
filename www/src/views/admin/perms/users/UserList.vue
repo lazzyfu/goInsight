@@ -220,7 +220,7 @@ const defaultUserForm = {
   nick_name: '',
   email: '',
   mobile: '',
-  role_id: '',
+  role_id: null,
   is_active: true,
   is_two_fa: true,
   is_superuser: false,

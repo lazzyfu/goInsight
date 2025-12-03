@@ -8,17 +8,17 @@
           </a-col>
           <a-col :flex="4">
             <menu-unfold-outlined v-if="data.collapsed" @click="clickScope" />
-            <menu-fold-outlined v-else @click="() => (data.collapsed = !data.collapsed)" />
+            <menu-fold-outlined v-else @click="toggleCollapse" />
           </a-col>
           <a-col :flex="200">
             <a-breadcrumb style="margin-top: 22px">
-              <a-breadcrumb-item v-for="(item, index) in $route.matched" :key="item.name">
+              <a-breadcrumb-item v-for="(item, index) in route.matched" :key="item.name">
                 <router-link
-                  v-if="item.meta.title && index !== $route.matched.length - 1"
+                  v-if="item.meta.title && index !== route.matched.length - 1"
                   :to="{ path: item.path === '' ? '/' : item.path }"
                   >{{ item.meta.title }}
                 </router-link>
-                <a-breadcrumb-item v-else>{{ item.meta.title }}</a-breadcrumb-item>
+                <span v-else>{{ item.meta.title }}</span>
               </a-breadcrumb-item>
             </a-breadcrumb>
           </a-col>
@@ -45,16 +45,27 @@
         </a-row>
       </a-layout-header>
       <a-layout
-        :style="{ background: '#fff', padding: '14px', marginTop: '60px', minHeight: '360px' }"
+        :style="{
+          background: '#fff',
+          padding: '14px',
+          marginTop: '60px',
+          marginLeft: data.collapsed ? '80px' : '280px',
+          minHeight: '360px',
+          transition: 'margin-left 0.2s'
+        }"
       >
-        <div class="layout-sider-bar" v-show="!data.collapsed"></div>
-        <a-layout-sider class="layout-sider" :collapsed="data.collapsed">
+        <a-layout-sider
+          class="layout-sider"
+          :collapsed="data.collapsed"
+          :collapsed-width="80"
+          :width="280"
+        >
           <div style="padding-top: 20px"></div>
           <a-menu
             theme="light"
             mode="inline"
             :openKeys="data.openKeys"
-            :selectedKeys="[$route.path]"
+            :selectedKeys="[route.path]"
             :items="data.menus"
             @select="select"
             @openChange="openChange"
@@ -87,8 +98,11 @@ import {
   UserOutlined,
 } from '@ant-design/icons-vue'
 import { defineAsyncComponent, h, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 import UserPassword from '@/views/account/settings/UserPassword.vue'
+
+const route = useRoute()
 
 // 动态加载图标组件
 const renderIcon = (iconName) => {
@@ -117,7 +131,6 @@ const data = reactive({
 const transformRoutesToMenuItems = (routes) => {
   return (
     routes
-      // 过滤 hidden 路由
       .filter((route) => !route.meta?.hidden)
       .map((route) => ({
         key: route.path,
@@ -144,7 +157,6 @@ const initializeLayoutData = async () => {
     }
   })
 
-  // 获取根下的路由
   const routes = asyncRouterStore.addRouters.find((item) => item.path === '/')
   const rootRoutes = (routes && routes.children) || []
 
@@ -168,8 +180,12 @@ const openChange = (openKeys) => {
 
 const collapsed = ref(false)
 const clickScope = () => {
-  data.collapsed = data.collapsed = !data.collapsed
+  data.collapsed = !data.collapsed
   collapsed.value = data.collapsed
+}
+
+const toggleCollapse = () => {
+  data.collapsed = !data.collapsed
 }
 
 const userCenter = () => {
@@ -192,29 +208,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.layout {
-  margin-left: 80px;
-}
-
 .layout-sider {
   overflow: auto;
-  height: calc(100vh);
+  height: calc(100vh - 60px);
   position: fixed;
-  top: 0;
+  top: 60px;
   left: 0;
   background: #fff;
   z-index: 100;
-  margin-top: 60px;
   border-right: 1px solid rgb(235, 237, 240);
-}
-
-.layout-sider-bar {
-  width: 100px;
-  flex: 0 0 120px;
-  max-width: 120px;
-  min-width: 120px;
   transition: all 0.2s;
-  overflow: hidden;
 }
 
 .header {

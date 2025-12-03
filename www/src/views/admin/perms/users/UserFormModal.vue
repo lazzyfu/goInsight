@@ -19,7 +19,7 @@
         <a-input v-model:value="formData.nick_name" placeholder="请输入昵称" allow-clear />
       </a-form-item>
       <a-form-item v-if="isCreate" label="密码" name="password" has-feedback>
-        <a-input v-model:value="formData.password" type="password" placeholder="请输入密码" />
+        <a-input-password v-model:value="formData.password" type="password" placeholder="请输入密码" />
       </a-form-item>
       <a-form-item label="邮箱" name="email" has-feedback>
         <a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
@@ -83,19 +83,33 @@ const uiState = reactive({
 
 // 表单校验规则
 const rules = {
-  username: [{ required: true, min: 2, max: 32, message: '请输入用户名', trigger: 'blur' }],
-  nick_name: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-  email: [{ required: true, pattern: regEmail, message: '请输入合法邮箱', trigger: 'blur' }],
-  mobile: [{ required: true, pattern: regPhone, message: '请输入合法手机号', trigger: 'blur' }],
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 32, message: '用户名长度为3-32个字符', trigger: 'blur' },
+    { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名仅支持字母、数字和下划线', trigger: 'blur' }
+  ],
+  nick_name: [
+    { required: true, message: '请输入昵称', trigger: 'blur' },
+    { min: 2, max: 32, message: '昵称长度为2-32个字符', trigger: 'blur' }
+  ],
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { pattern: regEmail, message: '请输入合法的邮箱地址', trigger: 'blur' }
+  ],
+  mobile: [
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { pattern: regPhone, message: '请输入合法的手机号码', trigger: 'blur' }
+  ],
   password: [
-    { required: true },
+    { required: true, message: '请输入密码', trigger: 'blur' },
     {
       validator: (_, value) => {
         // 编辑用户不必填密码
         if (!isCreate.value && !value) return Promise.resolve()
         if (!value) return Promise.reject(new Error('请输入密码'))
+        if (value.length < 8) return Promise.reject(new Error('密码长度至少8个字符'))
         if (!regPassword.test(value))
-          return Promise.reject(new Error('密码至少7个字符，包含大小写字母、数字和特殊字符'))
+          return Promise.reject(new Error('密码必须包含大小写字母、数字和特殊字符'))
         return Promise.resolve()
       },
       trigger: 'blur',
