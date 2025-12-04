@@ -1,13 +1,13 @@
 <template>
   <a-tabs
-    v-model="data.activeKey"
+    v-model="uiData.activeKey"
     type="editable-card"
     size="small"
     @edit="handleTabEdit"
     @change="handleTabChange"
   >
     <a-tab-pane
-      v-for="pane in data.panes"
+      v-for="pane in uiData.panes"
       :key="pane.key"
       :tab="pane.title"
       :closable="pane.closable"
@@ -44,7 +44,7 @@
     </a-button>
     <span>
       字符集
-      <a-select style="width: 120px" v-model:value="data.characterSet" @change="saveTabToCache">
+      <a-select style="width: 120px" v-model:value="uiData.characterSet" @change="saveTabToCache">
         <a-select-option v-for="item in characterSets" :key="item.key" :value="item.value">
           {{ item.key }}
         </a-select-option>
@@ -52,21 +52,20 @@
     </span>
   </a-space>
   <div style="margin-top: 6px">
-    <a-spin :spinning="data.tableLoading" tip="Loading...">
+    <a-spin :spinning="uiState.tableLoading" tip="Loading...">
       <CodeMirror ref="codemirrorRef" />
       <a-card class="box-card">
-        <span v-html="data.queryResultMessage"></span>
+        <span v-html="uiData.queryResultMessage"></span>
       </a-card>
     </a-spin>
   </div>
   <!-- 数据字典 -->
-  <DbDict ref="dbDictRef" :open="isDbDictOpen" @update:open="isDbDictOpen = false" />
+  <ConsoleDbDict ref="dbDictRef" :open="uiState.isDbDictOpen" @update:open="uiState.isDbDictOpen = false" />
   <!-- 新增收藏SQL -->
-  <FavoritesAdd
-    :open="isFavoritesOpen"
-    :formState="favoritesFormState"
-    :btnType="favoritesBtnType"
-    @update:open="isFavoritesOpen = $event"
+  <DasFavoriteFormModal
+    :open="uiState.isFavoritesOpen"
+    v-model:modelValue="favoritesFormState"
+    @update:open="uiState.isFavoritesOpen = $event"
     @submit="handleFavoritesSubmit"
   />
 </template>
@@ -79,40 +78,49 @@ import {
   GetDBDictApi,
 } from '@/api/das'
 import CodeMirror from '@/components/edit/Codemirror.vue'
-import FavoritesAdd from '@/views/das/favorite/modal.vue'
+import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
 import { BookOutlined, CodeOutlined, PlayCircleOutlined, StarOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
-import DbDict from './dbdict.vue'
+import ConsoleDbDict from './ConsoleDbDict.vue'
 
+// 字符集选项
 const characterSets = [
   { key: 'utf8', value: 'utf8' },
   { key: 'utf8mb4', value: 'utf8mb4' },
   { key: 'latin1', value: 'latin1' },
 ]
-const isDbDictOpen = ref(false)
-const dbDictRef = ref(null)
 
-const isFavoritesOpen = ref(false)
-const favoritesBtnType = ref('收藏')
+// 状态
+const uiState = reactive({
+  isDbDictOpen: false,
+  isFavoritesOpen: false,
+  tableLoading: false,
+})
+
+// 引用
+const dbDictRef = ref(null)
+const codemirrorRef = ref(null)
+
 const favoritesFormState = ref({
   sqltext: '',
 })
 
+// 获取共享数据
 const dasInstanceData = inject('dasInstanceData')
-const codemirrorRef = ref(null)
+
 const emit = defineEmits(['renderResultTable'])
-const data = reactive({
+const uiData = reactive({
   panes: [],
   activeKey: 1,
   characterSet: 'utf8',
-  tableLoading: false,
   schema: '',
   instance_id: '',
   db_type: '',
   queryResultMessage: undefined,
 })
 
+// tab编辑
 const handleTabEdit = (targetKey, action) => {
   if (action === 'add') {
     addTab()
@@ -121,23 +129,25 @@ const handleTabEdit = (targetKey, action) => {
   }
 }
 
+// 新增tab
 const addTab = () => {
-  const tabKey = data.panes.length + 1
-  data.panes.push({
+  const tabKey = uiData.panes.length + 1
+  uiData.panes.push({
     title: `New Console ${tabKey}`,
     key: tabKey,
   })
 }
 
+// 移除tab
 const removeTab = (targetKey) => {
-  let activeKey = data.activeKey
+  let activeKey = uiData.activeKey
   let lastIndex
-  data.panes.forEach((pane, i) => {
+  uiData.panes.forEach((pane, i) => {
     if (pane.key === targetKey) {
       lastIndex = i - 1
     }
   })
-  const newPanes = data.panes.filter((pane) => pane.key !== targetKey)
+  const newPanes = uiData.panes.filter((pane) => pane.key !== targetKey)
   if (newPanes.length && activeKey === targetKey) {
     if (lastIndex >= 0) {
       activeKey = newPanes[lastIndex].key
@@ -145,61 +155,63 @@ const removeTab = (targetKey) => {
       activeKey = newPanes[0].key
     }
   }
-  data.panes = newPanes
-  data.activeKey = activeKey
+  uiData.panes = newPanes
+  uiData.activeKey = activeKey
   localStorage.removeItem('das#tab#' + targetKey)
-  localStorage.setItem('das#panes', JSON.stringify(data.panes))
+  localStorage.setItem('das#panes', JSON.stringify(uiData.panes))
 }
 
+// 切换tab
 const handleTabChange = (value) => {
   saveTabToCache()
-  data.activeKey = value
+  uiData.activeKey = value
   loadTabFromCache()
 }
 
+// 加载tab
 const loadTab = () => {
   const panes = JSON.parse(localStorage.getItem('das#panes'))
   if (panes?.length > 0) {
-    data.panes = panes
+    uiData.panes = panes
   } else {
-    data.panes = [{ key: 1, title: 'Console 1', closable: false }]
+    uiData.panes = [{ key: 1, title: 'Console 1', closable: false }]
   }
 }
 
 // 保存tab cache
 const saveTabToCache = () => {
   var tabData = {
-    characterSet: data.characterSet,
+    characterSet: uiData.characterSet,
     userInput: codemirrorRef.value.getContent(),
   }
-  localStorage.setItem('das#tab#' + data.activeKey, JSON.stringify(tabData))
+  localStorage.setItem('das#tab#' + uiData.activeKey, JSON.stringify(tabData))
 }
 
 // 加载tab cache
 const loadTabFromCache = () => {
-  var tabData = JSON.parse(localStorage.getItem('das#tab#' + data.activeKey))
+  var tabData = JSON.parse(localStorage.getItem('das#tab#' + uiData.activeKey))
   if (tabData != null) {
     codemirrorRef.value.setContent(tabData.userInput)
-    data.characterSet = tabData.characterSet
+    uiData.characterSet = tabData.characterSet
   } else {
-    data.characterSet = 'utf8'
+    uiData.characterSet = 'utf8'
     codemirrorRef.value.setContent('')
   }
 }
 
 // 生成数据字典
 const generatorDataDictionary = () => {
-  if (!data.schema) {
+  if (!uiData.schema) {
     message.warning('请先选择左侧的DB库')
     return
   }
   const payLoad = {
-    instance_id: data.instance_id,
-    schema: data.schema,
-    db_type: data.db_type,
+    instance_id: uiData.instance_id,
+    schema: uiData.schema,
+    db_type: uiData.db_type,
   }
   GetDBDictApi(payLoad).then((res) => {
-    isDbDictOpen.value = true
+    uiState.isDbDictOpen = true
     dbDictRef.value.render(res.data)
   })
 }
@@ -213,7 +225,7 @@ const addToFavorites = () => {
     message.warning('请鼠标选中要收藏的SQL')
     return
   }
-  isFavoritesOpen.value = true
+  uiState.isFavoritesOpen = true
   favoritesFormState.value.sqltext = sqltext
 }
 
@@ -225,7 +237,7 @@ const handleFavoritesSubmit = (data) => {
     } else {
       message.error(res.message)
     }
-    isFavoritesOpen.value = false
+    uiState.isFavoritesOpen = false
   })
 }
 
@@ -245,7 +257,7 @@ const executeSqlQuery = async () => {
     }
   */
   saveTabToCache()
-  if (!data.schema) {
+  if (!uiData.schema) {
     message.warning('请先选择左侧的DB库')
     return
   }
@@ -256,23 +268,23 @@ const executeSqlQuery = async () => {
     message.warning('请鼠标选中要执行的SQL')
     return
   }
-  const dbType = data.db_type?.toLowerCase()
+  const dbType = uiData.db_type?.toLowerCase()
   const payLoad = {
-    instance_id: data.instance_id,
-    schema: data.schema,
-    db_type: data.db_type,
+    instance_id: uiData.instance_id,
+    schema: uiData.schema,
+    db_type: uiData.db_type,
     sqltext: sqltext,
   }
   if (dbType === 'mysql' || dbType === 'tidb') {
     payLoad.params = {
-      character_set_client: data.characterSet,
-      character_set_connection: data.characterSet,
-      character_set_results: data.characterSet,
+      character_set_client: uiData.characterSet,
+      character_set_connection: uiData.characterSet,
+      character_set_results: uiData.characterSet,
     }
   }
 
   let res = null
-  data.tableLoading = true
+  uiState.tableLoading = true
   const resMsgs = []
   try {
     if (dbType === 'mysql' || dbType === 'tidb') {
@@ -280,7 +292,7 @@ const executeSqlQuery = async () => {
     } else if (dbType === 'clickhouse') {
       res = await ExecuteClickHouseQueryApi(payLoad).catch((err) => {})
     } else {
-      message.error(`不支持的数据库类型: ${data.db_type}`)
+      message.error(`不支持的数据库类型: ${uiData.db_type}`)
       return
     }
     if (res) {
@@ -292,8 +304,8 @@ const executeSqlQuery = async () => {
       emit('renderResultTable', res.data)
     }
   } finally {
-    data.tableLoading = false
-    data.queryResultMessage = resMsgs.join('<br>')
+    uiState.tableLoading = false
+    uiData.queryResultMessage = resMsgs.join('<br>')
   }
 }
 
@@ -305,9 +317,9 @@ const formatSqlContent = () => {
 
 // 监控用户切库
 watch(dasInstanceData, (newVal) => {
-  data.instance_id = newVal.value.instance_id
-  data.schema = newVal.value.schema
-  data.db_type = newVal.value.db_type
+  uiData.instance_id = newVal.value.instance_id
+  uiData.schema = newVal.value.schema
+  uiData.db_type = newVal.value.db_type
   // 设置自动补全
   codemirrorRef.value.setCompletion(newVal.value.tables)
 })

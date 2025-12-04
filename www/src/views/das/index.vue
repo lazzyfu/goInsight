@@ -1,31 +1,28 @@
 <template>
-  <a-tabs v-model:activeKey="activeKey" >
+  <a-tabs v-model:activeKey="activeKey">
     <a-tab-pane key="1" tab="编辑器">
-      <ConsoleEdit />
+      <ConsoleIndex />
     </a-tab-pane>
     <a-tab-pane key="2" tab="收藏SQL">
-      <FavoriteSQL />
+      <DasFavorite />
     </a-tab-pane>
     <a-tab-pane key="3" tab="历史SQL">
-      <HistorySQL />
+      <DasHistory />
     </a-tab-pane>
   </a-tabs>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import ConsoleEdit from './console/index.vue';
-import FavoriteSQL from './favorite/index.vue';
-import HistorySQL from './history/index.vue';
+import { ref } from 'vue'
+import ConsoleIndex from './console/ConsoleIndex.vue'
+import DasFavorite from './favorite/DasFavorite.vue'
+import DasHistory from './history/DasHistory.vue'
 
-const activeKey = ref('1');
-
-
+const activeKey = ref('1')
 </script>
 
 <style scoped>
 body .anticon {
   transform: translate(-0.5px, -3px);
 }
-
 </style>

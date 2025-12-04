@@ -125,7 +125,9 @@ const changeEnv = async (value) => {
     is_page: false,
   }
   const res = await getInstancesListApi(payload).catch(() => {})
-  uiData.instances = res.data || []
+  if (res) {
+    uiData.instances = res.data || []
+  }
 }
 
 // 更改实例
