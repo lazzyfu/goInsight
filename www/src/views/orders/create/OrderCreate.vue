@@ -1,5 +1,5 @@
 <template>
-  <a-card size="small">
+  <a-card title="提交工单">
     <a-row :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
       <a-col class="gutter-row" :span="8">
         <a-form
@@ -252,7 +252,7 @@ const checkSyntax = debounce(async () => {
     content: sqltext,
   }
 
-  const res = await inspectOrderSyntaxApi(data).catch((err) => {})
+  const res = await inspectOrderSyntaxApi(data).catch(() => {})
   if (res) {
     inspectResultTableRef.value.render(res.data)
   }

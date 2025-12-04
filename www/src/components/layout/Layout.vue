@@ -49,7 +49,7 @@
           background: '#fff',
           padding: '14px',
           marginTop: '60px',
-          marginLeft: data.collapsed ? '80px' : '300px',
+          marginLeft: data.collapsed ? '80px' : '280px',
           minHeight: '360px',
           transition: 'margin-left 0.2s'
         }"
@@ -58,7 +58,7 @@
           class="layout-sider"
           :collapsed="data.collapsed"
           :collapsed-width="80"
-          :width="300"
+          :width="280"
         >
           <div style="padding-top: 20px"></div>
           <a-menu
