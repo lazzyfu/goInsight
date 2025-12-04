@@ -196,6 +196,5 @@ const handleDelete = async (record) => {
 const getUsers = async () => {
   const res = await getUsersApi().catch(() => {})
   uiData.users = res.data || []
-  console.log('res.data: ', res.data)
 }
 </script>

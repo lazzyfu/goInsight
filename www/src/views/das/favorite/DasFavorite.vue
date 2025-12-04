@@ -17,7 +17,7 @@
         :pagination="pagination"
         :loading="uiState.loading"
         @change="handleTableChange"
-        :scroll="{ x: 1500 }"
+        :scroll="{ x: 1100 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'sqltext'">

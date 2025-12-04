@@ -54,13 +54,17 @@
   <div style="margin-top: 6px">
     <a-spin :spinning="uiState.tableLoading" tip="Loading...">
       <CodeMirror ref="codemirrorRef" />
-      <a-card class="box-card">
-        <span v-html="uiData.queryResultMessage"></span>
+      <a-card class="box-card" style="margin-top: 8px; padding: 8px">
+        <div v-html="uiData.queryResultMessage" style="white-space: pre-wrap"></div>
       </a-card>
     </a-spin>
   </div>
   <!-- 数据字典 -->
-  <ConsoleDbDict ref="dbDictRef" :open="uiState.isDbDictOpen" @update:open="uiState.isDbDictOpen = false" />
+  <ConsoleDbDict
+    ref="dbDictRef"
+    :open="uiState.isDbDictOpen"
+    @update:open="uiState.isDbDictOpen = false"
+  />
   <!-- 新增收藏SQL -->
   <DasFavoriteFormModal
     :open="uiState.isFavoritesOpen"
