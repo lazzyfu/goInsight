@@ -25,7 +25,7 @@ type AdminGetSchemasGrantService struct {
 	C *gin.Context
 }
 
-func (s *AdminGetSchemasGrantService) Run() (responseData interface{}, total int64, err error) {
+func (s *AdminGetSchemasGrantService) Run() (responseData any, total int64, err error) {
 	type result struct {
 		models.InsightDASUserSchemaPermissions
 		Hostname    string `json:"hostname"`
@@ -57,7 +57,7 @@ type AdminGetInstancesListService struct {
 	C *gin.Context
 }
 
-func (s *AdminGetInstancesListService) Run() (responseData interface{}, total int64, err error) {
+func (s *AdminGetInstancesListService) Run() (responseData any, total int64, err error) {
 	var configs []commonModels.InsightDBConfig
 	tx := global.App.DB.Table("insight_db_config").Where("environment=? and db_type=? and use_type='查询'", s.ID, s.DbType)
 	total = pagination.Pager(&s.PaginationQ, tx, &configs)
@@ -69,7 +69,7 @@ type AdminGetSchemasListService struct {
 	C *gin.Context
 }
 
-func (s *AdminGetSchemasListService) Run() (responseData interface{}, total int64, err error) {
+func (s *AdminGetSchemasListService) Run() (responseData any, total int64, err error) {
 	var roles []commonModels.InsightDBSchemas
 	tx := global.App.DB.Table("insight_db_schemas").Where("instance_id=?", s.InstanceID)
 	total = pagination.Pager(&s.PaginationQ, tx, &roles)
@@ -82,7 +82,7 @@ type AdminGetTablesListService struct {
 }
 
 // 获取MySQL/TiDB的表信息
-func (g *AdminGetTablesListService) getMySQLMetaData(r *ConfigResult) (data *[]map[string]interface{}, err error) {
+func (g *AdminGetTablesListService) getMySQLMetaData(r *InstanceCfg) (data *[]map[string]any, err error) {
 	var query string = fmt.Sprintf(`
 		select 
 			table_name as table_name
@@ -91,9 +91,10 @@ func (g *AdminGetTablesListService) getMySQLMetaData(r *ConfigResult) (data *[]m
 		where 
 			table_schema='%s' and table_name not regexp '^_(.*)[_ghc|_gho|_del]$'
 		`, r.Schema)
+
 	db := dao.DB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
+		User:     r.User,
+		Password: r.PlainPassword,
 		Host:     r.Hostname,
 		Port:     r.Port,
 		Params:   map[string]string{"group_concat_max_len": "4194304"},
@@ -108,7 +109,7 @@ func (g *AdminGetTablesListService) getMySQLMetaData(r *ConfigResult) (data *[]m
 }
 
 // 获取ClickHouse的表信息
-func (g *AdminGetTablesListService) getClickHouseMetaData(r *ConfigResult) (data *[]map[string]interface{}, err error) {
+func (g *AdminGetTablesListService) getClickHouseMetaData(r *InstanceCfg) (data *[]map[string]any, err error) {
 	var query string = fmt.Sprintf(`
 	select 
 		name as table_name
@@ -117,9 +118,10 @@ func (g *AdminGetTablesListService) getClickHouseMetaData(r *ConfigResult) (data
 	where 
 		(database = '%s')
 	`, r.Schema)
+
 	db := dao.ClickhouseDB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
+		User:     r.User,
+		Password: r.PlainPassword,
 		Host:     r.Hostname,
 		Port:     r.Port,
 		Ctx:      g.C.Request.Context(),
@@ -132,15 +134,21 @@ func (g *AdminGetTablesListService) getClickHouseMetaData(r *ConfigResult) (data
 	return data, nil
 }
 
-func (s *AdminGetTablesListService) Run() (responseData *[]map[string]interface{}, err error) {
-	var config ConfigResult
-	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&config)
-	config.Schema = s.Schema
-	if strings.EqualFold(config.DbType, "mysql") || strings.EqualFold(config.DbType, "tidb") {
-		return s.getMySQLMetaData(&config)
+func (s *AdminGetTablesListService) Run() (responseData *[]map[string]any, err error) {
+	var cfg InstanceCfg
+	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
+
+	plainPassword, err := utils.Decrypt(cfg.Password)
+	if err != nil {
+		return nil, err
 	}
-	if strings.EqualFold(config.DbType, "clickhouse") {
-		return s.getClickHouseMetaData(&config)
+	cfg.PlainPassword = plainPassword
+	cfg.Schema = s.Schema
+	if strings.EqualFold(cfg.DbType, "mysql") || strings.EqualFold(cfg.DbType, "tidb") {
+		return s.getMySQLMetaData(&cfg)
+	}
+	if strings.EqualFold(cfg.DbType, "clickhouse") {
+		return s.getClickHouseMetaData(&cfg)
 	}
 
 	return responseData, nil
@@ -200,7 +208,7 @@ type AdminGetTablesGrantService struct {
 	C *gin.Context
 }
 
-func (s *AdminGetTablesGrantService) Run() (responseData interface{}, total int64, err error) {
+func (s *AdminGetTablesGrantService) Run() (responseData any, total int64, err error) {
 	var tables []models.InsightDASUserTablePermissions
 	tx := global.App.DB.Model(&models.InsightDASUserTablePermissions{}).
 		Where("username=? and instance_id=? and `schema`=?", s.Username, s.InstanceID, s.Schema).

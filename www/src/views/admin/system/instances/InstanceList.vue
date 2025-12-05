@@ -167,6 +167,8 @@ const defaultForm = {
   use_type: '',
   hostname: '',
   port: 3306,
+  user: '',
+  password: '',
   inspect_params: '{}',
   remark: '',
 }

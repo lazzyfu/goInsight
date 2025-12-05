@@ -7,6 +7,7 @@ import (
 	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/lazzyfu/goinsight/pkg/pagination"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/common/forms"
 	"github.com/lazzyfu/goinsight/internal/common/models"
@@ -30,7 +31,7 @@ func (s *AdminGetDBConfigServices) Run() (responseData interface{}, total int64,
 		OrganizationKey  string `json:"organization_key"`
 	}
 	var dbs []DBConfig
-	tx := global.App.DB.Select(`a.id,a.instance_id,a.hostname,a.port,a.use_type,a.db_type,a.inspect_params,a.organization_path,b.id as environment, 
+	tx := global.App.DB.Select(`a.id,a.instance_id,a.hostname,a.port,a.user,a.password,a.use_type,a.db_type,a.inspect_params,a.organization_path,b.id as environment, 
 							b.name as environment_name, a.remark, ifnull(
 								concat(
 									(
@@ -92,10 +93,17 @@ func (s *AdminCreateDBConfigService) Run() error {
 	if err != nil {
 		return err
 	}
+	// 加密密码
+	encryptPassword, err := utils.Encrypt(s.Password)
+	if err != nil {
+		return err
+	}
 	// 新增记录
 	db := models.InsightDBConfig{
 		Hostname:         s.Hostname,
 		Port:             s.Port,
+		User:             s.User,
+		Password:         encryptPassword,
 		InspectParams:    datatypes.JSON(jsonInspectParams),
 		UseType:          s.UseType,
 		DbType:           s.DbType,
@@ -138,10 +146,17 @@ func (s *AdminUpdateDBConfigService) Run() error {
 	if err != nil {
 		return err
 	}
+	// 加密密码
+	encryptPassword, err := utils.Encrypt(s.Password)
+	if err != nil {
+		return err
+	}
 	// 更新记录
 	result := global.App.DB.Model(&models.InsightDBConfig{}).Where("id=?", s.ID).Updates(map[string]interface{}{
 		"hostname":          s.Hostname,
 		"port":              s.Port,
+		"user":              s.User,
+		"password":          encryptPassword,
 		"inspect_params":    datatypes.JSON(jsonInspectParams),
 		"use_type":          s.UseType,
 		"db_type":           s.DbType,

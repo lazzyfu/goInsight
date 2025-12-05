@@ -22,6 +22,8 @@ type InsightDBConfig struct {
 	InstanceID       uuid.UUID      `gorm:"type:char(36);uniqueIndex:uniq_instance_id" json:"instance_id"`
 	Hostname         string         `gorm:"type:varchar(128);not null;default:'';uniqueIndex:uniq_hostname;comment:主机名" json:"hostname"`
 	Port             int            `gorm:"type:int;not null;default 3306;uniqueIndex:uniq_hostname;comment:端口" json:"port"`
+	User             string         `gorm:"type:varchar(32);not null;default:'';comment:用户名" json:"user"`
+	Password         string         `gorm:"type:varchar(128);not null;default:'';comment:密码" json:"password"`
 	UseType          EnumType       `gorm:"type:ENUM('查询', '工单');default:工单;uniqueIndex:uniq_hostname;comment:用途" json:"use_type"`
 	DbType           EnumType       `gorm:"type:ENUM('MySQL', 'TiDB', 'ClickHouse');default:MySQL;comment:数据库类型" json:"db_type"`
 	Environment      int            `gorm:"type:int;null;default:null;comment:环境;index" json:"environment"`

@@ -1,5 +1,5 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="35%" @cancel="handleCancel">
+  <a-modal :open="props.open" :title="props.title" width="40%" @cancel="handleCancel">
     <template #footer>
       <a-button @click="handleCancel">取消</a-button>
       <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
@@ -38,11 +38,7 @@
         <a-select
           ref="select"
           v-model:value="formData.db_type"
-          :options="[
-            { value: 'MySQL', label: 'MySQL' },
-            { value: 'TiDB', label: 'TiDB' },
-            { value: 'ClickHouse', label: 'ClickHouse' },
-          ]"
+          :options="uiData.dbTypes"
           allowClear
         >
         </a-select>
@@ -52,10 +48,7 @@
         <a-select
           ref="select"
           v-model:value="formData.use_type"
-          :options="[
-            { value: '查询', label: '查询' },
-            { value: '工单', label: '工单' },
-          ]"
+          :options="uiData.useTypes"
           allowClear
         >
         </a-select>
@@ -67,6 +60,14 @@
 
       <a-form-item label="端口" name="port" has-feedback>
         <a-input-number v-model:value="formData.port" placeholder="请输入端口" allow-clear />
+      </a-form-item>
+
+      <a-form-item label="用户" name="user" has-feedback>
+        <a-input v-model:value="formData.user" placeholder="请输入用户" allow-clear />
+      </a-form-item>
+
+      <a-form-item label="密码" name="password" has-feedback>
+        <a-input-password v-model:value="formData.password" placeholder="请输入密码" allow-clear />
       </a-form-item>
 
       <a-form-item
@@ -115,6 +116,18 @@ const uiState = reactive({
   loading: false,
 })
 
+const uiData = reactive({
+  dbTypes: [
+    { value: 'MySQL', label: 'MySQL' },
+    { value: 'TiDB', label: 'TiDB' },
+    { value: 'ClickHouse', label: 'ClickHouse' },
+  ],
+  useTypes: [
+    { value: '查询', label: '查询' },
+    { value: '工单', label: '工单' },
+  ],
+})
+
 // 表单校验规则
 const rules = {
   environment: [{ required: true, message: '请选择所属环境', trigger: 'change' }],
@@ -122,12 +135,12 @@ const rules = {
   db_type: [{ required: true, message: '请选择数据库类型', trigger: 'change' }],
   use_type: [{ required: true, message: '请选择实例用途', trigger: 'change' }],
   hostname: [
-    { required: true, message: '请输入主机名', trigger: ['blur', 'change'] },
+    { required: true, message: '请输入主机名', trigger: 'blur'},
     {
       validator: (_, value) => {
         const v = (value || '').trim()
-        if (v.length < 3 || v.length > 256) {
-          return Promise.reject(new Error('主机名长度需在 3 到 256 个字符之间'))
+        if (v.length < 3 || v.length > 255) {
+          return Promise.reject(new Error('主机名长度需在 3 到 255 个字符之间'))
         }
         // 允许字母数字、点、短横线，且不能包含空格
         const hostRe = /^[A-Za-z0-9.-]+$/
@@ -149,6 +162,42 @@ const rules = {
         }
         if (num < 1 || num > 65535) {
           return Promise.reject(new Error('端口号范围为 1-65535'))
+        }
+        return Promise.resolve()
+      },
+      trigger: 'blur',
+    },
+  ],
+  user: [
+    { required: true, message: '请输入访问数据库的用户名', trigger: 'blur' },
+    {
+      validator: (_, value) => {
+        const v = (value || '').trim()
+        if (v.length < 3 || v.length > 32) {
+          return Promise.reject(new Error('用户名长度需在 3 到 32 个字符之间'))
+        }
+        // MySQL user只允许字母数字、下划线、短横线
+        const userRe = /^[A-Za-z0-9_-]+$/
+        if (!userRe.test(v)) {
+          return Promise.reject(new Error('用户名仅支持字母、数字、下划线(_)、短横线(-)'))
+        }
+        return Promise.resolve()
+      },
+      trigger: 'blur',
+    },
+  ],
+  password: [
+    { required: true, message: '请输入访问数据库的密码', trigger: 'blur' },
+    {
+      validator: (_, value) => {
+        const v = (value || '').trim()
+        if (v.length < 8 || v.length > 64) {
+          return Promise.reject(new Error('密码长度需在 8 到 64 个字符之间'))
+        }
+        // MySQL密码支持大多数字符，建议包含大小写字母、数字和特殊字符
+        const passwordRe = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/
+        if (!passwordRe.test(v)) {
+          return Promise.reject(new Error('密码包含不支持的字符'))
         }
         return Promise.resolve()
       },

@@ -67,7 +67,7 @@ func (s *ExecuteMySQLQueryService) validateStatementType(stmt ast.StmtNode) erro
 func (s *ExecuteMySQLQueryService) Run() (ResponseData, error) {
 	// 初始化SQLText为用户输入的SQLText
 	var responseData ResponseData = ResponseData{SQLText: s.SQLText}
-	var data *[]map[string]interface{}
+	var data *[]map[string]any
 	// 判断当前用户是否正在对当前实例当前库进行查询，如果有，禁止执行，防止并发
 	if err := IsConcurrentRunning(s.Username, s.InstanceID, s.Schema); err != nil {
 		return responseData, err
@@ -103,7 +103,7 @@ func (s *ExecuteMySQLQueryService) Run() (ResponseData, error) {
 		return responseData, fmt.Errorf("当前接口仅支持MySQL/Aurora/TiDB，当前DB类型为%s", DbType)
 	}
 	// 获取DB配置
-	hostname, port, err := GetDBConfig(s.InstanceID)
+	instanceCfg, err := GetDBConfig(s.InstanceID)
 	if err != nil {
 		return responseData, err
 	}
@@ -167,14 +167,14 @@ func (s *ExecuteMySQLQueryService) Run() (ResponseData, error) {
 		Update("RewriteSqltext", SQLText)
 	// 调用mysql和tidb执行接口
 	var executeApi ExecuteApi = MySQLExecuteApi{ExecuteMySQLQueryForm: s.ExecuteMySQLQueryForm, Ctx: s.C.Request.Context()}
-	columns, data, duration, err := CalculateDuration(hostname, port, executeApi.Execute)
+	columns, data, duration, err := CalculateDuration(instanceCfg, executeApi.Execute)
 	if err != nil {
 		return responseData, err
 	}
 	// 更新耗时和影响行数
 	global.App.DB.Model(&models.InsightDASRecords{}).
 		Where("request_id=? and username=?", requestid.Get(s.C), s.Username).
-		Updates(map[string]interface{}{"ReturnRows": len(*data), "Duration": duration})
+		Updates(map[string]any{"ReturnRows": len(*data), "Duration": duration})
 	responseData.Duration = fmt.Sprintf("%dms", duration)
 	responseData.Data = data
 	responseData.Columns = columns

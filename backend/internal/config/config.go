@@ -37,11 +37,6 @@ type Redis struct {
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }
 
-type RemoteDB struct {
-	UserName string `mapstructure:"username" json:"username" yaml:"username"`
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
-}
-
 type Das struct {
 	MaxExecutionTime  uint64   `mapstructure:"max_execution_time" json:"max_execution_time" yaml:"max_execution_time"`
 	DefaultReturnRows uint64   `mapstructure:"default_return_rows" json:"default_return_rows" yaml:"default_return_rows"`
@@ -80,7 +75,6 @@ type Configuration struct {
 	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
 	Database Database `mapstructure:"database" json:"database" yaml:"database"`
 	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
-	RemoteDB RemoteDB `mapstructure:"remotedb" json:"remotedb" yaml:"remotedb"`
 	Das      Das      `mapstructure:"das" json:"das" yaml:"das"`
 	Ghost    Ghost    `mapstructure:"ghost" json:"ghost" yaml:"ghost"`
 	Notify   Notify   `mapstructure:"notify" json:"notify" yaml:"notify"`

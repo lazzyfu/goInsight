@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/das/dao"
 	"github.com/lazzyfu/goinsight/internal/das/models"
@@ -24,6 +25,8 @@ type tidbQueryRecord struct {
 	RequestID string
 	Hostname  string
 	Port      int
+	User      string
+	Password  string
 }
 
 type KillTiDBQuery struct{}
@@ -53,12 +56,17 @@ func (k *KillTiDBQuery) match(row tidbQueryRecord) (*[]string, *[]map[string]int
 			User="%s" 
 			and DB!="information_schema"
 			and INFO like "%%%s%%"
-	`, global.App.Config.RemoteDB.UserName, row.RequestID)
+	`, row.User, row.RequestID)
 	ctx, cancel := context.WithTimeout(context.Background(), 3000*time.Millisecond)
 	defer cancel()
+
+	plainPassword, err := utils.Decrypt(row.Password)
+	if err != nil {
+		return nil, nil, err
+	}
 	db := dao.DB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
+		User:     row.User,
+		Password: plainPassword,
 		Host:     row.Hostname,
 		Port:     row.Port,
 		Database: "information_schema",
@@ -77,16 +85,20 @@ func (k *KillTiDBQuery) kill(row tidbQueryRecord) {
 	if err != nil {
 		return
 	}
+	plainPassword, err := utils.Decrypt(row.Password)
+	if err != nil {
+		return
+	}
 	for _, d := range *data {
 		var killUser string = d["USER"].(string)
-		if killUser == global.App.Config.RemoteDB.UserName {
+		if killUser == row.User {
 			queryID, _ := strconv.Atoi(d["ID"].(string))
 			query := fmt.Sprintf("kill tidb query %d", queryID)
 			ctx, cancel := context.WithTimeout(context.Background(), 3000*time.Millisecond)
 			defer cancel()
 			db := dao.DB{
-				User:     global.App.Config.RemoteDB.UserName,
-				Password: global.App.Config.RemoteDB.Password,
+				User:     row.User,
+				Password: plainPassword,
 				Host:     row.Hostname,
 				Port:     row.Port,
 				Database: "information_schema",

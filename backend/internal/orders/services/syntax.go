@@ -6,6 +6,7 @@ import (
 	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/lazzyfu/goinsight/pkg/parser"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
 	"github.com/lazzyfu/goinsight/internal/inspect/checker"
@@ -34,14 +35,18 @@ func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightDBC
 }
 
 // 审核SQL
-func (s *InspectOrderSyntaxService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+	plainPassword, err := utils.Decrypt(instanceCfg.Password)
+	if err != nil {
+		return nil, err
+	}
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
-		DbUser:     global.App.Config.RemoteDB.UserName,
-		DbPassword: global.App.Config.RemoteDB.Password,
-		DbHost:     config.Hostname,
-		DbPort:     config.Port,
-		DBParams:   config.InspectParams,
+		DbUser:     instanceCfg.User,
+		DbPassword: plainPassword,
+		DbHost:     instanceCfg.Hostname,
+		DbPort:     instanceCfg.Port,
+		DBParams:   instanceCfg.InspectParams,
 		DBSchema:   s.Schema,
 		Username:   s.Username,
 		SqlText:    s.Content,

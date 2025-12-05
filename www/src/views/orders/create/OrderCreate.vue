@@ -5,8 +5,8 @@
         <a-form
           ref="formRef"
           :model="formState"
-          :label-col="{ span: 4 }"
-          :wrapper-col="{ span: 20 }"
+          :label-col="{ span: 6 }"
+          :wrapper-col="{ span: 18 }"
           autocomplete="off"
           :rules="rules"
           @finish="onSubmit"

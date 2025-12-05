@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lazzyfu/goinsight/internal/common/models"
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/das/dao"
 	"github.com/lazzyfu/goinsight/internal/das/forms"
@@ -46,22 +48,17 @@ func (s *GetDbDictService) validatePerms(uuid uuid.UUID) error {
 	return nil
 }
 
-func (s *GetDbDictService) getConfigFromInstanceID() (hostname string, port int, err error) {
+func (s *GetDbDictService) getInstanceCfg() (record models.InsightDBConfig, err error) {
 	// 获取DB配置
-	type DASConfigResult struct {
-		Hostname string `json:"hostname"`
-		Port     int    `json:"port"`
-	}
-	var result DASConfigResult
 	r := global.App.DB.Table("`insight_db_config` a").
-		Select("a.`hostname`, a.`port`").
+		Select("a.`hostname`, a.`port`, a.`user`, a.`password`").
 		Where("a.instance_id=?", s.InstanceID).
-		Take(&result)
+		Take(&record)
 	// 判断记录是否存在
 	if errors.Is(r.Error, gorm.ErrRecordNotFound) {
-		return hostname, port, fmt.Errorf("指定DB配置的记录不存在,错误的信息:%s", r.Error.Error())
+		return record, fmt.Errorf("指定DB配置的记录不存在,错误的信息:%s", r.Error.Error())
 	}
-	return result.Hostname, result.Port, nil
+	return record, nil
 }
 
 func (s *GetDbDictService) getDbType() (string, error) {
@@ -81,7 +78,7 @@ func (s *GetDbDictService) getDbType() (string, error) {
 	return result.DbType, nil
 }
 
-func (s *GetDbDictService) getDbDict(hostname string, port int) (data *[]map[string]interface{}, err error) {
+func (s *GetDbDictService) getDbDict(instanceCfg models.InsightDBConfig) (data *[]map[string]interface{}, err error) {
 	query := fmt.Sprintf(`
 					select
 						t.TABLE_NAME,
@@ -122,11 +119,18 @@ func (s *GetDbDictService) getDbDict(hostname string, port int) (data *[]map[str
 						t.TABLE_COMMENT,
 						t.CREATE_TIME
 				`, s.Schema)
+
+	// 解密密码
+	plainPassword, err := utils.Decrypt(instanceCfg.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	db := dao.DB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
-		Host:     hostname,
-		Port:     port,
+		User:     instanceCfg.User,
+		Password: plainPassword,
+		Host:     instanceCfg.Hostname,
+		Port:     instanceCfg.Port,
 		Database: "information_schema",
 		Params:   map[string]string{"group_concat_max_len": "1073741824"},
 		Ctx:      s.C.Request.Context(),
@@ -150,17 +154,18 @@ func (s *GetDbDictService) Run() (responseData *[]map[string]interface{}, err er
 		return responseData, err
 	}
 	// 获取DB配置
-	hostname, port, err := s.getConfigFromInstanceID()
+	instanceCfg, err := s.getInstanceCfg()
 	if err != nil {
 		return responseData, err
 	}
+
 	// 获取DB类型
 	dbType, err := s.getDbType()
 	if err != nil {
 		return responseData, err
 	}
 	if strings.EqualFold(dbType, "mysql") || strings.EqualFold(dbType, "tidb") {
-		return s.getDbDict(hostname, port)
+		return s.getDbDict(instanceCfg)
 	}
 	return responseData, fmt.Errorf("%s不支持获取数据字典", dbType)
 }

@@ -96,41 +96,43 @@ func CheckSourceSchemasIsDeleted(instanceID uuid.UUID, data *[]map[string]interf
 
 // 从用户定义的远程数据库实例同步库信息
 func SyncDBMeta() {
-	// 获取数据库配置
-	type Result struct {
-		InstanceID uuid.UUID
-		Hostname   string
-		Port       int
-		DbType     string
-	}
-	var results []Result
-	global.App.DB.Table("insight_db_config").Scan(&results)
+	// 获取数据库配置列表
+	var records []models.InsightDBConfig
+	global.App.DB.Table("insight_db_config").Scan(&records)
 	// 启动4个并发
 	var wg sync.WaitGroup
 	ch := make(chan struct{}, 4)
-	for _, row := range results {
+	for _, row := range records {
 		ch <- struct{}{}
 		wg.Add(1)
 		// 获取目标数据库的库信息
-		go func(row Result) {
+		go func(row models.InsightDBConfig) {
 			defer func() {
 				<-ch
 				wg.Done()
 			}()
 
 			var (
-				data *[]map[string]interface{}
+				data *[]map[string]any
 				err  error
 			)
 
 			// 执行SQL超时
 			ctx, cancel := context.WithTimeout(context.Background(), 10000*time.Millisecond)
 			defer cancel()
-			switch strings.ToLower(row.DbType) {
+
+			// 解密密码
+			plainPassword, err := utils.Decrypt(row.Password)
+			if err != nil {
+				global.App.Log.Error(fmt.Sprintf("从主机%s:%d同步元数据失败，密码解密失败，错误信息：%s", row.Hostname, row.Port, err.Error()))
+				return
+			}
+
+			switch strings.ToLower(string(row.DbType)) {
 			case "mysql", "tidb":
 				db := dao.DB{
-					User:     global.App.Config.RemoteDB.UserName,
-					Password: global.App.Config.RemoteDB.Password,
+					User:     row.User,
+					Password: plainPassword,
 					Host:     row.Hostname,
 					Port:     row.Port,
 					Params:   map[string]string{"group_concat_max_len": "67108864"},
@@ -139,8 +141,8 @@ func SyncDBMeta() {
 				_, data, err = db.Query(mysqlQuery)
 			case "clickhouse":
 				db := dao.ClickhouseDB{
-					User:     global.App.Config.RemoteDB.UserName,
-					Password: global.App.Config.RemoteDB.Password,
+					User:     row.User,
+					Password: plainPassword,
 					Host:     row.Hostname,
 					Port:     row.Port,
 					Ctx:      ctx,
@@ -155,7 +157,7 @@ func SyncDBMeta() {
 				return
 			}
 			if len(*data) == 0 {
-				global.App.Log.Warn(fmt.Sprintf("从主机%s:%d同步元数据失败，未发现库记录，请检查账号%s是否有SELECT权限", row.Hostname, row.Port, global.App.Config.RemoteDB.UserName))
+				global.App.Log.Warn(fmt.Sprintf("从主机%s:%d同步元数据失败，未发现库记录，请检查账号%s是否有SELECT权限", row.Hostname, row.Port, row.User))
 			}
 			// 创建元数据记录
 			for _, d := range *data {

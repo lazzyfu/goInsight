@@ -142,14 +142,18 @@ func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.U
 }
 
 // 审核SQL
-func (s *CreateOrderService) inspectSQL(config commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *CreateOrderService) inspectSQL(instanceCfg commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+	plainPassword, err := utils.Decrypt(instanceCfg.Password)
+	if err != nil {
+		return nil, err
+	}
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
-		DbUser:     global.App.Config.RemoteDB.UserName,
-		DbPassword: global.App.Config.RemoteDB.Password,
-		DbHost:     config.Hostname,
-		DbPort:     config.Port,
-		DBParams:   config.InspectParams,
+		DbUser:     instanceCfg.User,
+		DbPassword: plainPassword,
+		DbHost:     instanceCfg.Hostname,
+		DbPort:     instanceCfg.Port,
+		DBParams:   instanceCfg.InspectParams,
 		DBSchema:   s.Schema,
 		Username:   s.Username,
 		SqlText:    s.Content,

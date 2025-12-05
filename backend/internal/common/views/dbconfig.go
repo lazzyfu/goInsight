@@ -30,41 +30,41 @@ func AdminGetDBConfigView(c *gin.Context) {
 }
 
 func AdminCreateDBConfigView(c *gin.Context) {
-	var form *forms.AdminCreateDBConfigForm = &forms.AdminCreateDBConfigForm{}
-	if err := c.ShouldBind(&form); err == nil {
-		service := services.AdminCreateDBConfigService{
-			AdminCreateDBConfigForm: form,
-			C:                       c,
-		}
-		err := service.Run()
-		if err != nil {
-			response.Fail(c, err.Error())
-		} else {
-			response.Success(c, nil, "success")
-		}
-	} else {
+	var form forms.AdminCreateDBConfigForm
+	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
+		return
 	}
+	service := services.AdminCreateDBConfigService{
+		AdminCreateDBConfigForm: &form,
+		C:                       c,
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
 }
 
 func AdminUpdateDBConfigView(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	var form *forms.AdminUpdateDBConfigForm = &forms.AdminUpdateDBConfigForm{}
-	if err := c.ShouldBind(&form); err == nil {
-		service := services.AdminUpdateDBConfigService{
-			AdminUpdateDBConfigForm: form,
-			C:                       c,
-			ID:                      uint64(id),
-		}
-		err := service.Run()
-		if err != nil {
-			response.Fail(c, err.Error())
-		} else {
-			response.Success(c, nil, "success")
-		}
-	} else {
+	var form forms.AdminUpdateDBConfigForm
+	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
+		return
 	}
+	service := services.AdminUpdateDBConfigService{
+		AdminUpdateDBConfigForm: &form,
+		C:                       c,
+		ID:                      uint64(id),
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
 }
 
 func AdminDeleteDBConfigView(c *gin.Context) {
@@ -76,7 +76,7 @@ func AdminDeleteDBConfigView(c *gin.Context) {
 	err := service.Run()
 	if err != nil {
 		response.Fail(c, err.Error())
-	} else {
-		response.Success(c, nil, "success")
+		return
 	}
+	response.Success(c, nil, "success")
 }

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/das/dao"
 	"github.com/lazzyfu/goinsight/internal/das/forms"
@@ -18,7 +19,7 @@ type GetOrderTablesService struct {
 }
 
 // 获取MySQL/TiDB的表信息
-func (g *GetOrderTablesService) getMySQLMetaData(r *ConfigResult) (data *[]map[string]interface{}, err error) {
+func (g *GetOrderTablesService) getMySQLMetaData(r *InstanceCfg) (data *[]map[string]interface{}, err error) {
 	var query string = fmt.Sprintf(`
 		select 
 			table_name as table_name
@@ -28,8 +29,8 @@ func (g *GetOrderTablesService) getMySQLMetaData(r *ConfigResult) (data *[]map[s
 			table_schema='%s' and table_name not regexp '^_(.*)[_ghc|_gho|_del]$'
 		`, r.Schema)
 	db := dao.DB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
+		User:     r.User,
+		Password: r.PlainPassword,
 		Host:     r.Hostname,
 		Port:     r.Port,
 		Params:   map[string]string{"group_concat_max_len": "4194304"},
@@ -44,7 +45,7 @@ func (g *GetOrderTablesService) getMySQLMetaData(r *ConfigResult) (data *[]map[s
 }
 
 // 获取ClickHouse的表信息
-func (g *GetOrderTablesService) getClickHouseMetaData(r *ConfigResult) (data *[]map[string]interface{}, err error) {
+func (g *GetOrderTablesService) getClickHouseMetaData(r *InstanceCfg) (data *[]map[string]interface{}, err error) {
 	var query string = fmt.Sprintf(`
 	select 
 		name as table_name
@@ -53,9 +54,10 @@ func (g *GetOrderTablesService) getClickHouseMetaData(r *ConfigResult) (data *[]
 	where 
 		(database = '%s')
 	`, r.Schema)
+
 	db := dao.ClickhouseDB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
+		User:     r.User,
+		Password: r.PlainPassword,
 		Host:     r.Hostname,
 		Port:     r.Port,
 		Ctx:      g.C.Request.Context(),
@@ -69,14 +71,19 @@ func (g *GetOrderTablesService) getClickHouseMetaData(r *ConfigResult) (data *[]
 }
 
 func (s *GetOrderTablesService) Run() (responseData *[]map[string]interface{}, err error) {
-	var config ConfigResult
-	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&config)
-	config.Schema = s.Schema
-	if strings.EqualFold(config.DbType, "mysql") || strings.EqualFold(config.DbType, "tidb") {
-		return s.getMySQLMetaData(&config)
+	var cfg InstanceCfg
+	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
+	plainPassword, err := utils.Decrypt(cfg.Password)
+	if err != nil {
+		return
 	}
-	if strings.EqualFold(config.DbType, "clickhouse") {
-		return s.getClickHouseMetaData(&config)
+	cfg.PlainPassword = plainPassword
+	cfg.Schema = s.Schema
+	if strings.EqualFold(cfg.DbType, "mysql") || strings.EqualFold(cfg.DbType, "tidb") {
+		return s.getMySQLMetaData(&cfg)
+	}
+	if strings.EqualFold(cfg.DbType, "clickhouse") {
+		return s.getClickHouseMetaData(&cfg)
 	}
 
 	return responseData, nil

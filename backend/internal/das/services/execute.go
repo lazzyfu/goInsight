@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
+	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
 	"github.com/lazzyfu/goinsight/internal/das/dao"
 	"github.com/lazzyfu/goinsight/internal/das/forms"
 	"github.com/lazzyfu/goinsight/internal/das/models"
@@ -17,21 +19,16 @@ import (
 )
 
 // 获取DB配置
-func GetDBConfig(instance_id string) (hostname string, port int, err error) {
-	type DASConfigResult struct {
-		Hostname string `json:"hostname"`
-		Port     int    `json:"port"`
-	}
-	var result DASConfigResult
+func GetDBConfig(instance_id string) (instanceCfg commonModels.InsightDBConfig, err error) {
 	r := global.App.DB.Table("`insight_db_config` a").
-		Select("a.`hostname`, a.`port`").
+		Select("a.`hostname`, a.`port`, a.`User`, a.`Password`").
 		Where("a.instance_id=?", instance_id).
-		Take(&result)
+		Take(&instanceCfg)
 	// 判断记录是否存在
 	if errors.Is(r.Error, gorm.ErrRecordNotFound) {
-		return hostname, port, fmt.Errorf("指定DB配置的记录不存在，错误的信息:%s", r.Error.Error())
+		return instanceCfg, fmt.Errorf("指定DB配置的记录不存在，错误的信息:%s", r.Error.Error())
 	}
-	return result.Hostname, result.Port, nil
+	return instanceCfg, nil
 }
 
 // 获取DB类型
@@ -80,9 +77,9 @@ func IsConcurrentRunning(username, instance_id, schema string) error {
 }
 
 // 计算延时
-func CalculateDuration(host string, port int, callback func(string, int) (*[]string, *[]map[string]interface{}, error)) (*[]string, *[]map[string]interface{}, int64, error) {
+func CalculateDuration(instanceCfg commonModels.InsightDBConfig, callback func(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error)) (*[]string, *[]map[string]interface{}, int64, error) {
 	startTime := time.Now()
-	columns, data, err := callback(host, port)
+	columns, data, err := callback(instanceCfg)
 	endTime := time.Now()
 	return columns, data, int64(endTime.Sub(startTime) / time.Millisecond), err
 }
@@ -98,7 +95,7 @@ type ResponseData struct {
 
 // 执行接口
 type ExecuteApi interface {
-	Execute(hostname string, port int) (*[]string, *[]map[string]interface{}, error)
+	Execute(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error)
 }
 
 type ClickHouseExecuteApi struct {
@@ -106,12 +103,18 @@ type ClickHouseExecuteApi struct {
 	Ctx context.Context
 }
 
-func (m ClickHouseExecuteApi) Execute(hostname string, port int) (*[]string, *[]map[string]interface{}, error) {
+func (m ClickHouseExecuteApi) Execute(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error) {
+	// 解密密码
+	plainPassword, err := utils.Decrypt(instanceCfg.Password)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	db := dao.ClickhouseDB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
-		Host:     hostname,
-		Port:     port,
+		User:     instanceCfg.User,
+		Password: plainPassword,
+		Host:     instanceCfg.Hostname,
+		Port:     instanceCfg.Port,
 		Database: m.Schema,
 		Settings: m.Params,
 		Ctx:      m.Ctx,
@@ -128,12 +131,18 @@ type MySQLExecuteApi struct {
 	Ctx context.Context
 }
 
-func (m MySQLExecuteApi) Execute(hostname string, port int) (*[]string, *[]map[string]interface{}, error) {
+func (m MySQLExecuteApi) Execute(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error) {
+	// 解密密码
+	plainPassword, err := utils.Decrypt(instanceCfg.Password)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	db := dao.DB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
-		Host:     hostname,
-		Port:     port,
+		User:     instanceCfg.User,
+		Password: plainPassword,
+		Host:     instanceCfg.Hostname,
+		Port:     instanceCfg.Port,
 		Database: m.Schema,
 		Params:   m.Params,
 		Ctx:      m.Ctx,

@@ -258,6 +258,8 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	type Record struct {
 		Hostname         string
 		Port             uint16
+		User             string
+		Password         string
 		Schema           string
 		DBType           string
 		SQLType          string
@@ -265,7 +267,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	}
 	var record Record
 	tx := global.App.DB.Table("`insight_order_records` a").
-		Select("a.db_type,a.sql_type,a.schema,a.export_file_format,b.hostname,b.port").
+		Select("a.db_type,a.sql_type,a.schema,a.export_file_format,b.hostname,b.port,b.user,b.password").
 		Joins("join `insight_db_config` b on a.instance_id=b.instance_id").
 		Where("a.order_id=?", task.OrderID).Take(&record)
 	if tx.RowsAffected == 0 {
@@ -273,11 +275,16 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 		data, _ := json.Marshal(returnData)
 		return string(data), errors.New("执行失败，没有发现工单关联的数据库信息")
 	}
+	// 解密密码
+	plainPassword, err := utils.Decrypt(record.Password)
+	if err != nil {
+		return "", err
+	}
 	config := base.DBConfig{
 		Hostname:         record.Hostname,
 		Port:             record.Port,
-		UserName:         global.App.Config.RemoteDB.UserName,
-		Password:         global.App.Config.RemoteDB.Password,
+		UserName:         record.User,
+		Password:         plainPassword,
 		Schema:           record.Schema,
 		DBType:           record.DBType,
 		SQLType:          record.SQLType,

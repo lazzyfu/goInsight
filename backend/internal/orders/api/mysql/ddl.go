@@ -153,7 +153,7 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	ghostCMDParts := []string{
 		global.App.Config.Ghost.Path,
 		strings.Join(global.App.Config.Ghost.Args, " "),
-		fmt.Sprintf("--user=\"%s\" --password=\"%s\"", global.App.Config.RemoteDB.UserName, global.App.Config.RemoteDB.Password),
+		fmt.Sprintf("--user=\"%s\" --password=\"%s\"", e.UserName, e.Password),
 		fmt.Sprintf("--host=\"%s\" --port=%d", e.Hostname, e.Port),
 		fmt.Sprintf("--database=%s --table=%s", e.Schema, tableName),
 		fmt.Sprintf("--alter=\"%s\" --execute", vv),

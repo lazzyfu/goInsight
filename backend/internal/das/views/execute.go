@@ -32,20 +32,20 @@ func ExecuteMySQLQueryView(c *gin.Context) {
 			// 更新数据库记录
 			global.App.DB.Model(&models.InsightDASRecords{}).
 				Where("request_id=? and username=?", RequestID, username).
-				Updates(map[string]interface{}{"error_msg": err.Error(), "is_finish": true})
+				Updates(map[string]any{"error_msg": err.Error(), "is_finish": true})
 			response.Fail(c, err.Error())
 		} else {
 			// 更新数据库记录
 			global.App.DB.Model(&models.InsightDASRecords{}).
 				Where("request_id=? and username=?", RequestID, username).
-				Updates(map[string]interface{}{"is_finish": true})
+				Updates(map[string]any{"is_finish": true})
 			response.Success(c, returnData, "success")
 		}
 	} else {
 		// 有效性验证不通过，更新数据库记录
 		global.App.DB.Model(&models.InsightDASRecords{}).
 			Where("request_id=? and username=?", RequestID, username).
-			Updates(map[string]interface{}{"error_msg": err.Error(), "is_finish": true})
+			Updates(map[string]any{"error_msg": err.Error(), "is_finish": true})
 		response.ValidateFail(c, err.Error())
 	}
 }
@@ -68,20 +68,20 @@ func ExecuteClickHouseQueryView(c *gin.Context) {
 			// 更新数据库记录
 			global.App.DB.Model(&models.InsightDASRecords{}).
 				Where("request_id=? and username=?", RequestID, username).
-				Updates(map[string]interface{}{"error_msg": err.Error(), "is_finish": true})
+				Updates(map[string]any{"error_msg": err.Error(), "is_finish": true})
 			response.Fail(c, err.Error())
 		} else {
 			// 更新数据库记录
 			global.App.DB.Model(&models.InsightDASRecords{}).
 				Where("request_id=? and username=?", RequestID, username).
-				Updates(map[string]interface{}{"is_finish": true})
+				Updates(map[string]any{"is_finish": true})
 			response.Success(c, returnData, "success")
 		}
 	} else {
 		// 有效性验证不通过，更新数据库记录
 		global.App.DB.Model(&models.InsightDASRecords{}).
 			Where("request_id=? and username=?", RequestID, username).
-			Updates(map[string]interface{}{"error_msg": err.Error(), "is_finish": true})
+			Updates(map[string]any{"error_msg": err.Error(), "is_finish": true})
 		response.ValidateFail(c, err.Error())
 	}
 }

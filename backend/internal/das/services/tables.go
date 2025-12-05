@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/das/dao"
 	"github.com/lazzyfu/goinsight/internal/das/forms"
@@ -14,11 +15,14 @@ import (
 	"github.com/google/uuid"
 )
 
-type ConfigResult struct {
-	Hostname string
-	Port     int
-	Schema   string
-	DbType   string
+type InstanceCfg struct {
+	Hostname      string
+	Port          int
+	User          string
+	Password      string
+	PlainPassword string
+	Schema        string
+	DbType        string
 }
 
 type GetTablesService struct {
@@ -52,7 +56,7 @@ func (s *GetTablesService) validatePerms(uuid uuid.UUID) error {
 }
 
 // 获取MySQL/TiDB的表&字段信息
-func (s *GetTablesService) getMySQLMetaData(r *ConfigResult) (data *[]map[string]interface{}, err error) {
+func (s *GetTablesService) getMySQLMetaData(instanceCfg *InstanceCfg) (data *[]map[string]interface{}, err error) {
 	/*
 		table_name: test
 		table_schema: pmm
@@ -69,12 +73,12 @@ func (s *GetTablesService) getMySQLMetaData(r *ConfigResult) (data *[]map[string
 			table_schema='%s' and table_name not regexp '^_(.*)[_ghc|_gho|_del]$'
 		group by 
 			table_schema, table_name order by table_name
-		`, r.Schema)
+		`, instanceCfg.Schema)
 	db := dao.DB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
-		Host:     r.Hostname,
-		Port:     r.Port,
+		User:     instanceCfg.User,
+		Password: instanceCfg.PlainPassword,
+		Host:     instanceCfg.Hostname,
+		Port:     instanceCfg.Port,
 		Params:   map[string]string{"group_concat_max_len": "4194304"},
 		Ctx:      s.C.Request.Context(),
 	}
@@ -87,7 +91,7 @@ func (s *GetTablesService) getMySQLMetaData(r *ConfigResult) (data *[]map[string
 }
 
 // 获取ClickHouse的表&字段信息
-func (s *GetTablesService) getClickHouseMetaData(r *ConfigResult) (data *[]map[string]interface{}, err error) {
+func (s *GetTablesService) getClickHouseMetaData(instanceCfg *InstanceCfg) (data *[]map[string]interface{}, err error) {
 	/*
 		table_name: test
 		table_schema: pmm
@@ -122,12 +126,13 @@ func (s *GetTablesService) getClickHouseMetaData(r *ConfigResult) (data *[]map[s
 				table
 		)
 		ORDER BY table ASC
-	`, r.Schema)
+	`, instanceCfg.Schema)
+
 	db := dao.ClickhouseDB{
-		User:     global.App.Config.RemoteDB.UserName,
-		Password: global.App.Config.RemoteDB.Password,
-		Host:     r.Hostname,
-		Port:     r.Port,
+		User:     instanceCfg.User,
+		Password: instanceCfg.PlainPassword,
+		Host:     instanceCfg.Hostname,
+		Port:     instanceCfg.Port,
 		Ctx:      s.C.Request.Context(),
 	}
 	_, data, err = db.Query(query)
@@ -148,14 +153,20 @@ func (s *GetTablesService) Run() (responseData *[]map[string]interface{}, err er
 	if err = s.validatePerms(uuid); err != nil {
 		return responseData, err
 	}
-	var config ConfigResult
-	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&config)
-	config.Schema = s.Schema
-	if strings.EqualFold(config.DbType, "mysql") || strings.EqualFold(config.DbType, "tidb") {
-		return s.getMySQLMetaData(&config)
+	var cfg InstanceCfg
+	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
+	// 解密密码
+	plainPassword, err := utils.Decrypt(cfg.Password)
+	if err != nil {
+		return nil, err
 	}
-	if strings.EqualFold(config.DbType, "clickhouse") {
-		return s.getClickHouseMetaData(&config)
+	cfg.PlainPassword = plainPassword
+	cfg.Schema = s.Schema
+	if strings.EqualFold(cfg.DbType, "mysql") || strings.EqualFold(cfg.DbType, "tidb") {
+		return s.getMySQLMetaData(&cfg)
+	}
+	if strings.EqualFold(cfg.DbType, "clickhouse") {
+		return s.getClickHouseMetaData(&cfg)
 	}
 
 	return responseData, nil
