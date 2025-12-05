@@ -2,15 +2,8 @@
   <a-card title="提交工单">
     <a-row :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
       <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="8">
-        <a-form
-          ref="formRef"
-          :model="formState"
-          :label-col="{ span: 6 }"
-          :wrapper-col="{ span: 18 }"
-          autocomplete="off"
-          :rules="rules"
-          @finish="onSubmit"
-        >
+        <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" autocomplete="off"
+          :rules="rules" @finish="onSubmit">
           <a-form-item label="标题" name="title" has-feedback>
             <a-input v-model:value="formState.title" placeholder="请输入标题" />
           </a-form-item>
@@ -24,58 +17,33 @@
           </a-form-item>
 
           <a-form-item label="环境" name="environment" has-feedback>
-            <a-select
-              v-model:value="formState.environment"
-              :options="uiData.environments"
-              :field-names="{ label: 'name', value: 'id' }"
-              @change="onEnvChange"
-              allowClear
-            />
+            <a-select v-model:value="formState.environment" :options="uiData.environments"
+              :field-names="{ label: 'name', value: 'id' }" @change="onEnvChange" allowClear />
           </a-form-item>
 
           <a-form-item label="数据库" name="db_type" has-feedback>
-            <a-select
-              v-model:value="formState.db_type"
-              :options="uiData.dbTypes"
-              @change="onDbTypeChange"
-              :disabled="!formState.environment"
-              allowClear
-            />
+            <a-select v-model:value="formState.db_type" :options="uiData.dbTypes" @change="onDbTypeChange"
+              :disabled="!formState.environment" allowClear />
           </a-form-item>
 
           <a-form-item label="实例" name="instance_id" has-feedback>
-            <a-select
-              v-model:value="formState.instance_id"
-              :options="uiData.instances"
-              :field-names="{ label: 'remark', value: 'instance_id' }"
-              @change="onInstanceChange"
-              :disabled="!formState.db_type"
-              allowClear
-            />
+            <a-select v-model:value="formState.instance_id" :options="uiData.instances"
+              :field-names="{ label: 'remark', value: 'instance_id' }" @change="onInstanceChange"
+              :disabled="!formState.db_type" allowClear />
           </a-form-item>
 
           <a-form-item label="库名" name="schema" has-feedback>
-            <a-select
-              v-model:value="formState.schema"
-              :options="uiData.schemas"
-              :field-names="{ label: 'schema', value: 'schema' }"
-              :disabled="!formState.instance_id"
-              allowClear
-            />
+            <a-select v-model:value="formState.schema" :options="uiData.schemas"
+              :field-names="{ label: 'schema', value: 'schema' }" :disabled="!formState.instance_id" allowClear />
           </a-form-item>
 
           <a-form-item label="抄送" name="cc">
-            <a-select
-              v-model:value="formState.cc"
-              mode="multiple"
-              :options="uiData.users"
-              :field-names="{ label: 'nick_name', value: 'username' }"
-              allowClear
-            />
+            <a-select v-model:value="formState.cc" mode="multiple" :options="uiData.users"
+              :field-names="{ label: 'nick_name', value: 'username' }" allowClear />
           </a-form-item>
 
           <a-form-item :wrapper-col="{ offset: 4 }">
-            <a-button type="primary" html-type="submit">提交</a-button>
+            <a-button type="primary" html-type="submit" :loading="uiState.loading">提交</a-button>
             <a-button style="margin-left: 10px" @click="resetForm">重置</a-button>
           </a-form-item>
         </a-form>
@@ -84,12 +52,16 @@
       <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="16">
         <a-space size="small">
           <a-button @click="formatSql">
-            <template #icon><CodeOutlined /></template>
+            <template #icon>
+              <CodeOutlined />
+            </template>
             格式化
           </a-button>
 
           <a-button @click="checkSyntax">
-            <template #icon><CodeOutlined /></template>
+            <template #icon>
+              <CodeOutlined />
+            </template>
             语法检查
           </a-button>
         </a-space>
@@ -159,6 +131,11 @@ const rules = {
   cc: [],
 }
 
+// 状态
+const uiState = reactive({
+  loading: false,
+})
+
 // 数据
 const uiData = reactive({
   environments: [],
@@ -202,7 +179,7 @@ const onDbTypeChange = debounce(async () => {
     id: formState.environment,
     db_type: formState.db_type,
     is_page: false,
-  }).catch(() => {})
+  }).catch(() => { })
 
   uiData.instances = res?.data || []
 }, 200)
@@ -217,25 +194,31 @@ const onInstanceChange = debounce(async () => {
   const res = await getOrderSchemasApi({
     instance_id: formState.instance_id,
     is_page: false,
-  }).catch(() => {})
+  }).catch(() => { })
 
   uiData.schemas = res?.data || []
 }, 200)
 
 // 提交工单
 const onSubmit = async () => {
+  uiState.loading = true
   formState.content = codemirrorRef.value?.getContent() || ''
 
   if (!formState.content) {
     message.warning('SQL内容不能为空')
+    uiState.loading = false
     return
   }
 
-  const res = await createOrderApi(formState).catch(() => {})
-  if (!res) return message.error('创建失败，请稍后再试')
+  const res = await createOrderApi(formState).catch(() => { })
+  if (!res) {
+    uiState.loading = false
+    return message.error('创建失败，请稍后再试')
+  }
 
   message.success('工单创建成功')
   router.push({ name: 'orders.list' })
+  uiState.loading = false
 }
 
 // 格式化
@@ -246,21 +229,17 @@ const formatSql = () => {
 // 语法检查
 const checkSyntax = debounce(async () => {
   const sql = codemirrorRef.value?.getContent() || ''
-
   if (!sql) return message.warning('SQL内容不能为空')
-
   if (!formState.environment || !formState.db_type || !formState.instance_id || !formState.schema) {
     return message.warning('请先选择环境、数据库类型、实例、库名')
   }
-
   const res = await inspectOrderSyntaxApi({
     db_type: formState.db_type,
     sql_type: formState.sql_type,
     instance_id: formState.instance_id,
     schema: formState.schema,
     content: sql,
-  }).catch(() => {})
-
+  }).catch(() => { })
   if (res) inspectResultTableRef.value.render(res.data)
 }, 300)
 
@@ -273,8 +252,8 @@ const resetForm = () => {
 // 初始化
 onMounted(async () => {
   const [envRes, userRes] = await Promise.all([
-    getOrderEnvironmentsApi().catch(() => {}),
-    getOrderUsersApi({ is_page: false }).catch(() => {}),
+    getOrderEnvironmentsApi().catch(() => { }),
+    getOrderUsersApi({ is_page: false }).catch(() => { }),
   ])
 
   uiData.environments = envRes?.data || []

@@ -55,19 +55,19 @@
       </a-form-item>
 
       <a-form-item label="主机名" name="hostname" has-feedback>
-        <a-input v-model:value="formData.hostname" placeholder="请输入主机名" allow-clear />
+        <a-input v-model:value="formData.hostname" placeholder="请输入主机名" />
       </a-form-item>
 
       <a-form-item label="端口" name="port" has-feedback>
-        <a-input-number v-model:value="formData.port" placeholder="请输入端口" allow-clear />
+        <a-input-number v-model:value="formData.port" placeholder="请输入端口" />
       </a-form-item>
 
       <a-form-item label="用户" name="user" has-feedback>
-        <a-input v-model:value="formData.user" placeholder="请输入用户" allow-clear />
+        <a-input v-model:value="formData.user" placeholder="请输入用户" />
       </a-form-item>
 
       <a-form-item label="密码" name="password" has-feedback>
-        <a-input-password v-model:value="formData.password" placeholder="请输入密码" allow-clear />
+        <a-input-password v-model:value="formData.password" placeholder="请输入密码" />
       </a-form-item>
 
       <a-form-item
@@ -84,7 +84,7 @@
       </a-form-item>
 
       <a-form-item label="备注" name="remark" has-feedback>
-        <a-input v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
+        <a-input v-model:value="formData.remark" placeholder="请输入备注" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -135,7 +135,7 @@ const rules = {
   db_type: [{ required: true, message: '请选择数据库类型', trigger: 'change' }],
   use_type: [{ required: true, message: '请选择实例用途', trigger: 'change' }],
   hostname: [
-    { required: true, message: '请输入主机名', trigger: 'blur'},
+    { required: true, message: '请输入主机名', trigger: 'blur' },
     {
       validator: (_, value) => {
         const v = (value || '').trim()
