@@ -1,5 +1,5 @@
 <template>
-  <a-card title="审批流管理" class="flow-manager-card">
+  <a-card  size="small" title="审批流管理" class="flow-manager-card">
     <template #extra>
       <a-space>
         <a-button @click="handleBind"> <DeploymentUnitOutlined /> 绑定流程到用户 </a-button>
@@ -105,7 +105,7 @@ import { onMounted, reactive, ref } from 'vue'
 import ApprovalFlowFormModal from './ApprovalFlowFormModal.vue'
 import ApprovalFlowStages from './ApprovalFlowStages.vue'
 import BindToUserFormModal from './BindToUserFormModal.vue'
-import FlowBoundUsersDetail from './FlowBoundUsersDetail.vue' // 导入新组件
+import FlowBoundUsersDetail from './FlowBoundUsersDetail.vue'; // 导入新组件
 
 const uiState = reactive({
   loading: false,

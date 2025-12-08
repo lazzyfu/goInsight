@@ -104,15 +104,16 @@ func ExecuteSingleTaskView(c *gin.Context) {
 }
 
 // 批量执行任务
-func ExecuteAllTaskView(c *gin.Context) {
+// TODO: 后续可以考虑增加任务队列，避免大量任务同时执行导致数据库压力过大
+func ExecuteBatchTasksView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.ExecuteAllTaskForm = &forms.ExecuteAllTaskForm{}
+	var form *forms.ExecuteBatchTasksForm = &forms.ExecuteBatchTasksForm{}
 	if err := c.ShouldBind(&form); err == nil {
-		service := services.ExecuteAllTaskService{
-			ExecuteAllTaskForm: form,
-			C:                  c,
-			Username:           username,
+		service := services.ExecuteBatchTasksService{
+			ExecuteBatchTasksForm: form,
+			C:                     c,
+			Username:              username,
 		}
 		if err := service.Run(); err != nil {
 			response.Fail(c, err.Error())

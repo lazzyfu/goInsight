@@ -1,5 +1,5 @@
 <template>
-  <a-card title="历史工单">
+  <a-card  title="历史工单">
     <div class="search-wrapper">
       <div class="search-row">
         <a-switch
@@ -63,7 +63,7 @@
 <script setup>
 import { getOrderListApi } from '@/api/order'
 import { DatabaseOutlined, FieldTimeOutlined } from '@ant-design/icons-vue'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive } from 'vue'
 
 // 状态
 const uiState = reactive({
@@ -75,7 +75,7 @@ const uiState = reactive({
 const uiData = reactive({
   searchValue: '',
   tableData: [],
-  tableColumns: ref([
+  tableColumns: [
     {
       title: '进度',
       dataIndex: 'progress',
@@ -129,7 +129,7 @@ const uiData = reactive({
       dataIndex: 'created_at',
       key: 'created_at',
     },
-  ]),
+  ],
 })
 
 // 搜索

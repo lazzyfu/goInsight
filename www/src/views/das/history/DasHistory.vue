@@ -30,9 +30,9 @@
             </span>
           </template>
           <template v-else-if="column.key === 'sqltext'">
-            <button @click="showSqlDetail(record)" class="view-btn" title="查看完整SQL">
+            <a @click="showSqlDetail(record)" title="查看完整SQL">
               <EyeOutlined />
-            </button>
+            </a>
             {{ record.sqltext }}
           </template>
           <template v-else-if="column.key === 'duration'">
@@ -290,20 +290,6 @@ onMounted(() => {
   border-radius: 0.375rem;
   font-size: 0.75rem;
   font-weight: 500;
-}
-
-.view-btn {
-  background: none;
-  border: none;
-  color: #3b82f6;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  transition: all 0.2s;
-}
-
-.view-btn:hover {
-  background: #eff6ff;
 }
 
 .duration-tag {

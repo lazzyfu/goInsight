@@ -65,9 +65,9 @@ func (s *GenOrderTasksService) Run() (err error) {
 		return err
 	}
 	// 批量插入
-	var tasks []map[string]interface{}
+	var tasks []map[string]any
 	for _, sql := range sqls {
-		tasks = append(tasks, map[string]interface{}{
+		tasks = append(tasks, map[string]any{
 			"OrderID":    s.OrderID,
 			"TaskID":     uuid.New(),
 			"DBType":     record.DBType,
@@ -94,7 +94,7 @@ type GetTasksServices struct {
 	Username string
 }
 
-func (s *GetTasksServices) Run() (responseData interface{}, total int64, err error) {
+func (s *GetTasksServices) Run() (responseData any, total int64, err error) {
 	var records []ordersModels.InsightOrderTasks
 	tx := global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", s.OrderID).Scan(&records)
 	if tx.RowsAffected == 0 {
@@ -116,7 +116,7 @@ type PreviewTasksServices struct {
 	C *gin.Context
 }
 
-func (s *PreviewTasksServices) Run() (responseData interface{}, err error) {
+func (s *PreviewTasksServices) Run() (responseData any, err error) {
 	type record struct {
 		Total                        int `json:"total"`
 		Unexecuted                   int `json:"unexecuted"`
@@ -371,14 +371,14 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		}
 		global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 			Where("id=? and order_id=?", s.ID, s.OrderID).
-			Updates(map[string]interface{}{"progress": taskProgress, "result": data})
+			Updates(map[string]any{"progress": taskProgress, "result": data})
 		return err
 	}
 
 	// 没有错误返回，更新任务状态为已完成
 	global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 		Where("id=? and order_id=?", s.ID, s.OrderID).
-		Updates(map[string]interface{}{"progress": "已完成", "result": data})
+		Updates(map[string]any{"progress": "已完成", "result": data})
 
 	// 导出工单需要发送导出文件信息给申请人、抄送人
 	go sendExportFileInfoToApplicant(task.TaskID)
@@ -389,13 +389,13 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 }
 
 // 批量执行任务
-type ExecuteAllTaskService struct {
-	*forms.ExecuteAllTaskForm
+type ExecuteBatchTasksService struct {
+	*forms.ExecuteBatchTasksForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *ExecuteAllTaskService) Run() (err error) {
+func (s *ExecuteBatchTasksService) Run() (err error) {
 	// 当工单的状态不为已批准或执行中的时候，禁止执行任务
 	if err = checkOrderStatus(s.OrderID, s.Username); err != nil {
 		return err
@@ -453,11 +453,11 @@ func (s *ExecuteAllTaskService) Run() (err error) {
 			}
 			global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 				Where("task_id=?", task.TaskID).
-				Updates(map[string]interface{}{"progress": taskProgress, "result": data})
+				Updates(map[string]any{"progress": taskProgress, "result": data})
 		} else {
 			global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 				Where("task_id=?", task.TaskID).
-				Updates(map[string]interface{}{"progress": "已完成", "result": data})
+				Updates(map[string]any{"progress": "已完成", "result": data})
 
 			// 导出工单需要发送导出文件信息给申请人、抄送人
 			go sendExportFileInfoToApplicant(task.TaskID)

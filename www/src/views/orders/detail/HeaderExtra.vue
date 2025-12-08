@@ -77,7 +77,7 @@ import {
   claimOrderApi,
   completeOrderApi,
   failOrderApi,
-  genOrderTasksApi,
+  generateOrderTasksApi,
   getOrderUsersApi,
   reviewOrderApi,
   revokeOrderApi,
@@ -229,9 +229,8 @@ const fetchUsers = async () => {
 // 生成执行任务
 const genOrderTasks = useThrottleFn(async () => {
   uiState.genOrderTasksLoading = true
-  message.info('生成执行任务')
   try {
-    const res = await genOrderTasksApi({ order_id: props.orderDetail?.order_id }).catch(() => {})
+    const res = await generateOrderTasksApi({ order_id: props.orderDetail?.order_id }).catch(() => {})
     console.log('res: ', res)
     if (res) {
       router.push({ name: 'orders.tasks', params: { order_id: props.orderDetail?.order_id } })

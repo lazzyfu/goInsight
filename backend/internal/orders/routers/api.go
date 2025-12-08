@@ -29,15 +29,12 @@ func RegisterApiRoutes(v1 *gin.RouterGroup) {
 	v1.PUT("review", views.ReviewOrderView)
 	// 新增生成执行任务接口
 	v1.POST("generate-tasks", views.GenOrderTasksView)
-
-	v1.POST("hook", views.HookOrdersView)
-	
-	
-
 	v1.GET("tasks/:order_id", views.GetTasksView)
+	v1.POST("tasks/execute-batch", views.ExecuteBatchTasksView)
+	v1.POST("hook", views.HookOrdersView)
+
 	v1.GET("tasks/preview", views.PreviewTasksView)
 	v1.POST("tasks/execute-single", views.ExecuteSingleTaskView)
-	v1.POST("tasks/execute-all", views.ExecuteAllTaskView)
 
 	v1.GET("download/exportfile/:task_id", views.DownloadExportFileView)
 }

@@ -21,6 +21,6 @@ type ExecuteSingleTaskForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 }
 
-type ExecuteAllTaskForm struct {
+type ExecuteBatchTasksForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 }
