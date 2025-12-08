@@ -88,8 +88,8 @@ import {
 
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import { CodeOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
-import { debounce } from 'lodash-es'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import OrderInspect from './OrderInspect.vue'
@@ -167,7 +167,7 @@ const onEnvChange = () => {
 }
 
 // 数据库类型变化
-const onDbTypeChange = debounce(async () => {
+const onDbTypeChange = useThrottleFn(async () => {
   formState.instance_id = ''
   formState.schema = ''
   uiData.instances = []
@@ -182,10 +182,10 @@ const onDbTypeChange = debounce(async () => {
   }).catch(() => { })
 
   uiData.instances = res?.data || []
-}, 200)
+})
 
 // 实例变化
-const onInstanceChange = debounce(async () => {
+const onInstanceChange = useThrottleFn(async () => {
   formState.schema = ''
   uiData.schemas = []
 
@@ -197,10 +197,10 @@ const onInstanceChange = debounce(async () => {
   }).catch(() => { })
 
   uiData.schemas = res?.data || []
-}, 200)
+})
 
 // 提交工单
-const onSubmit = async () => {
+const onSubmit = useThrottleFn(async () => {
   uiState.loading = true
   formState.content = codemirrorRef.value?.getContent() || ''
 
@@ -219,7 +219,7 @@ const onSubmit = async () => {
   message.success('工单创建成功')
   router.push({ name: 'orders.list' })
   uiState.loading = false
-}
+})
 
 // 格式化
 const formatSql = () => {
@@ -227,7 +227,7 @@ const formatSql = () => {
 }
 
 // 语法检查
-const checkSyntax = debounce(async () => {
+const checkSyntax = useThrottleFn(async () => {
   const sql = codemirrorRef.value?.getContent() || ''
   if (!sql) return message.warning('SQL内容不能为空')
   if (!formState.environment || !formState.db_type || !formState.instance_id || !formState.schema) {
@@ -241,7 +241,7 @@ const checkSyntax = debounce(async () => {
     content: sql,
   }).catch(() => { })
   if (res) inspectResultTableRef.value.render(res.data)
-}, 300)
+})
 
 // 重置表单
 const resetForm = () => {

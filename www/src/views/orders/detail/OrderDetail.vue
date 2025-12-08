@@ -19,22 +19,28 @@
       <header-content :order-detail="orderDetail" />
     </a-page-header>
   </div>
-  <a-row :gutter="[16, 16]">
-    <a-col :span="8" :push="16">
-      <a-card size="small" title="操作日志" style="margin-top: 12px">
-        <a-timeline>
-          <a-timeline-item v-for="(item, index) in orderLogs" :key="index">
-            {{ item.created_at }} {{ item.msg }}
-          </a-timeline-item>
-        </a-timeline>
-      </a-card>
-    </a-col>
-    <a-col :span="16" :pull="8">
-      <a-card size="small" title="审批流" style="margin-top: 12px">
-        <approval-steps :approval-status="approvalStatus" />
-      </a-card>
-    </a-col>
-  </a-row>
+
+  <a-card size="small" title="审批流" style="margin-top: 12px">
+    <approval-steps :approval-status="approvalStatus" />
+  </a-card>
+
+  <a-card size="small" title="操作日志" style="margin-top: 12px">
+    <div
+      style="
+        max-height: 260px;
+        padding: 12px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        word-wrap: break-word;
+      "
+    >
+      <a-timeline>
+        <a-timeline-item v-for="(item, index) in orderLogs" :key="index">
+          {{ item.created_at }} {{ item.msg }}
+        </a-timeline-item>
+      </a-timeline>
+    </div>
+  </a-card>
 
   <a-card size="small" title="工单内容" style="margin-top: 12px">
     <CodeMirror ref="codemirrorRef" />
@@ -83,6 +89,7 @@ const getOrderLogs = async () => {
   }).catch((err) => {})
   if (res) {
     orderLogs.value = res.data
+    console.log('orderLogs.value: ', orderLogs.value)
   }
 }
 

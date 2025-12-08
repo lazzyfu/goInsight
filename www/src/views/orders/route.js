@@ -25,6 +25,12 @@ const route = {
       component: () => import('./detail/OrderDetail.vue'),
       meta: { title: '工单详情', keepAlive: true, hidden: true },
     },
+    {
+      name: 'orders.tasks',
+      path: '/orders/tasks/:order_id',
+      component: () => import('./tasks/TaskList.vue'),
+      meta: { title: '工单任务', keepAlive: true, hidden: true },
+    },
   ],
 }
 

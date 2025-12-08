@@ -7,7 +7,13 @@
     </a-button>
 
     <!-- 执行任务按钮 -->
-    <a-button v-if="uiState.showExecuteButton" @click="generateExecuteTask"> 执行 </a-button>
+    <a-button
+      v-if="uiState.showExecuteButton"
+      @click="genOrderTasks"
+      :loading="uiState.genOrderTasksLoading"
+    >
+      执行
+    </a-button>
 
     <!-- 已完成按钮 -->
     <a-button v-if="uiState.showCompleteFailButton" @click="openCompleteModal"> 已完成 </a-button>
@@ -36,16 +42,30 @@
     <!-- 表单 -->
     <a-form ref="formRef" :model="uiData.formData" layout="vertical">
       <!-- 转交操作新执行人 -->
-      <a-form-item v-if="uiData.modalAction === 'transfer'" label="新执行人" name="newExecutor"
-        :rules="[{ required: true, message: '请选择新执行人' }]">
-        <a-select v-model:value="uiData.formData.newExecutor" :options="uiData.userList"
-          :field-names="{ label: 'nick_name', value: 'username' }" allowClear style="width: 100%" />
+      <a-form-item
+        v-if="uiData.modalAction === 'transfer'"
+        label="新执行人"
+        name="newClaimer"
+        :rules="[{ required: true, message: '请选择新执行人' }]"
+      >
+        <a-select
+          v-model:value="uiData.formData.newClaimer"
+          :options="uiData.userList"
+          :field-names="{ label: 'nick_name', value: 'username' }"
+          allowClear
+          style="width: 100%"
+        />
       </a-form-item>
 
       <!-- 附加信息 -->
       <a-form-item label="附加信息" name="confirmMsg">
-        <a-textarea v-model:value="uiData.formData.confirmMsg" :placeholder="uiData.modalPlaceholder" :rows="3"
-          allow-clear style="width: 100%" />
+        <a-textarea
+          v-model:value="uiData.formData.confirmMsg"
+          :placeholder="uiData.modalPlaceholder"
+          :rows="3"
+          allow-clear
+          style="width: 100%"
+        />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -57,17 +77,23 @@ import {
   claimOrderApi,
   completeOrderApi,
   failOrderApi,
+  genOrderTasksApi,
   getOrderUsersApi,
   reviewOrderApi,
   revokeOrderApi,
   transferOrderApi,
 } from '@/api/order'
+import { useUserStore } from '@/store/user'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({ orderDetail: Object })
 const emit = defineEmits(['refresh'])
 const formRef = ref()
+const userStore = useUserStore()
+const router = useRouter()
 
 // UI 状态：只存 bool
 const uiState = reactive({
@@ -76,6 +102,7 @@ const uiState = reactive({
   showCompleteFailButton: false,
   showTransferButton: false,
   revokeDisabled: false,
+  genOrderTasksLoading: false,
 })
 
 // UI 数据
@@ -88,7 +115,7 @@ const uiData = reactive({
   modalOkText: '确定',
   modalCancelText: '取消',
   modalPlaceholder: '',
-  formData: { newExecutor: '', confirmMsg: '' },
+  formData: { newClaimer: '', confirmMsg: '' },
   userList: [],
 })
 
@@ -113,13 +140,20 @@ const getStatusConfig = (progress) => {
 const updateUIState = () => {
   const cfg = getStatusConfig(props.orderDetail?.progress)
   uiData.btnTitle = cfg.title || ''
+  // 主操作按钮是否显示
   uiState.showMainButton = cfg.showMain ?? false
+  // 撤销按钮是否禁用
   uiState.revokeDisabled = cfg.revokeDisabled ?? true
+  // 仅当工单处于CLAIMED、EXECUTING、COMPLETED、FAILED或REVIEWED状态时，显示执行按钮
   uiState.showExecuteButton = ['CLAIMED', 'EXECUTING', 'COMPLETED', 'FAILED', 'REVIEWED'].includes(
     props.orderDetail?.progress,
   )
+  // 仅当工单处于CLAIMED或EXECUTING状态时，显示已完成/已失败按钮
   uiState.showCompleteFailButton = ['CLAIMED', 'EXECUTING'].includes(props.orderDetail?.progress)
-  uiState.showTransferButton = ['CLAIMED', 'EXECUTING'].includes(props.orderDetail?.progress)
+  // 仅当工单处于CLAIMED状态且当前用户为执行人时，显示转交按钮
+  uiState.showTransferButton =
+    ['CLAIMED'].includes(props.orderDetail?.progress) &&
+    props.orderDetail?.claimer === userStore.username
 }
 
 // 监听工单进度变化
@@ -157,8 +191,8 @@ const apiMap = {
   fail: failOrderApi,
 }
 
-// 提交 modal 操作
-const handleSubmit = async () => {
+// 提交
+const handleSubmit = useThrottleFn(async () => {
   uiData.modalLoading = true
   const payload = { order_id: props.orderDetail?.order_id, msg: uiData.formData.confirmMsg }
   try {
@@ -166,7 +200,7 @@ const handleSubmit = async () => {
     if (uiData.modalAction === 'approval')
       res = await apiMap.approval({ ...payload, status: 'APPROVED' })
     else if (uiData.modalAction === 'transfer')
-      res = await apiMap.transfer({ ...payload, new_executor: uiData.formData.newExecutor })
+      res = await apiMap.transfer({ ...payload, new_claimer: uiData.formData.newClaimer })
     else res = await apiMap[uiData.modalAction](payload)
 
     if (res?.code === '0000') {
@@ -178,7 +212,7 @@ const handleSubmit = async () => {
     uiData.modalOpen = false
     formRef.value?.resetFields()
   }
-}
+})
 
 // 取消 modal
 const handleCancel = () => {
@@ -192,6 +226,18 @@ const fetchUsers = async () => {
   if (res) uiData.userList = res.data
 }
 
-// 占位：生成执行任务
-const generateExecuteTask = () => message.info('生成执行任务功能尚未实现')
+// 生成执行任务
+const genOrderTasks = useThrottleFn(async () => {
+  uiState.genOrderTasksLoading = true
+  message.info('生成执行任务')
+  try {
+    const res = await genOrderTasksApi({ order_id: props.orderDetail?.order_id }).catch(() => {})
+    console.log('res: ', res)
+    if (res) {
+      router.push({ name: 'orders.tasks', params: { order_id: props.orderDetail?.order_id } })
+    }
+  } finally {
+    uiState.genOrderTasksLoading = false
+  }
+})
 </script>

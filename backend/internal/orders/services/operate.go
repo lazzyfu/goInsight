@@ -209,18 +209,18 @@ func (s *TransferOrderService) Run() (err error) {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{
-				"executor": s.NewExecutor,
+				"claimer": s.NewClaimer,
 			}).Error; err != nil {
 			return err
 		}
 		// 记录操作日志
-		if err := WriteOrderLog(tx, s.OrderID, s.Username, fmt.Sprintf("用户%s转交工单给%s，附加消息：%s", s.Username, s.NewExecutor, s.Msg)); err != nil {
+		if err := WriteOrderLog(tx, s.OrderID, s.Username, fmt.Sprintf("用户%s转交工单给%s，附加消息：%s", s.Username, s.NewClaimer, s.Msg)); err != nil {
 			global.App.Log.Error("TransferOrderService.Run error:", err.Error())
 			return err
 		}
 		// 发送消息
 		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s将工单转交给了%s\n>工单标题：%s\n>附加消息：%s", s.Username, s.NewExecutor, record.Title, s.Msg)
+		msg := fmt.Sprintf("您好，用户%s将工单转交给了%s\n>工单标题：%s\n>附加消息：%s", s.Username, s.NewClaimer, record.Title, s.Msg)
 		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})

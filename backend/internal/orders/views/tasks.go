@@ -19,26 +19,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 提交工单
-func GenerateTasksView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
-	var form *forms.GenerateTasksForm = &forms.GenerateTasksForm{}
-	if err := c.ShouldBind(&form); err == nil {
-		service := services.GenerateTasksService{
-			GenerateTasksForm: form,
-			C:                 c,
-			Username:          username,
-		}
-		if err := service.Run(); err != nil {
-			response.Fail(c, err.Error())
-			return
-		}
-		response.Success(c, nil, "success")
-	} else {
+// 生成执行任务
+func GenOrderTasksView(c *gin.Context) {
+	username := jwt.ExtractClaims(c)["id"].(string)
+	var form forms.GenOrderTasksForm
+	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
+		return
 	}
-
+	service := services.GenOrderTasksService{
+		GenOrderTasksForm: &form,
+		C:                 c,
+		Username:          username,
+	}
+	if err := service.Run(); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
 }
 
 // 获取任务列表
