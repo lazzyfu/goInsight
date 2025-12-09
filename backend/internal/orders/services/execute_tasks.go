@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
 
 	"github.com/lazzyfu/goinsight/pkg/notifier"
-	"github.com/lazzyfu/goinsight/pkg/pagination"
-	"github.com/lazzyfu/goinsight/pkg/parser"
 	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/orders/api/base"
@@ -22,118 +19,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
-type GenOrderTasksService struct {
-	*forms.GenOrderTasksForm
-	C        *gin.Context
-	Username string
-}
-
-func (s *GenOrderTasksService) subTasksExist() bool {
-	// 如果tasks记录存在，跳过
-	var count int64
-	global.App.DB.
-		Model(&ordersModels.InsightOrderTasks{}).
-		Where("order_id = ?", s.OrderID).
-		Count(&count)
-	return count == 0
-}
-
-func (s *GenOrderTasksService) Run() (err error) {
-	// 工单是否存在
-	var record ordersModels.InsightOrderRecords
-	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
-	if tx.RowsAffected == 0 {
-		return fmt.Errorf("记录`%s`不存在", s.OrderID)
-	}
-	// 检查是否有执行权限
-	if s.Username != record.Claimer {
-		return fmt.Errorf("您不是工单认领人，没有执行工单权限")
-	}
-	// 判断审核状态
-	// 'PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED', 'FAILED','REVIEWED','REVOKED'
-	if !utils.IsContain([]string{"CLAIMED", "EXECUTING", "COMPLETED", "FAILED", "REVIEWED"}, string(record.Progress)) {
-		return fmt.Errorf("当前工单状态，禁止操作")
-	}
-	// 如果tasks记录存在，跳过
-	if !s.subTasksExist() {
-		return nil
-	}
-	// tasks记录不存在，生成记录
-	sqls, err := parser.SplitSQLText(record.Content)
-	if err != nil {
-		return err
-	}
-	// 批量插入
-	var tasks []map[string]any
-	for _, sql := range sqls {
-		tasks = append(tasks, map[string]any{
-			"OrderID":    s.OrderID,
-			"TaskID":     uuid.New(),
-			"DBType":     record.DBType,
-			"SQLType":    record.SQLType,
-			"SQL":        sql,
-			"created_at": time.Now().Format("2006-01-02 15:04:05"),
-			"updated_at": time.Now().Format("2006-01-02 15:04:05"),
-		})
-	}
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&ordersModels.InsightOrderTasks{}).Create(tasks).Error; err != nil {
-			global.App.Log.Error(err)
-			return err
-		}
-		return nil
-	})
-}
-
-// 获取任务列表
-type GetTasksServices struct {
-	*forms.GetTasksForm
-	C        *gin.Context
-	OrderID  string `json:"order_id"`
-	Username string
-}
-
-func (s *GetTasksServices) Run() (responseData any, total int64, err error) {
-	var records []ordersModels.InsightOrderTasks
-	tx := global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", s.OrderID).Scan(&records)
-	if tx.RowsAffected == 0 {
-		return records, total, fmt.Errorf("记录`%s`不存在", s.OrderID)
-	}
-	// 搜索
-	if s.Search != "" {
-		tx = tx.Where("sql like ?", "%"+s.Search+"%")
-	}
-	if s.Progress != "" {
-		tx = tx.Where("progress=?", s.Progress)
-	}
-	total = pagination.Pager(&s.PaginationQ, tx, &records)
-	return &records, total, nil
-}
-
-type PreviewTasksServices struct {
-	*forms.PreviewTasksForm
-	C *gin.Context
-}
-
-func (s *PreviewTasksServices) Run() (responseData any, err error) {
-	type record struct {
-		Total                        int `json:"total"`
-		Unexecuted                   int `json:"unexecuted"`
-		Processing                   int `json:"processing"`
-		Completed                    int `json:"completed"`
-		CompletedWithRollbackFailure int `json:"completed_with_rollback_failure"`
-		Failed                       int `json:"failed"`
-		Paused                       int `json:"paused"`
-	}
-	var records record
-	global.App.DB.Table("`insight_order_tasks`").
-		Select("COUNT(*) as total, SUM(if(progress='未执行',1,0)) as unexecuted, SUM(if(progress='执行中',1,0)) as processing, SUM(if(progress='已完成',1,0)) as completed, SUM(if(progress='已失败',1,0)) as failed,SUM(if(progress='已暂停',1,0)) as paused").
-		Where("order_id=?", s.OrderID).
-		Take(&records)
-
-	return records, nil
-}
 
 // 检查工单所有任务是否完成，如果所有子任务已完成，更新工单状态为已完成
 func updateOrderStatusToFinish(order_id string) {
@@ -166,51 +51,34 @@ func updateOrderStatusToFinish(order_id string) {
 	}
 }
 
-// 检查当前工单的所有任务中是否有执行中的任务
-func checkTasksProgressIsDoing(order_id string) bool {
-	var records []ordersModels.InsightOrderTasks
-	global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", order_id).Scan(&records)
-	for _, record := range records {
-		if record.Progress == "执行中" {
-			return false
-		}
-	}
-	return true
-}
-
-// 检查当前工单的所有任务中是否有已暂停的任务
-func checkTasksProgressIsPause(order_id string) bool {
-	var records []ordersModels.InsightOrderTasks
-	global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", order_id).Scan(&records)
-	for _, record := range records {
-		if record.Progress == "已暂停" {
-			return false
-		}
-	}
-	return true
+// 判断当前工单是否没有执行中的任务
+func noTaskExecuting(orderID string) bool {
+	var count int64
+	global.App.DB.Table("`insight_order_tasks`").
+		Where("order_id=? AND progress='EXECUTING'", orderID).
+		Count(&count)
+	return count == 0
 }
 
 // 检查工单状态
-func checkOrderStatus(order_id string, username string) error {
+func checkOrderStatusAndPerm(order_id string, username string) error {
 	var record ordersModels.InsightOrderRecords
 	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", order_id).Take(&record)
+	if tx.Error != nil {
+		return fmt.Errorf("查询工单记录失败: %v", tx.Error)
+	}
 	if tx.RowsAffected == 0 {
 		return fmt.Errorf("工单记录`%s`不存在", order_id)
 	}
 	// 检查是否有执行权限
-	var executorList []string
-	err := json.Unmarshal([]byte(record.Executor), &executorList)
-	if err != nil {
-		return err
+	if record.Claimer != username {
+		return fmt.Errorf("您不是工单认领人，没有执行工单权限")
 	}
-	if !utils.IsContain(executorList, username) {
-		return fmt.Errorf("您没有执行工单权限")
+	// 检查状态是否允许执行
+	if !utils.IsContain([]string{"CLAIMED", "EXECUTING"}, string(record.Progress)) {
+		return fmt.Errorf("当前工单状态不为已认领或执行中，禁止执行")
 	}
-	// 当工单的状态不为已批准或执行中的时候，禁止执行
-	if utils.IsContain([]string{"已批准", "执行中"}, string(record.Progress)) {
-		return nil
-	}
-	return fmt.Errorf("执行失败，当前工单状态为：%s", string(record.Progress))
+	return nil
 }
 
 func sendExportFileInfoToApplicant(task_id uuid.UUID) {
@@ -303,7 +171,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	return string(data), err
 }
 
-// 执行单个任务
+// ---------- 执行单个任务 ----------
 type ExecuteSingleTaskService struct {
 	*forms.ExecuteSingleTaskForm
 	C        *gin.Context
@@ -312,7 +180,7 @@ type ExecuteSingleTaskService struct {
 
 func (s *ExecuteSingleTaskService) Run() (err error) {
 	// 当工单的状态不为已批准或执行中的时候，禁止执行任务
-	if err = checkOrderStatus(s.OrderID, s.Username); err != nil {
+	if err = checkOrderStatusAndPerm(s.OrderID, s.Username); err != nil {
 		return err
 	}
 	// 获取任务记录
@@ -330,7 +198,7 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		return errors.New("当前任务正在执行中，请勿重复执行")
 	}
 	// 判断当前工单的所有任务是否存在执行中的任务，避免跳过执行中的任务执行其他的任务
-	if !checkTasksProgressIsDoing(s.OrderID) {
+	if !noTaskExecuting(s.OrderID) {
 		return errors.New("当前有任务正在执行中，请先等待执行完成")
 	}
 	// 更新当前任务进度为执行中，工单状态为执行中
@@ -338,13 +206,13 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		return global.App.DB.Transaction(func(tx *gorm.DB) error {
 			if err := tx.Model(&ordersModels.InsightOrderTasks{}).
 				Where("id=? and order_id=?", s.ID, s.OrderID).
-				Update("progress", "执行中").Error; err != nil {
+				Update("progress", "EXECUTING").Error; err != nil {
 				global.App.Log.Error(err)
 				return err
 			}
 			if err := tx.Model(&ordersModels.InsightOrderRecords{}).
 				Where("order_id=?", s.OrderID).
-				Update("progress", "执行中").Error; err != nil {
+				Update("progress", "EXECUTING").Error; err != nil {
 				global.App.Log.Error(err)
 				return err
 			}
@@ -363,11 +231,11 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 		// 错误类型断言，可以添加更多状态
 		switch err.(type) {
 		case base.SQLExecuteError:
-			taskProgress = "已失败"
+			taskProgress = "FAILED"
 		case base.RollbackSQLError:
-			taskProgress = "已完成"
+			taskProgress = "COMPLETED"
 		default:
-			taskProgress = "已失败"
+			taskProgress = "FAILED"
 		}
 		global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 			Where("id=? and order_id=?", s.ID, s.OrderID).
@@ -378,7 +246,7 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 	// 没有错误返回，更新任务状态为已完成
 	global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 		Where("id=? and order_id=?", s.ID, s.OrderID).
-		Updates(map[string]any{"progress": "已完成", "result": data})
+		Updates(map[string]any{"progress": "COMPLETED", "result": data})
 
 	// 导出工单需要发送导出文件信息给申请人、抄送人
 	go sendExportFileInfoToApplicant(task.TaskID)
@@ -388,7 +256,7 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 	return nil
 }
 
-// 批量执行任务
+// ---------- 批量执行任务 ----------
 type ExecuteBatchTasksService struct {
 	*forms.ExecuteBatchTasksForm
 	C        *gin.Context
@@ -396,42 +264,37 @@ type ExecuteBatchTasksService struct {
 }
 
 func (s *ExecuteBatchTasksService) Run() (err error) {
-	// 当工单的状态不为已批准或执行中的时候，禁止执行任务
-	if err = checkOrderStatus(s.OrderID, s.Username); err != nil {
+	// 检查工单状态和执行权限
+	if err = checkOrderStatusAndPerm(s.OrderID, s.Username); err != nil {
 		return err
 	}
-	// 判断当前工单的所有任务中是否存在执行中的任务，如果存在，不执行
-	if !checkTasksProgressIsDoing(s.OrderID) {
-		return errors.New("当前有任务正在执行中，请先等待执行完成")
-	}
-	//  判断当前工单的所有任务中是否存在已暂停的任务，如果存在，不执行；可手动执行单个任务
-	if !checkTasksProgressIsPause(s.OrderID) {
+	// 判断当前工单的所有任务是否存在执行中的任务，避免跳过执行中的任务执行其他的任务
+	if !noTaskExecuting(s.OrderID) {
 		return errors.New("当前有任务正在执行中，请先等待执行完成")
 	}
 	// 更新当前工单进度为执行中
 	if err := global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
 		Where("order_id=?", s.OrderID).
-		Update("progress", "执行中").Error; err != nil {
+		Update("progress", "EXECUTING").Error; err != nil {
 		global.App.Log.Error(err)
 		return err
 	}
 	// 获取工单所有的任务
 	var tasks []ordersModels.InsightOrderTasks
-	tx := global.App.DB.Table("`insight_order_tasks`").Where("order_id=?", s.OrderID).Scan(&tasks)
-	if tx.RowsAffected == 0 {
-		return errors.New("任务记录不存在")
+	if err := global.App.DB.Where("order_id=?", s.OrderID).Find(&tasks).Error; err != nil {
+		return err
 	}
-	// 执行任务
+	// 串行执行任务
 	for _, task := range tasks {
 		// 跳过已完成的任务
-		if task.Progress == "已完成" {
+		if task.Progress == "COMPLETED" {
 			continue
 		}
 
 		// 更新当前任务进度为执行中
-		if err := tx.Model(&ordersModels.InsightOrderTasks{}).
+		if err := global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 			Where("task_id=?", task.TaskID).
-			Update("progress", "执行中").Error; err != nil {
+			Update("progress", "EXECUTING").Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}
@@ -445,11 +308,11 @@ func (s *ExecuteBatchTasksService) Run() (err error) {
 			// 错误类型断言，可以添加更多状态
 			switch err.(type) {
 			case base.SQLExecuteError:
-				taskProgress = "已失败"
+				taskProgress = "FAILED"
 			case base.RollbackSQLError:
-				taskProgress = "已完成"
+				taskProgress = "COMPLETED"
 			default:
-				taskProgress = "已失败"
+				taskProgress = "FAILED"
 			}
 			global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 				Where("task_id=?", task.TaskID).
@@ -457,7 +320,7 @@ func (s *ExecuteBatchTasksService) Run() (err error) {
 		} else {
 			global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 				Where("task_id=?", task.TaskID).
-				Updates(map[string]any{"progress": "已完成", "result": data})
+				Updates(map[string]any{"progress": "COMPLETED", "result": data})
 
 			// 导出工单需要发送导出文件信息给申请人、抄送人
 			go sendExportFileInfoToApplicant(task.TaskID)

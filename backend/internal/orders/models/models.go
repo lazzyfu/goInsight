@@ -125,7 +125,7 @@ type InsightOrderTasks struct {
 	SQLType  models.EnumType `gorm:"type:ENUM('DML', 'DDL', 'EXPORT');default:'DML';comment:SQL类型" json:"sql_type"`
 	Executor string          `gorm:"type:varchar(128);null;default:null;comment:任务执行人" json:"executor"`
 	SQL      string          `gorm:"type:text;null;comment:SQL语句" json:"sql"`
-	Progress models.EnumType `gorm:"type:ENUM('PENDING', 'EXECUTING', 'COMPLETED', 'FAILED', 'PAUSED');default:'PENDING';comment:进度" json:"progress"`
+	Progress models.EnumType `gorm:"type:ENUM('PENDING', 'EXECUTING', 'COMPLETED', 'FAILED');default:'PENDING';comment:进度" json:"progress"`
 	Result   datatypes.JSON  `gorm:"type:json;null;default:null;comment:执行结果" json:"result"`
 }
 

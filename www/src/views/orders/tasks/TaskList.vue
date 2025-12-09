@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { getOrderTasksApi } from '@/api/order'
+import { executebatchTasksApi, getOrderTasksApi } from '@/api/order'
 import { EyeOutlined, FileSearchOutlined, PlayCircleOutlined } from '@ant-design/icons-vue'
 import { onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
@@ -206,8 +206,12 @@ const handleCancel = (e) => {
 }
 
 // 批量执行
-const executeBatchTasks = () => {
+const executeBatchTasks = async () => {
   console.log('执行全部任务')
+  const res = await executebatchTasksApi({ order_id: orderId })
+  if (res) {
+    fetchData()
+  }
 }
 
 onMounted(() => {
