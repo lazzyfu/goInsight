@@ -29,7 +29,7 @@ func (s *GetTasksServices) Run() (responseData any, total int64, err error) {
 	}
 	// 搜索
 	if s.Search != "" {
-		tx = tx.Where("sql like ?", "%"+s.Search+"%")
+		tx = tx.Where("`sql` like ?", "%"+s.Search+"%")
 	}
 	if s.Progress != "" {
 		tx = tx.Where("progress=?", s.Progress)

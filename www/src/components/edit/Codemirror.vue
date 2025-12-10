@@ -1,5 +1,5 @@
 <template>
-  <div ref="editor" :initVal="initVal" style="height: 100%"></div>
+  <div ref="editor" :initVal="props.initVal" :editHeight="props.editHeight" style="height: 100%"></div>
 </template>
 
 <script setup>
@@ -20,6 +20,10 @@ const props = defineProps({
   initVal: {
     type: String,
     default: 'SELECT * FROM ',
+  },
+  editHeight: {
+    type: [String, Number],
+    default: '200px',
   },
 })
 
@@ -60,7 +64,7 @@ const initEditor = () => {
     parent: editor.value,
   })
   editorView.value.dom.style.border = '1px solid #f0f0f0'
-  editorView.value.dom.style.height = '470px'
+  editorView.value.dom.style.height = props.editHeight
 }
 
 // 设置为只读，但可选中、可复制

@@ -2,7 +2,7 @@
   <a-modal
     :open="open"
     title="任务详情"
-    width="50%"
+    width="55%"
     @cancel="handleCancel"
   >
     <template #footer>

@@ -53,7 +53,7 @@
   </a-space>
   <div style="margin-top: 6px">
     <a-spin :spinning="uiState.tableLoading" tip="Loading...">
-      <CodeMirror ref="codemirrorRef" />
+      <CodeMirror ref="codemirrorRef" :editHeight="'470px'" />
       <a-card class="box-card" style="margin-top: 8px; padding: 8px">
         <div v-html="uiData.queryResultMessage" style="white-space: pre-wrap"></div>
       </a-card>

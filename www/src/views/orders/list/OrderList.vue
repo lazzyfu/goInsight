@@ -1,5 +1,5 @@
 <template>
-  <a-card  title="历史工单">
+  <a-card title="历史工单">
     <div class="search-wrapper">
       <div class="search-row">
         <a-switch
@@ -63,7 +63,17 @@
 <script setup>
 import { getOrderListApi } from '@/api/order'
 import { DatabaseOutlined, FieldTimeOutlined } from '@ant-design/icons-vue'
+import { useIntervalFn } from '@vueuse/core'
 import { onMounted, reactive } from 'vue'
+
+// 定时器, 自动刷新列表
+const { pause, resume, isActive } = useIntervalFn(
+  () => {
+    fetchData()
+  },
+  5000,
+  { immediate: true }, // 组件挂载时立刻执行一次
+)
 
 // 状态
 const uiState = reactive({

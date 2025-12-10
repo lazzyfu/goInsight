@@ -43,23 +43,23 @@ func GenOrderTasksView(c *gin.Context) {
 func GetTasksView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.GetTasksForm = &forms.GetTasksForm{}
-	if err := c.ShouldBind(&form); err == nil {
-		service := services.GetTasksServices{
-			GetTasksForm: form,
-			OrderID:      c.Param("order_id"),
-			C:            c,
-			Username:     username,
-		}
-		returnData, total, err := service.Run()
-		if err != nil {
-			response.Fail(c, err.Error())
-			return
-		}
-		response.PaginationSuccess(c, total, returnData)
-	} else {
+	var form forms.GetTasksForm
+	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
+		return
 	}
+	service := services.GetTasksServices{
+		GetTasksForm: &form,
+		OrderID:      c.Param("order_id"),
+		C:            c,
+		Username:     username,
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
 }
 
 // 预览任务

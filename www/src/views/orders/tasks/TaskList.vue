@@ -1,22 +1,28 @@
 <template>
   <a-card title="任务列表">
-    <div class="search-wrapper">
-      <div class="search-row">
-        <a-tooltip title="依次执行所有任务">
-          <a-button type="primary" @click="executeBatchTasks">
-            <PlayCircleOutlined />
-            全部执行
-          </a-button>
-        </a-tooltip>
+    <a-space size="middle" wrap>
+      <a-button type="primary" @click="executeBatchTasks">
+        <PlayCircleOutlined />
+        全部执行
+      </a-button>
 
-        <a-input-search
-          v-model:value="uiData.searchValue"
-          placeholder="请输入SQL文本进行搜索"
-          style="width: 350px"
-          @search="handleSearch"
-        />
-      </div>
-    </div>
+      <!-- 进度筛选 -->
+      <a-select
+        v-model:value="uiData.progress"
+        :options="progressOptions"
+        allowClear
+        style="width: 140px"
+        placeholder="任务进度"
+      />
+
+      <!-- 搜索框 -->
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="请输入 SQL 文本"
+        style="width: 260px"
+        @search="handleSearch"
+      />
+    </a-space>
 
     <div style="margin-top: 12px">
       <a-table
@@ -42,6 +48,12 @@
               <EyeOutlined />
             </a>
             {{ record.sql }}
+          </template>
+          <template v-else-if="column.key === 'updated_at'">
+            <div class="time-cell">
+              <div class="time-main"><FieldTimeOutlined /> {{ formatDate(record.updated_at) }}</div>
+              <div class="time-sub">{{ formatTime(record.updated_at) }}</div>
+            </div>
           </template>
           <template v-if="column.key === 'action'">
             <a-space>
@@ -73,13 +85,24 @@
     <highlightjs language="sql" :code="uiData.sql" />
   </a-modal>
 
-  <TaskResult :open="uiState.taskResultOpen" v-model:modelValue="taskResultData" @update:open="uiState.taskResultOpen = $event"> </TaskResult>
+  <TaskResult
+    :open="uiState.taskResultOpen"
+    v-model:modelValue="taskResultData"
+    @update:open="uiState.taskResultOpen = $event"
+  >
+  </TaskResult>
 </template>
 
 <script setup>
 import { executeTaskApi, executebatchTasksApi, getOrderTasksApi } from '@/api/order'
-import { EyeOutlined, FileSearchOutlined, PlayCircleOutlined } from '@ant-design/icons-vue'
-import { useThrottleFn } from '@vueuse/core'
+import {
+  EyeOutlined,
+  FieldTimeOutlined,
+  FileSearchOutlined,
+  PlayCircleOutlined,
+} from '@ant-design/icons-vue'
+import { useIntervalFn, useThrottleFn } from '@vueuse/core'
+import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import TaskResult from './TaskResult.vue'
@@ -87,6 +110,21 @@ import TaskResult from './TaskResult.vue'
 const route = useRoute()
 const orderID = route.params.order_id
 const taskResultData = ref({})
+const progressOptions = [
+  { value: 'PENDING', label: '待执行' },
+  { value: 'EXECUTING', label: '执行中' },
+  { value: 'COMPLETED', label: '已完成' },
+  { value: 'FAILED', label: '已失败' },
+]
+
+// 定时器, 自动刷新列表
+const { pause, resume, isActive } = useIntervalFn(
+  () => {
+    fetchData()
+  },
+  5000,
+  { immediate: true }  // 组件挂载时立刻执行一次
+)
 
 // 状态
 const uiState = reactive({
@@ -99,6 +137,7 @@ const uiState = reactive({
 const uiData = reactive({
   searchValue: '',
   tableData: [],
+  progress: '',
   sql: '',
   tableColumns: [
     {
@@ -166,6 +205,7 @@ const fetchData = async () => {
     page: pagination.current,
     is_page: true,
     search: uiData.searchValue,
+    progress: uiData.progress,
     order_id: orderID,
   }
   const res = await getOrderTasksApi(params).catch(() => {})
@@ -212,6 +252,7 @@ const handleCancel = (e) => {
 
 // 执行单个任务
 const executeTask = useThrottleFn(async (record) => {
+  message.success(`开始执行任务: ${record.task_id}`)
   const res = await executeTaskApi({ order_id: orderID, task_id: record.task_id }).catch(() => {})
   if (res) {
     fetchData()
@@ -220,6 +261,7 @@ const executeTask = useThrottleFn(async (record) => {
 
 // 批量执行
 const executeBatchTasks = useThrottleFn(async () => {
+  message.success('开始批量执行任务')
   const res = await executebatchTasksApi({ order_id: orderID }).catch(() => {})
   if (res) {
     fetchData()
@@ -235,6 +277,7 @@ const showTaskResult = (record) => {
 onMounted(() => {
   fetchData()
 })
+
 </script>
 
 <style scoped>
