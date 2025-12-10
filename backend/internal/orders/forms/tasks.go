@@ -16,8 +16,8 @@ type PreviewTasksForm struct {
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 }
 
-type ExecuteSingleTaskForm struct {
-	ID      int64  `form:"id" json:"id" binding:"required"`
+type ExecuteTaskForm struct {
+	TaskID  string  `form:"task_id" json:"task_id" binding:"required,uuid"`
 	OrderID string `form:"order_id" json:"order_id" binding:"required,uuid"`
 }
 

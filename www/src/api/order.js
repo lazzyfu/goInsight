@@ -20,4 +20,5 @@ export const reviewOrderApi = (data) => put(`/api/v1/orders/review`, data)
 export const generateOrderTasksApi = (data) => post(`/api/v1/orders/generate-tasks`, data)
 // 获取tasks
 export const getOrderTasksApi = (params) => get(`/api/v1/orders/tasks/${params.order_id}`, params)
+export const executeTaskApi = (data) => post(`/api/v1/orders/tasks/execute`, data)
 export const executebatchTasksApi = (data) => post(`/api/v1/orders/tasks/execute-batch`, data)

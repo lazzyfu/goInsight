@@ -10,29 +10,15 @@ import (
 // 工单记录
 /**
 # 工单生命周期
-| 阶段            | 描述                | 示例触发方     |
-| ------------- | ----------------- | --------- |
-| **PENDING**   | 待审批（创建后进入此状态）     | 工单提交人     |
-| **APPROVED**  | 已批准，待执行           | 审批人同意     |
-| **REJECTED**  | 已驳回，流程终止          | 审批人驳回     |
-| **CLAIMED**   | 已认领，执行人接单         | 执行人主动认领   |
-| **EXECUTING** | 执行中               | 执行人操作     |
-| **COMPLETED** | 执行完成，待复核          | 执行人提交结果   |
-| **REVIEWED**  | 已复核，流程结束          | 复核人通过     |
-| **CLOSED**    | 已关闭，非正常终止（例如人工关闭） | 任意角色（管理方） |
-
-# 前端展示映射
-| 枚举        | 显示文案 | 显示颜色    |
-| --------- | ---- | ------- |
-| PENDING   | 待审批  | default |
-| APPROVED  | 已批准  | blue    |
-| REJECTED  | 已驳回  | red     |
-| CLAIMED   | 已认领  | cyan    |
-| EXECUTING | 执行中  | orange  |
-| COMPLETED | 已完成  | green   |
-| REVIEWED  | 已复核  | green   |
-| CLOSED    | 已关闭  | gray    |
-
+"PENDING":   "待审批",
+"APPROVED":  "已批准",
+"REJECTED":  "已驳回",
+"CLAIMED":   "已认领",
+"EXECUTING": "执行中",
+"COMPLETED": "已完成",
+"FAILED":    "已失败",
+"REVIEWED":  "已复核",
+"REVOKED":   "已撤销",
 */
 type InsightOrderRecords struct {
 	*models.Model

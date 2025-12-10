@@ -89,7 +89,6 @@ const getOrderLogs = async () => {
   }).catch((err) => {})
   if (res) {
     orderLogs.value = res.data
-    console.log('orderLogs.value: ', orderLogs.value)
   }
 }
 

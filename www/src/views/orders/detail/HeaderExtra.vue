@@ -29,7 +29,7 @@
   </a-space>
 
   <!-- 操作弹窗 -->
-  <a-modal :open="uiData.modalOpen" :title="uiData.modalTitle" width="45%" @cancel="handleCancel">
+  <a-modal :open="uiData.modalOpen" :title="uiData.modalTitle" @cancel="handleCancel">
     <template #footer>
       <!-- 取消按钮 -->
       <a-button @click="handleCancel">{{ uiData.modalCancelText }}</a-button>
@@ -229,9 +229,11 @@ const fetchUsers = async () => {
 // 生成执行任务
 const genOrderTasks = useThrottleFn(async () => {
   uiState.genOrderTasksLoading = true
+  message.success('正在加载执行任务，请稍候...')
   try {
-    const res = await generateOrderTasksApi({ order_id: props.orderDetail?.order_id }).catch(() => {})
-    console.log('res: ', res)
+    const res = await generateOrderTasksApi({ order_id: props.orderDetail?.order_id }).catch(
+      () => {},
+    )
     if (res) {
       router.push({ name: 'orders.tasks', params: { order_id: props.orderDetail?.order_id } })
     }

@@ -82,24 +82,25 @@ func PreviewTasksView(c *gin.Context) {
 }
 
 // 执行单个任务
-func ExecuteSingleTaskView(c *gin.Context) {
+func ExecuteTaskView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	var form *forms.ExecuteSingleTaskForm = &forms.ExecuteSingleTaskForm{}
-	if err := c.ShouldBind(&form); err == nil {
-		service := services.ExecuteSingleTaskService{
-			ExecuteSingleTaskForm: form,
-			C:                     c,
-			Username:              username,
-		}
-		if err := service.Run(); err != nil {
-			response.Fail(c, err.Error())
-			return
-		}
-		response.Success(c, nil, "success")
-	} else {
+	var form forms.ExecuteTaskForm
+	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
+		return
 	}
+	service := services.ExecuteTaskService{
+		ExecuteTaskForm: &form,
+		C:               c,
+		Username:        username,
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
 
 }
 

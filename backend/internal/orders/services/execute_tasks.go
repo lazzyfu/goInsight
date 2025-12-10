@@ -20,71 +20,116 @@ import (
 	"gorm.io/gorm"
 )
 
-// 检查工单所有任务是否完成，如果所有子任务已完成，更新工单状态为已完成
-func updateOrderStatusToFinish(order_id string) {
-	// 判断所有任务是否都完成
-	type TaskCount struct {
-		Count int64
-	}
-	var taskCount TaskCount
-	global.App.DB.Table("`insight_order_tasks`").
-		Select("count(*) as count").
-		Where("order_id=? and progress not in ('已完成')", order_id).
-		Scan(&taskCount)
-	if taskCount.Count == 0 {
-		// 更新工单为已完成
-		global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
-			Where("order_id=?", order_id).
-			Update("progress", "已完成")
+// 尝试获取锁，如果返回 false 表示已经有用户在执行
+func acquireOrderLock(ctx *gin.Context, orderID string) (bool, error) {
+	key := fmt.Sprintf("order:lock:%s", orderID)
+	ok, err := global.App.Redis.SetNX(ctx, key, "1", 0).Result()
+	return ok, err
+}
 
-		// 发送通知消息
-		var record ordersModels.InsightOrderRecords
-		global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
-			Where("order_id=?", order_id).Scan(&record)
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf(
-			"您好，工单已经执行完成，请悉知\n"+
-				">工单标题：%s",
-			record.Title,
-		)
-		notifier.SendMessage(record.Title, order_id, receiver, msg)
-	}
+// 释放锁
+func releaseOrderLock(ctx *gin.Context, orderID string) error {
+	key := fmt.Sprintf("order:lock:%s", orderID)
+	_, err := global.App.Redis.Del(ctx, key).Result()
+	return err
+}
+
+// 逻辑：
+// 1) 如果存在 EXECUTING 的任务 -> 不处理（返回 nil）
+// 2) 否则如果存在 FAILED 的任务 -> 将工单置为 FAILED
+// 3) 否则（所有任务均为 COMPLETED）-> 将工单置为 COMPLETED 并通知申请人
+func updateOrderStatusToFinish(orderID string) error {
+	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+		// 统计状态
+		var counts struct {
+			Executing int64
+			Failed    int64
+			NotDone   int64
+		}
+
+		if err := tx.Table("`insight_order_tasks`").
+			Select(
+				"SUM(CASE WHEN progress = ? THEN 1 ELSE 0 END) AS executing,"+
+					"SUM(CASE WHEN progress = ? THEN 1 ELSE 0 END) AS failed,"+
+					"SUM(CASE WHEN progress != ? THEN 1 ELSE 0 END) AS not_done",
+				"EXECUTING", "FAILED", "COMPLETED").
+			Where("order_id = ?", orderID).
+			Scan(&counts).Error; err != nil {
+			return err
+		}
+		// 如果还有执行中的任务，不变更
+		if counts.Executing > 0 {
+			return nil
+		}
+
+		// 如果存在失败任务，将工单置为 FAILED
+		if counts.Failed > 0 {
+			if tx := tx.Model(&ordersModels.InsightOrderRecords{}).
+				Where("order_id = ?", orderID).
+				Update("progress", "FAILED"); tx.Error != nil {
+				return tx.Error
+			}
+			return nil
+		}
+		// 如果没有未完成任务（NotDone==0），则全部完成
+		if counts.NotDone == 0 {
+			if tx := tx.Model(&ordersModels.InsightOrderRecords{}).
+				Where("order_id = ?", orderID).
+				Update("progress", "COMPLETED"); tx.Error != nil {
+				return tx.Error
+			}
+			// 读取记录用于通知（事务提交后通知，确保不会阻塞事务）
+			var record ordersModels.InsightOrderRecords
+			if tx := tx.Where("order_id = ?", orderID).Take(&record); tx.Error != nil {
+				// 更新虽已成功，但读取失败则直接返回 nil（不影响状态）
+				return nil
+			}
+			receiver := []string{record.Applicant}
+			msg := fmt.Sprintf("您好，工单已经执行完成，请知悉\n>工单标题：%s", record.Title)
+			// 异步发送通知（不阻塞事务）
+			go notifier.SendMessage(record.Title, orderID, receiver, msg)
+		}
+		return nil
+	})
 }
 
 // 判断当前工单是否没有执行中的任务
 func noTaskExecuting(orderID string) bool {
 	var count int64
 	global.App.DB.Table("`insight_order_tasks`").
-		Where("order_id=? AND progress='EXECUTING'", orderID).
+		Where("order_id = ? AND progress = 'EXECUTING'", orderID).
 		Count(&count)
 	return count == 0
 }
 
-// 检查工单状态
-func checkOrderStatusAndPerm(order_id string, username string) error {
-	var record ordersModels.InsightOrderRecords
-	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", order_id).Take(&record)
-	if tx.Error != nil {
-		return fmt.Errorf("查询工单记录失败: %v", tx.Error)
-	}
-	if tx.RowsAffected == 0 {
-		return fmt.Errorf("工单记录`%s`不存在", order_id)
-	}
-	// 检查是否有执行权限
-	if record.Claimer != username {
-		return fmt.Errorf("您不是工单认领人，没有执行工单权限")
-	}
-	// 检查状态是否允许执行
+func CheckOrderExecutable(record *ordersModels.InsightOrderRecords) error {
+	// 检查工单状态是否允许执行
+	// 'PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED', 'FAILED','REVIEWED','REVOKED'
 	if !utils.IsContain([]string{"CLAIMED", "EXECUTING"}, string(record.Progress)) {
-		return fmt.Errorf("当前工单状态不为已认领或执行中，禁止执行")
+		progressMap := map[string]string{
+			"PENDING":   "待审批",
+			"APPROVED":  "已批准",
+			"REJECTED":  "已驳回",
+			"CLAIMED":   "已认领",
+			"EXECUTING": "执行中",
+			"COMPLETED": "已完成",
+			"FAILED":    "已失败",
+			"REVIEWED":  "已复核",
+			"REVOKED":   "已撤销",
+		}
+		progressCN := progressMap[string(record.Progress)]
+		if progressCN == "" {
+			progressCN = string(record.Progress)
+		}
+		return fmt.Errorf("当前工单%s，禁止执行", progressCN)
 	}
 	return nil
 }
 
-func sendExportFileInfoToApplicant(task_id uuid.UUID) {
+func sendExportFileInfoToApplicant(orderID uuid.UUID) {
 	var task ordersModels.InsightOrderTasks
 	global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
-		Where("task_id=?", task_id).Scan(&task)
+		Where("task_id=?", orderID).Scan(&task)
 
 	var record ordersModels.InsightOrderRecords
 	global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
@@ -108,7 +153,7 @@ func sendExportFileInfoToApplicant(task_id uuid.UUID) {
 			">文件解密密码：%s\n"+
 			">文件格式：%s\n"+
 			">文件下载路径：%s",
-		record.Title, task_id.String(),
+		record.Title, orderID.String(),
 		file.FileName,
 		file.FileSize,
 		file.ExportRows,
@@ -172,49 +217,67 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 }
 
 // ---------- 执行单个任务 ----------
-type ExecuteSingleTaskService struct {
-	*forms.ExecuteSingleTaskForm
+type ExecuteTaskService struct {
+	*forms.ExecuteTaskForm
 	C        *gin.Context
 	Username string
 }
 
-func (s *ExecuteSingleTaskService) Run() (err error) {
-	// 当工单的状态不为已批准或执行中的时候，禁止执行任务
-	if err = checkOrderStatusAndPerm(s.OrderID, s.Username); err != nil {
+func (s *ExecuteTaskService) Run() (err error) {
+	// 检查工单记录是否存在
+	var record ordersModels.InsightOrderRecords
+	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
+	if tx.Error != nil {
+		return fmt.Errorf("查询工单记录失败: %v", tx.Error)
+	}
+	if tx.RowsAffected == 0 {
+		return fmt.Errorf("工单记录`%s`不存在", s.OrderID)
+	}
+	// 检查是否有工单执行权限
+	if record.Claimer != s.Username {
+		return fmt.Errorf("您不是工单认领人，没有执行工单权限")
+	}
+	// 检查工单状态是否允许执行
+	if err := CheckOrderExecutable(&record); err != nil {
 		return err
 	}
+	// 获取锁
+	locked, err := acquireOrderLock(s.C, s.OrderID)
+	if err != nil {
+		return fmt.Errorf("获取工单锁失败: %v", err)
+	}
+	if !locked {
+		return fmt.Errorf("工单正在执行中，请稍后再试")
+	}
+	defer releaseOrderLock(s.C, s.OrderID)
 	// 获取任务记录
 	var task ordersModels.InsightOrderTasks
-	tx := global.App.DB.Table("`insight_order_tasks`").Where("id=? and order_id=?", s.ID, s.OrderID).Take(&task)
+	tx = global.App.DB.Table("`insight_order_tasks`").Where("task_id=? and order_id=?", s.TaskID, s.OrderID).Take(&task)
 	if tx.RowsAffected == 0 {
-		return fmt.Errorf("任务ID为`%d`的记录不存在", s.ID)
+		return fmt.Errorf("任务记录不存在")
 	}
 	// 跳过已完成的任务
-	if task.Progress == "已完成" {
+	if task.Progress == "COMPLETED" {
 		return errors.New("当前任务已完成，请勿重复执行")
 	}
 	// 跳过执行中的任务
-	if task.Progress == "执行中" {
+	if task.Progress == "EXECUTING" {
 		return errors.New("当前任务正在执行中，请勿重复执行")
-	}
-	// 判断当前工单的所有任务是否存在执行中的任务，避免跳过执行中的任务执行其他的任务
-	if !noTaskExecuting(s.OrderID) {
-		return errors.New("当前有任务正在执行中，请先等待执行完成")
 	}
 	// 更新当前任务进度为执行中，工单状态为执行中
 	if err := func() error {
 		return global.App.DB.Transaction(func(tx *gorm.DB) error {
-			if err := tx.Model(&ordersModels.InsightOrderTasks{}).
-				Where("id=? and order_id=?", s.ID, s.OrderID).
-				Update("progress", "EXECUTING").Error; err != nil {
-				global.App.Log.Error(err)
-				return err
+			if tx = tx.Model(&ordersModels.InsightOrderTasks{}).
+				Where("task_id=? and order_id=?", s.TaskID, s.OrderID).
+				Update("progress", "EXECUTING"); tx.Error != nil {
+				global.App.Log.Error(tx.Error)
+				return tx.Error
 			}
-			if err := tx.Model(&ordersModels.InsightOrderRecords{}).
+			if tx = tx.Model(&ordersModels.InsightOrderRecords{}).
 				Where("order_id=?", s.OrderID).
-				Update("progress", "EXECUTING").Error; err != nil {
-				global.App.Log.Error(err)
-				return err
+				Update("progress", "EXECUTING"); tx.Error != nil {
+				global.App.Log.Error(tx.Error)
+				return tx.Error
 			}
 			return nil
 		})
@@ -238,14 +301,14 @@ func (s *ExecuteSingleTaskService) Run() (err error) {
 			taskProgress = "FAILED"
 		}
 		global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
-			Where("id=? and order_id=?", s.ID, s.OrderID).
+			Where("task_id=? and order_id=?", s.TaskID, s.OrderID).
 			Updates(map[string]any{"progress": taskProgress, "result": data})
 		return err
 	}
 
 	// 没有错误返回，更新任务状态为已完成
 	global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
-		Where("id=? and order_id=?", s.ID, s.OrderID).
+		Where("task_id=? and order_id=?", s.TaskID, s.OrderID).
 		Updates(map[string]any{"progress": "COMPLETED", "result": data})
 
 	// 导出工单需要发送导出文件信息给申请人、抄送人
@@ -265,38 +328,61 @@ type ExecuteBatchTasksService struct {
 
 func (s *ExecuteBatchTasksService) Run() (err error) {
 	// 检查工单状态和执行权限
-	if err = checkOrderStatusAndPerm(s.OrderID, s.Username); err != nil {
+	var record ordersModels.InsightOrderRecords
+	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
+	if tx.Error != nil {
+		return fmt.Errorf("查询工单记录失败: %v", tx.Error)
+	}
+	// 检查工单记录是否存在
+	if tx.RowsAffected == 0 {
+		return fmt.Errorf("工单记录`%s`不存在", s.OrderID)
+	}
+	// 检查是否有工单执行权限
+	if record.Claimer != s.Username {
+		return fmt.Errorf("您不是工单认领人，没有执行工单权限")
+	}
+	// 检查工单状态是否允许执行
+	if err := CheckOrderExecutable(&record); err != nil {
 		return err
 	}
-	// 判断当前工单的所有任务是否存在执行中的任务，避免跳过执行中的任务执行其他的任务
+	// 判断当前工单是否存在执行中的任务，避免跳过执行中的任务执行其他的任务
 	if !noTaskExecuting(s.OrderID) {
 		return errors.New("当前有任务正在执行中，请先等待执行完成")
 	}
-	// 更新当前工单进度为执行中
-	if err := global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
-		Where("order_id=?", s.OrderID).
-		Update("progress", "EXECUTING").Error; err != nil {
-		global.App.Log.Error(err)
-		return err
+	// 获取锁
+	locked, err := acquireOrderLock(s.C, s.OrderID)
+	if err != nil {
+		return fmt.Errorf("获取工单锁失败: %v", err)
 	}
-	// 获取工单所有的任务
+	if !locked {
+		return fmt.Errorf("工单正在执行中，请稍后再试")
+	}
+	defer releaseOrderLock(s.C, s.OrderID)
+	// 更新当前工单进度为执行中
+	if tx = global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
+		Where("order_id=?", s.OrderID).
+		Update("progress", "EXECUTING"); tx.Error != nil {
+		global.App.Log.Error(tx.Error)
+		return tx.Error
+	}
+	// 获取当前工单所有的任务
 	var tasks []ordersModels.InsightOrderTasks
-	if err := global.App.DB.Where("order_id=?", s.OrderID).Find(&tasks).Error; err != nil {
-		return err
+	if tx = global.App.DB.Where("order_id=?", s.OrderID).Find(&tasks); tx.Error != nil {
+		return tx.Error
 	}
 	// 串行执行任务
 	for _, task := range tasks {
-		// 跳过已完成的任务
+		// 跳过已完成的任务，避免重复执行
 		if task.Progress == "COMPLETED" {
 			continue
 		}
 
 		// 更新当前任务进度为执行中
-		if err := global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
+		if tx = global.App.DB.Model(&ordersModels.InsightOrderTasks{}).
 			Where("task_id=?", task.TaskID).
-			Update("progress", "EXECUTING").Error; err != nil {
-			global.App.Log.Error(err)
-			return err
+			Update("progress", "EXECUTING"); tx.Error != nil {
+			global.App.Log.Error(tx.Error)
+			return tx.Error
 		}
 
 		// 执行任务

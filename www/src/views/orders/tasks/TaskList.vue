@@ -46,13 +46,13 @@
           <template v-if="column.key === 'action'">
             <a-space>
               <a-tooltip title="执行当前任务">
-                <a @click="handleEdit(record)">
+                <a @click="executeTask(record)">
                   <PlayCircleOutlined />
                   执行
                 </a>
               </a-tooltip>
 
-              <a @click="showResult(record)">
+              <a @click="showTaskResult(record)">
                 <FileSearchOutlined />
                 结果
               </a>
@@ -72,21 +72,27 @@
   >
     <highlightjs language="sql" :code="uiData.sql" />
   </a-modal>
+
+  <TaskResult :open="uiState.taskResultOpen" v-model:modelValue="taskResultData" @update:open="uiState.taskResultOpen = $event"> </TaskResult>
 </template>
 
 <script setup>
-import { executebatchTasksApi, getOrderTasksApi } from '@/api/order'
+import { executeTaskApi, executebatchTasksApi, getOrderTasksApi } from '@/api/order'
 import { EyeOutlined, FileSearchOutlined, PlayCircleOutlined } from '@ant-design/icons-vue'
-import { onMounted, reactive } from 'vue'
+import { useThrottleFn } from '@vueuse/core'
+import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import TaskResult from './TaskResult.vue'
 
 const route = useRoute()
-const orderId = route.params.order_id
+const orderID = route.params.order_id
+const taskResultData = ref({})
 
 // 状态
 const uiState = reactive({
   loading: false,
   open: false,
+  taskResultOpen: false,
 })
 
 // 数据
@@ -160,7 +166,7 @@ const fetchData = async () => {
     page: pagination.current,
     is_page: true,
     search: uiData.searchValue,
-    order_id: orderId,
+    order_id: orderID,
   }
   const res = await getOrderTasksApi(params).catch(() => {})
   if (res) {
@@ -195,7 +201,6 @@ const getProgressAlias = (progress) => {
 
 // 查看SQL
 const showSqlDetail = (record) => {
-  console.log('record: ', record)
   uiState.open = true
   uiData.sql = record.sql
 }
@@ -205,13 +210,26 @@ const handleCancel = (e) => {
   uiState.open = false
 }
 
-// 批量执行
-const executeBatchTasks = async () => {
-  console.log('执行全部任务')
-  const res = await executebatchTasksApi({ order_id: orderId })
+// 执行单个任务
+const executeTask = useThrottleFn(async (record) => {
+  const res = await executeTaskApi({ order_id: orderID, task_id: record.task_id }).catch(() => {})
   if (res) {
     fetchData()
   }
+})
+
+// 批量执行
+const executeBatchTasks = useThrottleFn(async () => {
+  const res = await executebatchTasksApi({ order_id: orderID }).catch(() => {})
+  if (res) {
+    fetchData()
+  }
+})
+
+// 查看任务结果
+const showTaskResult = (record) => {
+  taskResultData.value = record?.result || {}
+  uiState.taskResultOpen = true
 }
 
 onMounted(() => {

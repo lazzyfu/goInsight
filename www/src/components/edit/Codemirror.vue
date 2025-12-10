@@ -1,12 +1,11 @@
 <template>
-  <div ref="editor" style="height: 100%"></div>
+  <div ref="editor" :initVal="initVal" style="height: 100%"></div>
 </template>
 
 <script setup>
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
 import { historyKeymap, indentWithTab } from '@codemirror/commands'
 import { MySQL, sql, StandardSQL } from '@codemirror/lang-sql'
-import { foldGutter } from '@codemirror/language'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
@@ -14,12 +13,19 @@ import { format } from 'sql-formatter'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const editor = ref(null) // template ref
-let editorView = ref(null) // 编辑器实例
+const editorView = ref(null) // 编辑器实例
+
+// 定义props
+const props = defineProps({
+  initVal: {
+    type: String,
+    default: 'SELECT * FROM ',
+  },
+})
 
 const languageCompartment = new Compartment()
 const editableCompartment = new Compartment()
 const readonlyCompartment = new Compartment()
-
 
 // 初始化扩展
 const fixedExtensions = [
@@ -33,7 +39,6 @@ const fixedExtensions = [
   ]),
   // 启用自动补全
   autocompletion(),
-  foldGutter(),
 ]
 
 // 初始化编辑器
@@ -42,7 +47,7 @@ const initEditor = () => {
     editorView.value.destroy()
   }
   const startState = EditorState.create({
-    doc: `SELECT * FROM `,
+    doc: props.initVal,
     extensions: [
       fixedExtensions,
       languageCompartment.of(sql({ dialect: StandardSQL })),
