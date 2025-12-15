@@ -22,22 +22,27 @@ import (
 
 // 初始化redis
 func InitializeRedis() *redis.Client {
-	var ctx = context.Background()
 	config := global.App.Config.Redis
 	if config.Host == "" {
 		return nil
 	}
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", config.Host, config.Port),
 		Password: config.Password,
 		DB:       config.DB,
 		PoolSize: 512,
 	})
-	err := rdb.Set(ctx, "testkey", "value", 0).Err()
-	if err != nil {
-		global.App.Log.Error(err)
+
+	// 健康检查：PING，而不是写 key
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer cancel()
+
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		global.App.Log.Error("Redis ping error: ", err)
 		panic(err)
 	}
+
 	return rdb
 }
 

@@ -31,6 +31,7 @@
 <script setup>
 import { createRootOrganizationsApi } from '@/api/admin'
 import { ApartmentOutlined, FolderOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
@@ -73,12 +74,12 @@ const handleCancel = () => {
 }
 
 // 提交表单
-const onSubmit = async () => {
+const onSubmit = useThrottleFn(async () => {
   try {
     await formRef.value.validateFields()
     uiState.loading = true
     const res = await createRootOrganizationsApi(formState).catch(() => {})
-    if (res?.code === '0000') {
+    if (res) {
       message.success('创建成功')
       emit('update:open', false)
       emit('refresh')
@@ -87,7 +88,7 @@ const onSubmit = async () => {
   } finally {
     uiState.loading = false
   }
-}
+})
 </script>
 
 <style scoped>

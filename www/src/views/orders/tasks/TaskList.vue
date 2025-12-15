@@ -13,6 +13,7 @@
         allowClear
         style="width: 140px"
         placeholder="任务进度"
+        @change="fetchData"
       />
 
       <!-- 搜索框 -->
@@ -20,6 +21,7 @@
         v-model:value="uiData.searchValue"
         placeholder="请输入 SQL 文本"
         style="width: 260px"
+        allowClear
         @search="handleSearch"
       />
     </a-space>
@@ -91,6 +93,7 @@
     @update:open="uiState.taskResultOpen = $event"
   >
   </TaskResult>
+  <TaskStream />
 </template>
 
 <script setup>
@@ -106,6 +109,7 @@ import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import TaskResult from './TaskResult.vue'
+import TaskStream from './TaskStream.vue'
 
 const route = useRoute()
 const orderID = route.params.order_id
@@ -117,12 +121,12 @@ const progressOptions = [
   { value: 'FAILED', label: '已失败' },
 ]
 
-// 定时器, 自动刷新列表
+// 定时器, 10秒刷新一次
 const { pause, resume, isActive } = useIntervalFn(
   () => {
     fetchData()
   },
-  5000,
+  10000,
   { immediate: true }  // 组件挂载时立刻执行一次
 )
 
@@ -136,9 +140,9 @@ const uiState = reactive({
 // 数据
 const uiData = reactive({
   searchValue: '',
-  tableData: [],
-  progress: '',
+  progress: null,
   sql: '',
+  tableData: [],
   tableColumns: [
     {
       title: '进度',
@@ -279,11 +283,3 @@ onMounted(() => {
 })
 
 </script>
-
-<style scoped>
-.search-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-</style>

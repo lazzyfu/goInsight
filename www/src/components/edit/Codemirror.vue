@@ -1,5 +1,10 @@
 <template>
-  <div ref="editor" :initVal="props.initVal" :editHeight="props.editHeight" style="height: 100%"></div>
+  <div
+    ref="editor"
+    :initVal="props.initVal"
+    :editHeight="props.editHeight"
+    style="height: 100%"
+  ></div>
 </template>
 
 <script setup>
@@ -125,6 +130,19 @@ const setContent = (content) => {
   })
 }
 
+// 追加内容
+const appendContent = (text) => {
+  if (!editorView.value) return
+  const docLen = editorView.value.state.doc.length
+  editorView.value.dispatch({
+    changes: { from: docLen, to: docLen, insert: text },
+  })
+  // 自动滚动到底部
+  editorView.value.dispatch({
+    selection: { anchor: editorView.value.state.doc.length },
+  })
+}
+
 onMounted(() => {
   initEditor()
 })
@@ -144,6 +162,7 @@ defineExpose({
   editorView,
   setReadonly,
   setHeight,
+  appendContent,
 })
 </script>
 
@@ -154,6 +173,7 @@ defineExpose({
 }
 
 :deep(.cm-editor.cm-focused) {
-  outline: none !important; /* 去掉浏览器默认的焦点高亮，CodeMirror 6 的容器 <div class="cm-editor"> 在获得焦点时，默认会被加上 */
+  outline: none !important;
+  /* 去掉浏览器默认的焦点高亮，CodeMirror 6 的容器 <div class="cm-editor"> 在获得焦点时，默认会被加上 */
 }
 </style>

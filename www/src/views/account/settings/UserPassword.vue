@@ -1,32 +1,19 @@
 <template>
-  <a-modal
-    title="修改密码"
-    v-model:open="props.open"
-    width="50%"
-    :footer="null"
-    @cancel="handleCancel"
-  >
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 18 }"
-      autocomplete="off"
-      @finish="onSubmit"
-    >
+  <a-modal title="修改密码" v-model:open="props.open" width="50%" :footer="null" @cancel="handleCancel">
+    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }"
+      autocomplete="off" @finish="onSubmit">
       <a-form-item label="当前密码" has-feedback name="old_password">
-        <a-input v-model:value="formState.old_password" type="password" autocomplete="off">
+        <a-input-password v-model:value="formState.old_password" type="password" autocomplete="off">
           <LockOutlined />
-        </a-input>
+        </a-input-password>
       </a-form-item>
       <a-form-item label="新密码" has-feedback name="new_password">
-        <a-input v-model:value="formState.new_password" autocomplete="off" type="password">
-        </a-input>
+        <a-input-password v-model:value="formState.new_password" autocomplete="off" type="password">
+        </a-input-password>
       </a-form-item>
       <a-form-item label="确认密码" has-feedback name="confirm_password">
-        <a-input v-model:value="formState.confirm_password" autocomplete="off" type="password">
-        </a-input>
+        <a-input-password v-model:value="formState.confirm_password" autocomplete="off" type="password">
+        </a-input-password>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
         <a-button type="primary" html-type="submit">提交</a-button>
@@ -40,6 +27,7 @@
 import { ChangePasswordApi } from '@/api/profile'
 import { regPassword } from '@/utils/validate'
 import { LockOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
@@ -107,17 +95,16 @@ const handleCancel = () => {
   formRef.value?.resetFields()
 }
 
-const onSubmit = (values) => {
-  ChangePasswordApi(values).then((res) => {
-    if (res.code === '0000') {
-      message.info(res.message)
-      handleCancel()
-      location.reload() // 刷新页面，此时token已经过期，需要重新登录
-    } else {
-      message.error(res.message)
-    }
-  })
-}
+// 提交表单
+const onSubmit = useThrottleFn(async (values) => {
+  const res = await ChangePasswordApi(values).catch(() => { })
+  if (res) {
+    message.info("密码修改成功")
+    handleCancel()
+    location.reload() // 刷新页面，此时token已经过期，需要重新登录
+  }
+})
+
 const resetForm = () => {
   formRef.value.resetFields()
 }

@@ -100,12 +100,13 @@ import {
   EyeOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import ApprovalFlowFormModal from './ApprovalFlowFormModal.vue'
 import ApprovalFlowStages from './ApprovalFlowStages.vue'
 import BindToUserFormModal from './BindToUserFormModal.vue'
-import FlowBoundUsersDetail from './FlowBoundUsersDetail.vue'; // 导入新组件
+import FlowBoundUsersDetail from './FlowBoundUsersDetail.vue'
 
 const uiState = reactive({
   loading: false,
@@ -244,26 +245,26 @@ const handleEdit = (record) => {
 }
 
 // 提交（
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   const payload = { ...data }
   const res = uiState.isEditMode
     ? await updateApprovalFlowsApi(payload).catch(() => {})
     : await createApprovalFlowsApi(payload).catch(() => {})
 
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
     fetchData()
   }
-}
+})
 
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const res = await deleteApprovalFlowsApi(record.id).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
     fetchData()
   }
-}
+})
 
 // 打开绑定审批流模态框
 const handleBind = () => {
@@ -272,13 +273,13 @@ const handleBind = () => {
 }
 
 // 提交绑定审批流到用户的请求
-const onSubmitBind = async (data) => {
+const onSubmitBind = useThrottleFn(async (data) => {
   const res = await bindUsersToApprovalFlowApi(data).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.isBindModalOpen = false
   }
-}
+})
 
 // 查看绑定了该审批流的用户列表
 const handleViewUsers = (record) => {

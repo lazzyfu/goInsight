@@ -57,6 +57,7 @@ import {
   getUsersApi,
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, watch } from 'vue'
 import BindOrgUsers from './BindOrgUsers.vue'
@@ -170,27 +171,27 @@ const handleAdd = () => {
 }
 
 // 提交
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   const res = await bindOrganizationsUsersApi(data).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('用户绑定成功')
     uiState.isModalOpen = false
     fetchData()
   }
-}
+})
 
 // 删除
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const payload = {
     key: props.nodeKey,
     uid: record.uid,
   }
   const res = await deleteOrganizationsUsersApi(payload).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('用户移除成功')
     fetchData()
   }
-}
+})
 
 // 获取所有用户列表
 const getUsers = async () => {

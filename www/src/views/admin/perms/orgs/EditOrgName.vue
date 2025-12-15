@@ -30,6 +30,7 @@
 <script setup>
 import { updateOrganizationsApi } from '@/api/admin'
 import { EditOutlined, FolderOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
@@ -73,7 +74,7 @@ const handleCancel = () => {
 }
 
 // 提交表单
-const onSubmit = async () => {
+const onSubmit = useThrottleFn(async () => {
   try {
     await formRef.value.validateFields()
     uiState.loading = true
@@ -82,7 +83,7 @@ const onSubmit = async () => {
       ...formState,
     }
     const res = await updateOrganizationsApi(payload).catch(() => {})
-    if (res?.code === '0000') {
+    if (res) {
       message.success('更新成功')
       emit('update:open', false)
       emit('refresh')
@@ -91,7 +92,7 @@ const onSubmit = async () => {
   } finally {
     uiState.loading = false
   }
-}
+})
 </script>
 
 <style scoped>

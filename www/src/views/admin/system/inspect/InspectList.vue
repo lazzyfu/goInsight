@@ -49,6 +49,7 @@
 <script setup>
 import { getInspectParamsApi, updateInspectParamsApi } from '@/api/admin'
 import { EditOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import InspectFormModal from './InspectFormModal.vue'
@@ -139,19 +140,19 @@ const handleEdit = (record) => {
 }
 
 // 提交
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   // 将 inspect_params 转换为 JSON 对象
   const payload = {
     ...data,
     params: JSON.parse(data.params),
   }
   const res = await updateInspectParamsApi(payload).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
     fetchData()
   }
-}
+})
 
 // 初始化
 onMounted(() => {

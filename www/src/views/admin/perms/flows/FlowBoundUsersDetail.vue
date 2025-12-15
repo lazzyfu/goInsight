@@ -47,6 +47,7 @@
 <script setup>
 import { deleteUsersFromApprovalFlowApi, getApprovalFlowUsersApi } from '@/api/admin'
 import { DeleteOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, watch } from 'vue'
 
@@ -143,13 +144,14 @@ const handleCancel = () => {
 }
 
 // 删除
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const res = await deleteUsersFromApprovalFlowApi(record).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
     fetchData()
   }
-}
+})
+
 </script>
 
 <style scoped>

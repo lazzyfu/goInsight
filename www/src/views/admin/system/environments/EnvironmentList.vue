@@ -15,7 +15,7 @@
         @search="handleSearch"
       />
     </div>
-    
+
     <!-- 表格 -->
     <div style="margin-top: 12px">
       <a-table
@@ -65,6 +65,7 @@ import {
   updateEnvironmentsApi,
 } from '@/api/admin'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import EnvironmentFormModal from './EnvironmentFormModal.vue'
@@ -167,25 +168,25 @@ const fetchData = async () => {
 }
 
 // 提交（新增或编辑）
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   const res = uiState.isEditMode
     ? await updateEnvironmentsApi(data).catch(() => {})
     : await createEnvironmentsApi(data).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
     fetchData()
   }
-}
+})
 
 // 删除
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const res = await deleteEnvironmentsApi(record.id).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
     fetchData()
   }
-}
+})
 
 // 初始化
 onMounted(() => {

@@ -121,7 +121,7 @@ func CheckOrderExecutable(record *ordersModels.InsightOrderRecords) error {
 		if progressCN == "" {
 			progressCN = string(record.Progress)
 		}
-		return fmt.Errorf("当前工单%s，禁止执行", progressCN)
+		return fmt.Errorf("当前工单%s，执行失败", progressCN)
 	}
 	return nil
 }

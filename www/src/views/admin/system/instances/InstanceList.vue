@@ -86,6 +86,7 @@ import {
   updateDBConfigApi,
 } from '@/api/admin'
 import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import InstanceFormModal from './InstanceFormModal.vue'
@@ -241,7 +242,7 @@ const handleEdit = (record) => {
 }
 
 // 提交（新增或编辑）
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   // 将 inspect_params 转换为 JSON 对象
   const payload = {
     ...data,
@@ -250,21 +251,21 @@ const onSubmit = async (data) => {
   const res = uiState.isEditMode
     ? await updateDBConfigApi(payload).catch(() => {})
     : await createDBConfigApi(payload).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
     fetchData()
   }
-}
+})
 
 // 删除
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const res = await deleteDBConfigApi(record.id).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
     fetchData()
   }
-}
+})
 
 // 获取环境
 const getEnvironments = async () => {

@@ -61,14 +61,15 @@
 </template>
 
 <script setup>
-import { GetUserProfileApi } from '@/api/login' // 保持原引用
-import { UpdateUserInfoApi } from '@/api/profile' // 保持原引用
-import { useUserStore } from '@/store/user'
-import { regEmail, regPhone } from '@/utils/validate'
-import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
-import { onMounted, reactive, ref, watch } from 'vue'
-import AvatarModal from './AvatarModal.vue'
+import { GetUserProfileApi } from '@/api/login'; // 保持原引用
+import { UpdateUserInfoApi } from '@/api/profile'; // 保持原引用
+import { useUserStore } from '@/store/user';
+import { regEmail, regPhone } from '@/utils/validate';
+import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { useThrottleFn } from '@vueuse/core';
+import { message } from 'ant-design-vue';
+import { onMounted, reactive, ref, watch } from 'vue';
+import AvatarModal from './AvatarModal.vue';
 
 const userStore = useUserStore()
 const open = ref(false)
@@ -149,7 +150,7 @@ const reloadUserProfile = async () => {
 }
 
 // 提交表单
-const onFinish = async (values) => {
+const onFinish = useThrottleFn(async (values) => {
   loading.value = true
   try {
     // 确保带上 uid
@@ -171,13 +172,13 @@ const onFinish = async (values) => {
   } finally {
     loading.value = false
   }
-}
+})
 
 // 头像修改回调
 const setavatar = (imgUrl) => {
   if (!imgUrl) return
 
-  // 🔴 关键修复：检查是否为 Blob URL
+  // 检查是否为 Blob URL
   if (imgUrl.startsWith('blob:')) {
     option.value.img = imgUrl
     userStore.setUserAvatar(imgUrl)

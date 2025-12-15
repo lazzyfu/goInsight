@@ -136,6 +136,7 @@ import {
   PlusOutlined,
   TeamOutlined,
 } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, reactive } from 'vue'
 import AddChildOrg from './AddChildOrg.vue'
@@ -232,20 +233,20 @@ const editCurrentNode = (item) => {
   uiState.isEditNodeNameOpen = true
 }
 
-const handleDelete = async (item) => {
+const handleDelete = useThrottleFn(async (item) => {
   const payload = {
     key: item.key,
     name: item.title,
   }
   const res = await deleteOrganizationsApi(payload).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('删除成功')
     uiData.selectedNodeKey = ''
     uiData.selectedNode = ''
     uiData.selectedKeys = []
     await fetchData()
   }
-}
+})
 
 // 初始化
 onMounted(async () => {

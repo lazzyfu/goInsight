@@ -1,0 +1,5 @@
+{
+  "name": "goInsight Dev",
+  "postStartCommand": "sudo service redis-server start && sudo service mysql start"
+}
+

@@ -45,6 +45,7 @@ import {
   getTablesListApi,
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -167,27 +168,27 @@ const getTables = async () => {
 }
 
 // 提交表单
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   const payload = {
     ...data,
     ...routeParams,
   }
   const res = await createTablesGrantApi(payload).catch(() => { })
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
     fetchData()
   }
-}
+})
 
 // 删除
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const res = await deleteTablesGrantApi(record.id).catch(() => { })
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
     fetchData()
   }
-}
+})
 
 // 初始化
 onMounted(() => {

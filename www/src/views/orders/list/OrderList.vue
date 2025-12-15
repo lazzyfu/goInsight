@@ -1,21 +1,26 @@
 <template>
   <a-card title="历史工单">
-    <div class="search-wrapper">
-      <div class="search-row">
-        <a-switch
-          v-model:checked="uiState.checked"
-          checked-children="我的工单"
-          un-checked-children="所有工单"
-          @change="fetchData"
-        />
-        <a-input-search
-          v-model:value="uiData.searchValue"
-          placeholder="请输入工单标题、实例、库名等关键词搜索"
-          style="width: 350px"
-          @search="handleSearch"
-        />
+    <a-space size="middle" wrap>
+      <div class="checkbox-container">
+        <a-checkbox v-model:checked="uiState.checked" @change="fetchData">我的工单</a-checkbox>
       </div>
-    </div>
+      <!-- 进度筛选 -->
+      <a-select
+        v-model:value="uiData.progress"
+        :options="progressOptions"
+        allowClear
+        style="width: 140px"
+        placeholder="工单进度"
+        @change="fetchData"
+      />
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="请输入工单标题、实例、库名等关键词搜索"
+        allowClear
+        style="width: 350px"
+        @search="handleSearch"
+      />
+    </a-space>
 
     <div style="margin-top: 12px">
       <a-table
@@ -66,14 +71,26 @@ import { DatabaseOutlined, FieldTimeOutlined } from '@ant-design/icons-vue'
 import { useIntervalFn } from '@vueuse/core'
 import { onMounted, reactive } from 'vue'
 
-// 定时器, 自动刷新列表
+// 定时器, 10秒刷新一次
 const { pause, resume, isActive } = useIntervalFn(
   () => {
     fetchData()
   },
-  5000,
+  10000,
   { immediate: true }, // 组件挂载时立刻执行一次
 )
+
+const progressOptions = [
+  { label: '待审批', value: 'PENDING' },
+  { label: '已批准', value: 'APPROVED' },
+  { label: '已驳回', value: 'REJECTED' },
+  { label: '已认领', value: 'CLAIMED' },
+  { label: '执行中', value: 'EXECUTING' },
+  { label: '已失败', value: 'FAILED' },
+  { label: '已完成', value: 'COMPLETED' },
+  { label: '已复核', value: 'REVIEWED' },
+  { label: '已撤销', value: 'REVOKED' },
+]
 
 // 状态
 const uiState = reactive({
@@ -84,6 +101,7 @@ const uiState = reactive({
 // 数据
 const uiData = reactive({
   searchValue: '',
+  progress: null,
   tableData: [],
   tableColumns: [
     {
@@ -174,6 +192,7 @@ const fetchData = async () => {
     is_page: true,
     only_my_orders: uiState.checked,
     search: uiData.searchValue,
+    progress: uiData.progress,
   }
   const res = await getOrderListApi(params).catch(() => {})
   if (res) {
@@ -215,9 +234,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.search-row {
-  display: flex;
+.checkbox-container {
+  height: 32px;
+  padding: 0 14px;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.checkbox-container:hover {
+  border-color: #bae0ff;
+  background: #f0f7ff;
+}
+
+/* 选中时的样式 */
+.checkbox-container:has(.ant-checkbox-checked) {
+  border-color: #91caff;
+  background: #e6f4ff;
 }
 </style>

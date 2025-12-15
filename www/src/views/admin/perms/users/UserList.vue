@@ -129,6 +129,7 @@ import {
   KeyOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import PasswordFormModal from './PasswordFormModal.vue'
@@ -302,16 +303,16 @@ const handleEdit = (record) => {
 }
 
 // 提交
-const onSubmit = async (data) => {
+const onSubmit = useThrottleFn(async (data) => {
   const res = uiState.isEditMode
     ? await updateUsersApi(data).catch(() => {})
     : await addUsersApi(data).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.success('操作成功')
     uiState.userModalOpen = false
     fetchData()
   }
-}
+})
 
 // 重置密码
 const handleResetPassword = (record) => {
@@ -321,26 +322,26 @@ const handleResetPassword = (record) => {
 }
 
 // 提交重置密码
-const handleResetPasswordSubmit = async (data) => {
+const handleResetPasswordSubmit = useThrottleFn(async (data) => {
   const payload = {
     uid: uid.value,
     ...data,
   }
   const res = await ResetPasswordApi(payload).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
   }
   uiState.passwordModalOpen = false
-}
+})
 
 // 删除
-const handleDelete = async (record) => {
+const handleDelete = useThrottleFn(async (record) => {
   const res = await deleteUsersApi(record.uid).catch(() => {})
-  if (res?.code === '0000') {
+  if (res) {
     message.info('操作成功')
     fetchData()
   }
-}
+})
 
 // 初始化
 onMounted(() => {
