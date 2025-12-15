@@ -132,8 +132,9 @@ const reloadUserProfile = async () => {
       userStore.setUserOrganization(data.organization)
       userStore.setUserRole(data.role)
       userStore.setUserDateJoined(data.date_joined)
+      userStore.SetIsSuperuser(res.data.is_superuser)
 
-      // 2. 更新当前表单数据 (实现无刷新回显)
+      // 2. 更新当前表单数据
       formState.username = data.username
       formState.nick_name = data.nick_name
       formState.email = data.email

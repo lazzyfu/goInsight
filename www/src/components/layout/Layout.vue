@@ -7,7 +7,7 @@
             <img src="@/assets/logo.svg" width="100" height="60" />
           </a-col>
           <a-col :flex="4">
-            <menu-unfold-outlined v-if="data.collapsed" @click="clickScope" />
+            <menu-unfold-outlined v-if="data.collapsed" @click="toggleCollapse" />
             <menu-fold-outlined v-else @click="toggleCollapse" />
           </a-col>
           <a-col :flex="200">
@@ -31,7 +31,7 @@
                 </a-badge>
                 <span style="padding-left: 8px"> {{ userStore.nickname }}</span>
               </span>
-              <template v-slot:overlay>
+              <template #overlay>
                 <a-menu>
                   <a-menu-item @click="userCenter"> <UserOutlined /> 个人中心 </a-menu-item>
                   <a-menu-item @click="state.openPasswordModal = true">
@@ -66,7 +66,7 @@
             mode="inline"
             :openKeys="data.openKeys"
             :selectedKeys="[route.path]"
-            :items="data.menus"
+            :items="menuItems"
             @select="select"
             @openChange="openChange"
           >
@@ -86,9 +86,8 @@
 </template>
 
 <script setup>
-import { GetUserProfileApi } from '@/api/login'
 import router from '@/router'
-import { useAsyncRouterStore } from '@/store/static-router'
+import { usePermissionStore } from '@/store/permission'
 import { useUserStore } from '@/store/user'
 import {
   LogoutOutlined,
@@ -97,14 +96,16 @@ import {
   SafetyOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
-import { defineAsyncComponent, h, onMounted, reactive, ref } from 'vue'
+import { computed, defineAsyncComponent, h, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 
 import UserPassword from '@/views/account/settings/UserPassword.vue'
 
 const route = useRoute()
+const userStore = useUserStore()
+const permissionStore = usePermissionStore()
 
-// 动态加载图标组件
+// 动态加载图标组件（保持不变）
 const renderIcon = (iconName) => {
   if (!iconName) return undefined
   const iconComponent = defineAsyncComponent(() =>
@@ -113,21 +114,16 @@ const renderIcon = (iconName) => {
   return h(iconComponent)
 }
 
-const userStore = useUserStore()
-const asyncRouterStore = useAsyncRouterStore()
-
 const state = reactive({
   openPasswordModal: false,
 })
 
 const data = reactive({
-  menus: [],
-  items: [],
   openKeys: [],
   collapsed: false,
 })
 
-// 转换路由数据为菜单项
+// 转换路由数据为菜单项（保持不变）
 const transformRoutesToMenuItems = (routes) => {
   return (
     routes
@@ -136,35 +132,29 @@ const transformRoutesToMenuItems = (routes) => {
         key: route.path,
         label: route.meta?.title,
         title: route.meta?.title,
-        icon: route.icon ? renderIcon(route.icon) : undefined,
+        icon: route.meta?.icon ? renderIcon(route.meta.icon) : undefined,
         children: route.children?.length ? transformRoutesToMenuItems(route.children) : undefined,
       }))
   )
 }
 
+const menuRoutes = computed(() => {
+  const root = permissionStore.routes.find((r) => r.path === '/')
+  return root?.children || []
+})
+// ⚠️ 核心修正：使用 Computed 属性获取 Ant Design Vue 格式的菜单项
+const menuItems = computed(() => {
+    // 响应式地根据 menuRoutes 的变化更新菜单项
+    return transformRoutesToMenuItems(menuRoutes.value);
+});
+
+
 const initializeLayoutData = async () => {
-  await GetUserProfileApi().then((res) => {
-    if (res.code === '0000') {
-      userStore.setUid(res.data.uid)
-      userStore.setUserName(res.data.username)
-      userStore.setNickName(res.data.nick_name)
-      userStore.setUserAvatar(res.data.avatar_file)
-      userStore.setUserEmail(res.data.email)
-      userStore.setUserMobile(res.data.mobile)
-      userStore.setUserOrganization(res.data.organization)
-      userStore.setUserRole(res.data.role)
-      userStore.setUserDateJoined(res.data.date_joined)
+    // 仅用于恢复 openKeys，不进行 API 调用
+    const storedOpenKeys = sessionStorage.getItem('openKeys')
+    if (storedOpenKeys && storedOpenKeys !== null) {
+      data.openKeys = JSON.parse(storedOpenKeys)
     }
-  })
-
-  const routes = asyncRouterStore.addRouters.find((item) => item.path === '/')
-  const rootRoutes = (routes && routes.children) || []
-
-  data.menus = transformRoutesToMenuItems(rootRoutes)
-  const storedOpenKeys = sessionStorage.getItem('openKeys')
-  if (storedOpenKeys && storedOpenKeys !== null) {
-    data.openKeys = JSON.parse(storedOpenKeys)
-  }
 }
 
 const select = (value) => {
@@ -176,12 +166,6 @@ const openChange = (openKeys) => {
     data.openKeys = openKeys
     sessionStorage.setItem('openKeys', JSON.stringify(data.openKeys))
   }
-}
-
-const collapsed = ref(false)
-const clickScope = () => {
-  data.collapsed = !data.collapsed
-  collapsed.value = data.collapsed
 }
 
 const toggleCollapse = () => {
@@ -202,12 +186,14 @@ const Logout = () => {
   router.push({ name: 'Login' })
 }
 
+// onMounted 仅用于初始化非响应式数据（如 openKeys）
 onMounted(async () => {
   await initializeLayoutData()
 })
 </script>
 
 <style scoped>
+/* 样式保持不变 */
 .layout-sider {
   overflow: auto;
   height: calc(100vh - 60px);

@@ -1,9 +1,8 @@
 const route = {
   name: 'das',
   path: '/das',
-  icon: 'CodeOutlined',
   component: () => import('./index.vue'),
-  meta: { title: 'SQL查询', keepAlive: true},
+  meta: { title: 'SQL查询', icon: 'CodeOutlined', keepAlive: true},
 }
 
 export default route

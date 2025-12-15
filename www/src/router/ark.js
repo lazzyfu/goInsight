@@ -1,38 +1,41 @@
+// router/ark.js
 import Layout from '@/components/layout/Layout.vue'
-import ACCOUNT from '@/views/account/route.js'
-import ADMIN from '@/views/admin/route.js'
-import DAS from '@/views/das/route.js'
-import ORDERS from '@/views/orders/route.js'
+import { markRaw } from 'vue'
 
-export const arkRouter = [
+import ACCOUNT from '@/views/account/route'
+import ADMIN from '@/views/admin/route'
+import DAS from '@/views/das/route'
+import ORDERS from '@/views/orders/route'
+
+export const staticRoutes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/login/Login.vue'),
+    meta: { title: '用户登录', hidden: true },
+  },
+  {
+    path: '/403',
+    name: '403',
+    component: () => import('@/views/error/403.vue'),
+    meta: { title: '403', hidden: true },
+  },
+]
+
+export const asyncRoutes = [
   {
     path: '/',
     name: 'Root',
-    component: Layout,
-    redirect: { name: 'account.basic' },
-    meta: { title: '首页' },
+    component: markRaw(Layout),
+    redirect: '/account/basic',
     children: [
-      ADMIN,
+      {
+        ...ADMIN,
+        meta: { ...ADMIN.meta, requiresAdmin: true },
+      },
       ACCOUNT,
       DAS,
-      ORDERS
-    ]
-  },
-  {
-    name: 'Login',
-    path: '/login',
-    component: () => import('@/views/login/Login.vue'),
-    meta: {
-      title: '用户登录',
-      module: "用户登录"
-    }
-  },
-  {
-    name: '403',
-    path: '/403',
-    component: () => import('../views/error/403.vue'),
-    meta: {
-      title: '当前无权限操作, 请联系管理员!'
-    }
+      ORDERS,
+    ],
   },
 ]

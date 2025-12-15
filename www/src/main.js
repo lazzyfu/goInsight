@@ -29,11 +29,11 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia)
 
-import { useAsyncRouterStore } from './store/static-router'
-const asyncRouterStore = useAsyncRouterStore()
-asyncRouterStore.GenerateRoutes().then(() => {
-  app.use(router).use(Antd).use(VueCookieNext).use(VueCropper).use(VueCodemirror).use(hljsVuePlugin).mount('#app')
-}).catch((error) => {
-  console.error('路由生成失败:', error)
-})
-
+app
+  .use(router)
+  .use(Antd)
+  .use(VueCookieNext)
+  .use(VueCropper)
+  .use(VueCodemirror)
+  .use(hljsVuePlugin)
+  .mount('#app')
