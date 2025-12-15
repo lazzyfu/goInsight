@@ -26,20 +26,26 @@ const wsURL = `${protocol}${window.location.host}/ws/${orderID}`
 // WebSocket 实例
 const ws = ref(null)
 
-// 心跳
+// 心跳定时器
 let heartbeatTimer = null
-let heartbeatInterval = 15000 // 15s 发一次 ping
+const heartbeatInterval = 15000 // 15秒发一次 ping
 
 // 重连控制
 let reconnectTimer = null
 let reconnecting = false
-let reconnectInterval = 3000 // 3 秒重试一次
+const reconnectInterval = 3000 // 3秒重试一次
 
-// 初始化 WS
+// 初始化 WebSocket
 const initWebsocket = () => {
   if (typeof WebSocket === 'undefined') {
     message.error('您的浏览器不支持 WebSocket')
     return
+  }
+
+  // 清理旧连接
+  if (ws.value) {
+    ws.value.close()
+    ws.value = null
   }
 
   clearReconnectState()
@@ -53,16 +59,23 @@ const initWebsocket = () => {
 
 // WebSocket 打开
 const onOpen = () => {
+  reconnecting = false
   startHeartbeat()
 }
 
 // WebSocket 错误
-const onError = () => {
-  tryReconnect()
+const onError = (error) => {
+  console.error('[WebSocket] 连接错误:', error)
+  stopHeartbeat()
 }
 
 // WebSocket 关闭
-const onClose = () => {
+const onClose = (event) => {
+  stopHeartbeat()
+
+  // 正常关闭不重连
+  if (event.code === 1000) return
+
   tryReconnect()
 }
 
@@ -71,15 +84,22 @@ const onMessage = (msg) => {
   // 后端可能发心跳 pong
   if (msg.data === 'pong') return
 
-  const result = JSON.parse(msg.data)
-  uiState.open = true
+  try {
+    const result = JSON.parse(msg.data)
+    uiState.open = true
 
-  if (result.type === 'processlist') {
-    cmRef.value.setContent(renderProcesslist(result.data))
-  } else if (result.type === 'ghost') {
-    cmRef.value.appendContent(result.data)
-  } else {
-    cmRef.value.setContent(result.data)
+    // 确保组件已挂载
+    if (!cmRef.value) return
+
+    if (result.type === 'processlist') {
+      cmRef.value.setContent(renderProcesslist(result.data))
+    } else if (result.type === 'ghost') {
+      cmRef.value.appendContent(result.data)
+    } else {
+      cmRef.value.setContent(result.data)
+    }
+  } catch (error) {
+    console.error('[WebSocket] 消息解析失败:', error, msg.data)
   }
 }
 
@@ -113,25 +133,27 @@ const tryReconnect = () => {
 
   reconnecting = true
   reconnectTimer = setTimeout(() => {
+    if (!reconnecting) return // 防止在清理后执行
     initWebsocket()
-    reconnecting = false
   }, reconnectInterval)
 }
 
 const clearReconnectState = () => {
+  reconnecting = false
   if (reconnectTimer) {
     clearTimeout(reconnectTimer)
     reconnectTimer = null
   }
-  reconnecting = false
 }
 
-// 关闭 WS
+// 关闭 WebSocket
 const closeWS = () => {
   stopHeartbeat()
   clearReconnectState()
+
   if (ws.value) {
-    ws.value.close()
+    // 使用正常关闭码，避免触发重连
+    ws.value.close(1000, 'Component unmounted')
     ws.value = null
   }
 }
