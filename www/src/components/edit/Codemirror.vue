@@ -48,6 +48,7 @@ const fixedExtensions = [
   ]),
   // 启用自动补全
   autocompletion(),
+  EditorView.lineWrapping,
 ]
 
 // 初始化编辑器
