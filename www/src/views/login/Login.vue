@@ -120,9 +120,9 @@ const onSubmit = async () => {
     if (res?.code === '0000') {
       // 登录成功
       localStorage.setItem('onLine', '1')
-      userStore.setUserToken(res.data.token)
+      userStore.setToken(res.data.token)
       message.success('登录成功')
-      router.push({ name: 'Root' })
+      router.push('/')
     } else if (res?.code === '4001') {
       // 需要绑定 OTP
       message.warning(res.message || '需要绑定OTP')

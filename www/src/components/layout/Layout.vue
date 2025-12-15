@@ -105,7 +105,7 @@ const route = useRoute()
 const userStore = useUserStore()
 const permissionStore = usePermissionStore()
 
-// 动态加载图标组件（保持不变）
+// 动态加载图标组件
 const renderIcon = (iconName) => {
   if (!iconName) return undefined
   const iconComponent = defineAsyncComponent(() =>
@@ -123,34 +123,26 @@ const data = reactive({
   collapsed: false,
 })
 
-// 转换路由数据为菜单项（保持不变）
+// 转换路由数据为菜单项
 const transformRoutesToMenuItems = (routes) => {
-  return (
-    routes
-      .filter((route) => !route.meta?.hidden)
-      .map((route) => ({
-        key: route.path,
-        label: route.meta?.title,
-        title: route.meta?.title,
-        icon: route.meta?.icon ? renderIcon(route.meta.icon) : undefined,
-        children: route.children?.length ? transformRoutesToMenuItems(route.children) : undefined,
-      }))
-  )
+  return routes
+    .filter(route => !route.meta?.hidden) // 过滤掉 hidden 的路由
+    .map((route) => ({
+      key: route.path,
+      label: route.meta?.title,
+      title: route.meta?.title,
+      icon: route.meta?.icon ? renderIcon(route.meta.icon) : undefined,
+      children: route.children?.length ? transformRoutesToMenuItems(route.children) : undefined,
+    }))
 }
 
-const menuRoutes = computed(() => {
-  const root = permissionStore.routes.find((r) => r.path === '/')
-  return root?.children || []
-})
-// ⚠️ 核心修正：使用 Computed 属性获取 Ant Design Vue 格式的菜单项
+// 使用 permission store 的 getter
 const menuItems = computed(() => {
-    // 响应式地根据 menuRoutes 的变化更新菜单项
-    return transformRoutesToMenuItems(menuRoutes.value);
+  return transformRoutesToMenuItems(permissionStore.menuRoutes)
 });
 
 
 const initializeLayoutData = async () => {
-    // 仅用于恢复 openKeys，不进行 API 调用
     const storedOpenKeys = sessionStorage.getItem('openKeys')
     if (storedOpenKeys && storedOpenKeys !== null) {
       data.openKeys = JSON.parse(storedOpenKeys)
@@ -182,8 +174,19 @@ const userCenter = () => {
 }
 
 const Logout = () => {
+  const permissionStore = usePermissionStore()
+
+  // 清除用户信息
   userStore.clear()
-  router.push({ name: 'Login' })
+
+  // 重置权限状态
+  permissionStore.reset()
+
+  // 跳转到登录页
+  router.push({ name: 'Login' }).then(() => {
+    // 刷新页面以清除动态路由
+    window.location.reload()
+  })
 }
 
 // onMounted 仅用于初始化非响应式数据（如 openKeys）

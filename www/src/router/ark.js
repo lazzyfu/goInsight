@@ -1,4 +1,3 @@
-// router/ark.js
 import Layout from '@/components/layout/Layout.vue'
 import { markRaw } from 'vue'
 
@@ -27,12 +26,14 @@ export const asyncRoutes = [
     path: '/',
     name: 'Root',
     component: markRaw(Layout),
-    redirect: '/account/basic',
+    redirect: '/das', // 重定向到 SQL查询页面
     children: [
+      // 管理员路由 - 标记需要超级管理员权限
       {
         ...ADMIN,
         meta: { ...ADMIN.meta, requiresAdmin: true },
       },
+      // 普通用户路由
       ACCOUNT,
       DAS,
       ORDERS,

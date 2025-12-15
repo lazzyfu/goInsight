@@ -95,7 +95,6 @@ const setRowClass = (record) => {
 }
 
 const render = (res) => {
-  console.log('res: ', res)
   if (res.status === 0) {
     message.info('语法检查通过，您可以提交工单了，O(∩_∩)O')
   }

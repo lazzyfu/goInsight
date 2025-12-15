@@ -1,3 +1,4 @@
 {
-    "editor.fontFamily": "Maple Mono NF CN"
+    "editor.fontFamily": "JetBrains Mono, Maple Mono NF CN",
+    "editor.fontSize": 13
 }
