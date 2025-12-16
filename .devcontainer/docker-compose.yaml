@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    volumes:
+      - .:/workspace
+    command: sleep infinity
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    ports:
+      - 3306:3306
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - 6379:6379
