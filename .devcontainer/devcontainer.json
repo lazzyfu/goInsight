@@ -1,6 +1,7 @@
 {
   "name": "goInsight Dev",
-  "dockerComposeFile": "./docker-compose.yaml",
+  "dockerComposeFile": "docker-compose.yaml",
   "service": "app",
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose"
 }

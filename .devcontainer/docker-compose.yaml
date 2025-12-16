@@ -4,7 +4,7 @@ services:
   app:
     image: mcr.microsoft.com/devcontainers/base:ubuntu
     volumes:
-      - .:/workspace
+      - ..:/workspace
     command: sleep infinity
     depends_on:
       - mysql
@@ -12,7 +12,6 @@ services:
 
   mysql:
     image: mysql:8.0
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: test
@@ -21,6 +20,5 @@ services:
 
   redis:
     image: redis:7
-    restart: unless-stopped
     ports:
       - 6379:6379
