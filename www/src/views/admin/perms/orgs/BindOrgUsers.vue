@@ -10,47 +10,38 @@
         <UserAddOutlined />
       </div>
       <p class="modal-desc">选择要添加到当前组织的用户</p>
-      <a-form ref="formRef" :model="formState" layout="vertical" class="bind-form">
+      <a-form ref="formRef" :model="formData" layout="vertical" class="bind-form">
         <a-form-item label="选择用户" name="users">
           <a-select
-            v-model:value="formState.users"
+            v-model:value="formData.users"
             mode="multiple"
             placeholder="请选择用户"
-            :options="userOptions"
+            :options="props.users"
+            :field-names="{ label: 'username', value: 'uid', children: 'children' }"
             show-search
-            :filter-option="filterOption"
             allow-clear
             style="width: 100%"
           >
-            <template #option="{ username, nick_name }">
-              <div class="user-option">
-                <a-avatar :size="24" class="option-avatar">
-                  {{ username?.charAt(0)?.toUpperCase() }}
-                </a-avatar>
-                <span>{{ nick_name }}</span>
-              </div>
-            </template>
           </a-select>
         </a-form-item>
       </a-form>
-      <div class="selected-info" v-if="formState.users.length > 0">
+      <div class="selected-info" v-if="formData.users.length > 0">
         <InfoCircleOutlined />
-        已选择 {{ formState.users.length }} 个用户
+        已选择 {{ formData.users.length }} 个用户
       </div>
     </div>
   </a-modal>
 </template>
 
 <script setup>
-import { InfoCircleOutlined, UserAddOutlined } from '@ant-design/icons-vue'
-import { computed, reactive, ref } from 'vue' // 引入 computed
+import { InfoCircleOutlined, UserAddOutlined } from '@ant-design/icons-vue';
+import { computed, reactive, ref } from 'vue'; // 引入 computed
 
 // 定义props和emits
 const emit = defineEmits(['update:open', 'submit'])
 const props = defineProps({
   open: Boolean,
   nodeKey: String,
-  // 假设 users 原始结构包含 uid/id, username, nick_name 等字段
   users: {
     type: Array,
     default: () => [],
@@ -66,31 +57,10 @@ const uiState = reactive({
 })
 
 // 表单数据
-const formState = reactive({
-  users: [], // 存储的是用户的 value (uid 或 username)
+const formData = defineModel('modelValue', {
+  type: Object,
+  required: true,
 })
-
-// 核心优化：将原始用户数组转换为 Select 期望的 label/value 结构
-const userOptions = computed(() => {
-  return props.users.map((user) => ({
-    // value 必须是 v-model 存储的唯一标识符
-    value: user.uid || user.id || user.username,
-    // label 用于 Select 的默认搜索和展示
-    label: `${user.nick_name} (${user.username})`,
-    // 保留原始字段供自定义渲染模板 #option 使用
-    username: user.username,
-    nick_name: user.nick_name,
-    uid: user.uid,
-  }))
-})
-
-const filterOption = (input, option) => {
-  // 搜索 label (昵称+用户名) 和 value (ID/用户名)
-  return (
-    option.label.toLowerCase().includes(input.toLowerCase()) ||
-    option.value.toString().toLowerCase().includes(input.toLowerCase())
-  )
-}
 
 // 取消按钮
 const handleCancel = () => {
@@ -100,21 +70,20 @@ const handleCancel = () => {
 
 // 提交表单
 const onSubmit = async () => {
-  if (formState.users.length === 0) {
-    // 可以添加 message 提示用户
-    return
+  try {
+    await formRef.value.validateFields()
+    uiState.loading = true
+    const payload = {
+      key: props.nodeKey,
+      ...formData.value,
+    }
+    emit('submit', payload)
+  } catch (err) {
+  } finally {
+    uiState.loading = false
   }
-  uiState.loading = true
-
-  const payload = {
-    key: props.nodeKey,
-    // 假设后端接口需要 users 字段存储 ID/username 列表
-    users: formState.users,
-  }
-
-  emit('submit', payload)
-  // uiState.loading = false 应该在父组件 API 调用完成后处理
 }
+
 </script>
 
 <style scoped>
@@ -146,16 +115,6 @@ const onSubmit = async () => {
   text-align: left;
 }
 
-.user-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.option-avatar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-size: 12px;
-}
 
 .selected-info {
   display: flex;

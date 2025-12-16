@@ -1,19 +1,11 @@
 <template>
-  <div class="org-management">
-    <div class="page-header">
-      <div class="header-content">
-        <div class="header-title">
-          <h1>组织管理</h1>
-          <p class="header-desc">管理组织架构和用户分配</p>
-        </div>
-        <a-button type="primary" @click="addRootNode">
-          <template #icon>
-            <PlusOutlined />
-          </template>
-          新增根组织
-        </a-button>
-      </div>
-    </div>
+  <a-card title="组织管理">
+    <!-- 卡片右上角的新增按钮 -->
+    <template #extra>
+      <a-button type="primary" @click="addRootNode">
+        <PlusOutlined />新增根组织
+      </a-button>
+    </template>
 
     <div class="main-content">
       <div class="tree-panel">
@@ -22,64 +14,34 @@
             <ApartmentOutlined class="panel-icon" />
             组织架构
           </span>
-          <a-input-search
-            v-model:value="uiData.searchValue"
-            placeholder="搜索组织"
-            style="width: 180px"
-            allow-clear
-          />
+          <a-input-search v-model:value="uiData.searchValue" placeholder="搜索组织" style="width: 180px" allow-clear />
         </div>
         <div class="tree-container">
           <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
             <a-button type="primary" size="small" @click="addRootNode"> 创建第一个组织 </a-button>
           </a-empty>
-          <a-tree
-            v-else
-            :tree-data="filteredTreeData"
-            :selected-keys="uiData.selectedKeys"
-            :expanded-keys="uiData.expandedKeys"
-            :auto-expand-parent="uiData.autoExpandParent"
-            block-node
-            @select="handleTreeSelect"
-            @expand="handleExpand"
-          >
+          <a-tree v-else :tree-data="filteredTreeData" :selected-keys="uiData.selectedKeys"
+            :expanded-keys="uiData.expandedKeys" :auto-expand-parent="uiData.autoExpandParent" block-node
+            @select="handleTreeSelect" @expand="handleExpand">
             <template #title="{ key: nodeKey, title, dataRef }">
-              <div
-                class="tree-node"
-                :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }"
-              >
+              <div class="tree-node" :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }">
                 <span class="tree-node-title" :title="title">
                   <FolderOutlined class="folder-icon" />
                   {{ title }}
                 </span>
                 <div class="tree-actions">
                   <a-tooltip title="新增子组织">
-                    <a-button
-                      type="text"
-                      size="small"
-                      class="action-btn"
-                      @click.stop="addChildNode(dataRef)"
-                    >
+                    <a-button type="text" size="small" class="action-btn" @click.stop="addChildNode(dataRef)">
                       <PlusOutlined />
                     </a-button>
                   </a-tooltip>
                   <a-tooltip title="编辑">
-                    <a-button
-                      type="text"
-                      size="small"
-                      class="action-btn"
-                      @click.stop="editCurrentNode(dataRef)"
-                    >
+                    <a-button type="text" size="small" class="action-btn" @click.stop="editCurrentNode(dataRef)">
                       <EditOutlined />
                     </a-button>
                   </a-tooltip>
-                  <a-popconfirm
-                    title="确定要删除该组织吗？"
-                    description="删除后将无法恢复"
-                    @confirm="handleDelete(dataRef)"
-                    ok-text="确定"
-                    cancel-text="取消"
-                  >
+                  <a-popconfirm title="确定要删除该组织吗？" description="删除后将无法恢复" @confirm="handleDelete(dataRef)" ok-text="确定"
+                    cancel-text="取消">
                     <a-tooltip title="删除">
                       <a-button type="text" size="small" class="action-btn danger" @click.stop>
                         <DeleteOutlined />
@@ -111,19 +73,11 @@
 
     <AddRootOrg v-model:open="uiState.isAddRootNodeOpen" @refresh="fetchData" />
 
-    <AddChildOrg
-      v-model:open="uiState.isAddChildNodeOpen"
-      :parent_node_key="uiData.selectedNodeKey"
-      :parent_node_name="uiData.selectedNode"
-      @refresh="fetchData"
-    />
+    <AddChildOrg v-model:open="uiState.isAddChildNodeOpen" :parent_node_key="uiData.selectedNodeKey"
+      :parent_node_name="uiData.selectedNode" @refresh="fetchData" />
 
-    <EditOrgName
-      v-model:open="uiState.isEditNodeNameOpen"
-      :node-key="uiData.selectedNodeKey"
-      @refresh="fetchData"
-    />
-  </div>
+    <EditOrgName v-model:open="uiState.isEditNodeNameOpen" :node-key="uiData.selectedNodeKey" @refresh="fetchData" />
+  </a-card>
 </template>
 
 <script setup>
@@ -164,7 +118,7 @@ const uiData = reactive({
 
 // 获取列表数据
 const fetchData = async () => {
-  const res = await getOrganizationsApi().catch(() => {})
+  const res = await getOrganizationsApi().catch(() => { })
   uiData.treeData = res?.data || []
   if (uiData.treeData.length > 0) {
     const allKeys = getAllKeys(uiData.treeData)
@@ -238,7 +192,7 @@ const handleDelete = useThrottleFn(async (item) => {
     key: item.key,
     name: item.title,
   }
-  const res = await deleteOrganizationsApi(payload).catch(() => {})
+  const res = await deleteOrganizationsApi(payload).catch(() => { })
   if (res) {
     message.success('删除成功')
     uiData.selectedNodeKey = ''
@@ -255,39 +209,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.org-management {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-  padding: 12px;
-}
-
-.page-header {
-  margin-bottom: 12px;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #fff;
-  padding: 12px 32px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.header-title h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: #1a1a2e;
-}
-
-.header-desc {
-  margin: 4px 0 0;
-  color: #8c8c8c;
-  font-size: 14px;
-}
-
 .main-content {
   display: flex;
   gap: 12px;

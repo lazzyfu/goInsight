@@ -18,7 +18,7 @@
     <div style="margin-top: 12px">
       <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1300 }">
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">

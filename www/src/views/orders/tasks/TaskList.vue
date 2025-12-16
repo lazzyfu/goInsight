@@ -7,36 +7,18 @@
       </a-button>
 
       <!-- 进度筛选 -->
-      <a-select
-        v-model:value="uiData.progress"
-        :options="progressOptions"
-        allowClear
-        style="width: 140px"
-        placeholder="任务进度"
-        @change="fetchData"
-      />
+      <a-select v-model:value="uiData.progress" :options="progressOptions" allowClear style="width: 140px"
+        placeholder="任务进度" @change="fetchData" />
 
       <!-- 搜索框 -->
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="请输入 SQL 文本"
-        style="width: 260px"
-        allowClear
-        @search="handleSearch"
-      />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="请输入 SQL 文本" style="width: 260px" allowClear
+        @search="handleSearch" />
     </a-space>
 
     <div style="margin-top: 12px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.key"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-        :scroll="{ x: 1100 }"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'progress'">
             <template v-if="progressInfo = getProgressAlias(record.progress)">
@@ -50,12 +32,6 @@
               <EyeOutlined />
             </a>
             {{ record.sql }}
-          </template>
-          <template v-else-if="column.key === 'updated_at'">
-            <div class="time-cell">
-              <div class="time-main"><FieldTimeOutlined /> {{ formatDate(record.updated_at) }}</div>
-              <div class="time-sub">{{ formatTime(record.updated_at) }}</div>
-            </div>
           </template>
           <template v-if="column.key === 'action'">
             <a-space>
@@ -77,21 +53,12 @@
     </div>
   </a-card>
   <!-- 查看SQL -->
-  <a-modal
-    v-model:open="uiState.open"
-    title="SQL语句"
-    width="55%"
-    :footer="null"
-    @cancel="handleCancel"
-  >
+  <a-modal v-model:open="uiState.open" title="SQL语句" width="55%" :footer="null" @cancel="handleCancel">
     <highlightjs language="sql" :code="uiData.sql" />
   </a-modal>
 
-  <TaskResult
-    :open="uiState.taskResultOpen"
-    v-model:modelValue="taskResultData"
-    @update:open="uiState.taskResultOpen = $event"
-  >
+  <TaskResult :open="uiState.taskResultOpen" v-model:modelValue="taskResultData"
+    @update:open="uiState.taskResultOpen = $event">
   </TaskResult>
   <TaskStream />
 </template>
@@ -100,9 +67,8 @@
 import { executeTaskApi, executebatchTasksApi, getOrderTasksApi } from '@/api/order'
 import {
   EyeOutlined,
-  FieldTimeOutlined,
   FileSearchOutlined,
-  PlayCircleOutlined,
+  PlayCircleOutlined
 } from '@ant-design/icons-vue'
 import { useIntervalFn, useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
@@ -212,22 +178,12 @@ const fetchData = async () => {
     progress: uiData.progress,
     order_id: orderID,
   }
-  const res = await getOrderTasksApi(params).catch(() => {})
+  const res = await getOrderTasksApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
   }
   uiState.loading = false
-}
-
-// 格式化日期时间
-const formatDate = (dateStr) => {
-  return dateStr.split(' ')[0]
-}
-
-// 格式化时间
-const formatTime = (dateStr) => {
-  return dateStr.split(' ')[1]
 }
 
 // 获取进度别名
@@ -257,7 +213,7 @@ const handleCancel = (e) => {
 // 执行单个任务
 const executeTask = useThrottleFn(async (record) => {
   message.success(`开始执行任务: ${record.task_id}`)
-  const res = await executeTaskApi({ order_id: orderID, task_id: record.task_id }).catch(() => {})
+  const res = await executeTaskApi({ order_id: orderID, task_id: record.task_id }).catch(() => { })
   if (res) {
     fetchData()
   }
@@ -266,7 +222,7 @@ const executeTask = useThrottleFn(async (record) => {
 // 批量执行
 const executeBatchTasks = useThrottleFn(async () => {
   message.success('开始批量执行任务')
-  const res = await executebatchTasksApi({ order_id: orderID }).catch(() => {})
+  const res = await executebatchTasksApi({ order_id: orderID }).catch(() => { })
   if (res) {
     fetchData()
   }

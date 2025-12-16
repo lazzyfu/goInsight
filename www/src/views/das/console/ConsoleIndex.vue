@@ -18,7 +18,7 @@
           class="ant-table-striped"
           bordered
           :data-source="uiData.tableData"
-          :scroll="{ x: '100%' }"
+          :scroll="{ x: 1100 }"
           style="min-width: 100%"
         >
           <a-table-column

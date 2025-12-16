@@ -1,43 +1,29 @@
 <template>
   <a-card title="用户管理">
     <template #extra>
-      <a-button type="primary" @click="handleAdd"><PlusOutlined />新增用户</a-button>
+      <a-button type="primary" @click="handleAdd">
+        <PlusOutlined />新增用户
+      </a-button>
     </template>
 
     <div class="search-wrapper">
       <a-space>
-        <a-cascader
-          v-model:value="uiData.searchOrganizationKey"
-          :field-names="{ label: 'title', value: 'key', children: 'children' }"
-          :options="uiData.organizations"
-          change-on-select
-          expand-trigger="hover"
-          placeholder="请选择组织"
-        >
+        <a-cascader v-model:value="uiData.searchOrganizationKey"
+          :field-names="{ label: 'title', value: 'key', children: 'children' }" :options="uiData.organizations"
+          change-on-select expand-trigger="hover" placeholder="请选择组织">
         </a-cascader>
 
         <!-- 搜索 -->
-        <a-input-search
-          v-model:value="uiData.searchValue"
-          placeholder="搜索用户名、昵称、手机号、邮箱..."
-          style="width: 350px"
-          @search="handleSearch"
-        />
+        <a-input-search v-model:value="uiData.searchValue" placeholder="搜索用户名、昵称、手机号、邮箱..." style="width: 350px"
+          @search="handleSearch" />
       </a-space>
     </div>
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.key"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-        :scroll="{ x: 1300 }"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'is_active'">
             <span v-if="record.is_active">
@@ -69,20 +55,21 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
+                    <a @click="handleEdit(record)">
+                      <EditOutlined /> 编辑
+                    </a>
                   </a-menu-item>
                   <a-menu-item key="2">
-                    <a-popconfirm
-                      title="确认删除吗？"
-                      ok-text="是"
-                      cancel-text="否"
-                      @confirm="handleDelete(record)"
-                    >
-                      <a><DeleteOutlined /> 删除</a>
+                    <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
+                      <a>
+                        <DeleteOutlined /> 删除
+                      </a>
                     </a-popconfirm>
                   </a-menu-item>
                   <a-menu-item key="3">
-                    <a @click="handleResetPassword(record)"><KeyOutlined /> 重置密码</a>
+                    <a @click="handleResetPassword(record)">
+                      <KeyOutlined /> 重置密码
+                    </a>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -94,22 +81,12 @@
   </a-card>
 
   <!-- 重置密码 -->
-  <PasswordFormModal
-    :open="uiState.passwordModalOpen"
-    :title="uiData.passwordFormTitle"
-    @update:open="uiState.passwordModalOpen = $event"
-    @submit="handleResetPasswordSubmit"
-  />
+  <PasswordFormModal :open="uiState.passwordModalOpen" :title="uiData.passwordFormTitle"
+    @update:open="uiState.passwordModalOpen = $event" @submit="handleResetPasswordSubmit" />
 
   <!-- 新增/编辑弹窗 -->
-  <UserFormModal
-    :open="uiState.userModalOpen"
-    v-model:modelValue="formState"
-    :roles="uiData.roles"
-    :title="uiState.isEditMode ? '编辑用户' : '新增用户'"
-    @update:open="uiState.userModalOpen = $event"
-    @submit="onSubmit"
-  />
+  <UserFormModal :open="uiState.userModalOpen" v-model:modelValue="formState" :roles="uiData.roles"
+    :title="uiState.isEditMode ? '编辑用户' : '新增用户'" @update:open="uiState.userModalOpen = $event" @submit="onSubmit" />
 </template>
 
 <script setup>
@@ -254,13 +231,13 @@ const handleTableChange = (pager) => {
 
 // 获取角色
 const getRoles = async () => {
-  const res = await getRolesApi().catch(() => {})
+  const res = await getRolesApi().catch(() => { })
   uiData.roles = res?.data || []
 }
 
 // 获取组织
 const getOrganizations = async () => {
-  const res = await getOrganizationsApi().catch(() => {})
+  const res = await getOrganizationsApi().catch(() => { })
   uiData.organizations = res?.data || []
 }
 
@@ -278,7 +255,7 @@ const fetchData = async () => {
     search: uiData.searchValue,
     organization_key: organization_key,
   }
-  const res = await getUsersApi(params).catch(() => {})
+  const res = await getUsersApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -305,8 +282,8 @@ const handleEdit = (record) => {
 // 提交
 const onSubmit = useThrottleFn(async (data) => {
   const res = uiState.isEditMode
-    ? await updateUsersApi(data).catch(() => {})
-    : await addUsersApi(data).catch(() => {})
+    ? await updateUsersApi(data).catch(() => { })
+    : await addUsersApi(data).catch(() => { })
   if (res) {
     message.success('操作成功')
     uiState.userModalOpen = false
@@ -327,7 +304,7 @@ const handleResetPasswordSubmit = useThrottleFn(async (data) => {
     uid: uid.value,
     ...data,
   }
-  const res = await ResetPasswordApi(payload).catch(() => {})
+  const res = await ResetPasswordApi(payload).catch(() => { })
   if (res) {
     message.info('操作成功')
   }
@@ -336,7 +313,7 @@ const handleResetPasswordSubmit = useThrottleFn(async (data) => {
 
 // 删除
 const handleDelete = useThrottleFn(async (record) => {
-  const res = await deleteUsersApi(record.uid).catch(() => {})
+  const res = await deleteUsersApi(record.uid).catch(() => { })
   if (res) {
     message.info('操作成功')
     fetchData()

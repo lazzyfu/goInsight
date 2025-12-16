@@ -1,22 +1,11 @@
 <template>
   <div v-if="data.showbTable" style="margin-top: 15px; overflow-x: auto">
-    <a-table
-      size="small"
-      class="ant-table-striped"
-      bordered
-      :data-source="data.tableData"
-      :columns="tableColumns"
-      :rowClassName="setRowClass"
-      :scroll="{ x: '100%' }"
-      style="min-width: 100%"
-    >
+    <a-table size="small" class="ant-table-striped" bordered :data-source="data.tableData" :columns="tableColumns"
+      :rowClassName="setRowClass" :scroll="{ x: 1100 }">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'summary'">
-          <ul
-            style="list-style-type: square; padding: 0 0 0 16px; margin: 2px"
-            v-for="(item, index) of record.summary"
-            :key="index"
-          >
+          <ul style="list-style-type: square; padding: 0 0 0 16px; margin: 2px" v-for="(item, index) of record.summary"
+            :key="index">
             <li>{{ item }}</li>
           </ul>
         </template>
@@ -35,18 +24,12 @@ const tableColumns = [
     dataIndex: 'level',
     key: 'level',
     ellipsis: true,
-    scopedSlots: {
-      customRender: 'level',
-    },
   },
   {
     title: '指纹',
     dataIndex: 'finger_id',
     key: 'finger_id',
     width: '15%',
-    scopedSlots: {
-      customRender: 'finger_id',
-    },
   },
   {
     title: '语句',
@@ -54,26 +37,17 @@ const tableColumns = [
     key: 'query',
     width: '30%',
     ellipsis: true,
-    scopedSlots: {
-      customRender: 'query',
-    },
   },
   {
     title: '提示',
     dataIndex: 'summary',
     key: 'summary',
     width: '40%',
-    scopedSlots: {
-      customRender: 'summary',
-    },
   },
   {
     title: '类型',
     dataIndex: 'type',
     key: 'type',
-    scopedSlots: {
-      customRender: 'type',
-    },
   },
 ]
 
@@ -114,9 +88,11 @@ defineExpose({
 :deep(.row-level-info) {
   color: green;
 }
+
 :deep(.row-level-warn) {
   color: orange;
 }
+
 :deep(.row-level-error) {
   color: red;
 }

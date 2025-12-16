@@ -26,7 +26,6 @@
         :pagination="pagination"
         :loading="uiState.loading"
         @change="handleTableChange"
-        :scroll="{ x: 1300 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">

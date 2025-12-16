@@ -1,24 +1,13 @@
 <template>
   <div>
     <div class="search-wrapper">
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="输入要查询的SQL内容"
-        style="width: 350px"
-        @search="handleSearch"
-      />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="输入要查询的SQL内容" style="width: 350px"
+        @search="handleSearch" />
     </div>
     <div style="margin-top: 14px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.key"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-        :scroll="{ x: 1300 }"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'username'">
             {{ record.username }}
@@ -41,12 +30,6 @@
               {{ record.duration }} ms
             </span>
           </template>
-          <template v-else-if="column.key === 'created_at'">
-            <div class="time-cell">
-              <div class="time-main">{{ formatDate(record.created_at) }}</div>
-              <div class="time-sub">{{ formatTime(record.created_at) }}</div>
-            </div>
-          </template>
           <template v-else-if="column.key === 'error_msg'">
             <span class="status-tag" :class="record.error_msg ? 'error' : 'success'">
               <CheckSquareOutlined v-if="!record.error_msg" />
@@ -60,13 +43,8 @@
           <template v-else-if="column.key === 'action'">
             <a-space wrap>
               <a-tooltip title="拷贝SQL语句">
-                <a-button
-                  type="link"
-                  block
-                  shape="circle"
-                  :icon="h(CopyOutlined)"
-                  @click="copyRecord(record.sqltext)"
-                />
+                <a-button type="link" block shape="circle" :icon="h(CopyOutlined)"
+                  @click="copyRecord(record.sqltext)" />
               </a-tooltip>
             </a-space>
           </template>
@@ -208,7 +186,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await GetHistoryApi(params).catch(() => {})
+  const res = await GetHistoryApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -234,16 +212,6 @@ const getDurationClass = (duration) => {
   if (duration > 1000) return 'slow'
   if (duration > 100) return 'medium'
   return 'fast'
-}
-
-// 日期格式化
-const formatDate = (dateStr) => {
-  return dateStr.split(' ')[0]
-}
-
-// 时间格式化
-const formatTime = (dateStr) => {
-  return dateStr.split(' ')[1]
 }
 
 // 复制到剪贴板

@@ -1,24 +1,13 @@
 <template>
   <div>
     <div class="search-wrapper">
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="输入SQL内容"
-        style="width: 350px"
-        @search="handleSearch"
-      />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="输入SQL内容" style="width: 350px"
+        @search="handleSearch" />
     </div>
     <div style="margin-top: 14px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.key"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-        :scroll="{ x: 1100 }"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'sqltext'">
             <a @click="showSqlDetail(record)" title="查看完整SQL">
@@ -26,37 +15,26 @@
             </a>
             {{ record.sqltext }}
           </template>
-          <template v-else-if="column.key === 'updated_at'">
-            <div class="time-cell">
-              <div class="time-main">{{ formatDate(record.updated_at) }}</div>
-              <div class="time-sub">{{ formatTime(record.updated_at) }}</div>
-            </div>
-          </template>
-          <template v-else-if="column.key === 'created_at'">
-            <div class="time-cell">
-              <div class="time-main">{{ formatDate(record.created_at) }}</div>
-              <div class="time-sub">{{ formatTime(record.created_at) }}</div>
-            </div>
-          </template>
           <template v-if="column.key === 'action'">
             <a-dropdown>
               <EllipsisOutlined />
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a @click="copyRecord(record)"> <CopyOutlined /> 拷贝 </a>
+                    <a @click="copyRecord(record)">
+                      <CopyOutlined /> 拷贝
+                    </a>
                   </a-menu-item>
                   <a-menu-item key="2">
-                    <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
+                    <a @click="handleEdit(record)">
+                      <EditOutlined /> 编辑
+                    </a>
                   </a-menu-item>
                   <a-menu-item key="3">
-                    <a-popconfirm
-                      title="确认删除吗？"
-                      ok-text="是"
-                      cancel-text="否"
-                      @confirm="handleDelete(record)"
-                    >
-                      <a><DeleteOutlined /> 删除</a>
+                    <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
+                      <a>
+                        <DeleteOutlined /> 删除
+                      </a>
                     </a-popconfirm>
                   </a-menu-item>
                 </a-menu>
@@ -67,22 +45,12 @@
       </a-table>
     </div>
     <!-- 查看SQL -->
-    <a-modal
-      v-model:open="uiState.open"
-      title="SQL语句"
-      width="55%"
-      :footer="null"
-      @cancel="handleCancel"
-    >
+    <a-modal v-model:open="uiState.open" title="SQL语句" width="55%" :footer="null" @cancel="handleCancel">
       <highlightjs language="sql" :code="uiData.sqltext" />
     </a-modal>
     <!-- 更新收藏SQL -->
-    <DasFavoriteFormModal
-      :open="uiState.isFavoritesOpen"
-      v-model:modelValue="formState"
-      @update:open="uiState.isFavoritesOpen = $event"
-      @submit="onSubmit"
-    />
+    <DasFavoriteFormModal :open="uiState.isFavoritesOpen" v-model:modelValue="formState"
+      @update:open="uiState.isFavoritesOpen = $event" @submit="onSubmit" />
   </div>
 </template>
 
@@ -187,7 +155,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await GetFavoritesApi(params).catch(() => {})
+  const res = await GetFavoritesApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -204,16 +172,6 @@ const showSqlDetail = (record) => {
 // 关闭查看SQL弹窗
 const handleCancel = (e) => {
   uiState.open = false
-}
-
-// 格式日期
-const formatDate = (dateStr) => {
-  return dateStr.split(' ')[0]
-}
-
-// 格式时间
-const formatTime = (dateStr) => {
-  return dateStr.split(' ')[1]
 }
 
 // 复制SQL
@@ -234,7 +192,7 @@ const handleEdit = (record) => {
 
 // 提交
 const onSubmit = async (data) => {
-  const res = await UpdateFavoritesApi(data).catch(() => {})
+  const res = await UpdateFavoritesApi(data).catch(() => { })
   if (res) {
     message.success('更新成功')
     uiState.isFavoritesOpen = false
@@ -244,7 +202,7 @@ const onSubmit = async (data) => {
 
 // 删除
 const handleDelete = async (record) => {
-  const res = await DeleteFavoritesApi(record).catch(() => {})
+  const res = await DeleteFavoritesApi(record).catch(() => { })
   if (res) {
     message.info('操作成功')
     fetchData()

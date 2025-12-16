@@ -18,7 +18,7 @@
     <div style="margin-top: 12px">
       <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1300 }">
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'schema'">
             <router-link :to="{

@@ -5,34 +5,16 @@
         <a-checkbox v-model:checked="uiState.checked" @change="fetchData">我的工单</a-checkbox>
       </div>
       <!-- 进度筛选 -->
-      <a-select
-        v-model:value="uiData.progress"
-        :options="progressOptions"
-        allowClear
-        style="width: 140px"
-        placeholder="工单进度"
-        @change="fetchData"
-      />
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="请输入工单标题、实例、库名等关键词搜索"
-        allowClear
-        style="width: 350px"
-        @search="handleSearch"
-      />
+      <a-select v-model:value="uiData.progress" :options="progressOptions" allowClear style="width: 140px"
+        placeholder="工单进度" @change="fetchData" />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="请输入工单标题、实例、库名等关键词搜索" allowClear
+        style="width: 350px" @search="handleSearch" />
     </a-space>
 
     <div style="margin-top: 12px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.key"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-        :scroll="{ x: 1500 }"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'progress'">
             <template v-if="progressInfo = getProgressAlias(record.progress)">
@@ -53,12 +35,6 @@
             <DatabaseOutlined />
             {{ record.schema }}
           </template>
-          <template v-else-if="column.key === 'created_at'">
-            <div class="time-cell">
-              <div class="time-main"><FieldTimeOutlined /> {{ formatDate(record.created_at) }}</div>
-              <div class="time-sub">{{ formatTime(record.created_at) }}</div>
-            </div>
-          </template>
         </template>
       </a-table>
     </div>
@@ -67,7 +43,7 @@
 
 <script setup>
 import { getOrderListApi } from '@/api/order'
-import { DatabaseOutlined, FieldTimeOutlined } from '@ant-design/icons-vue'
+import { DatabaseOutlined } from '@ant-design/icons-vue'
 import { useIntervalFn } from '@vueuse/core'
 import { onMounted, reactive } from 'vue'
 
@@ -194,22 +170,12 @@ const fetchData = async () => {
     search: uiData.searchValue,
     progress: uiData.progress,
   }
-  const res = await getOrderListApi(params).catch(() => {})
+  const res = await getOrderListApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
   }
   uiState.loading = false
-}
-
-// 格式化日期时间
-const formatDate = (dateStr) => {
-  return dateStr.split(' ')[0]
-}
-
-// 格式化时间
-const formatTime = (dateStr) => {
-  return dateStr.split(' ')[1]
 }
 
 // 获取进度别名

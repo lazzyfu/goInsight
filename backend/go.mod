@@ -1,8 +1,6 @@
 module github.com/lazzyfu/goinsight
 
-go 1.23.6
-
-toolchain go1.23.12
+go 1.23.12
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.13.3

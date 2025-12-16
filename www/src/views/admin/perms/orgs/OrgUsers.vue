@@ -44,6 +44,7 @@
     :open="uiState.isModalOpen"
     :nodeKey="props.nodeKey"
     :users="uiData.users"
+    v-model:modelValue="formState"
     @update:open="uiState.isModalOpen = $event"
     @submit="onSubmit"
   />
@@ -59,7 +60,7 @@ import {
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
-import { reactive, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import BindOrgUsers from './BindOrgUsers.vue'
 
 // props
@@ -69,6 +70,13 @@ const props = defineProps({
     required: true,
   },
 })
+
+// form表单
+const defaultForm = {
+  users: [],
+}
+const formState = ref({ ...defaultForm })
+
 
 // 状态
 const uiState = reactive({
@@ -167,6 +175,7 @@ const handleTableChange = (pager) => {
 // 新增
 const handleAdd = () => {
   getUsers()
+  formState.value = { ...defaultForm }
   uiState.isModalOpen = true
 }
 
