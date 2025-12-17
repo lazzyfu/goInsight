@@ -131,6 +131,14 @@ export const get = (url, params) => {
   })
 }
 
+export const getBlob = (url, params = {}, config = {}) => {
+  return service.get(url, {
+    params,
+    responseType: 'blob',
+    ...config,
+  })
+}
+
 export function post(url, params, headers = {}) {
   return new Promise((resolve, reject) => {
     service

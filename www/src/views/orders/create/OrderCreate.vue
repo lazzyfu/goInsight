@@ -72,7 +72,7 @@
       </a-col>
     </a-row>
 
-    <order-inspect ref="inspectResultTableRef" />
+    <order-inspect ref="inspectResultTableRef" v-model:modelValue="formState" />
   </a-card>
 </template>
 
@@ -147,8 +147,9 @@ const uiData = reactive({
     { value: 'TiDB', label: 'TiDB' },
   ],
   sqlTypes: [
-    { value: 'DML', label: 'DML' },
-    { value: 'DDL', label: 'DDL' },
+    { value: 'DML', label: 'DML工单' },
+    { value: 'DDL', label: 'DDL工单' },
+    { value: 'EXPORT', label: '数据导出工单' },
   ],
 })
 

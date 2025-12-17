@@ -54,7 +54,7 @@ func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightD
 	return inspect.Run()
 }
 
-func (s *InspectOrderSyntaxService) Run() (interface{}, error) {
+func (s *InspectOrderSyntaxService) Run() (any, error) {
 	// 判断SQL类型是否匹配，DML工单仅允许提交DML语句，DDL工单仅允许提交DDL语句
 	err := parser.CheckSqlType(s.Content, string(s.SQLType))
 	if err != nil {
@@ -91,5 +91,5 @@ func (s *InspectOrderSyntaxService) Run() (interface{}, error) {
 		}
 	}
 	// return
-	return map[string]interface{}{"status": status, "data": returnData}, nil
+	return map[string]any{"status": status, "data": returnData}, nil
 }

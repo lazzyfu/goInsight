@@ -12,7 +12,7 @@
         <a-row :gutter="[16, 16]">
           <a-col :xs="24" :sm="12" :md="8">
             <div class="stat-item">
-              <a-statistic title="执行耗时" :value="formData.execute_cost_time || ''">
+              <a-statistic title="执行耗时" :value="formData.result.execute_cost_time || ''">
                 <template #prefix>
                   <ThunderboltOutlined style="color: #1890ff" />
                 </template>
@@ -21,7 +21,7 @@
           </a-col>
           <a-col :xs="24" :sm="12" :md="8">
             <div class="stat-item">
-              <a-statistic title="备份耗时" :value="formData.backup_cost_time || ''">
+              <a-statistic title="备份耗时" :value="formData.result.backup_cost_time || ''">
                 <template #prefix>
                   <SaveOutlined style="color: #52c41a" />
                 </template>
@@ -30,7 +30,7 @@
           </a-col>
           <a-col :xs="24" :sm="12" :md="8">
             <div class="stat-item">
-              <a-statistic title="影响行数" :value="formData.affected_rows || 0" :value-style="{ color: '#fa8c16' }">
+              <a-statistic title="影响行数" :value="formData.result.affected_rows || 0" :value-style="{ color: '#fa8c16' }">
                 <template #prefix>
                   <DatabaseOutlined style="color: #fa8c16" />
                 </template>
@@ -41,7 +41,7 @@
       </a-card>
 
       <!-- 导出文件信息 -->
-      <a-card v-if="formData.sqlType === 'EXPORT'" size="small" class="info-card">
+      <a-card v-if="formData.sql_type === 'EXPORT'" size="small" class="info-card">
         <template #title>
           <div class="card-title">
             <FileTextOutlined class="title-icon" />
@@ -51,22 +51,24 @@
         <a-descriptions :column="1" bordered size="small">
           <a-descriptions-item label="文件名">
             <a-typography-text copyable>
-              {{ formData.file_name || '-' }}
+              {{ formData.result.file_name || '-' }}
             </a-typography-text>
           </a-descriptions-item>
           <a-descriptions-item label="文件大小">
-            <a-tag color="blue">{{ formatFileSize(formData.file_size) }}</a-tag>
+            <a-tag color="blue">{{ formatFileSize(formData.result.file_size) }}</a-tag>
           </a-descriptions-item>
           <a-descriptions-item label="导出行数">
-            <a-tag color="green">{{ formData.export_rows || 0 }} 行</a-tag>
+            <a-tag color="green">{{ formData.result.export_rows || 0 }} 行</a-tag>
           </a-descriptions-item>
           <a-descriptions-item label="文件加密秘钥">
-            <a-typography-text copyable :ellipsis="true" style="max-width: 100%">
-              {{ formData.encryption_key || '-' }}
-            </a-typography-text>
+            <a @click="copyRecord(formData.result.encryption_key)">
+              {{ formData.result.encryption_key || '-' }}
+            </a>
+
           </a-descriptions-item>
           <a-descriptions-item label="文件下载路径">
-            <a v-if="formData.download_url" :href="formData.download_url" target="_blank" class="download-link">
+            <a v-if="formData.result.download_url" :href="formData.result.download_url" target="_blank"
+              class="download-link">
               <DownloadOutlined /> 点击下载
             </a>
             <span v-else>-</span>
@@ -75,7 +77,7 @@
       </a-card>
 
       <!-- 错误信息 -->
-      <a-card v-if="formData.error" size="small" class="info-card error-card">
+      <a-card v-if="formData.result.error" size="small" class="info-card error-card">
         <template #title>
           <div class="card-title error-title">
             <CloseCircleOutlined class="title-icon" />
@@ -83,12 +85,12 @@
           </div>
         </template>
         <div class="code-wrapper">
-          <CodeMirror :initVal="formData.error" />
+          <CodeMirror :initVal="formData.result.error" />
         </div>
       </a-card>
 
       <!-- 执行日志 -->
-      <a-card v-if="formData.execute_log" size="small" class="info-card">
+      <a-card v-if="formData.result.execute_log" size="small" class="info-card">
         <template #title>
           <div class="card-title">
             <FileSearchOutlined class="title-icon" />
@@ -96,12 +98,12 @@
           </div>
         </template>
         <div class="code-wrapper">
-          <CodeMirror :initVal="formData.execute_log" />
+          <CodeMirror :initVal="formData.result.execute_log" />
         </div>
       </a-card>
 
       <!-- 回滚 SQL -->
-      <a-card v-if="formData.rollback_sql" size="small" class="info-card">
+      <a-card v-if="formData.result.rollback_sql" size="small" class="info-card">
         <template #title>
           <div class="card-title">
             <RollbackOutlined class="title-icon" />
@@ -109,7 +111,7 @@
           </div>
         </template>
         <div class="code-wrapper">
-          <CodeMirror :initVal="formData.rollback_sql" />
+          <CodeMirror :initVal="formData.result.rollback_sql" />
         </div>
       </a-card>
 
@@ -134,6 +136,10 @@ import {
   RollbackOutlined
 } from '@ant-design/icons-vue'
 import CodeMirror from '@/components/edit/Codemirror.vue'
+import { message } from 'ant-design-vue'
+import useClipboard from 'vue-clipboard3'
+
+const { toClipboard } = useClipboard()
 
 const props = defineProps({
   open: Boolean,
@@ -146,6 +152,20 @@ const formData = defineModel('modelValue', {
   type: Object,
   required: true
 })
+
+// 复制：支持传入字符串或对象 { sqltext }
+const copyRecord = async (value) => {
+  try {
+    if (!value) {
+      message.warning('没有可拷贝的内容')
+      return
+    }
+    await toClipboard(value)
+    message.success('已拷贝到剪贴板')
+  } catch (e) {
+    message.error(String(e))
+  }
+}
 
 // 关闭
 const handleCancel = () => {

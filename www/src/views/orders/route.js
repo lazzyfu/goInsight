@@ -8,13 +8,13 @@ const route = {
       name: 'orders.create',
       path: '/orders/create',
       component: () => import('./create/OrderCreate.vue'),
-      meta: { title: '新建工单', icon: 'FormOutlined',  keepAlive: true },
+      meta: { title: '新建工单', icon: 'FormOutlined', keepAlive: true },
     },
     {
       name: 'orders.list',
       path: '/orders',
       component: () => import('./list/OrderList.vue'),
-      meta: { title: '工单列表', icon:'UnorderedListOutlined' , keepAlive: true },
+      meta: { title: '工单列表', icon: 'UnorderedListOutlined', keepAlive: true },
     },
     {
       name: 'orders.detail',
@@ -27,6 +27,12 @@ const route = {
       path: '/orders/tasks/:order_id',
       component: () => import('./tasks/TaskList.vue'),
       meta: { title: '工单任务', keepAlive: true, hidden: true },
+    },
+    {
+      name: 'orders.tasks.exportfile.download',
+      path: '/orders/tasks/download/exportfile/:filename',
+      component: () => import('./tasks/ExportfileDownload.vue'),
+      meta: { title: '下载导出文件', keepAlive: true, hidden: true },
     },
   ],
 }

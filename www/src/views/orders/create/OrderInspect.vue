@@ -18,6 +18,12 @@
 import { message } from 'ant-design-vue'
 import { reactive } from 'vue'
 
+// 表单数据
+const formData = defineModel('modelValue', {
+  type: Object,
+  required: true,
+})
+
 const tableColumns = [
   {
     title: '级别',
@@ -51,6 +57,8 @@ const tableColumns = [
   },
 ]
 
+
+
 const data = reactive({
   showbTable: false,
   tableData: [],
@@ -69,13 +77,19 @@ const setRowClass = (record) => {
 }
 
 const render = (res) => {
-  if (res.status === 0) {
+  if (formData.value.sql_type === 'EXPORT') {
+    message.info('数据导出工单无需语法检查，可以直接提交工单')
+    data.tableData = []
+    data.showbTable = false
+    return
+  }
+  if (res?.status === 0) {
     message.info('语法检查通过，您可以提交工单了，O(∩_∩)O')
   }
-  if (res.status === 1) {
+  if (res?.status === 1) {
     message.error('语法检查未通过，请根据下面输出提示进行更正，(ㄒoㄒ)')
   }
-  data.tableData = res.data
+  data.tableData = res?.data || []
   data.showbTable = true
 }
 

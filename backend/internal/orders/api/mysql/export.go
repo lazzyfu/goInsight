@@ -26,11 +26,11 @@ var filePath string = "./media"
 func (e *ExecuteMySQLExportToFile) processRowsAndExport(rows *sql.Rows, columns []string) (int64, string, string, error) {
 	g := new(errgroup.Group)
 
-	vals := make([]interface{}, len(columns))
+	vals := make([]any, len(columns))
 	for i := range columns {
 		vals[i] = new(sql.RawBytes)
 	}
-	ch := make(chan []interface{}, 10)
+	ch := make(chan []any, 10)
 
 	// Determine file format and start export
 	var fileName, fullFileName string
@@ -66,7 +66,7 @@ func (e *ExecuteMySQLExportToFile) processRowsAndExport(rows *sql.Rows, columns 
 	return rowCount, fileName, fullFileName, nil
 }
 
-func (e *ExecuteMySQLExportToFile) readAndProcessRows(rows *sql.Rows, vals []interface{}, ch chan []interface{}) (int64, error) {
+func (e *ExecuteMySQLExportToFile) readAndProcessRows(rows *sql.Rows, vals []any, ch chan []any) (int64, error) {
 	var rowCount int64
 	for rows.Next() {
 		if err := rows.Scan(vals...); err != nil {
@@ -79,8 +79,8 @@ func (e *ExecuteMySQLExportToFile) readAndProcessRows(rows *sql.Rows, vals []int
 	return rowCount, nil
 }
 
-func (e *ExecuteMySQLExportToFile) processRowData(vals []interface{}) []interface{} {
-	vmap := make([]interface{}, len(vals))
+func (e *ExecuteMySQLExportToFile) processRowData(vals []any) []any {
+	vmap := make([]any, len(vals))
 	for i, c := range vals {
 		switch v := c.(type) {
 		case *sql.RawBytes:
@@ -173,7 +173,7 @@ func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
 		ContentType:   "xlsx",
 		FileSize:      FileSize,
 		ExportRows:    rowCount,
-		DownloadUrl:   fmt.Sprintf("%s/orders/download/exportfile/%s", global.App.Config.Notify.NoticeURL, encryptFileName),
+		DownloadUrl:   fmt.Sprintf("%s/orders/tasks/download/exportfile/%s", global.App.Config.Notify.NoticeURL, encryptFileName),
 	}
 	data.ExecuteLog = strings.Join(executeLog, "\n")
 	data.ExecuteCostTime = executeCostTime
