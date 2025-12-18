@@ -116,7 +116,7 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	// Logging function for errors
 	logErrorAndReturn := func(err error, errMsg string) (base.ReturnData, error) {
 		logAndPublish(errMsg + err.Error())
-		data.ExecuteLog = strings.Join(executeLog, "\n")
+		data.ExecuteLog = strings.Join(executeLog, "")
 		return data, err
 	}
 

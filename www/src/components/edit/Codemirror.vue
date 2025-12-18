@@ -2,7 +2,7 @@
   <div
     ref="editor"
     :initVal="props.initVal"
-    :editHeight="props.editHeight"
+    :height="props.height"
     style="height: 100%"
   ></div>
 </template>
@@ -24,10 +24,10 @@ const editorView = ref(null) // 编辑器实例
 const props = defineProps({
   initVal: {
     type: String,
-    default: 'SELECT * FROM ',
+    default: '',
   },
-  editHeight: {
-    type: [String, Number],
+  height: {
+    type: String,
     default: '200px',
   },
 })
@@ -70,7 +70,7 @@ const initEditor = () => {
     parent: editor.value,
   })
   editorView.value.dom.style.border = '1px solid #f0f0f0'
-  editorView.value.dom.style.height = props.editHeight
+  editorView.value.dom.style.height = props.height
 }
 
 // 设置为只读，但可选中、可复制
@@ -84,9 +84,7 @@ const setReadonly = (readonly) => {
 // 设置编辑器高度
 const setHeight = (height) => {
   if (!editorView.value) return
-  // 支持数值或字符串两种传入形式
-  const value = typeof height === 'number' ? `${height}px` : height
-  editorView.value.dom.style.height = value
+  editorView.value.dom.style.height = height
 }
 
 // 设置自动补全

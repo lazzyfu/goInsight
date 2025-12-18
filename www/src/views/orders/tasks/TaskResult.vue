@@ -98,7 +98,7 @@
           </div>
         </template>
         <div class="code-wrapper">
-          <CodeMirror :initVal="formData.result.execute_log" />
+          <CodeMirror :initVal="formData.result.execute_log" :height="'350px'" />
         </div>
       </a-card>
 

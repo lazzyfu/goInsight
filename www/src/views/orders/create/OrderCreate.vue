@@ -67,7 +67,7 @@
         </a-space>
 
         <div style="margin-top: 6px">
-          <CodeMirror ref="codemirrorRef" :editHeight="'470px'" />
+          <CodeMirror ref="codemirrorRef" :height="'470px'" />
         </div>
       </a-col>
     </a-row>

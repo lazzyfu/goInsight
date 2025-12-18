@@ -1,6 +1,6 @@
 <template>
   <a-card title="执行输出" v-show="uiState.open" class="mt-2">
-    <CodeMirror ref="cmRef" />
+    <CodeMirror ref="cmRef" :height="'380px'" />
   </a-card>
 </template>
 
@@ -93,10 +93,8 @@ const onMessage = (msg) => {
 
     if (result.type === 'processlist') {
       cmRef.value.setContent(renderProcesslist(result.data))
-    } else if (result.type === 'ghost') {
-      cmRef.value.appendContent(result.data)
     } else {
-      cmRef.value.setContent(result.data)
+      cmRef.value.appendContent(result.data)
     }
   } catch (error) {
     console.error('[WebSocket] 消息解析失败:', error, msg.data)
