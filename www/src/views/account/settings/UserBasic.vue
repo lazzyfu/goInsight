@@ -122,19 +122,21 @@ const reloadUserProfile = async () => {
     if (res.code === '0000') {
       const data = res.data
 
-      // 1. 更新 Store (严格使用原代码的 Setters)
-      userStore.setUid(data.uid)
-      userStore.setUserName(data.username)
-      userStore.setNickName(data.nick_name)
-      userStore.setUserAvatar(data.avatar_file)
-      userStore.setUserEmail(data.email)
-      userStore.setUserMobile(data.mobile)
-      userStore.setUserOrganization(data.organization)
-      userStore.setUserRole(data.role)
-      userStore.setUserDateJoined(data.date_joined)
-      userStore.SetIsSuperuser(res.data.is_superuser)
+      // 使用 setUserInfo 批量更新 Store
+      userStore.setUserInfo({
+        uid: data.uid,
+        username: data.username,
+        nick_name: data.nick_name,
+        avatar_file: data.avatar_file,
+        email: data.email,
+        mobile: data.mobile,
+        organization: data.organization,
+        role: data.role,
+        date_joined: data.date_joined,
+        is_superuser: data.is_superuser,
+      })
 
-      // 2. 更新当前表单数据
+      // 更新当前表单数据
       formState.username = data.username
       formState.nick_name = data.nick_name
       formState.email = data.email
@@ -142,7 +144,7 @@ const reloadUserProfile = async () => {
       formState.role = data.role
       formState.organization = data.organization
 
-      // 3. 更新头像显示
+      // 更新头像显示
       option.value.img = data.avatar_file
     }
   } catch (error) {

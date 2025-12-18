@@ -34,13 +34,13 @@ func InitializeRedis() *redis.Client {
 		PoolSize: 512,
 	})
 
-	// 健康检查：PING，而不是写 key
+	// 健康检查PING
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	defer cancel()
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		global.App.Log.Error("Redis ping error: ", err)
-		panic(err)
+		global.App.Log.Error("redis connect failed, err:", err.Error())
+		panic(fmt.Sprintf("redis connect failed, err: %s", err.Error()))
 	}
 
 	return rdb

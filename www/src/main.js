@@ -1,4 +1,3 @@
-import { setupDirectives } from '@/directives'; // 全局指令
 import Antd from 'ant-design-vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -30,9 +29,6 @@ const app = createApp(App)
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia)
-
-// 注册全局指令
-setupDirectives(app)
 
 // 过滤 Vue Router 的 "No match found" 警告（动态路由生成前的正常警告）
 const originalWarn = console.warn

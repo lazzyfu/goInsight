@@ -1,8 +1,6 @@
 package app
 
 import (
-	"embed"
-	"flag"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -13,6 +11,7 @@ import (
 	"github.com/lazzyfu/goinsight/internal/bootstrap"
 	"github.com/lazzyfu/goinsight/internal/global"
 	"github.com/lazzyfu/goinsight/middleware"
+	"github.com/lazzyfu/goinsight/web"
 
 	commonRouter "github.com/lazzyfu/goinsight/internal/common/routers"
 	dasRouter "github.com/lazzyfu/goinsight/internal/das/routers"
@@ -23,18 +22,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed dist
-var staticFS embed.FS
-
 const mediaDir = "./media"
 
 func setupStaticFiles(r *gin.Engine) error {
-	// Embedded file system
-	st, err := fs.Sub(staticFS, "dist")
+	// Embedded file system - 映射整个 dist 目录
+	distFS, err := fs.Sub(web.StaticFS, "dist")
 	if err != nil {
 		return fmt.Errorf("Error accessing embedded filesystem: %w", err)
 	}
-	r.StaticFS("/static", http.FS(st))
+
+	// 映射 /static 到 dist 根目录（用于访问 avatar2.jpg 等文件）
+	r.StaticFS("/static", http.FS(distFS))
+
+	// 映射 assets 目录
+	assetsFS, err := fs.Sub(distFS, "assets")
+	if err != nil {
+		return fmt.Errorf("Error accessing assets directory: %w", err)
+	}
+	r.StaticFS("/assets", http.FS(assetsFS))
 
 	// Provide other non-embedded file system
 	if _, err := os.Stat(mediaDir); os.IsNotExist(err) {
@@ -44,8 +49,6 @@ func setupStaticFiles(r *gin.Engine) error {
 	}
 	r.Static("/media", mediaDir)
 
-	// Default avatar file
-	r.StaticFile("/avatar2.jpg", "dist/avatar2.jpg")
 	return nil
 }
 
@@ -53,7 +56,7 @@ func setupNoRoute(r *gin.Engine) {
 	// Fix 404 issue on page refresh
 	r.NoRoute(func(c *gin.Context) {
 		if strings.Contains(c.Request.Header.Get("Accept"), "text/html") {
-			if content, err := staticFS.ReadFile("dist/index.html"); err == nil {
+			if content, err := web.StaticFS.ReadFile("dist/index.html"); err == nil {
 				c.Header("Content-Type", "text/html; charset=utf-8")
 				c.Data(http.StatusOK, "text/html; charset=utf-8", content)
 				return
@@ -66,7 +69,7 @@ func setupNoRoute(r *gin.Engine) {
 func setupRootRoute(r *gin.Engine) {
 	// Root route
 	r.GET("/", func(c *gin.Context) {
-		if data, err := staticFS.ReadFile("dist/index.html"); err == nil {
+		if data, err := web.StaticFS.ReadFile("dist/index.html"); err == nil {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 		} else {
 			_ = c.AbortWithError(http.StatusInternalServerError, err)
@@ -116,24 +119,8 @@ func RunServer() {
 	}
 }
 
-func Run() {
-	// Define version
-	var version string
-
-	// Read local config file
-	var configFile = flag.String("config", "config.yaml", "config file")
-
-	if version != "" {
-		fmt.Println("goInsight Version:", version)
-	}
-
-	flag.Parse()
-	if _, err := os.Stat(*configFile); os.IsNotExist(err) {
-		fmt.Printf("Config file %s does not exist, you can also specify the config file path with -config parameter\n", *configFile)
-		os.Exit(1)
-	}
-
-	bootstrap.InitializeConfig(*configFile)
+func Run(configFile string) {
+	bootstrap.InitializeConfig(configFile)
 	bootstrap.InitializeLog()
 	global.App.DB = bootstrap.InitializeDB()
 	global.App.Redis = bootstrap.InitializeRedis()
