@@ -231,6 +231,7 @@ const executeBatchTasks = useThrottleFn(async () => {
 // 查看任务结果
 const showTaskResult = (record) => {
   taskResultData.value = record || {}
+  console.log('taskResultData.value: ', taskResultData.value);
   uiState.taskResultOpen = true
 }
 

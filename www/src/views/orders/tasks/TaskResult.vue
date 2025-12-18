@@ -41,7 +41,7 @@
       </a-card>
 
       <!-- 导出文件信息 -->
-      <a-card v-if="formData.sql_type === 'EXPORT'" size="small" class="info-card">
+      <a-card v-if="formData?.sql_type === 'EXPORT'" size="small" class="info-card">
         <template #title>
           <div class="card-title">
             <FileTextOutlined class="title-icon" />
@@ -77,7 +77,7 @@
       </a-card>
 
       <!-- 错误信息 -->
-      <a-card v-if="formData.result.error" size="small" class="info-card error-card">
+      <a-card v-if="formData?.result?.error" size="small" class="info-card error-card">
         <template #title>
           <div class="card-title error-title">
             <CloseCircleOutlined class="title-icon" />
@@ -90,7 +90,7 @@
       </a-card>
 
       <!-- 执行日志 -->
-      <a-card v-if="formData.result.execute_log" size="small" class="info-card">
+      <a-card v-if="formData?.result?.execute_log" size="small" class="info-card">
         <template #title>
           <div class="card-title">
             <FileSearchOutlined class="title-icon" />
@@ -103,7 +103,7 @@
       </a-card>
 
       <!-- 回滚 SQL -->
-      <a-card v-if="formData.result.rollback_sql" size="small" class="info-card">
+      <a-card v-if="formData?.result?.rollback_sql" size="small" class="info-card">
         <template #title>
           <div class="card-title">
             <RollbackOutlined class="title-icon" />

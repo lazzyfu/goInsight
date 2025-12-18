@@ -90,10 +90,10 @@ const onMessage = (msg) => {
 
     // 确保组件已挂载
     if (!cmRef.value) return
-
     if (result.type === 'processlist') {
       cmRef.value.setContent(renderProcesslist(result.data))
     } else {
+
       cmRef.value.appendContent(result.data)
     }
   } catch (error) {

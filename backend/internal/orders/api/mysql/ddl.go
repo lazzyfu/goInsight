@@ -22,10 +22,9 @@ func ExecuteOnlineDDL(dc *base.DBConfig) (data base.ReturnData, err error) {
 
 	// Function to log messages and publish
 	logAndPublish := func(msg string) {
-		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
+		formattedMsg := fmt.Sprintf("[%s] %s", time.Now().Format("2006-01-02 15:04:05"), msg)
 		executeLog = append(executeLog, formattedMsg)
-		base.PublishMessageToChannel(dc.OrderID, formattedMsg, "")
+		base.PublishMessageToChannel(dc.OrderID, fmt.Sprintf("%s \n", formattedMsg), "")
 	}
 
 	// Logging function for errors
@@ -107,16 +106,15 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 
 	// Function to log messages and publish
 	logAndPublish := func(msg string) {
-		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		formattedMsg := fmt.Sprintf("[%s] %s\n", timestamp, msg)
+		formattedMsg := fmt.Sprintf("[%s] %s", time.Now().Format("2006-01-02 15:04:05"), msg)
 		executeLog = append(executeLog, formattedMsg)
-		base.PublishMessageToChannel(e.OrderID, formattedMsg, "ghost")
+		base.PublishMessageToChannel(e.OrderID, fmt.Sprintf("%s \n", formattedMsg), "")
 	}
 
 	// Logging function for errors
 	logErrorAndReturn := func(err error, errMsg string) (base.ReturnData, error) {
 		logAndPublish(errMsg + err.Error())
-		data.ExecuteLog = strings.Join(executeLog, "")
+		data.ExecuteLog = strings.Join(executeLog, "\n")
 		return data, err
 	}
 
@@ -144,7 +142,7 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	logAndPublish("正则匹配SQL语句成功")
 
 	//  将反引号处理为空，将双引号处理成单引号
-	vv := strings.Replace(strings.Replace(strings.Join(match[5:], ""), "`", "", -1), "\"", "'", -1)
+	vv := strings.ReplaceAll(strings.ReplaceAll(strings.Join(match[5:], ""), "`", ""), "\"", "'")
 	logAndPublish("将反引号处理为空，将双引号处理成单引号")
 
 	// 生成ghost命令
@@ -182,7 +180,7 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
 
 	// 返回数据
-	data.ExecuteLog = strings.Join(executeLog, "")
+	data.ExecuteLog = strings.Join(executeLog, "\n")
 	data.ExecuteCostTime = executeCostTime
 	return
 }
