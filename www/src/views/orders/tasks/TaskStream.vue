@@ -93,7 +93,6 @@ const onMessage = (msg) => {
     if (result.type === 'processlist') {
       cmRef.value.setContent(renderProcesslist(result.data))
     } else {
-
       cmRef.value.appendContent(result.data)
     }
   } catch (error) {
@@ -105,7 +104,7 @@ const onMessage = (msg) => {
 const renderProcesslist = (data) => {
   return Object.keys(data)
     .map((key) => `${key}: ${data[key]}`)
-    .join('\n')
+    .join('\n') + '\n'
 }
 
 // 心跳机制
