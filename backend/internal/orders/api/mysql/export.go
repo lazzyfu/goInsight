@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -96,73 +95,76 @@ func (e *ExecuteMySQLExportToFile) processRowData(vals []any) []any {
 
 func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
 	var (
-		executeLog []string
-		startTime  = time.Now()
+		startTime = time.Now()
 	)
 
-	// Function to log messages and publish
-	logAndPublish := func(msg string) {
-		formattedMsg := fmt.Sprintf("[%s] %s", time.Now().Format("2006-01-02 15:04:05"), msg)
-		executeLog = append(executeLog, formattedMsg)
-		base.PublishMessageToChannel(e.OrderID, fmt.Sprintf("%s \n", formattedMsg), "")
-	}
+	logger := base.NewExecuteLogger()
+	publisher := base.NewRedisPublisher()
 
-	// Logging function for errors
-	logErrorAndReturn := func(err error, errMsg string) (base.ReturnData, error) {
-		logAndPublish(fmt.Sprintf("%s: %s", errMsg, err.Error()))
-		data.ExecuteLog = strings.Join(executeLog, "\n")
-		return data, err
+	log := func(msg string) {
+		formatted := logger.Add(msg)
+		publisher.Publish(e.OrderID, formatted, "")
 	}
 
 	// Establish database connection
 	db, err := NewMySQLCnx(e.DBConfig)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, fmt.Sprintf("Failed to access database (%s:%d)", e.DBConfig.Hostname, e.DBConfig.Port))
+		log(fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.Hostname, e.Port, err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
 	defer db.Close()
-	logAndPublish(fmt.Sprintf("连接到数据库(%s:%d)", e.DBConfig.Hostname, e.DBConfig.Port))
+	log(fmt.Sprintf("连接到数据库(%s:%d)", e.DBConfig.Hostname, e.DBConfig.Port))
 
 	// Execute the SQL
 	rows, err := db.Query(e.SQL)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "Failed to execute SQL query")
+		log(fmt.Sprintf("执行SQL失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
 	defer rows.Close()
-	logAndPublish("执行SQL语句")
+	log("执行SQL语句")
 
 	// Retrieve column names
 	columns, err := rows.Columns()
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "Failed to retrieve columns")
+		log(fmt.Sprintf("检索列名失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish("检索列名")
+	log("检索列名")
 
 	// Process rows and export to file
 	rowCount, fileName, fullFileName, err := e.processRowsAndExport(rows, columns)
 	if err != nil {
-		return logErrorAndReturn(err, "Failed to process rows and export")
+		log(fmt.Sprintf("处理行数据失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish("处理行数据")
+	log("处理行数据")
 
 	// 加密和压缩文件
 	encryptFileName := fileName + ".zip"
 	encryptFilePath := fmt.Sprintf("%s/%s", filePath, encryptFileName)
 	key := utils.GenerateRandomString(24)
 	_ = utils.EncryptAndTarGzFiles(fileName, encryptFileName, filePath, key)
-	logAndPublish(fmt.Sprintf("加密和压缩文件%s -> %s", fullFileName, encryptFileName))
+	log(fmt.Sprintf("加密和压缩文件%s -> %s", fullFileName, encryptFileName))
 
 	// 删除原文件
 	err = os.Remove(fullFileName)
 	if err != nil {
-		return logErrorAndReturn(err, "Error deleting original file")
+		log(fmt.Sprintf("删除文件失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish(fmt.Sprintf("源文件%s删除成功", fullFileName))
+	log(fmt.Sprintf("源文件%s删除成功", fullFileName))
 
 	// 结束时间
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
 
-	logAndPublish(fmt.Sprintf("执行成功，影响行数%d，执行耗时：%s", rowCount, executeCostTime))
+	log(fmt.Sprintf("执行成功，影响行数%d，执行耗时：%s", rowCount, executeCostTime))
 
 	// Prepare export file metadata
 	FileSize, _ := utils.GetFileSize(encryptFilePath)
@@ -175,7 +177,7 @@ func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
 		ExportRows:    rowCount,
 		DownloadUrl:   fmt.Sprintf("%s/orders/tasks/download/exportfile/%s", global.App.Config.Notify.NoticeURL, encryptFileName),
 	}
-	data.ExecuteLog = strings.Join(executeLog, "\n")
+	data.ExecuteLog = logger.String()
 	data.ExecuteCostTime = executeCostTime
 
 	// Return execution data

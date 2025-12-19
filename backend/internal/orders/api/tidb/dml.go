@@ -2,7 +2,6 @@ package tidb
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/pkg/utils"
@@ -17,38 +16,32 @@ type ExecuteTiDBDML struct {
 
 // 执行TiDB DML
 func (e *ExecuteTiDBDML) Run() (data base.ReturnData, err error) {
-	var executeLog []string
+	logger := base.NewExecuteLogger()
+	publisher := base.NewRedisPublisher()
 
-	// Function to log messages and publish
-	logAndPublish := func(msg string) {
-		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		formattedMsg := fmt.Sprintf("[%s] %s", timestamp, msg)
-		executeLog = append(executeLog, formattedMsg)
-		base.PublishMessageToChannel(e.OrderID, formattedMsg, "")
-	}
-
-	// Logging function for errors
-	logErrorAndReturn := func(err error, errMsg string) (base.ReturnData, error) {
-		logAndPublish(errMsg + err.Error())
-		data.ExecuteLog = strings.Join(executeLog, "\n")
-		return data, err
+	log := func(msg string) {
+		formatted := logger.Add(msg)
+		publisher.Publish(e.OrderID, formatted, "")
 	}
 
 	// CREATE A NEW DATABASE CONNECTION
 	db, err := NewTiDBCnx(e.DBConfig)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err},
-			fmt.Sprintf("访问数据库(%s:%d)失败，错误：", e.DBConfig.Hostname, e.DBConfig.Port))
+		log(fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.Hostname, e.Port, err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
 	defer db.Close()
-	logAndPublish(fmt.Sprintf("访问数据库(%s:%d)成功", e.DBConfig.Hostname, e.DBConfig.Port))
+	log(fmt.Sprintf("访问数据库(%s:%d)成功", e.Hostname, e.Port))
 
 	// GET CONNECTION ID
 	connectionID, err := DaoGetTiDBConnectionID(db)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "获取数据库Connection ID失败，错误：")
+		log(fmt.Sprintf("获取数据库Connection ID失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish(fmt.Sprintf("数据库Connection ID：%d", connectionID))
+	log(fmt.Sprintf("数据库Connection ID：%d", connectionID))
 
 	// SHOW PROCESS
 	ch1 := make(chan int64)
@@ -69,17 +62,19 @@ func (e *ExecuteTiDBDML) Run() (data base.ReturnData, err error) {
 	startTime := time.Now()
 	affectedRows, err := DaoTiDBExecute(db, e.SQL, ch1)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "SQL执行失败，错误：")
+		log(fmt.Sprintf("SQL执行失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
-	logAndPublish(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
+	log(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
 
 	// TiDB不支持生成回滚SQL
-	logAndPublish("TiDB不支持生成回滚SQL")
+	log("TiDB不支持生成回滚SQL")
 
 	// 返回数据
-	data.ExecuteLog = strings.Join(executeLog, "\n")
+	data.ExecuteLog = logger.String()
 	data.AffectedRows = affectedRows
 	data.ExecuteCostTime = executeCostTime
 	return

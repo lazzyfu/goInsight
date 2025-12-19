@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/pkg/utils"
@@ -17,37 +16,32 @@ type ExecuteMySQLDML struct {
 
 // 执行MySQL DML语句
 func (e *ExecuteMySQLDML) Run() (data base.ReturnData, err error) {
-	// Slice for executeLog
-	var executeLog []string
+	logger := base.NewExecuteLogger()
+	publisher := base.NewRedisPublisher()
 
-	// Function to log messages and publish
-	logAndPublish := func(msg string) {
-		formattedMsg := fmt.Sprintf("[%s] %s", time.Now().Format("2006-01-02 15:04:05"), msg)
-		executeLog = append(executeLog, formattedMsg)
-		base.PublishMessageToChannel(e.OrderID, fmt.Sprintf("%s \n", formattedMsg), "")
-	}
-
-	// Logging function for errors
-	logErrorAndReturn := func(err error, errMsg string) (base.ReturnData, error) {
-		logAndPublish(errMsg + err.Error())
-		data.ExecuteLog = strings.Join(executeLog, "\n")
-		return data, err
+	log := func(msg string) {
+		formatted := logger.Add(msg)
+		publisher.Publish(e.OrderID, formatted, "")
 	}
 
 	// CREATE A NEW DATABASE CONNECTION
 	db, err := NewMySQLCnx(e.DBConfig)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error()))
+		log(fmt.Sprintf("访问数据库(%s:%d)失败，错误：%s", e.DBConfig.Hostname, e.DBConfig.Port, err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
 	defer db.Close()
-	logAndPublish(fmt.Sprintf("访问数据库(%s:%d)成功", e.DBConfig.Hostname, e.DBConfig.Port))
+	log(fmt.Sprintf("访问数据库(%s:%d)成功", e.DBConfig.Hostname, e.DBConfig.Port))
 
 	// GET CONNECTION ID
 	connectionID, err := DaoMySQLGetConnectionID(db)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "获取数据库Connection ID失败，错误：")
+		log(fmt.Sprintf("获取数据库Connection ID失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish(fmt.Sprintf("数据库Connection ID：%d", connectionID))
+	log(fmt.Sprintf("数据库Connection ID：%d", connectionID))
 
 	// SHOW PROCESS
 	ch1 := make(chan int64)
@@ -56,19 +50,23 @@ func (e *ExecuteMySQLDML) Run() (data base.ReturnData, err error) {
 	// 获取执行开始前的binlog position
 	startFile, startPosition, err := DaoMySQLGetBinlogPos(db)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "获取Start Binlog File和Position失败，错误：")
+		log(fmt.Sprintf("获取Start Binlog File和Position失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish(fmt.Sprintf("Start Binlog File：%s，Position：%d", startFile, startPosition))
+	log(fmt.Sprintf("Start Binlog File：%s，Position：%d", startFile, startPosition))
 
 	// 执行SQL
 	startTime := time.Now()
 	affectedRows, err := DaoMySQLExecute(db, e.SQL, ch1)
 	if err != nil {
-		return logErrorAndReturn(base.SQLExecuteError{Err: err}, "SQL执行失败，错误：")
+		log(fmt.Sprintf("SQL执行失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
 	endTime := time.Now()
 	executeCostTime := utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
-	logAndPublish(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
+	log(fmt.Sprintf("SQL执行成功，影响行数%d，执行耗时：%s", affectedRows, executeCostTime))
 
 	data.AffectedRows = affectedRows
 	data.ExecuteCostTime = executeCostTime
@@ -76,15 +74,17 @@ func (e *ExecuteMySQLDML) Run() (data base.ReturnData, err error) {
 	// 获取执行后的binlog position
 	endFile, endPosition, err := DaoMySQLGetBinlogPos(db)
 	if err != nil {
-		return logErrorAndReturn(base.RollbackSQLError{Err: err}, "获取End Binlog File和Position失败，错误：")
+		log(fmt.Sprintf("获取End Binlog File和Position失败，错误：%s", err.Error()))
+		data.ExecuteLog = logger.String()
+		return data, base.SQLExecuteError{Err: err}
 	}
-	logAndPublish(fmt.Sprintf("End Binlog File：%s，Position：%d", endFile, endPosition))
+	log(fmt.Sprintf("End Binlog File：%s，Position：%d", endFile, endPosition))
 
 	var rollbackSQL, backupCostTime string
 	// 影响行数大于0，才执行生成回滚SQL操作
 	if affectedRows > 0 {
 		// 生成回滚SQL
-		logAndPublish("开始解析Binlog生成回滚SQL")
+		log("开始解析Binlog生成回滚SQL")
 		startTime = time.Now()
 		binlog := Binlog{
 			DBConfig:      e.DBConfig,
@@ -95,15 +95,17 @@ func (e *ExecuteMySQLDML) Run() (data base.ReturnData, err error) {
 			EndPosition:   endPosition}
 		rollbackSQL, err = binlog.Run()
 		if err != nil {
-			return logErrorAndReturn(base.RollbackSQLError{Err: err}, "生成回滚SQL失败，错误：")
+			log(fmt.Sprintf("生成回滚SQL失败，错误：%s", err.Error()))
+			data.ExecuteLog = logger.String()
+			return data, base.SQLExecuteError{Err: err}
 		}
 
 		endTime = time.Now()
 		backupCostTime = utils.HumanfriendlyTimeUnit(endTime.Sub(startTime))
-		logAndPublish(fmt.Sprintf("生成回滚SQL成功，耗时：%s", backupCostTime))
+		log(fmt.Sprintf("生成回滚SQL成功，耗时：%s", backupCostTime))
 	}
 	// 返回数据
-	data.ExecuteLog = strings.Join(executeLog, "\n")
+	data.ExecuteLog = logger.String()
 	data.RollbackSQL = rollbackSQL
 	data.BackupCostTime = backupCostTime
 	return

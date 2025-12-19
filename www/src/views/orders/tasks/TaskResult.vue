@@ -12,7 +12,7 @@
         <a-row :gutter="[16, 16]">
           <a-col :xs="24" :sm="12" :md="8">
             <div class="stat-item">
-              <a-statistic title="执行耗时" :value="formData.result.execute_cost_time || ''">
+              <a-statistic title="执行耗时" :value="formData?.result?.execute_cost_time || ''">
                 <template #prefix>
                   <ThunderboltOutlined style="color: #1890ff" />
                 </template>
@@ -21,7 +21,7 @@
           </a-col>
           <a-col :xs="24" :sm="12" :md="8">
             <div class="stat-item">
-              <a-statistic title="备份耗时" :value="formData.result.backup_cost_time || ''">
+              <a-statistic title="备份耗时" :value="formData?.result?.backup_cost_time || ''">
                 <template #prefix>
                   <SaveOutlined style="color: #52c41a" />
                 </template>
@@ -30,7 +30,7 @@
           </a-col>
           <a-col :xs="24" :sm="12" :md="8">
             <div class="stat-item">
-              <a-statistic title="影响行数" :value="formData.result.affected_rows || 0" :value-style="{ color: '#fa8c16' }">
+              <a-statistic title="影响行数" :value="formData?.result?.affected_rows || 0" :value-style="{ color: '#fa8c16' }">
                 <template #prefix>
                   <DatabaseOutlined style="color: #fa8c16" />
                 </template>
@@ -55,19 +55,19 @@
             </a-typography-text>
           </a-descriptions-item>
           <a-descriptions-item label="文件大小">
-            <a-tag color="blue">{{ formatFileSize(formData.result.file_size) }}</a-tag>
+            <a-tag color="blue">{{ formatFileSize(formData?.result?.file_size) }}</a-tag>
           </a-descriptions-item>
           <a-descriptions-item label="导出行数">
-            <a-tag color="green">{{ formData.result.export_rows || 0 }} 行</a-tag>
+            <a-tag color="green">{{ formData?.result?.export_rows || 0 }} 行</a-tag>
           </a-descriptions-item>
           <a-descriptions-item label="文件加密秘钥">
-            <a @click="copyRecord(formData.result.encryption_key)">
-              {{ formData.result.encryption_key || '-' }}
+            <a @click="copyRecord(formData?.result?.encryption_key)">
+              {{ formData?.result?.encryption_key || '-' }}
             </a>
 
           </a-descriptions-item>
           <a-descriptions-item label="文件下载路径">
-            <a v-if="formData.result.download_url" :href="formData.result.download_url" target="_blank"
+            <a v-if="formData?.result?.download_url" :href="formData?.result?.download_url" target="_blank"
               class="download-link">
               <DownloadOutlined /> 点击下载
             </a>

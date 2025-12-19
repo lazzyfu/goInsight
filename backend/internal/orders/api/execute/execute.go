@@ -21,8 +21,6 @@ type ExecuteSQLAPI struct {
 func (e *ExecuteSQLAPI) Run() (data base.ReturnData, err error) {
 	data, err = e.Executor.Run()
 	if err != nil {
-		// 发送消息
-		base.PublishMessageToChannel(e.OrderID, err.Error(), "")
 		data.Error = err.Error()
 	}
 	return

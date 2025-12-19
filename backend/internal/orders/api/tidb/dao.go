@@ -174,6 +174,7 @@ func DaoTiDBGetProcesslist(dbconfig *base.DBConfig, order_id string, connection_
 		// Expect only one row of data
 		row := (*data)[0]
 		// Publish the process information
-		base.PublishMessageToChannel(order_id, row, "processlist")
+		publisher := base.NewRedisPublisher()
+		publisher.Publish(order_id, row, "processlist")
 	}
 }

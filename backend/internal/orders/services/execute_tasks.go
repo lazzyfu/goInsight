@@ -34,43 +34,23 @@ func releaseOrderLock(ctx *gin.Context, orderID string) error {
 	return err
 }
 
-// 逻辑：
-// 1) 如果存在 EXECUTING 的任务 -> 不处理（返回 nil）
-// 2) 否则如果存在 FAILED 的任务 -> 将工单置为 FAILED
-// 3) 否则（所有任务均为 COMPLETED）-> 将工单置为 COMPLETED 并通知申请人
+// 所有任务均为 COMPLETED -> 将工单置为 COMPLETED 并通知申请人
 func updateOrderStatusToFinish(orderID string) error {
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 统计状态
 		var counts struct {
-			Executing int64
-			Failed    int64
-			NotDone   int64
+			NotDone int64
 		}
 
 		if err := tx.Table("`insight_order_tasks`").
 			Select(
-				"SUM(CASE WHEN progress = ? THEN 1 ELSE 0 END) AS executing,"+
-					"SUM(CASE WHEN progress = ? THEN 1 ELSE 0 END) AS failed,"+
-					"SUM(CASE WHEN progress != ? THEN 1 ELSE 0 END) AS not_done",
-				"EXECUTING", "FAILED", "COMPLETED").
+				"SUM(CASE WHEN progress != ? THEN 1 ELSE 0 END) AS not_done",
+				"COMPLETED").
 			Where("order_id = ?", orderID).
 			Scan(&counts).Error; err != nil {
 			return err
 		}
-		// 如果还有执行中的任务，不变更
-		if counts.Executing > 0 {
-			return nil
-		}
 
-		// 如果存在失败任务，将工单置为 FAILED
-		if counts.Failed > 0 {
-			if tx := tx.Model(&ordersModels.InsightOrderRecords{}).
-				Where("order_id = ?", orderID).
-				Update("progress", "FAILED"); tx.Error != nil {
-				return tx.Error
-			}
-			return nil
-		}
 		// 如果没有未完成任务（NotDone==0），则全部完成
 		if counts.NotDone == 0 {
 			if tx := tx.Model(&ordersModels.InsightOrderRecords{}).
@@ -208,9 +188,6 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	// 执行工单
 	executor := execute.NewExecuteSQLAPI(&config)
 	returnData, err := executor.Run()
-	if err != nil {
-		base.PublishMessageToChannel(task.OrderID.String(), err.Error(), "")
-	}
 	// 转换为json
 	data, _ := json.Marshal(returnData)
 	return string(data), err
