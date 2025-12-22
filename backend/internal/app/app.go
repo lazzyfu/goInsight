@@ -25,27 +25,27 @@ import (
 const mediaDir = "./media"
 
 func setupStaticFiles(r *gin.Engine) error {
-	// dist 根目录
+	// Embedded file system - 映射整个 dist 目录
 	distFS, err := fs.Sub(web.StaticFS, "dist")
 	if err != nil {
-		return fmt.Errorf("access dist fs failed: %w", err)
+		return fmt.Errorf("error accessing embedded filesystem: %w", err)
 	}
 
-	// 1️⃣ Vite 构建产物（assets）
+	// 映射 assets 目录
 	assetsFS, err := fs.Sub(distFS, "assets")
 	if err != nil {
-		return fmt.Errorf("access assets fs failed: %w", err)
+		return fmt.Errorf("error accessing assets directory: %w", err)
 	}
 	r.StaticFS("/assets", http.FS(assetsFS))
 
-	// 2️⃣ public 下的“根资源”（avatar / favicon）
-	r.StaticFile("/avatar.png", "dist/avatar.png")
-	r.StaticFile("/favicon.ico", "dist/favicon.ico")
+	// public 目录下的文件（avatar.png / favicon.ico）
+	r.StaticFileFS("/avatar.png", "avatar.png", http.FS(distFS))
+	r.StaticFileFS("/favicon.ico", "favicon.ico", http.FS(distFS))
 
-	// 3️⃣ 业务上传目录
+	// 业务上传文件目录
 	if _, err := os.Stat(mediaDir); os.IsNotExist(err) {
-		if err := os.MkdirAll(mediaDir, 0755); err != nil {
-			return err
+		if err := os.MkdirAll(mediaDir, os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create media directory: %w", err)
 		}
 	}
 	r.Static("/media", mediaDir)
