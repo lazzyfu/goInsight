@@ -30,15 +30,6 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia)
 
-// 过滤 Vue Router 的 "No match found" 警告（动态路由生成前的正常警告）
-const originalWarn = console.warn
-console.warn = function (...args) {
-  if (typeof args[0] === 'string' && args[0].includes('No match found for location')) {
-    return
-  }
-  originalWarn.apply(console, args)
-}
-
 app
   .use(router)
   .use(Antd)

@@ -19,6 +19,14 @@ export const staticRoutes = [
     component: () => import('@/views/error/403.vue'),
     meta: { title: '403', hidden: true },
   },
+  {
+    // 动态路由尚未生成时（首屏刷新/直达深链接）兜底，避免 Vue Router 打印 "No match found" 警告
+    // 动态路由生成后会 replace 回真实目标路由
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/error/403.vue'),
+    meta: { title: 'Not Found', hidden: true },
+  },
 ]
 
 export const asyncRoutes = [

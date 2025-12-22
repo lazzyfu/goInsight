@@ -57,6 +57,13 @@ router.beforeEach(async (to, from, next) => {
       // 根据用户权限生成可访问的路由
       await permissionStore.GenerateRoutes(userStore.is_superuser)
 
+      // 如果是刷新/深链接访问，在动态路由加入之前可能先命中了兜底路由（NotFound）。
+      // 此时需要 replace 回原始地址，才能匹配到新加入的真实路由（例如 /orders/:order_id）。
+      if (to.name === 'NotFound') {
+        next({ path: to.fullPath, replace: true })
+        return
+      }
+
       // 重新导航到目标路由，确保动态添加的路由生效
       // 使用 replace: true 避免在浏览器历史记录中留下重复条目
       next({ ...to, replace: true })

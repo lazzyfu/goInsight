@@ -27,7 +27,7 @@
               <span class="ant-dropdown-link">
                 <a-badge>
                   <a-avatar v-if="userStore.avatar" :src="userStore.avatar" icon="user" />
-                  <a-avatar v-else src="/assets/account.png" icon="user" />
+                  <a-avatar v-else src="/avatar.png" icon="user" />
                 </a-badge>
                 <span style="padding-left: 8px"> {{ userStore.nickname }}</span>
               </span>

@@ -328,7 +328,8 @@ func (s *CreateOrderService) Run() error {
 		approvers = append(approvers, appr.Approver)
 	}
 	notifier.SendOrderMessage(approvers, notifier.MsgTypeOrderPendingApproval, notifier.MessageParams{
-		Order: &latestRecord,
+		Order:     &latestRecord,
+		Approvers: approvers,
 	})
 
 	return nil

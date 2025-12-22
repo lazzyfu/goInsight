@@ -48,8 +48,8 @@ func (s *GetOrderListServices) Run() (responseData any, total int64, err error) 
 			a.applicant, 
 			if(length(a.organization)=0, "N/A", a.organization) as organization,
 			a.is_restrict_access,
-			b.name as environment,
-			concat(c.hostname, ':', c.port) as instance, 
+			a.environment,
+			concat(b.hostname, ':', b.port) as instance, 
 			a.schema, 
 			a.sql_type, 
 			a.approver, 
@@ -57,8 +57,7 @@ func (s *GetOrderListServices) Run() (responseData any, total int64, err error) 
 			a.order_id, 
 			a.created_at
 		`).
-		Joins("left join insight_db_environments b on a.environment=b.id").
-		Joins("left join insight_db_config c on a.instance_id = c.instance_id").
+		Joins("left join insight_db_config b on a.instance_id = b.instance_id").
 		Order("a.created_at desc")
 	// 仅加载我的工单
 	if s.OnlyMyOrders {

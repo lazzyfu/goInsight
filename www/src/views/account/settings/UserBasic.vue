@@ -2,24 +2,13 @@
   <div class="account-settings-info-view">
     <a-row :gutter="16" type="flex" justify="center">
       <a-col :order="1" :md="24" :lg="16">
-        <a-form
-          layout="vertical"
-          :model="formState"
-          :rules="rules"
-          name="basic"
-          autocomplete="off"
-          @finish="onFinish"
-        >
+        <a-form layout="vertical" :model="formState" :rules="rules" name="basic" autocomplete="off" @finish="onFinish">
           <a-form-item label="用户名" name="username">
             <a-input disabled v-model:value="formState.username" placeholder="用户名不可修改" />
           </a-form-item>
 
-          <a-form-item
-            label="昵称"
-            has-feedback
-            name="nick_name"
-            :rules="[{ required: true, min: 1, max: 32, message: '昵称不能为空且长度为1-32位' }]"
-          >
+          <a-form-item label="昵称" has-feedback name="nick_name"
+            :rules="[{ required: true, min: 1, max: 32, message: '昵称不能为空且长度为1-32位' }]">
             <a-input v-model:value="formState.nick_name" placeholder="请输入昵称" />
           </a-form-item>
 
@@ -85,9 +74,11 @@ const formState = reactive({
   organization: '',
 })
 
+const DEFAULT_AVATAR = '/avatar.png'
+
 // 头像显示数据
 const option = ref({
-  img: userStore.avatar || '', // 防止初始化为 undefined
+  img: userStore.avatar || DEFAULT_AVATAR, // 防止初始化为 undefined
 })
 
 // 校验规则：邮箱
@@ -145,7 +136,7 @@ const reloadUserProfile = async () => {
       formState.organization = data.organization
 
       // 更新头像显示
-      option.value.img = data.avatar_file
+      option.value.img = data.avatar_file || DEFAULT_AVATAR
     }
   } catch (error) {
     console.error('获取用户信息失败', error)
@@ -155,26 +146,23 @@ const reloadUserProfile = async () => {
 // 提交表单
 const onFinish = useThrottleFn(async (values) => {
   loading.value = true
-  try {
-    // 确保带上 uid
-    const params = {
-      ...values,
-      uid: userStore.uid,
-    }
 
-    const res = await UpdateUserInfoApi(params)
-    if (res.code === '0000') {
-      message.success('更新成功')
-      // 更新成功后，重新拉取最新数据并更新 Store 和界面
-      await reloadUserProfile()
-    } else {
-      message.error(res.message || '更新失败')
-    }
-  } catch (error) {
-    message.error('网络请求出错')
-  } finally {
-    loading.value = false
+  // 确保带上 uid
+  const params = {
+    ...values,
+    uid: userStore.uid,
   }
+
+  const res = await UpdateUserInfoApi(params).catch(() => { })
+  if (res) {
+    console.log('res: ', res);
+    message.success('更新成功')
+    await reloadUserProfile()
+  } else {
+    message.error(res.message || '更新失败')
+  }
+
+  loading.value = false
 })
 
 // 头像修改回调

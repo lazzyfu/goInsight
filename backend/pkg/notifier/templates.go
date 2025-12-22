@@ -3,6 +3,7 @@ package notifier
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
 )
@@ -42,8 +43,33 @@ type MessageParams struct {
 	// 工单记录
 	Order         *ordersModels.InsightOrderRecords
 	Task          *ordersModels.InsightOrderTasks
-	Username      string // 操作用户
-	AdditionalMsg string // 附加消息
+	Username      string   // 操作用户
+	AdditionalMsg string   // 附加消息
+	Approvers     []string // 待审批消息中需要 @ 的审批人
+}
+
+func buildApproverMentions(approvers []string) string {
+	if len(approvers) == 0 {
+		return ""
+	}
+	// 去重 + 过滤空值，同时保持尽量稳定的顺序
+	seen := make(map[string]struct{}, len(approvers))
+	mentions := make([]string, 0, len(approvers))
+	for _, a := range approvers {
+		a = strings.TrimSpace(a)
+		if a == "" {
+			continue
+		}
+		if _, ok := seen[a]; ok {
+			continue
+		}
+		seen[a] = struct{}{}
+		mentions = append(mentions, "@"+a)
+	}
+	if len(mentions) == 0 {
+		return ""
+	}
+	return strings.Join(mentions, " ")
 }
 
 // BuildMessage 根据模版类型和参数构建消息
@@ -54,7 +80,7 @@ func BuildMessage(msgType MessageType, params MessageParams) string {
 	switch msgType {
 	case MsgTypeOrderSubmitted:
 		return fmt.Sprintf(
-			"您好，用户@%s提交了工单\n"+
+			"您好，用户%s提交了工单\n"+
 				">工单标题：%s\n"+
 				">环境：%s\n"+
 				">工单类型：%s\n"+
@@ -65,15 +91,19 @@ func BuildMessage(msgType MessageType, params MessageParams) string {
 		)
 
 	case MsgTypeOrderPendingApproval:
+		mentions := buildApproverMentions(params.Approvers)
+		if mentions != "" {
+			mentions = "\n" + mentions
+		}
 		return fmt.Sprintf(
-			"您好，您有新的工单需要审批\n"+
+			"您好，您有新的工单需要审批 %s\n"+
 				">工单标题：%s\n"+
 				">申请人：%s\n"+
 				">环境：%s\n"+
 				">工单类型：%s\n"+
 				">数据库类型：%s\n"+
 				">库名：%s",
-			order.Title, order.Applicant, order.Environment, order.SQLType, order.DBType, order.Schema,
+			mentions, order.Title, order.Applicant, order.Environment, order.SQLType, order.DBType, order.Schema,
 		)
 
 	case MsgTypeOrderApproved:

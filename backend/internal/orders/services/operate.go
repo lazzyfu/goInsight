@@ -150,7 +150,8 @@ func (s *ApprovalOrderService) Run() (err error) {
 			receivers = append(receivers, r.Approver)
 		}
 		notifier.SendOrderMessage(receivers, notifier.MsgTypeOrderPendingApproval, notifier.MessageParams{
-			Order: &latestRecord,
+			Order:     &latestRecord,
+			Approvers: receivers,
 		})
 	}
 
