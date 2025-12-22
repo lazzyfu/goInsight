@@ -36,7 +36,7 @@ func releaseOrderLock(ctx *gin.Context, orderID string) error {
 
 // 所有任务均为 COMPLETED -> 将工单置为 COMPLETED 并通知申请人
 func updateOrderStatusToFinish(orderID string) error {
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	err := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 统计状态
 		var counts struct {
 			NotDone int64
@@ -53,24 +53,32 @@ func updateOrderStatusToFinish(orderID string) error {
 
 		// 如果没有未完成任务（NotDone==0），则全部完成
 		if counts.NotDone == 0 {
-			if tx := tx.Model(&ordersModels.InsightOrderRecords{}).
+			if err := tx.Model(&ordersModels.InsightOrderRecords{}).
 				Where("order_id = ?", orderID).
-				Update("progress", "COMPLETED"); tx.Error != nil {
-				return tx.Error
+				Update("progress", "COMPLETED").Error; err != nil {
+				return err
 			}
-			// 读取记录用于通知（事务提交后通知，确保不会阻塞事务）
-			var record ordersModels.InsightOrderRecords
-			if tx := tx.Where("order_id = ?", orderID).Take(&record); tx.Error != nil {
-				// 更新虽已成功，但读取失败则直接返回 nil（不影响状态）
-				return nil
-			}
-			receiver := []string{record.Applicant}
-			msg := fmt.Sprintf("您好，工单已经执行完成，请知悉\n>工单标题：%s", record.Title)
-			// 异步发送通知（不阻塞事务）
-			go notifier.SendMessage(record.Title, orderID, receiver, msg)
 		}
 		return nil
 	})
+
+	if err != nil {
+		return err
+	}
+
+	// 事务提交成功后，如果全部完成则发送消息
+	var record ordersModels.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", orderID).Take(&record).Error; err == nil {
+		if record.Progress == "COMPLETED" {
+			// 发送消息，发送给申请人
+			receiver := []string{record.Applicant}
+			notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderExecutionCompleted, notifier.MessageParams{
+				Order: &record,
+			})
+		}
+	}
+
+	return nil
 }
 
 // 判断当前工单是否没有执行中的任务
@@ -123,25 +131,10 @@ func sendExportFileInfoToApplicant(orderID uuid.UUID) {
 	_ = json.Unmarshal([]byte(task.Result), &file)
 
 	receiver := []string{record.Applicant}
-	msg := fmt.Sprintf(
-		"您好，导出文件信息如下，请查收\n"+
-			">工单标题：%s\n"+
-			">任务ID：%s\n"+
-			">文件名：%s\n"+
-			">文件大小：%d字节\n"+
-			">数据行数：%d\n"+
-			">文件解密密码：%s\n"+
-			">文件格式：%s\n"+
-			">文件下载路径：%s",
-		record.Title, orderID.String(),
-		file.FileName,
-		file.FileSize,
-		file.ExportRows,
-		file.EncryptionKey,
-		file.ContentType,
-		file.DownloadUrl,
-	)
-	notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeExportFileInfo, notifier.MessageParams{
+		Order: &record,
+		Task:  &task,
+	})
 }
 
 // 执行任务
@@ -193,7 +186,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	return string(data), err
 }
 
-// ---------- 执行单个任务 ----------
+// 执行单个任务
 type ExecuteTaskService struct {
 	*forms.ExecuteTaskForm
 	C        *gin.Context
@@ -296,7 +289,7 @@ func (s *ExecuteTaskService) Run() (err error) {
 	return nil
 }
 
-// ---------- 批量执行任务 ----------
+// 批量执行任务
 type ExecuteBatchTasksService struct {
 	*forms.ExecuteBatchTasksForm
 	C        *gin.Context

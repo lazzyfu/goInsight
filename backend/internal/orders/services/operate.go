@@ -54,7 +54,7 @@ func (s *ApprovalOrderService) Run() (err error) {
 		return fmt.Errorf("您没有审批权限或审批阶段未激活")
 	}
 	now := time.Now().Format("2006-01-02 15:04:05")
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 更新当前用户审批状态
 		if err := tx.Model(&models.InsightApprovalRecords{}).
 			Where("order_id=? AND stage=? AND approver=?", s.OrderID, record.Stage, s.Username).
@@ -128,12 +128,45 @@ func (s *ApprovalOrderService) Run() (err error) {
 				return err
 			}
 		}
-		// 发送消息
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s%s了工单\n>工单标题：%s\n>附加消息：%s", s.Username, action, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+
+	// 如果阶段通过且有下一阶段，通知下一阶段审批人
+	var nextStageRecords []models.InsightApprovalRecords
+	if err := global.App.DB.Where("order_id=? AND stage=? AND approval_status='PENDING'", s.OrderID, latestRecord.Stage).Find(&nextStageRecords).Error; err == nil && len(nextStageRecords) > 0 {
+		receivers := make([]string, 0, len(nextStageRecords))
+		for _, r := range nextStageRecords {
+			receivers = append(receivers, r.Approver)
+		}
+		notifier.SendOrderMessage(receivers, notifier.MsgTypeOrderPendingApproval, notifier.MessageParams{
+			Order: &latestRecord,
+		})
+	}
+
+	// 发送消息给申请人
+	receiver := []string{latestRecord.Applicant}
+	msgType := notifier.MsgTypeOrderApproved
+	if s.Status == "REJECTED" {
+		msgType = notifier.MsgTypeOrderRejected
+	}
+	notifier.SendOrderMessage(receiver, msgType, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }
 
 // 认领
@@ -155,7 +188,7 @@ func (s *ClaimOrderService) Run() (err error) {
 		return fmt.Errorf("当前工单没有审批通过，无法认领")
 	}
 	// 认领操作
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 更新工单认领人
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
@@ -170,12 +203,27 @@ func (s *ClaimOrderService) Run() (err error) {
 			global.App.Log.Error("ClaimOrderService.Run error:", err.Error())
 			return err
 		}
-		// 发送消息
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s认领了工单\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+	receiver := []string{latestRecord.Applicant}
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderClaimed, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }
 
 // 转交
@@ -201,7 +249,7 @@ func (s *TransferOrderService) Run() (err error) {
 		return fmt.Errorf("只有工单认领人才能转交工单")
 	}
 	// 转交操作
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 更新工单执行人
 		if err != nil {
 			return err
@@ -218,12 +266,27 @@ func (s *TransferOrderService) Run() (err error) {
 			global.App.Log.Error("TransferOrderService.Run error:", err.Error())
 			return err
 		}
-		// 发送消息
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s将工单转交给了%s\n>工单标题：%s\n>附加消息：%s", s.Username, s.NewClaimer, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+	receiver := []string{latestRecord.Applicant, s.NewClaimer}
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderTransferred, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }
 
 // 撤销工单
@@ -249,7 +312,7 @@ func (s *RevokeOrderService) Run() (err error) {
 		return fmt.Errorf("非可操作状态，禁止操作")
 	}
 	// 更新状态为已已撤销
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{
@@ -262,12 +325,27 @@ func (s *RevokeOrderService) Run() (err error) {
 			global.App.Log.Error("RevokeOrderService.Run error:", err.Error())
 			return err
 		}
-		// 发送消息
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s撤销了工单\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+	receiver := []string{latestRecord.Applicant}
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderRevoked, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }
 
 type CompleteOrderService struct {
@@ -292,7 +370,7 @@ func (s *CompleteOrderService) Run() (err error) {
 		return fmt.Errorf("只有工单认领人才能更改工单状态")
 	}
 	// 用户点击完成按钮
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{"progress": "COMPLETED"}).Error; err != nil {
@@ -304,12 +382,27 @@ func (s *CompleteOrderService) Run() (err error) {
 			global.App.Log.Error("CompleteOrderService.Run error:", err.Error())
 			return err
 		}
-		// 发送消息，发送给工单申请人
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s更新工单状态为：已完成\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+	receiver := []string{latestRecord.Applicant}
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderCompleted, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }
 
 // 手动更新工单为失败
@@ -335,7 +428,7 @@ func (s *FailOrderService) Run() (err error) {
 		return fmt.Errorf("只有工单认领人才能更改工单状态")
 	}
 	// 用户点击失败按钮
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{"progress": "FAILED"}).Error; err != nil {
@@ -347,12 +440,27 @@ func (s *FailOrderService) Run() (err error) {
 			global.App.Log.Error("FailOrderService.Run error:", err.Error())
 			return err
 		}
-		// 发送消息，发送给工单申请人
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s更新工单状态为：已失败\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+	receiver := []string{latestRecord.Applicant}
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderFailed, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }
 
 // 复核
@@ -378,7 +486,7 @@ func (s *ReviewOrderService) Run() (err error) {
 		return fmt.Errorf("只有工单提交人才能复核工单")
 	}
 
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightOrderRecords{}).
 			Where("order_id=?", s.OrderID).
 			Updates(map[string]any{"progress": "REVIEWED"}).Error; err != nil {
@@ -390,10 +498,24 @@ func (s *ReviewOrderService) Run() (err error) {
 			global.App.Log.Error("ReviewOrderService.Run error:", err.Error())
 			return err
 		}
-		// 发送消息
-		receiver := []string{record.Applicant}
-		msg := fmt.Sprintf("您好，用户%s更新工单状态为：已复核\n>工单标题：%s\n>附加消息：%s", s.Username, record.Title, s.Msg)
-		notifier.SendMessage(record.Title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+	if txErr != nil {
+		return txErr
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", s.OrderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+	receiver := []string{latestRecord.Applicant}
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderReviewed, notifier.MessageParams{
+		Order:         &latestRecord,
+		Username:      s.Username,
+		AdditionalMsg: s.Msg,
+	})
+
+	return nil
 }

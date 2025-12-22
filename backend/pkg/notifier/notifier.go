@@ -15,17 +15,17 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-// WechatNotifierConfig holds configuration for the WeChat notifier
+// WechatNotifierConfig 保存企业微信通知器的配置
 type WechatNotifierConfig struct {
 	Webhook string
 }
 
-// DingTalkNotifierConfig holds configuration for the DingTalk notifier
+// DingTalkNotifierConfig 保存钉钉通知器的配置
 type DingTalkNotifierConfig struct {
 	Webhook string
 }
 
-// EmailNotifierConfig holds configuration for the email notifier
+// EmailNotifierConfig 保存邮件通知器的配置
 type EmailNotifierConfig struct {
 	Username string
 	Host     string
@@ -33,26 +33,25 @@ type EmailNotifierConfig struct {
 	Password string
 }
 
-// Notifier interface defines methods for sending messages
+// Notifier 接口定义发送消息的方法
 type Notifier interface {
 	SendMessage(subject string, users []string, msg string) error
 }
 
-// WechatNotifier implements Notifier for sending WeChat messages
+// WechatNotifier 实现了 Notifier 用于发送企业微信消息
 type WechatNotifier struct {
 	Config WechatNotifierConfig
 }
 
 // SendMessage 发送企业微信消息
 func (w *WechatNotifier) SendMessage(subject string, users []string, msg string) error {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"msgtype": "markdown",
-		"markdown": map[string]interface{}{
+		"markdown": map[string]any{
 			"content":        msg,
 			"mentioned_list": users,
 		},
 	}
-
 	messageJSON, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -72,39 +71,39 @@ func (w *WechatNotifier) SendMessage(subject string, users []string, msg string)
 	return nil
 }
 
-// DingTalkNotifier implements Notifier for sending DingTalk messages
+// DingTalkNotifier 实现了 Notifier 用于发送钉钉消息
 type DingTalkNotifier struct {
 	Config DingTalkNotifierConfig
 }
 
-// SendMessage sends a DingTalk message
+// SendMessage 发送钉钉消息
 func (d *DingTalkNotifier) SendMessage(subject string, users []string, msg string) error {
-	// Construct the DingTalk message payload
-	payload := map[string]interface{}{
+	// 构造钉钉消息负载
+	payload := map[string]any{
 		"msgtype": "text",
 		"text": map[string]string{
 			"content": msg,
 		},
-		"at": map[string]interface{}{
+		"at": map[string]any{
 			"atMobiles": users,
 			"isAtAll":   false,
 		},
 	}
 
-	// Convert the payload to JSON
+	// 将负载转换为 JSON
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 
-	// Send the HTTP POST request to the DingTalk webhook
+	// 发送 HTTP POST 请求到钉钉 webhook
 	resp, err := http.Post(d.Config.Webhook, "application/json", bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Check the response status
+	// 检查响应状态
 	if resp.StatusCode == http.StatusOK {
 		global.App.Log.Info("DingTalk message sent successfully to users:", users)
 	} else {
@@ -114,31 +113,31 @@ func (d *DingTalkNotifier) SendMessage(subject string, users []string, msg strin
 	return nil
 }
 
-// EmailNotifier implements Notifier for sending emails
+// EmailNotifier 实现了 Notifier 用于发送邮件
 type EmailNotifier struct {
 	Config EmailNotifierConfig
 }
 
 func (e *EmailNotifier) SendMessage(subject string, emails []string, msg string) error {
-	// Create a new message
+	// 创建新的邮件消息
 	m := gomail.NewMessage()
 
-	// Set the sender (you should replace "your-email@example.com" with the actual sender's email address)
+	// 设置发件人（请替换为实际的发件人邮箱）
 	m.SetHeader("From", e.Config.Username)
 
-	// Set the recipients
+	// 设置收件人
 	m.SetHeader("To", emails...)
 
-	// Set the email subject
+	// 设置邮件主题
 	m.SetHeader("Subject", subject)
 
-	// Set the email body (text/plain)
+	// 设置邮件正文（文本）
 	m.SetBody("text/plain", msg)
 
-	// Create a new dialer (you should replace the SMTP server and credentials with your own)
+	// 创建新的拨号器（请使用实际的 SMTP 服务器和凭据）
 	d := gomail.NewDialer(e.Config.Host, e.Config.Port, e.Config.Username, e.Config.Password)
 
-	// Send the email
+	// 发送邮件
 	if err := d.DialAndSend(m); err != nil {
 		return err
 	}
@@ -146,31 +145,31 @@ func (e *EmailNotifier) SendMessage(subject string, emails []string, msg string)
 	return nil
 }
 
-// NewWechatNotifier creates a new WeChat notifier instance
+// NewWechatNotifier 创建新的企业微信通知器实例
 func NewWechatNotifier(config WechatNotifierConfig) Notifier {
 	return &WechatNotifier{Config: config}
 }
 
-// NewDingTalkNotifier creates a new DingTalk notifier instance
+// NewDingTalkNotifier 创建新的钉钉通知器实例
 func NewDingTalkNotifier(config DingTalkNotifierConfig) Notifier {
 	return &DingTalkNotifier{Config: config}
 }
 
-// NewEmailNotifier creates a new email notifier instance
+// NewEmailNotifier 创建新的邮件通知器实例
 func NewEmailNotifier(config EmailNotifierConfig) Notifier {
 	return &EmailNotifier{Config: config}
 }
 
-// SendMessage sends a notification message to users via WeChat and Email
+// SendMessage 通过企业微信/钉钉/邮件发送通知消息给用户
 func SendMessage(subject, orderID string, users []string, msg string) {
-	// Add the order link to the notification message
-	noticeURL := fmt.Sprintf("%s/orders/detail/%s", global.App.Config.Notify.NoticeURL, orderID)
+	// 在通知消息中添加工单链接
+	noticeURL := fmt.Sprintf("%s/orders/%s", global.App.Config.Notify.NoticeURL, orderID)
 	msg = fmt.Sprintf("%s\n\n工单地址：%s", msg, noticeURL)
 
-	// Deduplicate user list
+	// 去重用户列表
 	newUsers := utils.RemoveDuplicate(users)
 
-	// Send WeChat message
+	// 发送企业微信消息
 	if global.App.Config.Notify.Wechat.Enable {
 		wechatConfig := WechatNotifierConfig{Webhook: global.App.Config.Notify.Wechat.Webhook}
 		wechatNotifier := NewWechatNotifier(wechatConfig)
@@ -179,7 +178,7 @@ func SendMessage(subject, orderID string, users []string, msg string) {
 		}
 	}
 
-	// Send DingTalk message
+	// 发送钉钉消息
 	if global.App.Config.Notify.DingTalk.Enable {
 		dingTalkConfig := DingTalkNotifierConfig{Webhook: global.App.Config.Notify.DingTalk.Webhook}
 		withKeywordsMsg := fmt.Sprintf("%s\nKeywords：%s", msg, global.App.Config.Notify.DingTalk.Keywords)
@@ -189,7 +188,7 @@ func SendMessage(subject, orderID string, users []string, msg string) {
 		}
 	}
 
-	// Send Email message
+	// 发送邮件消息
 	if global.App.Config.Notify.Mail.Enable {
 		emailConfig := EmailNotifierConfig{
 			Host:     global.App.Config.Notify.Mail.Host,
@@ -199,7 +198,7 @@ func SendMessage(subject, orderID string, users []string, msg string) {
 		}
 		emailNotifier := NewEmailNotifier(emailConfig)
 
-		// Retrieve user emails from the database
+		// 从数据库中获取用户邮箱
 		var usersWithEmail []string
 		var usersFromDB []models.InsightUsers
 		global.App.DB.Table("insight_users").Where("username in ?", newUsers).Scan(&usersFromDB)
@@ -208,7 +207,7 @@ func SendMessage(subject, orderID string, users []string, msg string) {
 			usersWithEmail = append(usersWithEmail, user.Email)
 		}
 
-		// Send email to each user
+		// 给每个用户发送邮件
 		for _, userEmail := range usersWithEmail {
 			if err := emailNotifier.SendMessage("【工单】"+subject, []string{userEmail}, msg); err != nil {
 				global.App.Log.Error("Error sending email:", err)

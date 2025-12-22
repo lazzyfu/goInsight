@@ -89,6 +89,13 @@ func (s *HookOrdersService) Run() error {
 		if !strings.HasPrefix(record.Title, "[Hook]") {
 			hookTitle = fmt.Sprintf("[Hook]%s", record.Title)
 		}
+		// 获取环境名称
+		var env commonModels.InsightDBEnvironments
+		global.App.DB.Table("`insight_db_environments` a").
+			Select("a.`name`, a.id").
+			Where("a.id=?", item.Environment).
+			Take(&env)
+		// 组装hook工单记录
 		hookRecords = append(hookRecords, models.InsightOrderRecords{
 			Title:            hookTitle,
 			Progress:         commonModels.EnumType(s.Progress),
@@ -98,7 +105,7 @@ func (s *HookOrdersService) Run() error {
 			IsRestrictAccess: record.IsRestrictAccess,
 			DBType:           s.DBType,
 			SQLType:          record.SQLType,
-			Environment:      item.Environment,
+			Environment:      env.Name,
 			InstanceID:       instance_id,
 			Schema:           item.Schema,
 			Applicant:        s.Username, // warn：谁执行的hook，申请人改为谁

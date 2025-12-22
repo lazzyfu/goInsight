@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -252,6 +251,12 @@ func (s *CreateOrderService) Run() error {
 	cc := datatypes.JSON(ccData)
 	// 生成工单ID
 	orderID := uuid.New()
+	// 获取工单环境名称
+	var env commonModels.InsightDBEnvironments
+	global.App.DB.Table("`insight_db_environments` a").
+		Select("a.`name`, a.id").
+		Where("a.id=?", s.Environment).
+		Take(&env)
 	// 创建工单
 	timeStr := time.Now().Format("2006-01-02 15:04:05")
 	title := fmt.Sprintf("%s_[%s] ", s.Title, timeStr)
@@ -261,7 +266,7 @@ func (s *CreateOrderService) Run() error {
 		Remark:           s.Remark,
 		SQLType:          s.SQLType,
 		DBType:           s.DBType,
-		Environment:      s.Environment,
+		Environment:      env.Name,
 		InstanceID:       instance_id,
 		Schema:           s.Schema,
 		Applicant:        s.Username,
@@ -270,7 +275,8 @@ func (s *CreateOrderService) Run() error {
 		Content:          s.Content,
 		ExportFileFormat: s.ExportFileFormat,
 	}
-	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+	err = global.App.DB.Transaction(func(tx *gorm.DB) error {
+		// 插入工单记录
 		if err := tx.Model(&models.InsightOrderRecords{}).Create(&record).Error; err != nil {
 			mysqlErr := err.(*mysql.MySQLError)
 			switch mysqlErr.Number {
@@ -290,28 +296,40 @@ func (s *CreateOrderService) Run() error {
 			global.App.Log.Error("CreateOrderService.Run error:", err.Error())
 			return err
 		}
-		// 获取提交的环境
-		var env commonModels.InsightDBEnvironments
-		global.App.DB.Table("`insight_db_environments` a").
-			Select("a.`name`, a.id").
-			Take(&env)
-		// 发送消息，发送给工单申请人
-		receiver := []string{record.Applicant}
-		receiver = append(receiver, s.CC...)
-		msg := fmt.Sprintf(
-			"您好，用户%s提交了工单\n"+
-				">工单标题：%s\n"+
-				">备注：%s\n"+
-				">抄送：%s\n"+
-				">环境：%s\n"+
-				">数据库类型：%s\n"+
-				">工单类型：%s\n"+
-				">库名：%s",
-			s.Username, title, s.Remark,
-			strings.Join(s.CC, ","),
-			env.Name, s.DBType, s.SQLType, s.Schema,
-		)
-		notifier.SendMessage(title, record.OrderID.String(), receiver, msg)
 		return nil
 	})
+
+	if err != nil {
+		return err
+	}
+
+	// 事务提交成功后，重新查询最新记录后发送消息
+	var latestRecord models.InsightOrderRecords
+	if err := global.App.DB.Where("order_id = ?", orderID).Take(&latestRecord).Error; err != nil {
+		global.App.Log.Error("查询工单记录失败:", err)
+		return err
+	}
+
+	// 发送消息给工单申请人
+	receiver := []string{latestRecord.Applicant}
+	receiver = append(receiver, s.CC...)
+	notifier.SendOrderMessage(receiver, notifier.MsgTypeOrderSubmitted, notifier.MessageParams{
+		Order:    &latestRecord,
+		Username: s.Username,
+	})
+
+	// 发送消息，发送给第一阶段的审批人
+	var approvalRecords []models.InsightApprovalRecords
+	global.App.DB.Table("insight_approval_records").
+		Where("order_id = ? AND stage = ?", orderID, 1).
+		Find(&approvalRecords)
+	var approvers []string
+	for _, appr := range approvalRecords {
+		approvers = append(approvers, appr.Approver)
+	}
+	notifier.SendOrderMessage(approvers, notifier.MsgTypeOrderPendingApproval, notifier.MessageParams{
+		Order: &latestRecord,
+	})
+
+	return nil
 }

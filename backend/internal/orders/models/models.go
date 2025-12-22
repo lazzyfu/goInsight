@@ -29,7 +29,7 @@ type InsightOrderRecords struct {
 	IsRestrictAccess bool            `gorm:"type:tinyint(1);not null;default:0;comment:是否限制访问" json:"is_restrict_access"`
 	DBType           models.EnumType `gorm:"type:ENUM('MySQL', 'TiDB', 'ClickHouse');default:'MySQL';comment:DB类型" json:"db_type"`
 	SQLType          models.EnumType `gorm:"type:ENUM('DML', 'DDL', 'EXPORT');default:'DML';comment:SQL类型" json:"sql_type"`
-	Environment      int             `gorm:"type:int;null;default:null;comment:环境;index" json:"environment"`
+	Environment      string          `gorm:"type:varchar(32);not null;default:'';comment:环境名;index:idx_environment" json:"environment"`
 	Applicant        string          `gorm:"type:varchar(32);not null;default:'';comment:申请人;index" json:"applicant"`
 	Organization     string          `gorm:"type:varchar(256);not null;default:'';index;comment:组织" json:"organization"`
 	Claimer          string          `gorm:"type:varchar(32);not null;default:'';comment:认领人;index" json:"claimer"`

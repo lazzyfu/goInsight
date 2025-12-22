@@ -12,8 +12,9 @@ func RegisterApiRoutes(v1 *gin.RouterGroup) {
 	v1.GET("users", views.GetOrderUsersView)
 	// 语法检查
 	v1.POST("inspect-syntax", views.InspectOrderSyntaxView)
-	// 获取工单
+	// 创建工单
 	v1.POST("", views.CreateOrderView)
+	// 获取工单
 	v1.GET("", views.GetOrderListView)
 	v1.GET(":order_id", views.GetOrderDetailView)
 	// 获取审批流和日志
