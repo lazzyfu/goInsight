@@ -18,6 +18,7 @@ export const transferOrderApi = (data) => put(`/api/v1/orders/transfer`, data)
 export const completeOrderApi = (data) => put(`/api/v1/orders/complete`, data)
 export const failOrderApi = (data) => put(`/api/v1/orders/fail`, data)
 export const reviewOrderApi = (data) => put(`/api/v1/orders/review`, data)
+// 生成tasks
 export const generateOrderTasksApi = (data) => post(`/api/v1/orders/generate-tasks`, data)
 // 获取tasks
 export const getOrderTasksApi = (params) => get(`/api/v1/orders/tasks/${params.order_id}`, params)

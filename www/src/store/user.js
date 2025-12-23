@@ -59,6 +59,14 @@ export const useUserStore = defineStore('user', {
     },
 
     /**
+     * 设置用户头像（支持 Blob URL 或远程地址）
+     * @param {String} avatarUrl
+     */
+    setUserAvatar(avatarUrl) {
+      this.avatar = avatarUrl || ''
+    },
+
+    /**
      * 设置 Token
      * @param {String} token 用户 token
      */

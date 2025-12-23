@@ -146,7 +146,6 @@ const onSave = () => {
         // 2. 将本地的 Blob URL 传给父组件用于立即展示
         // 这样父组件使用的是 "blob:http://..." 地址，无需刷新，速度极快
         emit('ok', localBlobUrl)
-
         handleCancel()
       } else {
         message.error(res.message || '上传失败')

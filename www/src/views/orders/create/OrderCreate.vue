@@ -87,6 +87,7 @@ import {
 } from '@/api/order'
 
 import CodeMirror from '@/components/edit/Codemirror.vue'
+import { useOrderCreatePrefillStore } from '@/store/prefill'
 import { CodeOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
@@ -259,5 +260,16 @@ onMounted(async () => {
 
   uiData.environments = envRes?.data || []
   uiData.users = userRes?.data || []
+
+  // 如果存在来自 Pinia store 的预填数据，则读取并填充表单（一次性消费）
+  const orderCreatePrefillStore = useOrderCreatePrefillStore()
+  const prefill = orderCreatePrefillStore.consumeCreatePrefill()
+  if (prefill) {
+    formState.title = prefill.title || ''
+    formState.remark = prefill.remark || ''
+    formState.sql_type = prefill.sql_type || ''
+    if (prefill.cc) formState.cc = prefill.cc
+    if (prefill.content) codemirrorRef.value?.setContent(prefill.content)
+  }
 })
 </script>

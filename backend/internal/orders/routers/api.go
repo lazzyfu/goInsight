@@ -36,7 +36,6 @@ func RegisterApiRoutes(v1 *gin.RouterGroup) {
 	v1.POST("tasks/execute", views.ExecuteTaskView)
 	// 批量执行任务
 	v1.POST("tasks/execute-batch", views.ExecuteBatchTasksView)
-	v1.POST("hook", views.HookOrdersView)
 	v1.GET("tasks/preview", views.PreviewTasksView)
 	// 下载导出文件
 	v1.GET("tasks/download/exportfile/:task_id", views.DownloadExportFileView)

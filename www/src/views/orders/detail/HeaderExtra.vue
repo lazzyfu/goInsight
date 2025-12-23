@@ -22,6 +22,11 @@
 
     <!-- 撤销按钮 -->
     <a-button v-if="!revokeDisabled" @click="openRevokeModal"> 撤销 </a-button>
+
+    <!-- 复制工单按钮（当状态为已复核 REVIEWED 时显示） -->
+    <a-tooltip v-if="canCopyAsNewOrder" title="复制当前工单为新工单" placement="top">
+      <a-button @click="handleCopyAsNewOrder"> 复制工单 </a-button>
+    </a-tooltip>
   </a-space>
 
   <!-- 操作弹窗 -->
@@ -63,12 +68,13 @@ import {
   getOrderUsersApi,
   reviewOrderApi,
   revokeOrderApi,
-  transferOrderApi,
+  transferOrderApi
 } from '@/api/order'
+import { useOrderCreatePrefillStore } from '@/store/prefill'
 import { useUserStore } from '@/store/user'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, toRaw, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({ orderDetail: Object })
@@ -76,6 +82,7 @@ const emit = defineEmits(['refresh'])
 const formRef = ref()
 const userStore = useUserStore()
 const router = useRouter()
+const orderCreatePrefillStore = useOrderCreatePrefillStore()
 
 // 工单状态常量
 const ORDER_STATUS = {
@@ -106,6 +113,9 @@ const COMPLETABLE_STATUSES = [ORDER_STATUS.CLAIMED, ORDER_STATUS.EXECUTING]
 const uiState = reactive({
   genOrderTasksLoading: false,
 })
+
+// 复制为新工单：仅在已复核状态可用
+const canCopyAsNewOrder = computed(() => props.orderDetail?.progress === ORDER_STATUS.REVIEWED)
 
 // UI 数据
 const uiData = reactive({
@@ -247,4 +257,35 @@ const genOrderTasks = useThrottleFn(async () => {
     uiState.genOrderTasksLoading = false
   }
 })
+
+const clonePlainObject = (value) => {
+  if (!value) return value
+  try {
+    // 优先使用 structuredClone（更健壮），否则退化为 JSON 克隆
+    if (typeof structuredClone === 'function') return structuredClone(value)
+    return JSON.parse(JSON.stringify(value))
+  } catch (e) {
+    return null
+  }
+}
+
+// 从 orderDetail 生成“新建工单”的预填数据（只保留表单需要的字段）
+const toCreateOrderPrefill = (orderDetail) => {
+  if (!orderDetail) return null
+  const raw = clonePlainObject(toRaw(orderDetail))
+  if (!raw) return null
+  return {
+    title: raw.title || '',
+    remark: raw.remark || '',
+    sql_type: raw.sql_type || '',
+    cc: raw.cc || [],
+    content: raw.content || '',
+  }
+}
+
+// 复制当前工单为新工单：设置预填并跳转到创建页
+const handleCopyAsNewOrder = () => {
+  orderCreatePrefillStore.setCreatePrefill(toCreateOrderPrefill(props.orderDetail))
+  router.push({ name: 'orders.create' })
+}
 </script>
