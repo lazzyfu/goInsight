@@ -102,6 +102,8 @@ func initializeTables(db *gorm.DB) {
 		&commonModels.InsightDBSchemas{},
 		// inspect
 		&inspectModels.InsightInspectParams{},
+		&inspectModels.InsightGlobalInspectParams{},
+		&inspectModels.InsightInstanceInspectParams{},
 		// das
 		&dasModels.InsightDASUserSchemaPermissions{},
 		&dasModels.InsightDASUserTablePermissions{},
