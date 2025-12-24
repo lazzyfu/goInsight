@@ -155,7 +155,6 @@ const onFinish = useThrottleFn(async (values) => {
 
   const res = await UpdateUserInfoApi(params).catch(() => { })
   if (res) {
-    console.log('res: ', res);
     message.success('更新成功')
     await reloadUserProfile()
   } else {

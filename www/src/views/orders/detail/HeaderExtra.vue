@@ -7,24 +7,34 @@
     </a-button>
 
     <!-- 执行任务按钮 -->
-    <a-button v-if="showExecuteButton" @click="genOrderTasks" :loading="uiState.genOrderTasksLoading">
-      执行
-    </a-button>
+    <a-tooltip title="点击加载执行任务" placement="top">
+      <a-button v-if="showExecuteButton" @click="genOrderTasks" :loading="uiState.genOrderTasksLoading">
+        执行
+      </a-button>
+    </a-tooltip>
 
     <!-- 已完成按钮 -->
-    <a-button v-if="showCompleteFailButton" @click="openCompleteModal"> 已完成 </a-button>
+    <a-tooltip title="标记当前工单为完成状态" placement="top">
+      <a-button v-if="showCompleteFailButton" @click="openCompleteModal"> 已完成 </a-button>
+    </a-tooltip>
 
     <!-- 已失败按钮 -->
-    <a-button v-if="showCompleteFailButton" @click="openFailModal"> 已失败 </a-button>
+    <a-tooltip title="标记当前工单为失败状态" placement="top">
+      <a-button v-if="showCompleteFailButton" @click="openFailModal"> 已失败 </a-button>
+    </a-tooltip>
 
     <!-- 转交按钮 -->
-    <a-button v-if="showTransferButton" @click="openTransferModal"> 转交 </a-button>
+    <a-tooltip title="转交当前工单给其他人执行" placement="top">
+      <a-button v-if="showTransferButton" @click="openTransferModal"> 转交 </a-button>
+    </a-tooltip>
 
     <!-- 撤销按钮 -->
-    <a-button v-if="!revokeDisabled" @click="openRevokeModal"> 撤销 </a-button>
+    <a-tooltip title="撤销当前工单" placement="top">
+      <a-button v-if="!revokeDisabled" @click="openRevokeModal"> 撤销 </a-button>
+    </a-tooltip>
 
-    <!-- 复制工单按钮（当状态为已复核 REVIEWED 时显示） -->
-    <a-tooltip v-if="canCopyAsNewOrder" title="复制当前工单为新工单" placement="top">
+    <!-- 复制工单 -->
+    <a-tooltip title="快速复制当前工单为一个新的工单" placement="top">
       <a-button @click="handleCopyAsNewOrder"> 复制工单 </a-button>
     </a-tooltip>
   </a-space>
@@ -113,9 +123,6 @@ const COMPLETABLE_STATUSES = [ORDER_STATUS.CLAIMED, ORDER_STATUS.EXECUTING]
 const uiState = reactive({
   genOrderTasksLoading: false,
 })
-
-// 复制为新工单：仅在已复核状态可用
-const canCopyAsNewOrder = computed(() => props.orderDetail?.progress === ORDER_STATUS.REVIEWED)
 
 // UI 数据
 const uiData = reactive({
