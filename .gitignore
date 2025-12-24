@@ -47,14 +47,17 @@ backend/logs/
 backend/media/
 backend/web/dist/
 backend/config.yaml
+backend/code.code-workspace
 
 # Frontend
 www/dist/
 www/node_modules/
 www/.vite/
+www/.vscode
 
 # Build artifacts
 bin/
 *.tar.gz
 *.zip
 *.sha256
+www/README.md
