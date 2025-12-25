@@ -1,0 +1,509 @@
+.flow-container {
+  $background: #fff;
+  $borderColor: #eee;
+  overflow-x: auto;
+
+  .flow-main {
+    min-width: min-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flow-group {
+    position: relative;
+    background: $background;
+    min-width: min-content
+  }
+
+  .flow-item {
+    border: 1px solid $borderColor;
+    box-shadow: 0 0 6px rgba(102, 102, 102, 0.1);
+    height: 80px;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all .3s;
+    position: relative;
+    z-index: 2;
+    background: $background;
+    width: 180px;
+
+    &:hover {
+      border-color: rgb(85, 197, 192);
+
+      .title .close {
+        visibility: visible;
+        opacity: 1
+      }
+    }
+
+    .title {
+      background: rgb(85, 197, 192);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 3px 10px;
+      justify-content: space-between;
+
+      span {
+        flex: 2
+      }
+
+      .close {
+        transform: scale(.8);
+        visibility: hidden;
+        transition: all .3s;
+        opacity: 0;
+        cursor: pointer
+      }
+
+      i {
+        font-size: 14px;
+        margin-right: 3px
+      }
+
+      &.bg-2 {
+        background: rgb(255, 148, 62)
+      }
+
+      &.bg-3 {
+        background: rgb(50, 150, 250)
+      }
+
+      &.bg-5 {
+        background: rgb(251, 83, 83);
+        // color: #666
+      }
+    }
+
+    .text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 5px 15px;
+      cursor: pointer;
+
+      div {
+        display: block;
+        max-height: 38px;
+        overflow: hidden;
+        color: #666;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+    }
+  }
+
+  .flow-add {
+    padding: 8px 0;
+    position: relative;
+    font-size: 12px;
+
+    i {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid #eee;
+      box-shadow: 0 0 6px rgba(102, 102, 102, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      background: $background;
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
+      transform: scale(.7);
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      width: 1px;
+      left: 50%;
+      background: #eee;
+      position: absolute;
+      top: 0;
+      bottom: 0
+    }
+  }
+
+  .flow-col {
+    flex: 1;
+    margin: 0 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      width: 1px;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      background: #eee;
+      position: absolute
+    }
+  }
+
+  .flow-row {
+    display: flex;
+    position: relative
+  }
+
+  .flow-branch-btn {
+    display: none
+  }
+
+  .flow-branch {
+    padding: 40px 0 1px;
+    display: flex;
+    flex-direction: column;
+
+    .flow-branch-btn {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      z-index: 2
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      left: 0;
+      right: 0;
+      bottom: 46px;
+      top: 12px;
+      border: 1px solid #eee;
+      position: absolute
+    }
+
+    .flow-col {
+
+      // 中线
+      &:before {
+        top: -28px
+      }
+
+      &:after {
+        content: '';
+        display: none;
+        width: 50%;
+        top: 0;
+        background: $borderColor;
+      }
+    }
+
+    .mask-left,
+    .mask-right {
+      position: absolute;
+      background: $background;
+      top: -28px;
+      display: block;
+      bottom: -1px;
+      width: calc(50% + 9px)
+    }
+
+    .mask-left {
+      left: -10px
+    }
+
+    .mask-right {
+      right: -10px
+    }
+  }
+
+  .flow-end {
+    box-shadow: 0 2px 10px 0 rgb(145 145 153 / 50%);
+    margin: 0 auto 30px;
+    border-radius: 50%;
+    position: relative;
+    background: #bcbcc5;
+    width: 50px;
+    height: 50px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.type-show {
+
+    // 展示模式
+    .flow-branch {
+      padding-top: 28px
+    }
+
+    .flow-item {
+      margin-bottom: 20px
+    }
+
+    .flow-branch:before {
+      bottom: 0;
+      top: 0
+    }
+
+    .flow-end {
+      position: relative;
+      margin-top: 20px;
+
+      &:before {
+        content: '';
+        width: 1px;
+        background: $borderColor;
+        position: absolute;
+        left: 50%;
+        top: -20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .tools {
+    text-align: right
+  }
+}
+
+.flow-node-down {
+  h3 {
+    font-size: 14px;
+    margin-bottom: 10px
+  }
+
+  div {
+    display: flex
+  }
+
+  i {
+    font-size: 14px;
+    margin-right: 5px
+  }
+}
+
+.flow-container.horizontal {
+  $borderColor: #eee;
+
+  .flow-main {
+    flex-direction: row;
+    justify-content: center
+  }
+
+  .flow-group:first-child {
+    overflow: hidden;
+  }
+
+  .flow-col {
+    flex-direction: row;
+    margin: 8px 0;
+
+    &:before {
+      width: auto;
+      right: 0;
+      height: 1px;
+      left: -29px;
+      top: 50%
+    }
+  }
+
+  .flow-add {
+    padding: 0 8px;
+
+    &:before {
+      left: 0;
+      top: 50%;
+      height: 1px;
+      width: 100%
+    }
+  }
+
+  .flow-row {
+    flex-direction: column
+  }
+
+  .flow-branch {
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+
+    .flow-branch-btn {
+      position: static;
+      transform: translateX(0);
+      margin-right: 8px;
+
+      button {
+        width: 50px;
+        white-space: normal;
+        padding: 15px 10px;
+        overflow: hidden;
+        line-height: 14px
+      }
+    }
+
+    &:before {
+      bottom: 0;
+      top: 0;
+      left: 30px;
+      right: 45px
+    }
+
+    .mask-left,
+    .mask-right {
+      left: -29px;
+      right: -1px;
+      width: auto;
+      height: calc(50% + 8px)
+    }
+
+    .mask-left {
+      top: -8px;
+    }
+
+    .mask-right {
+      bottom: -9px;
+      top: auto
+    }
+
+    .flow-col {}
+  }
+
+  .flow-end {
+    margin: 0
+  }
+
+  &.type-show {
+    .flow-branch {
+      margin-left: 20px
+    }
+
+    .flow-item {
+      margin-right: 20px;
+      margin-bottom: 0
+    }
+
+    .flow-branch .flow-col:before {
+      left: -20px
+    }
+
+    .flow-branch:before {
+      left: -20px;
+      right: -1px
+    }
+
+    .flow-end {
+      position: relative;
+      margin-left: 20px;
+
+      &:before {
+        content: '';
+        height: 1px;
+        background: $borderColor;
+        position: absolute;
+        top: 50%;
+        left: -20px;
+        width: 20px;
+      }
+    }
+  }
+}
+
+// 侧栏drawer
+.flow-modal-class {
+  $borderColor: #eee;
+
+  .el-drawer__header {
+    border-bottom: 1px solid $borderColor;
+    margin-bottom: 0;
+    padding-bottom: 20px
+  }
+}
+
+.flow-drawer {
+  .tip {
+    margin-bottom: 20px;
+    color: #999;
+    font-size: 12px;
+    line-height: 22px
+  }
+}
+
+// 设计主页
+.design-flow-container {
+  position: relative;
+
+  .tools {
+    position: absolute;
+    right: 20px;
+    top: 13px;
+    z-index: 2
+  }
+
+  .tabs-info {
+    display: flex;
+    justify-content: center;
+
+    form {
+      width: 680px;
+    }
+  }
+}
+
+//工作台
+.task-apply {
+  .item {
+    margin-bottom: 20px;
+
+    h3 {
+      font-size: 14px;
+      margin-bottom: 10px
+    }
+  }
+
+  .list {
+    display: flex;
+    margin: 0 -8px;
+
+    >div {
+      border: 1px solid #dcdfe6;
+      padding: 16px;
+      border-radius: 8px;
+      height: 100px;
+      margin: 0 8px;
+      width: 24%;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      transition: all .3s;
+      cursor: pointer;
+      box-shadow: 0 0 2px #ddd;
+
+      &:hover {
+        border-color: #409eff
+      }
+    }
+
+    .icon {
+      font-size: 36px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      overflow: hidden;
+      color: #fff;
+      margin-right: 10px;
+
+      &:before {
+        font-weight: 400
+      }
+    }
+  }
+}

@@ -19,6 +19,16 @@
 
 # Go workspace file
 go.work
+
+# macOS
+.DS_Store
+
+# IDEs
+*.code-workspace
+.vscode/
+.idea/
+
+# Legacy paths
 goInsight/logs
 goInsight/cmd/__debug_bin
 goInsight_windows.code-workspace
@@ -26,9 +36,28 @@ goInsight-fe/node_modules
 goInsight-fe/yarn-error.log
 goInsight/config.yaml
 goInsight/dist/
-goInsight/media/
 goInsight/goinsight/dist
-.DS_Store
 goinsight/bin/
 goInsight.code-workspace
 github.goinsight.code-workspace
+
+# Project specific
+# Backend
+backend/logs/
+backend/media/
+backend/web/dist/
+backend/config.yaml
+backend/code.code-workspace
+
+# Frontend
+www/dist/
+www/node_modules/
+www/.vite/
+www/.vscode
+
+# Build artifacts
+bin/
+*.tar.gz
+*.zip
+*.sha256
+www/README.md

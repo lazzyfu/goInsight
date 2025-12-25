@@ -1,0 +1,120 @@
+html, body, div, span, ul, li, i, h3, p {margin: 0;padding: 0;}
+ul, li {list-style: none}
+body {font-size: 14px; font-family: "Microsoft YaHei UI"}
+* {box-sizing: border-box}
+a{color: #409eff;text-decoration: none}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  position: relative;
+  z-index: 100;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #babdc2;
+  background-clip: padding-box;
+  min-height: 28px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-corner {
+  background: #babdc2;
+}
+/*&::-webkit-scrollbar:$colorGray2; //滚动条整体部分
+::-webkit-scrollbar-button:''; //滚动条两端的按钮
+::-webkit-scrollbar-track:'';  //外层轨道
+::-webkit-scrollbar-track-piece:'';  //内层滚动槽
+::-webkit-scrollbar-thumb:$colorGray3; //滚动的滑块
+::-webkit-scrollbar-corner:''; //边角
+::-webkit-resizer //定义右下角拖动块的样式*/
+.common-layout {
+  .common-sidebar {
+    transition: all 0.3s;
+    box-shadow: 2px 0 6px rgb(0 21 41 / 35%);
+    color: #fff;
+    background-color: rgb(48 65 86);
+    height: 100vh;
+    overflow-x: hidden;
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      height: 40px;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 700;
+      img {
+        width: 14px;
+        height: 14px;
+      }
+    }
+    .el-menu {
+      border-right: 0;
+      .icon{margin-right: 5px;font-size: 15px;opacity: .8}
+    }
+    .el-sub-menu .el-menu-item{min-width: 180px}
+  }
+  .common-header {
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .collapse-icon {
+      cursor: pointer;
+      font-size: 18px;
+      margin-right: 15px;
+    }
+    .breadcrumb {flex: 2;}
+    .comm-header-tool {margin: 0 10px;display: flex;
+      i {margin: 0 5px;cursor: pointer}
+    }
+  }
+  // 使用整个右侧滚动，没必要固定那个头部浪费空间
+  .overflow-scroll{overflow-y: auto;display: block;height: 100vh}
+  .common-main {
+    background: #f0f2f5;
+    padding: 10px;
+    overflow: hidden;
+    > div:first-child {border-radius: 5px;padding: 10px 15px;background: #fff;overflow-x: auto; // 横向滚动条放在这里
+    &.bg-none{background: none;}
+    }
+  }
+  .tag-tabs {display: flex;justify-content: space-between;align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    .el-tabs__content {
+      display: none;
+    }
+    .el-tabs__nav-wrap::after {
+      display: none;
+    }
+    .el-tabs__item {
+      padding: 0 10px !important;
+    }
+    .el-tabs__header {
+      margin: 0;
+    }
+    .tabs-label {
+      i {margin-left: 3px}
+    }
+    .clear-tag {cursor: pointer}
+  }
+  .quit-full {position: fixed;right: 10px;top: 10px;cursor: pointer;z-index: 101}
+}
+// 设置el-tooltip最大宽度
+.el-popper {
+  max-width: 400px;
+}
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all .3s;
+}
+.fade-transform-enter-from{opacity: .3;transform: translateX(-30px)}
+.fade-transform-enter-active {
+}
+.fade-transform-enter-to{transform: translateX(0);opacity: 1}
+
+.fade-transform-leave-active {
+  opacity: 0;
+  transform: translateX(30px);
+}

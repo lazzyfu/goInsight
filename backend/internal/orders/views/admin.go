@@ -1,0 +1,154 @@
+package views
+
+import (
+	"strconv"
+
+	"github.com/lazzyfu/goinsight/pkg/response"
+
+	"github.com/lazzyfu/goinsight/internal/orders/forms"
+	"github.com/lazzyfu/goinsight/internal/orders/services"
+
+	"github.com/gin-gonic/gin"
+)
+
+func AdminGetApprovalFlowUnboundUsersView(c *gin.Context) {
+	var form forms.AdminGetApprovalFlowUnboundUsersForm
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminGetApprovalFlowUnboundService{
+		AdminGetApprovalFlowUnboundUsersForm: &form,
+		C:                                    c,
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
+}
+
+func AdminGetApprovalFlowsView(c *gin.Context) {
+	var form forms.AdminGetApprovalFlowsForm
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminGetApprovalFlowsService{
+		AdminGetApprovalFlowsForm: &form,
+		C:                         c,
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
+}
+
+func AdminUpdateApprovalFlowsView(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var form forms.AdminUpdateApprovalFlowsForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminUpdateApprovalFlowsService{
+		AdminUpdateApprovalFlowsForm: &form,
+		C:                            c,
+		ID:                           uint64(id),
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
+}
+
+func AdminCreateApprovalFlowsView(c *gin.Context) {
+	var form forms.AdminCreateApprovalFlowsForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminCreateApprovalFlowsService{
+		AdminCreateApprovalFlowsForm: &form,
+		C:                            c,
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
+}
+
+func AdminDeleteApprovalFlowsView(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	service := services.AdminDeleteApprovalFlowsService{
+		C:  c,
+		ID: uint64(id),
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
+}
+
+func AdminBindUsersToApprovalFlowView(c *gin.Context) {
+	var form forms.AdminBindUsersToApprovalFlowForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminBindUsersToApprovalFlowService{
+		AdminBindUsersToApprovalFlowForm: &form,
+		C:                                c,
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
+}
+
+func AdminGetApprovalFlowUsersView(c *gin.Context) {
+	var form forms.AdminGetApprovalFlowUsersForm
+
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, err.Error())
+		return
+	}
+	service := services.AdminGetApprovalFlowUsersService{
+		AdminGetApprovalFlowUsersForm: &form,
+		C:                             c,
+	}
+	returnData, total, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.PaginationSuccess(c, total, returnData)
+}
+
+func AdminDeleteUsersFromApprovalFlowView(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	service := services.AdminDeleteUsersFromApprovalFlowService{
+		C:  c,
+		ID: uint64(id),
+	}
+	err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, nil, "success")
+}
