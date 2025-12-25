@@ -39,7 +39,7 @@ const errorHandle = (response) => {
     case 404:
       message.error('请求的资源不存在!')
       break
-    case 400:
+    case 422:
       message.error('token验证失败!')
       localStorage.clear()
       toLogin()

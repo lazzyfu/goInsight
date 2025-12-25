@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="修改密码" v-model:open="props.open" width="50%" :footer="null" @cancel="handleCancel">
+  <a-modal title="修改密码" v-model:open="modalOpen" width="50%" :footer="null" @cancel="handleCancel">
     <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }"
       autocomplete="off" @finish="onSubmit">
       <a-form-item label="当前密码" has-feedback name="old_password">
@@ -29,13 +29,19 @@ import { regPassword } from '@/utils/validate'
 import { LockOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 const props = defineProps({
   open: Boolean,
   title: String,
 })
 const emit = defineEmits(['update:open'])
+
+// 用 computed 包一层，避免直接修改 props
+const modalOpen = computed({
+  get: () => props.open,
+  set: (val) => emit('update:open', val),
+})
 
 const formRef = ref()
 const formState = reactive({
@@ -91,7 +97,7 @@ const rules = {
 
 // 取消按钮处理函数
 const handleCancel = () => {
-  emit('update:open', false)
+  modalOpen.value = false
   formRef.value?.resetFields()
 }
 

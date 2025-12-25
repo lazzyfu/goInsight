@@ -6,6 +6,6 @@ import (
 )
 
 func RegisterAdminRoutes(v1 *gin.RouterGroup) {
-	v1.GET("/params", views.AdminGetInspectParamsView)
-	v1.PUT("/params/:id", views.AdminUpdateInspectParamsView)
+	v1.GET("/params", views.AdminGetGlobalInspectParamsView)
+	v1.PUT("/params/:id", views.AdminUpdateGlobalInspectParamsView)
 }

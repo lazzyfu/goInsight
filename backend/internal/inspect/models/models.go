@@ -20,10 +20,10 @@ func (InsightInspectParams) TableName() string {
 
 type InsightGlobalInspectParams struct {
 	*models.Model
-	Title string          `gorm:"type:varchar(64);not null;uniqueIndex:uniq_title;comment:审核参数描述" json:"title"`
+	Title string          `gorm:"type:varchar(256);not null;uniqueIndex:uniq_title;comment:审核参数描述" json:"title"`
 	Key   string          `gorm:"type:varchar(64);not null;uniqueIndex:uniq_key;comment:审核参数名称" json:"key"`
 	Value string          `gorm:"type:varchar(256);not null;comment:审核参数值" json:"value"`
-	Type  models.EnumType `gorm:"type:enum('string','number','boolean','json');not null;default:'string';comment:参数类型" json:"type"`
+	Type  models.EnumType `gorm:"type:enum('string','number','boolean');not null;default:'string';comment:参数类型" json:"type"`
 }
 
 func (InsightGlobalInspectParams) TableName() string {
@@ -33,10 +33,10 @@ func (InsightGlobalInspectParams) TableName() string {
 type InsightInstanceInspectParams struct {
 	*models.Model
 	InstanceID uuid.UUID       `gorm:"type:char(36);uniqueIndex:uniq_instance_key;comment:关联insight_db_config的instance_id" json:"instance_id"`
-	Title      string          `gorm:"type:varchar(64);not null;comment:审核参数描述" json:"title"`
+	Title      string          `gorm:"type:varchar(256);not null;comment:审核参数描述" json:"title"`
 	Key        string          `gorm:"type:varchar(64);not null;uniqueIndex:uniq_instance_key;comment:审核参数名称" json:"key"`
 	Value      string          `gorm:"type:varchar(256);not null;comment:审核参数值" json:"value"`
-	Type       models.EnumType `gorm:"type:enum('string','number','boolean','json');not null;default:'string';comment:参数类型" json:"type"`
+	Type       models.EnumType `gorm:"type:enum('string','number','boolean');not null;default:'string';comment:参数类型" json:"type"`
 }
 
 func (InsightInstanceInspectParams) TableName() string {

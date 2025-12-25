@@ -3,47 +3,35 @@
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="搜索参数名..."
-        style="width: 350px"
-        @search="handleSearch"
-      />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索参数名..." style="width: 350px"
+        @search="handleSearch" />
     </div>
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.id"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.id" :scroll="{ x: 1100 }"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'action'">
-            <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
+          <!-- 类型转换为中文显示 -->
+          <template v-if="column.key === 'type'">
+            <template v-if="record.type === 'string'">字符串</template>
+            <template v-else-if="record.type === 'number'">数字</template>
+            <template v-else-if="record.type === 'boolean'">布尔值</template>
+            <template v-else>{{ record.type }}</template>
           </template>
-        </template>
-        <template #expandedRowRender="{ record }">
-          <p style="margin: 0">
-            <highlightjs language="json" :code="JSON.stringify(record.params, null, 2)" />
-          </p>
+          <template v-if="column.key === 'action'">
+            <a @click="handleEdit(record)">
+              <EditOutlined /> 编辑
+            </a>
+          </template>
         </template>
       </a-table>
     </div>
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <InspectFormModal
-    :open="uiState.isModalOpen"
-    title="配置审核参数"
-    v-model:modelValue="formState"
-    @update:open="uiState.isModalOpen = $event"
-    @submit="onSubmit"
-  />
+  <InspectFormModal :open="uiState.isModalOpen" title="配置审核参数" v-model:modelValue="formState"
+    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
 </template>
 
 <script setup>
@@ -65,28 +53,45 @@ const uiData = reactive({
   searchValue: '',
   tableData: [],
   tableColumns: [
-  {
-    title: '描述',
-    dataIndex: 'remark',
-    key: 'remark',
-  },
-  {
-    title: '更新时间',
-    dataIndex: 'updated_at',
-    key: 'updated_at',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    key: 'action',
-  },
-]
+    {
+      title: '描述',
+      dataIndex: 'title',
+      key: 'title',
+      fixed: 'left',
+      width: '40%',
+      ellipsis: true,
+    },
+    {
+      title: '值',
+      dataIndex: 'value',
+      width: '20%',
+      key: 'value',
+    },
+    {
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updated_at',
+      width: '20%',
+      key: 'updated_at',
+    },
+    {
+      title: '操作',
+      dataIndex: 'action',
+      key: 'action',
+    },
+  ]
 })
 
 // form表单
 const defaultForm = {
-  params: '{}',
-  remark: '',
+  title: '',
+  key: '',
+  type: 'string',
+  value: '',
 }
 const formState = ref({ ...defaultForm })
 
@@ -122,7 +127,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await getInspectParamsApi(params).catch(() => {})
+  const res = await getInspectParamsApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -133,20 +138,19 @@ const fetchData = async () => {
 // 编辑
 const handleEdit = (record) => {
   formState.value = {
+    ...defaultForm,
     ...record,
-    params: JSON.stringify(record.params || {}, null, 2), // 仅修改 formState，原 record 保持 Object
   }
   uiState.isModalOpen = true
 }
 
 // 提交
 const onSubmit = useThrottleFn(async (data) => {
-  // 将 inspect_params 转换为 JSON 对象
-  const payload = {
-    ...data,
-    params: JSON.parse(data.params),
-  }
-  const res = await updateInspectParamsApi(payload).catch(() => {})
+  const payload = { ...data }
+  // 移除弹窗内部使用的临时字段
+  delete payload._editValue
+
+  const res = await updateInspectParamsApi(payload).catch(() => { })
   if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false

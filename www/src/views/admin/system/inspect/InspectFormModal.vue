@@ -13,27 +13,46 @@
       :wrapper-col="{ span: 20 }"
       style="margin-top: 24px"
     >
-      <a-form-item label="描述" name="remark" has-feedback>
-        <a-input disabled v-model:value="formData.remark" placeholder="请输入备注" allow-clear />
+      <a-form-item label="描述" name="title" has-feedback>
+        <a-input disabled v-model:value="formData.title" placeholder="" />
       </a-form-item>
-      <a-form-item
-        label="审核参数"
-        name="params"
-        has-feedback
-        help="格式要求为JSON类型，默认为{}，表示继承全局审核参数"
-      >
-        <a-textarea
-          :rows="8"
-          v-model:value="formData.params"
-          placeholder=" 请输入自定义审核参数，默认为{}"
-        />
+
+      <a-form-item label="键" name="key" has-feedback>
+        <a-input disabled v-model:value="formData.key" placeholder="" />
+      </a-form-item>
+
+      <a-form-item label="类型" name="type" has-feedback>
+        <a-input disabled v-model:value="formData.type" placeholder="" />
+      </a-form-item>
+
+  <a-form-item label="值" name="value" has-feedback>
+        <template v-if="formData.type === 'boolean'">
+          <!-- ant-design-vue 的 SelectOption 在部分版本里 value 不支持 boolean，这里统一用字符串承载 -->
+          <a-select v-model:value="formData._editValue" placeholder="请选择" style="width: 100%">
+            <a-select-option value="true">true</a-select-option>
+            <a-select-option value="false">false</a-select-option>
+          </a-select>
+        </template>
+
+        <template v-else-if="formData.type === 'number'">
+          <a-input-number
+            v-model:value="formData._editValue"
+            style="width: 100%"
+            :precision="0"
+            placeholder="请输入数字"
+          />
+        </template>
+
+        <template v-else>
+          <a-input v-model:value="formData._editValue" placeholder="请输入" allow-clear />
+        </template>
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { computed, ref, reactive, watch } from 'vue'
 
 // 定义props和emits
 const props = defineProps({
@@ -48,6 +67,39 @@ const formData = defineModel('modelValue', {
   required: true,
 })
 
+// 编辑态的值：根据 type 用 boolean/number/string 承载，保存时再转回字符串提交给后端
+const normalizeEditValue = (record) => {
+  const type = record?.type
+  const raw = record?.value
+
+  if (type === 'boolean') {
+    // Select 用字符串承载
+    if (raw === true) return 'true'
+    if (raw === false) return 'false'
+    const s = String(raw ?? '').trim().toLowerCase()
+    return s === 'true' ? 'true' : 'false'
+  }
+  if (type === 'number') {
+    if (typeof raw === 'number') return raw
+    const n = Number(String(raw ?? '').trim())
+    return Number.isFinite(n) ? n : undefined
+  }
+  return raw ?? ''
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) return
+    // 打开弹窗时回填当前行数据
+    // 约定：InspectList 传入的 formData 里包含 { id, title, key, type, value, ... }
+    formData.value = {
+      ...formData.value,
+      _editValue: normalizeEditValue(formData.value),
+    }
+  },
+)
+
 // 表单引用
 const formRef = ref()
 
@@ -57,31 +109,58 @@ const uiState = reactive({
 })
 
 // 表单校验规则
-const rules = {
-  params: [
-    {
-      validator: (_rule, value) => {
-        const text = (value ?? '').trim()
-        if (text === '') return Promise.resolve() // 为空表示继承全局参数
-        try {
-          const parsed = JSON.parse(text)
-          if (parsed === null || typeof parsed !== 'object') {
-            return Promise.reject('审核参数必须是有效的 JSON 对象，例如 {}')
-          }
+const rules = computed(() => {
+  const type = formData.value?.type
+  if (type === 'number') {
+    return {
+      value: [
+        {
+          validator: () => {
+            const v = formData.value?._editValue
+            if (v === undefined || v === null || v === '') return Promise.reject('请输入数字')
+            if (typeof v === 'number' && Number.isFinite(v)) return Promise.resolve()
+            return Promise.reject('请输入合法数字')
+          },
+          trigger: ['blur', 'change'],
+        },
+      ],
+    }
+  }
+  if (type === 'boolean') {
+    return {
+      value: [
+        {
+          validator: () => {
+            const v = formData.value?._editValue
+            if (v === 'true' || v === 'false') return Promise.resolve()
+            return Promise.reject('请选择 true/false')
+          },
+          trigger: ['blur', 'change'],
+        },
+      ],
+    }
+  }
+  return {
+    value: [
+      {
+        validator: () => {
+          // string 允许空字符串
           return Promise.resolve()
-        } catch {
-          return Promise.reject('请输入合法的 JSON，示例：{"enable": true}')
-        }
+        },
+        trigger: ['blur', 'change'],
       },
-      trigger: ['blur', 'change'],
-    },
-  ],
-}
+    ],
+  }
+})
 
 // 取消按钮处理函数
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
+  if (formData.value && '_editValue' in formData.value) {
+    // 避免下次打开弹窗残留上一次的临时值
+    delete formData.value._editValue
+  }
 }
 
 // 提交表单
@@ -89,8 +168,20 @@ const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
     uiState.loading = true
-    emit('submit', formData.value)
-  } catch (err) {
+
+    const type = formData.value?.type
+    const v = formData.value?._editValue
+    let valueAsString = ''
+  if (type === 'boolean') valueAsString = v === 'true' ? 'true' : 'false'
+    else if (type === 'number') valueAsString = String(v)
+    else valueAsString = String(v ?? '')
+
+    emit('submit', {
+      ...formData.value,
+      value: valueAsString,
+    })
+  } catch {
+    // 校验失败时不处理
   } finally {
     uiState.loading = false
   }

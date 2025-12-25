@@ -1,6 +1,6 @@
 <template>
   <div class="split-wrapper">
-    <div ref="scalable" class="scalable" :style="{ width: leftWidth }">
+    <div ref="scalable" class="scalable" :style="{ width: computedLeftWidth }">
       <div class="left-content">
         <slot name="left-content"> 左边内容区 </slot>
       </div>
@@ -13,13 +13,13 @@
 </template>
 
 <script>
-import { throttle } from 'lodash-es'
-import { computed, ref } from 'vue'
+import { throttle } from 'lodash-es';
+import { computed, ref } from 'vue';
 
 export default {
   props: ['leftWidth'],
   setup(props) {
-    const leftWidth = computed(() => {
+    const computedLeftWidth = computed(() => {
       if (props.leftWidth) {
         return props.leftWidth
       } else {
@@ -51,7 +51,7 @@ export default {
     }
 
     return {
-      leftWidth,
+      computedLeftWidth,
       scalable,
       startDrag
     }

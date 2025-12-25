@@ -1,7 +1,9 @@
-import { fileURLToPath, URL } from 'node:url';
+import { fileURLToPath, URL } from 'node:url'
 
-import vue from '@vitejs/plugin-vue';
-import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
+
+// 保留 fileURLToPath 用于 alias '@' 指向 src
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,7 +14,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   // 本地开发代理
@@ -33,23 +35,8 @@ export default defineConfig({
       },
     }
   },
-  chainWebpack: config => {
-    config.module
-      .rule('svg-icons')
-      .test(/\.svg$/)
-      .include
-      .add(path.resolve(__dirname, 'src/assets/icons'))  // 只处理这个目录下的 SVG 文件
-      .end()
-      .use('url-loader')
-      .loader('url-loader')
-      .options({
-        limit: 4096,
-        name: 'img/[name].[hash:8].[ext]',
-        fallback: 'file-loader'
-      });
-
-    // 修改已存在的 svg 规则，使其不处理特定目录下的 SVG 文件
-    const svgRule = config.module.rule('svg');
-    svgRule.exclude.add(path.resolve(__dirname, 'src/assets/icons'));
-  },
+  // NOTE:
+  // Vite 的配置不支持 chainWebpack（这是 vue-cli/webpack-chain 的 API），放在这里不会生效。
+  // 之前的 svg-icons 规则也依赖 webpack loader（url-loader/file-loader），在 Vite 下同样不会起作用。
+  // 如需 svg sprite/自动注册图标，请引入相应的 Vite 插件（例如 vite-plugin-svg-icons 等）。
 })
