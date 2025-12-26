@@ -6,7 +6,7 @@ import (
 
 // Cache 存储单次请求的上下文信息
 type Cache struct {
-	value interface{}
+	value any
 }
 
 // KVCache 存储多个Cache实例的集合
@@ -17,26 +17,37 @@ type KVCache struct {
 }
 
 // Put 写入
-func (c *KVCache) Put(key string, value interface{}) {
+func (c *KVCache) Put(key string, value any) {
 	c.Lock()
 	defer c.Unlock()
+	if c.Items == nil {
+		c.Items = make(map[string]*Cache)
+	}
+	if item, ok := c.Items[key]; ok && item != nil {
+		item.value = value
+		return
+	}
 	c.Items[key] = &Cache{value: value}
 }
 
 // Get 查询
-func (c *KVCache) Get(key string) interface{} {
+func (c *KVCache) Get(key string) any {
 	c.RLock()
-	defer c.RUnlock()
-	if item, ok := c.Items[key]; ok {
-		return item.value
+	item := c.Items[key]
+	c.RUnlock()
+	if item == nil {
+		return nil
 	}
-	return nil
+	return item.value
 }
 
 // Delete 删除
 func (c *KVCache) Delete(key string) {
 	c.Lock()
 	defer c.Unlock()
+	if c.Items == nil {
+		return
+	}
 	delete(c.Items, key)
 }
 

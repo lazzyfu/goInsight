@@ -103,7 +103,7 @@ func (s *SyntaxInspectService) initDBInspectParams() error {
 	if err != nil {
 		return fmt.Errorf("序列化JSON参数失败: %v", err)
 	}
-	r := bytes.NewReader([]byte(jsonParams))
+	r := bytes.NewReader(jsonParams)
 	decoder := json.NewDecoder(r)
 	// 动态参数赋值给默认模板
 	// 优先级: post instance params > 内置默认参数
@@ -123,14 +123,14 @@ func (s *SyntaxInspectService) parser() error {
 		return fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
 	}
 	if err != nil {
-		return fmt.Errorf("sql解析错误：%s", err.Error())
+		return fmt.Errorf("sql解析错误：%w", err)
 	}
 	return nil
 }
 
 // 判断多条alter语句是否需要合并
 func (s *SyntaxInspectService) mergeAlters(kv *kv.KVCache, mergeAlters []string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: utils.GenerateSimpleRandomString(16), Level: "INFO"}
+	data := ReturnData{FingerId: utils.GenerateSimpleRandomString(16), Level: LevelInfo}
 	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
 	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
 		if ok, val := utils.IsRepeat(mergeAlters); ok {
@@ -140,7 +140,7 @@ func (s *SyntaxInspectService) mergeAlters(kv *kv.KVCache, mergeAlters []string)
 		}
 	}
 	if len(data.Summary) > 0 {
-		data.Level = "WARN"
+		data.Level = LevelWarn
 	}
 	return data
 }
@@ -164,7 +164,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	var mergeAlters []string
 	// 每次请求基于RequestID初始化kv cache
 	kv := kv.NewKVCache(requestID)
-	defer kv.Delete(requestID)
+	defer kv.Clear(requestID)
 	// 获取目标数据库变量
 	dbVars, err := dao.GetDBVars(s.DB)
 	if err != nil {
@@ -180,6 +180,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 		return returnData, err
 	}
 	// 迭代stmt
+	st := Stmt{s}
 	for _, stmt := range s.Audit.TiStmt {
 		// 移除SQL尾部的分号
 		sqlTrim := strings.TrimSuffix(stmt.Text(), ";")
@@ -187,8 +188,6 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 		fingerId := query.Id(query.Fingerprint(sqlTrim))
 		// 存储指纹ID
 		kv.Put(fingerId, true)
-		// 迭代
-		st := Stmt{s}
 		switch stmt.(type) {
 		case *ast.SelectStmt:
 			// select语句不允许审核
