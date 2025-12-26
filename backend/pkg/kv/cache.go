@@ -41,8 +41,8 @@ func (c *KVCache) Get(key string) any {
 	return item.value
 }
 
-// Delete 删除
-func (c *KVCache) Delete(key string) {
+// 清理
+func (c *KVCache) Clear(key string) {
 	c.Lock()
 	defer c.Unlock()
 	if c.Items == nil {
