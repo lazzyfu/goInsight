@@ -9,7 +9,7 @@ import (
 // LogicCreateDatabaseIsExist
 func LogicCreateDatabaseIsExist(v *traverses.TraverseCreateDatabaseIsExist, r *controllers.RuleHint) {
 	if msg, err := dao.CheckIfDatabaseExists(v.Name, r.DB); err == nil {
-		r.Summary = append(r.Summary, msg)
-		r.IsSkipNextStep = true
+		r.Warn("数据库已存在：" + msg)
+		r.IsBreak = true
 	}
 }

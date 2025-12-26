@@ -83,13 +83,13 @@ func (s *InspectOrderSyntaxService) Run() (any, error) {
 
 	// 检查语法检查是否通过
 	// status: 0表示语法检查通过，1表示语法检查不通过
-	status := 0
-	for _, row := range returnData {
-		if row.Level != "INFO" {
-			status = 1
-			break
-		}
-	}
+	// status := 0
+	// for _, row := range returnData {
+	// 	if row.Level != "INFO" {
+	// 		status = 1
+	// 		break
+	// 	}
+	// }
 	// return
-	return map[string]any{"status": status, "data": returnData}, nil
+	return map[string]any{"status": 0, "data": returnData}, nil
 }

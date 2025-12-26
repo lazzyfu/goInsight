@@ -14,6 +14,7 @@ import (
 	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/inspect/config"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/parser"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/process"
@@ -28,12 +29,11 @@ import (
 
 // 返回数据
 type ReturnData struct {
-	Summary      []string `json:"summary"`       // 摘要
-	Level        string   `json:"level"`         // 级别,INFO/WARN/ERROR
-	AffectedRows int      `json:"affected_rows"` // 影响行数
-	Type         string   `json:"type"`          // SQL类型
-	FingerId     string   `json:"finger_id"`     // 指纹
-	Query        string   `json:"query"`         // 原始SQL
+	Summary      []controllers.SummaryItem `json:"summary"`       // 摘要
+	AffectedRows int                       `json:"affected_rows"` // 影响行数
+	Type         string                    `json:"type"`          // SQL类型
+	FingerId     string                    `json:"finger_id"`     // 指纹
+	Query        string                    `json:"query"`         // 原始SQL
 }
 
 // 语法check
@@ -130,17 +130,14 @@ func (s *SyntaxInspectService) parser() error {
 
 // 判断多条alter语句是否需要合并
 func (s *SyntaxInspectService) mergeAlters(kv *kv.KVCache, mergeAlters []string) ReturnData {
-	data := ReturnData{FingerId: utils.GenerateSimpleRandomString(16), Level: LevelInfo}
+	data := ReturnData{FingerId: utils.GenerateSimpleRandomString(16)}
 	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
 	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
 		if ok, val := utils.IsRepeat(mergeAlters); ok {
 			for _, v := range val {
-				data.Summary = append(data.Summary, fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v))
+				data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v)})
 			}
 		}
-	}
-	if len(data.Summary) > 0 {
-		data.Level = LevelWarn
 	}
 	return data
 }
@@ -191,8 +188,8 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 		switch stmt.(type) {
 		case *ast.SelectStmt:
 			// select语句不允许审核
-			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DML", Level: "WARN"}
-			data.Summary = append(data.Summary, "发现SELECT语句，请删除SELECT语句后重新审核")
+			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DML"}
+			data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: "发现SELECT语句，请删除SELECT语句后重新审核"})
 			returnData = append(returnData, data)
 		case *ast.CreateTableStmt:
 			returnData = append(returnData, st.CreateTableStmt(stmt, kv, fingerId))
@@ -214,8 +211,8 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 			returnData = append(returnData, st.CreateDatabaseStmt(stmt, kv, fingerId))
 		default:
 			// 不允许的其他语句，有需求可以扩展
-			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "", Level: "WARN"}
-			data.Summary = append(data.Summary, "未识别或禁止的审核语句，请联系数据库管理员")
+			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: ""}
+			data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: "未识别或禁止的审核语句，请联系数据库管理员"})
 			returnData = append(returnData, data)
 		}
 	}

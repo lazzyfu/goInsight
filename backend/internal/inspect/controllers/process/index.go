@@ -26,7 +26,7 @@ func (i *IndexPrefix) CheckUniquePrefix() error {
 	for _, key := range i.UniqueKeys {
 		if i.InspectParams.CHECK_IDENTIFIER {
 			if ok := utils.IsMatchPattern(utils.NamePattern, key); !ok {
-				return fmt.Errorf("索引`%s`命名不符合要求，仅允许匹配正则`%s`[表`%s`]", key, utils.NamePattern, i.Table)
+				return fmt.Errorf("索引`%s`命名不符合要求，仅允许匹配正则`%s`（表`%s`）", key, utils.NamePattern, i.Table)
 			}
 		}
 		if len(key) == 0 {
@@ -37,7 +37,7 @@ func (i *IndexPrefix) CheckUniquePrefix() error {
 		}
 	}
 	if len(unMatchKeys) > 0 {
-		return fmt.Errorf("唯一索引前缀不符合要求，必须以`%s`开头（不区分大小写）[表`%s`]", i.InspectParams.UNQI_INDEX_PREFIX, i.Table)
+		return fmt.Errorf("唯一索引前缀不符合要求，必须以`%s`开头（不区分大小写）（表`%s`）", i.InspectParams.UNQI_INDEX_PREFIX, i.Table)
 	}
 	return nil
 }
@@ -47,7 +47,7 @@ func (i *IndexPrefix) CheckSecondaryPrefix() error {
 	for _, key := range i.SecondaryKeys {
 		if i.InspectParams.CHECK_IDENTIFIER {
 			if ok := utils.IsMatchPattern(utils.NamePattern, key); !ok {
-				return fmt.Errorf("索引`%s`命名不符合要求，仅允许匹配正则`%s`[表`%s`]", key, utils.NamePattern, i.Table)
+				return fmt.Errorf("索引`%s`命名不符合要求，仅允许匹配正则`%s`（表`%s`）", key, utils.NamePattern, i.Table)
 			}
 		}
 		if len(key) == 0 {
@@ -58,7 +58,7 @@ func (i *IndexPrefix) CheckSecondaryPrefix() error {
 		}
 	}
 	if len(unMatchKeys) > 0 {
-		return fmt.Errorf("二级索引前缀不符合要求，必须以`%s`开头（不区分大小写）[表`%s`]", i.InspectParams.SECONDARY_INDEX_PREFIX, i.Table)
+		return fmt.Errorf("二级索引前缀不符合要求，必须以`%s`开头（不区分大小写）（表`%s`）", i.InspectParams.SECONDARY_INDEX_PREFIX, i.Table)
 	}
 	return nil
 }
@@ -68,7 +68,7 @@ func (i *IndexPrefix) CheckFulltextPrefix() error {
 	for _, key := range i.FulltextKeys {
 		if i.InspectParams.CHECK_IDENTIFIER {
 			if ok := utils.IsMatchPattern(utils.NamePattern, key); !ok {
-				return fmt.Errorf("索引`%s`命名不符合要求，仅允许匹配正则`%s`[表`%s`]", key, utils.NamePattern, i.Table)
+				return fmt.Errorf("索引`%s`命名不符合要求，仅允许匹配正则`%s`（表`%s`）", key, utils.NamePattern, i.Table)
 			}
 		}
 		if len(key) == 0 {
@@ -79,7 +79,7 @@ func (i *IndexPrefix) CheckFulltextPrefix() error {
 		}
 	}
 	if len(unMatchKeys) > 0 {
-		return fmt.Errorf("全文索引前缀不符合要求，必须以`%s`开头（不区分大小写）[表`%s`]", i.InspectParams.FULLTEXT_INDEX_PREFIX, i.Table)
+		return fmt.Errorf("全文索引前缀不符合要求，必须以`%s`开头（不区分大小写）（表`%s`）", i.InspectParams.FULLTEXT_INDEX_PREFIX, i.Table)
 	}
 	return nil
 }
@@ -144,12 +144,12 @@ func (r *RedundantIndex) CheckRepeatCols() error {
 		for _, col := range item.Cols {
 			itemLower := strings.ToLower(col)
 			if !utils.IsContain(r.Cols, itemLower) {
-				return fmt.Errorf("索引`%s`中的列`%s`不存在[表`%s`]", item.Index, itemLower, r.Table)
+				return fmt.Errorf("索引`%s`中的列`%s`不存在（表`%s`）", item.Index, itemLower, r.Table)
 			}
 			if !idxColsDefDup[itemLower] {
 				idxColsDefDup[itemLower] = true
 			} else {
-				return fmt.Errorf("索引`%s`中的列不能重复[表`%s`]", item.Index, r.Table)
+				return fmt.Errorf("索引`%s`中的列不能重复（表`%s`）", item.Index, r.Table)
 			}
 		}
 	}
@@ -317,7 +317,7 @@ func (i *DisabledIndexes) Check() error {
 		for _, item := range i.IndexesCols {
 			for _, col := range item.Cols {
 				if utils.IsContain(i.Cols, col) {
-					return fmt.Errorf("索引名`%s`中的列`%s`不能创建索引[表`%s`]", item.Index, col, i.Table)
+					return fmt.Errorf("索引名`%s`中的列`%s`不能创建索引（表`%s`）", item.Index, col, i.Table)
 				}
 			}
 		}

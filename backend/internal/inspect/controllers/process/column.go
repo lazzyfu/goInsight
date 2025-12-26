@@ -33,7 +33,7 @@ type ColOptions struct {
 // 检查列名长度
 func (c *ColOptions) CheckColumnLength() error {
 	if utf8.RuneCountInString(c.Column) > c.InspectParams.MAX_COLUMN_NAME_LENGTH {
-		return fmt.Errorf("列`%s`命名长度超出限制，最大字符数为%d[表`%s`]", c.Column, c.InspectParams.MAX_COLUMN_NAME_LENGTH, c.Table)
+		return fmt.Errorf("列`%s`命名长度超出限制，最大字符数为%d（表`%s`）", c.Column, c.InspectParams.MAX_COLUMN_NAME_LENGTH, c.Table)
 	}
 	return nil
 }
@@ -42,7 +42,7 @@ func (c *ColOptions) CheckColumnLength() error {
 func (c *ColOptions) CheckColumnIdentifer() error {
 	if c.InspectParams.CHECK_IDENTIFIER {
 		if ok := utils.IsMatchPattern(utils.NamePattern, c.Column); !ok {
-			return fmt.Errorf("列`%s`命名不符合要求，仅允许匹配正则`%s`[表`%s`]", c.Column, utils.NamePattern, c.Table)
+			return fmt.Errorf("列`%s`命名不符合要求，仅允许匹配正则`%s`（表`%s`）", c.Column, utils.NamePattern, c.Table)
 		}
 	}
 	return nil
@@ -52,7 +52,7 @@ func (c *ColOptions) CheckColumnIdentifer() error {
 func (c *ColOptions) CheckColumnIdentiferKeyword() error {
 	if c.InspectParams.CHECK_IDENTIFER_KEYWORD {
 		if _, ok := Keywords[strings.ToUpper(c.Column)]; ok {
-			return fmt.Errorf("列`%s`命名不允许使用关键字[表`%s`]", c.Column, c.Table)
+			return fmt.Errorf("列`%s`命名不允许使用关键字（表`%s`）", c.Column, c.Table)
 		}
 	}
 	return nil
@@ -61,7 +61,7 @@ func (c *ColOptions) CheckColumnIdentiferKeyword() error {
 // 检查列注释
 func (c *ColOptions) CheckColumnComment() error {
 	if c.InspectParams.CHECK_COLUMN_COMMENT && !c.HasComment {
-		return fmt.Errorf("列`%s`必须要有注释[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`必须要有注释（表`%s`）", c.Column, c.Table)
 	}
 	return nil
 }
@@ -69,7 +69,7 @@ func (c *ColOptions) CheckColumnComment() error {
 // char建议转换为varchar
 func (c *ColOptions) CheckColumnCharToVarchar() error {
 	if c.InspectParams.COLUMN_MAX_CHAR_LENGTH < c.Flen && c.Tp == mysql.TypeString {
-		return fmt.Errorf("列`%s`推荐设置为varchar(%d)[表`%s`]", c.Column, c.Flen, c.Table)
+		return fmt.Errorf("列`%s`推荐设置为varchar(%d)（表`%s`）", c.Column, c.Flen, c.Table)
 	}
 	return nil
 }
@@ -77,7 +77,7 @@ func (c *ColOptions) CheckColumnCharToVarchar() error {
 // 最大允许定义的varchar长度
 func (c *ColOptions) CheckColumnMaxVarcharLength() error {
 	if c.InspectParams.MAX_VARCHAR_LENGTH < c.Flen && c.Tp == mysql.TypeVarchar {
-		return fmt.Errorf("列`%s`长度太大（max = %d），当前varchar长度为%d，请使用BLOB或TEXT类型替代[表`%s`]", c.Column, c.InspectParams.MAX_VARCHAR_LENGTH, c.Flen, c.Table)
+		return fmt.Errorf("列`%s`长度太大（max = %d），当前varchar长度为%d，请使用BLOB或TEXT类型替代（表`%s`）", c.Column, c.InspectParams.MAX_VARCHAR_LENGTH, c.Flen, c.Table)
 	}
 	return nil
 }
@@ -86,7 +86,7 @@ func (c *ColOptions) CheckColumnMaxVarcharLength() error {
 func (c *ColOptions) CheckColumnFloatDouble() error {
 	if c.InspectParams.CHECK_COLUMN_FLOAT_DOUBLE {
 		if c.Tp == mysql.TypeFloat || c.Tp == mysql.TypeDouble {
-			return fmt.Errorf("列`%s`的类型为float或double，请使用int/bigint/decimal类型[表`%s`]", c.Column, c.Table)
+			return fmt.Errorf("列`%s`的类型为float或double，请使用int/bigint/decimal类型（表`%s`）", c.Column, c.Table)
 		}
 	}
 	return nil
@@ -95,16 +95,16 @@ func (c *ColOptions) CheckColumnFloatDouble() error {
 // 列不允许定义的类型
 func (c *ColOptions) CheckColumnNotAllowedType() error {
 	if !c.InspectParams.ENABLE_COLUMN_JSON_TYPE && c.Tp == mysql.TypeJSON {
-		return fmt.Errorf("列`%s`不允许定义JSON类型[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`不允许定义JSON类型（表`%s`）", c.Column, c.Table)
 	}
 	if !c.InspectParams.ENABLE_COLUMN_BLOB_TYPE && (c.Tp == mysql.TypeTinyBlob || c.Tp == mysql.TypeMediumBlob || c.Tp == mysql.TypeLongBlob || c.Tp == mysql.TypeBlob) {
-		return fmt.Errorf("列`%s`不允许定义BLOB/TEXT类型[表`%s`]", c.Table, c.Column)
+		return fmt.Errorf("列`%s`不允许定义BLOB/TEXT类型（表`%s`）", c.Table, c.Column)
 	}
 	if !c.InspectParams.ENABLE_COLUMN_TIMESTAMP_TYPE && c.Tp == mysql.TypeTimestamp {
-		return fmt.Errorf("列`%s`不允许定义TIMESTAMP类型[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`不允许定义TIMESTAMP类型（表`%s`）", c.Column, c.Table)
 	}
 	if !c.InspectParams.ENABLE_COLUMN_BIT_TYPE && c.Tp == mysql.TypeBit {
-		return fmt.Errorf("列`%s`不允许定义BIT类型[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`不允许定义BIT类型（表`%s`）", c.Column, c.Table)
 	}
 	return nil
 }
@@ -122,11 +122,11 @@ func (c *ColOptions) CheckColumnNotNull() error {
 	}
 	// 列必须定义NOT NULL
 	if !utils.IsByteContain(allowNULLType, c.Tp) && !c.NotNullFlag {
-		return fmt.Errorf("列`%s`必须定义为`NOT NULL`[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`必须定义为`NOT NULL`（表`%s`）", c.Column, c.Table)
 	}
 	// 不合法的定义`NOT NULL DEFAULT NULL`
 	if c.NotNullFlag && c.HasDefaultValue && c.DefaultIsNull {
-		return fmt.Errorf("列`%s`不能定义`NOT NULL DEFAULT NULL`[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`不能定义`NOT NULL DEFAULT NULL`（表`%s`）", c.Column, c.Table)
 	}
 	return nil
 }
@@ -137,12 +137,12 @@ func (c *ColOptions) CheckColumnDefaultValue() error {
 	cannotSetDefaultValueType := []byte{mysql.TypeBlob, mysql.TypeTinyBlob, mysql.TypeMediumBlob, mysql.TypeLongBlob, mysql.TypeJSON, mysql.TypeGeometry}
 	if utils.IsByteContain(cannotSetDefaultValueType, c.Tp) {
 		if c.HasDefaultValue {
-			return fmt.Errorf("列`%s`不能有一个默认值(BLOB/TEXT/GEOMETRY/JSON类型不能有一个默认值)[表`%s`]", c.Column, c.Table)
+			return fmt.Errorf("列`%s`不能有一个默认值(BLOB/TEXT/GEOMETRY/JSON类型不能有一个默认值)（表`%s`）", c.Column, c.Table)
 		}
 	}
 	// 列需要设置默认值
 	if c.InspectParams.CHECK_COLUMN_DEFAULT_VALUE && !c.HasDefaultValue && !utils.IsByteContain(cannotSetDefaultValueType, c.Tp) {
-		return fmt.Errorf("列`%s`需要设置一个默认值[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`需要设置一个默认值（表`%s`）", c.Column, c.Table)
 	}
 	// 检查默认值(有默认值、且不为NULL)和数据类型是否匹配，Invalid default value
 	if c.HasDefaultValue && !c.DefaultIsNull && !utils.IsByteContain(cannotSetDefaultValueType, c.Tp) {
@@ -157,24 +157,24 @@ func (c *ColOptions) CheckColumnDefaultValue() error {
 				_, intErr := strconv.ParseInt(val, 10, 16)
 				_, floatErr := strconv.ParseFloat(val, 64)
 				if intErr != nil && floatErr != nil {
-					return fmt.Errorf("列`%s`默认值和类型不匹配[表`%s`]", c.Column, c.Table)
+					return fmt.Errorf("列`%s`默认值和类型不匹配（表`%s`）", c.Column, c.Table)
 				}
 			}
 		case mysql.TypeVarchar, mysql.TypeString:
 			var defaultStr string
 			defaultStr, ok := c.DefaultValue.(string)
 			if !ok {
-				return fmt.Errorf("列`%s`的默认值类型应为字符串但获取到其他类型[表`%s`]", c.Column, c.Table)
+				return fmt.Errorf("列`%s`的默认值类型应为字符串但获取到其他类型（表`%s`）", c.Column, c.Table)
 			}
 			// 判断string型默认值的长度是否超过了定义的长度
 			if utf8.RuneCountInString(defaultStr) > c.Flen {
-				return fmt.Errorf("列`%s`的默认值超过了字段类型定义的长度[表`%s`]", c.Column, c.Table)
+				return fmt.Errorf("列`%s`的默认值超过了字段类型定义的长度（表`%s`）", c.Column, c.Table)
 			}
 		}
 	}
 	// 有默认值，配置了无效的默认值，如default current_timestamp
 	if c.HasDefaultValue && !(c.Tp == mysql.TypeTimestamp || c.Tp == mysql.TypeDatetime) && c.DefaultValue == "current_timestamp" {
-		return fmt.Errorf("列`%s`配置了无效的默认值(default current_timestamp)[表`%s`]", c.Column, c.Table)
+		return fmt.Errorf("列`%s`配置了无效的默认值(default current_timestamp)（表`%s`）", c.Column, c.Table)
 	}
 	return nil
 }
@@ -220,15 +220,15 @@ func CheckColsTypeChanged(col ColOptions, vCol ColOptions, InspectParams *config
 		}
 		if utils.IsByteContain(intTp, col.Tp) && utils.IsByteContain(intTp, vCol.Tp) {
 			if bytes.IndexByte(intTp, col.Tp) < bytes.IndexByte(intTp, vCol.Tp) {
-				return fmt.Errorf("列`%s`不允许变更数据类型(%s -> %s)[表`%s`]%s", oriColumn, intMap[vCol.Tp], intMap[col.Tp], table, tidbTips)
+				return fmt.Errorf("列`%s`不允许变更数据类型(%s -> %s)（表`%s`）%s", oriColumn, intMap[vCol.Tp], intMap[col.Tp], table, tidbTips)
 			}
 		} else if utils.IsByteContain(stringTp, col.Tp) && utils.IsByteContain(stringTp, vCol.Tp) {
 			if bytes.IndexByte(stringTp, col.Tp) < bytes.IndexByte(stringTp, vCol.Tp) {
-				return fmt.Errorf("列`%s`不允许变更数据类型(%s -> %s)[表`%s`]%s", oriColumn, stringMap[vCol.Tp], stringMap[col.Tp], table, tidbTips)
+				return fmt.Errorf("列`%s`不允许变更数据类型(%s -> %s)（表`%s`）%s", oriColumn, stringMap[vCol.Tp], stringMap[col.Tp], table, tidbTips)
 			}
 		} else {
 			if col.Tp != vCol.Tp {
-				return fmt.Errorf("列`%s`不允许变更数据类型[表`%s`]", col.Column, table)
+				return fmt.Errorf("列`%s`不允许变更数据类型（表`%s`）", col.Column, table)
 			}
 		}
 		return nil
@@ -248,7 +248,7 @@ func CheckColsTypeChanged(col ColOptions, vCol ColOptions, InspectParams *config
 		if !InspectParams.ENABLE_COLUMN_TYPE_CHANGE_COMPATIBLE {
 			// 禁用兼容模式
 			if col.Tp != vCol.Tp {
-				return fmt.Errorf("列`%s`不允许变更数据类型[表`%s`]", col.Column, table)
+				return fmt.Errorf("列`%s`不允许变更数据类型（表`%s`）", col.Column, table)
 			}
 		}
 	}

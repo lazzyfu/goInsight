@@ -18,7 +18,7 @@ type Stmt struct {
 
 // CreateTableStmt 检查 CreateTable 语句
 func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateTable", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateTable"}
 
 	for _, rule := range rules.CreateTableRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -30,13 +30,18 @@ func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data
@@ -44,7 +49,7 @@ func (s *Stmt) CreateTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 
 // CreateViewStmt 检查 CreateView 语句
 func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateView", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateView"}
 
 	for _, rule := range rules.CreateViewRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -56,13 +61,18 @@ func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data
@@ -70,7 +80,7 @@ func (s *Stmt) CreateViewStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 
 // CreateDatabaseStmt 检查 CreateDatabase 语句
 func (s *Stmt) CreateDatabaseStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateDatabase", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "CreateDatabase"}
 
 	for _, rule := range rules.CreateDatabaseRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -82,13 +92,18 @@ func (s *Stmt) CreateDatabaseStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId st
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data
@@ -96,7 +111,7 @@ func (s *Stmt) CreateDatabaseStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId st
 
 // RenameTableStmt 检查 RenameTable 语句
 func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "RenameTable", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "RenameTable"}
 
 	for _, rule := range rules.RenameTableRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -108,13 +123,17 @@ func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data
@@ -122,7 +141,7 @@ func (s *Stmt) RenameTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId strin
 
 // AnalyzeTableStmt 检查 AnalyzeTable 语句
 func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "AnalyzeTable", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "AnalyzeTable"}
 
 	for _, rule := range rules.AnalyzeTableRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -134,13 +153,18 @@ func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId stri
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data
@@ -148,7 +172,7 @@ func (s *Stmt) AnalyzeTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId stri
 
 // DropTableStmt 检查 DropTable 语句
 func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DropTable", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DropTable"}
 
 	for _, rule := range rules.DropTableRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -160,13 +184,17 @@ func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string)
 		rule.RuleHint = ruleHint
 		rule.CheckFunc(&rule, &stmt)
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data
@@ -174,14 +202,13 @@ func (s *Stmt) DropTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string)
 
 // AlterTableStmt 检查 AlterTable 语句
 func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) (ReturnData, string) {
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "AlterTable", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "AlterTable"}
 	var mergeAlter string
 	// 禁止使用ALTER TABLE...ADD CONSTRAINT...语法
 	tmpCompile := regexp.MustCompile(`(?is:.*alter.*table.*add.*constraint.*)`)
 	match := tmpCompile.MatchString(stmt.Text())
 	if match {
-		data.Level = "WARN"
-		data.Summary = append(data.Summary, "禁止使用ALTER TABLE...ADD CONSTRAINT...语法")
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: "禁止使用ALTER TABLE...ADD CONSTRAINT...语法"})
 		return data, mergeAlter
 	}
 
@@ -196,15 +223,19 @@ func (s *Stmt) AlterTableStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string
 		if len(rule.RuleHint.MergeAlter) > 0 && len(mergeAlter) == 0 {
 			mergeAlter = rule.RuleHint.MergeAlter
 		}
-		if len(rule.RuleHint.Summary) > 0 {
-			// 检查不通过
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
-			// 如果IsSkipNextStep为true，跳过接下来的检查步骤
+
+		if rule.RuleHint.IsBreak {
+			// 如果IsBreak为true，跳过接下来的检查步骤
 			break
 		}
+	}
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 	return data, mergeAlter
 }
@@ -223,7 +254,7 @@ func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) Retur
 			IsSkipAudit = true
 		}
 	*/
-	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DML", Level: "INFO"}
+	var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DML"}
 
 	for _, rule := range rules.DMLRules() {
 		var ruleHint *controllers.RuleHint = &controllers.RuleHint{
@@ -238,13 +269,18 @@ func (s *Stmt) DMLStmt(stmt ast.StmtNode, kv *kv.KVCache, fingerId string) Retur
 		// 当为DML语句时，赋值AffectedRows
 		data.AffectedRows = rule.RuleHint.AffectedRows
 
-		if len(rule.RuleHint.Summary) > 0 {
-			data.Level = "WARN"
-			data.Summary = append(data.Summary, rule.RuleHint.Summary...)
+		if len(ruleHint.Summary) > 0 {
+			data.Summary = append(data.Summary, ruleHint.Summary...)
 		}
-		if rule.RuleHint.IsSkipNextStep {
+
+		if rule.RuleHint.IsBreak {
 			break
 		}
+	}
+
+	// 若无任何规则命中/提示，则注入一条默认通过信息
+	if len(data.Summary) == 0 {
+		data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelInfo, Message: "语句检查通过"})
 	}
 
 	return data

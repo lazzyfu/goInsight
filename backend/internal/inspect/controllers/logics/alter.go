@@ -18,15 +18,15 @@ func LogicAlterTableIsExist(v *traverses.TraverseAlterTableIsExist, r *controlle
 	// 检查表是否存在，如果表不存在，skip下面的检查
 	r.MergeAlter = v.Table
 	if msg, err := dao.CheckIfTableExists(v.Table, r.DB); err != nil {
-		r.Summary = append(r.Summary, msg)
-		r.IsSkipNextStep = true
+		r.Warn(msg)
+		r.IsBreak = true
 	}
 	// 禁止审核指定的表
 	if len(r.InspectParams.DISABLE_AUDIT_DDL_TABLES) > 0 {
 		for _, item := range r.InspectParams.DISABLE_AUDIT_DDL_TABLES {
 			if item.DB == r.DB.Database && utils.IsContain(item.Tables, v.Table) {
-				r.Summary = append(r.Summary, fmt.Sprintf("表`%s`.`%s`被限制进行DDL语法审核，原因：%s", r.DB.Database, v.Table, item.Reason))
-				r.IsSkipNextStep = true
+				r.Warn(fmt.Sprintf("禁止对表`%s`.`%s`进行 DDL 审核：%s", r.DB.Database, v.Table, item.Reason))
+				r.IsBreak = true
 			}
 		}
 	}
@@ -38,7 +38,7 @@ func LogicAlterTableTiDBMerge(v *traverses.TraverseAlterTiDBMerge, r *controller
 	dbVersionIns := process.DbVersion{Version: r.KV.Get("dbVersion").(string)}
 	if !r.InspectParams.ENABLE_TIDB_MERGE_ALTER_TABLE && dbVersionIns.IsTiDB() {
 		if v.SpecsLen > 1 {
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`的多个操作，请拆分为多条ALTER语句(TiDB不支持在单个ALTER TABLE语句中进行多个更改)", v.Table))
+			r.Warn(fmt.Sprintf("表`%s`包含多个 ALTER 操作：TiDB 不支持单条 `ALTER TABLE` 执行多个更改，请拆分执行", v.Table))
 		}
 	}
 }
@@ -53,7 +53,7 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -66,12 +66,12 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 	if len(v.Cols) > 0 {
 		if !r.InspectParams.ENABLE_DROP_COLS {
 			// 不允许drop列
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`不允许DROP列", v.Table))
+			r.Warn(fmt.Sprintf("表`%s`不允许执行 `DROP COLUMN`", v.Table))
 		} else {
 			// 检查drop的列是否存在
 			for _, col := range v.Cols {
 				if !utils.IsContain(vAudit.Cols, col) {
-					r.Summary = append(r.Summary, fmt.Sprintf("表`%s`DROP的列`%s`不存在", v.Table, col))
+					r.Warn(fmt.Sprintf("表`%s`中要 DROP 的列`%s`不存在", v.Table, col))
 				}
 			}
 		}
@@ -79,7 +79,7 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 			// 不允许drop主键
 			for _, pri := range vAudit.PrimaryKeys {
 				if utils.IsContain(v.Cols, pri) {
-					r.Summary = append(r.Summary, fmt.Sprintf("表`%s`不允许DROP主键`%s`", v.Table, pri))
+					r.Warn(fmt.Sprintf("表`%s`不允许 DROP 主键列`%s`", v.Table, pri))
 				}
 			}
 		}
@@ -87,12 +87,12 @@ func LogicAlterTableDropColsOrIndexes(v *traverses.TraverseAlterTableDropColsOrI
 	if len(vAudit.Indexes) > 0 {
 		if !r.InspectParams.ENABLE_DROP_INDEXES {
 			// 不允许drop索引
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`不允许DROP索引", v.Table))
+			r.Warn(fmt.Sprintf("表`%s`不允许执行 `DROP INDEX`", v.Table))
 		} else {
 			// 检查drop的索引是否存在
 			for _, index := range v.Indexes {
 				if !utils.IsContain(vAudit.Indexes, index) {
-					r.Summary = append(r.Summary, fmt.Sprintf("表`%s`DROP的索引`%s`不存在", v.Table, index))
+					r.Warn(fmt.Sprintf("表`%s`中要 DROP 的索引`%s`不存在", v.Table, index))
 				}
 			}
 		}
@@ -114,7 +114,7 @@ func LogicAlterTableDropTiDBColWithCoveredIndex(v *traverses.TraverseAlterTableD
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -128,7 +128,7 @@ func LogicAlterTableDropTiDBColWithCoveredIndex(v *traverses.TraverseAlterTableD
 		for _, item := range vAudit.Redundant.IndexesCols {
 			if len(item.Cols) > 1 {
 				if utils.IsContain(item.Cols, col) {
-					r.Summary = append(r.Summary, fmt.Sprintf("表`%s`DROP列`%s`操作失败，无法删除包含组合索引的列，当前列已经被组合索引%s(%s)覆盖【TiDB目前不支持删除主键列或组合索引相关列，请先删除复合索引`%s`】", v.Table, col, item.Index, strings.Join(item.Cols, ","), item.Index))
+					r.Warn(fmt.Sprintf("表`%s`删除列`%s`失败：该列被复合索引 %s(%s) 覆盖；TiDB 不支持直接删除（请先删除复合索引`%s`）", v.Table, col, item.Index, strings.Join(item.Cols, ","), item.Index))
 				}
 			}
 		}
@@ -155,7 +155,7 @@ func LogicAlterTableOptions(v *traverses.TraverseAlterTableOptions, r *controlle
 	fns := []func() error{v.CheckTableEngine, v.CheckTableComment, v.CheckTableCharset, v.CheckInnoDBRowFormat}
 	for _, fn := range fns {
 		if err := fn(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 }
@@ -171,7 +171,7 @@ func LogicAlterTableColCharset(v *traverses.TraverseAlterTableColCharset, r *con
 	if r.InspectParams.CHECK_COLUMN_CHARSET {
 		if len(v.Cols) > 0 {
 			if err := v.CheckColumn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -187,7 +187,7 @@ func LogicAlterTableAddColAfter(v *traverses.TraverseAlterTableAddColAfter, r *c
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -203,7 +203,7 @@ func LogicAlterTableAddColAfter(v *traverses.TraverseAlterTableAddColAfter, r *c
 	// 检查AFTER的列是否存在
 	for _, pCol := range v.PositionCols {
 		if !utils.IsContain(v.Cols, pCol) {
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`语句中AFTER指定的列`%s`不存在", v.Table, pCol))
+			r.Warn(fmt.Sprintf("表`%s`中 AFTER 指定的列`%s`不存在", v.Table, pCol))
 		}
 	}
 }
@@ -231,7 +231,7 @@ func LogicAlterTableAddColOptions(v *traverses.TraverseAlterTableAddColOptions, 
 		}
 		for _, fn := range fns {
 			if err := fn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -247,7 +247,7 @@ func LogicAlterTableAddPrimaryKey(v *traverses.TraverseAlterTableAddPrimaryKey, 
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -262,7 +262,7 @@ func LogicAlterTableAddPrimaryKey(v *traverses.TraverseAlterTableAddPrimaryKey, 
 		for _, col := range v.Cols {
 			newPrimaryKeys = append(newPrimaryKeys, fmt.Sprintf("`%s`", col))
 		}
-		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`已经存在主键`%s`，增加主键%+s失败", v.Table, strings.Join(vAudit.PrimaryKeys, ","), strings.Join(newPrimaryKeys, ",")))
+		r.Warn(fmt.Sprintf("表`%s`已经存在主键`%s`，增加主键%+s失败", v.Table, strings.Join(vAudit.PrimaryKeys, ","), strings.Join(newPrimaryKeys, ",")))
 	}
 }
 
@@ -277,7 +277,7 @@ func LogicAlterTableAddColRepeatDefine(v *traverses.TraverseAlterTableAddColRepe
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -289,7 +289,7 @@ func LogicAlterTableAddColRepeatDefine(v *traverses.TraverseAlterTableAddColRepe
 	v.Cols = append(v.Cols, vAudit.Cols...)
 
 	if ok, data := utils.IsRepeat(v.Cols); ok {
-		r.Summary = append(r.Summary, fmt.Sprintf("发现重复的列名`%s`[表`%s`]", strings.Join(data, ","), v.Table))
+		r.Warn(fmt.Sprintf("发现重复的列名`%s`（表`%s`）", strings.Join(data, ","), v.Table))
 	}
 }
 
@@ -305,19 +305,19 @@ func LogicAlterTableAddIndexPrefix(v *traverses.TraverseAlterTableAddIndexPrefix
 	indexPrefixCheck.InspectParams = r.InspectParams
 	if r.InspectParams.CHECK_UNIQ_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckUniquePrefix(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 	// 检查二级索引前缀、如二级索引必须以idx_为前缀
 	if r.InspectParams.CHECK_SECONDARY_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckSecondaryPrefix(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 	// 检查全文索引前缀、如全文索引必须以full_为前缀
 	if r.InspectParams.CHECK_FULLTEXT_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckFulltextPrefix(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 }
@@ -332,7 +332,7 @@ func LogicAlterTableAddIndexCount(v *traverses.TraverseAlterTableAddIndexCount, 
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -346,10 +346,10 @@ func LogicAlterTableAddIndexCount(v *traverses.TraverseAlterTableAddIndexCount, 
 	var indexNumberCheck process.IndexNumber = v.Number
 	indexNumberCheck.InspectParams = r.InspectParams
 	if err := indexNumberCheck.CheckSecondaryIndexesNum(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 	if err := indexNumberCheck.CheckPrimaryKeyColsNum(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
@@ -361,7 +361,7 @@ func LogicAlterTableAddConstraint(v *traverses.TraverseAlterTableAddConstraint, 
 	r.MergeAlter = v.Table
 	if !r.InspectParams.ENABLE_FOREIGN_KEY && v.IsForeignKey {
 		// 禁止使用外键
-		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`禁止定义外键", v.Table))
+		r.Warn(fmt.Sprintf("表`%s`禁止定义外键", v.Table))
 	}
 }
 
@@ -375,7 +375,7 @@ func LogicAlterTableAddIndexRepeatDefine(v *traverses.TraverseAlterTableAddIndex
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -386,7 +386,7 @@ func LogicAlterTableAddIndexRepeatDefine(v *traverses.TraverseAlterTableAddIndex
 	}
 	v.Indexes = append(v.Indexes, vAudit.Indexes...)
 	if ok, data := utils.IsRepeat(v.Indexes); ok {
-		r.Summary = append(r.Summary, fmt.Sprintf("发现重复的索引`%s`[表`%s`]", strings.Join(data, ","), v.Table))
+		r.Warn(fmt.Sprintf("发现重复的索引`%s`（表`%s`）", strings.Join(data, ","), v.Table))
 	}
 }
 
@@ -407,7 +407,7 @@ func LogicAlterTableRedundantIndexes(v *traverses.TraverseAlterTableRedundantInd
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -425,13 +425,13 @@ func LogicAlterTableRedundantIndexes(v *traverses.TraverseAlterTableRedundantInd
 	v.Redundant.IndexesCols = append(v.Redundant.IndexesCols, vAudit.Redundant.IndexesCols...)
 	var redundantIndexCheck process.RedundantIndex = v.Redundant
 	if err := redundantIndexCheck.CheckRepeatCols(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 	if err := redundantIndexCheck.CheckRepeatColsWithDiffIndexes(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 	if err := redundantIndexCheck.CheckRedundantColsWithDiffIndexes(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
@@ -445,7 +445,7 @@ func LogicAlterTableDisabledIndexes(v *traverses.TraverseAlterTableDisabledIndex
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -460,7 +460,7 @@ func LogicAlterTableDisabledIndexes(v *traverses.TraverseAlterTableDisabledIndex
 	// BLOB/TEXT类型不能设置为索引
 	var indexTypesCheck process.DisabledIndexes = v.DisabledIndexes
 	if err := indexTypesCheck.Check(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
@@ -474,7 +474,7 @@ func LogicAlterTableModifyColOptions(v *traverses.TraverseAlterTableModifyColOpt
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -490,14 +490,14 @@ func LogicAlterTableModifyColOptions(v *traverses.TraverseAlterTableModifyColOpt
 	// 检查modify的列是否存在
 	for _, col := range v.Cols {
 		if !utils.IsContain(vCols, col.Column) {
-			r.Summary = append(r.Summary, fmt.Sprintf("列`%s`不存在[表`%s`]", col.Column, v.Table))
+			r.Warn(fmt.Sprintf("列`%s`不存在（表`%s`）", col.Column, v.Table))
 		}
 	}
 	// 检查modify的列是否进行列类型变更
 	for _, col := range v.Cols {
 		for _, vCol := range vAudit.Cols {
 			if err := process.CheckColsTypeChanged(col, vCol, r.InspectParams, r.KV, "modify", v.Table); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -514,7 +514,7 @@ func LogicAlterTableModifyColOptions(v *traverses.TraverseAlterTableModifyColOpt
 		}
 		for _, fn := range fns {
 			if err := fn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -522,13 +522,8 @@ func LogicAlterTableModifyColOptions(v *traverses.TraverseAlterTableModifyColOpt
 
 // LogicAlterTableChangeColOptions
 func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOptions, r *controllers.RuleHint) {
-	/*
-		change操作的2种用法
-		修改列的类型信息
-			> ALTER TABLE 【表名字】 CHANGE 【列名称】【列名称】 BIGINT NOT NULL  COMMENT '注释说明'
-		修改列名+修改列类型信息
-			> ALTER TABLE 【表名字】 CHANGE 【列名称】【新列名称】 BIGINT NOT NULL  COMMENT '注释说明'
-	*/
+	// CHANGE 既可以“改列定义”，也可以“改列名 + 改列定义”。
+	// 这里对“改列名”做显式控制：默认不允许（需要打开 ENABLE_COLUMN_CHANGE_COLUMN_NAME）。
 	if v.IsMatch == 0 {
 		return
 	}
@@ -536,7 +531,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -554,20 +549,20 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 		if col.Column != col.OldColumn {
 			// 不允许change列名操作
 			if !r.InspectParams.ENABLE_COLUMN_CHANGE_COLUMN_NAME && len(v.Cols) > 0 {
-				r.Summary = append(r.Summary, fmt.Sprintf("禁止CHANGE修改列名操作(`%s` -> `%s`)[表`%s`]", col.OldColumn, col.Column, v.Table))
+				r.Warn(fmt.Sprintf("表`%s`禁止通过 `CHANGE` 修改列名：`%s` -> `%s`", v.Table, col.OldColumn, col.Column))
 				return
 			}
 			// 允许change列名操作,检查change的列是否存在
 			if !utils.IsContain(vCols, col.OldColumn) {
-				r.Summary = append(r.Summary, fmt.Sprintf("原列`%s`不存在[表`%s`]", col.OldColumn, v.Table))
+				r.Warn(fmt.Sprintf("表`%s`中原列`%s`不存在，无法执行 `CHANGE`", v.Table, col.OldColumn))
 			}
 			if utils.IsContain(vCols, col.Column) {
-				r.Summary = append(r.Summary, fmt.Sprintf("新列`%s`已经存在[表`%s`]", col.Column, v.Table))
+				r.Warn(fmt.Sprintf("表`%s`中新列`%s`已存在，`CHANGE` 可能导致列名冲突", v.Table, col.Column))
 			}
 		} else {
 			// 允许change列名操作,检查change的列是否存在
 			if !utils.IsContain(vCols, col.OldColumn) {
-				r.Summary = append(r.Summary, fmt.Sprintf("原列`%s`不存在[表`%s`]", col.OldColumn, v.Table))
+				r.Warn(fmt.Sprintf("表`%s`中原列`%s`不存在，无法执行 `CHANGE`", v.Table, col.OldColumn))
 			}
 		}
 	}
@@ -577,7 +572,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 		for _, vCol := range vAudit.Cols {
 			if col.OldColumn == vCol.Column {
 				if err := process.CheckColsTypeChanged(col, vCol, r.InspectParams, r.KV, "change", v.Table); err != nil {
-					r.Summary = append(r.Summary, err.Error())
+					r.Warn(err.Error())
 				}
 			}
 		}
@@ -597,7 +592,7 @@ func LogicAlterTableChangeColOptions(v *traverses.TraverseAlterTableChangeColOpt
 		}
 		for _, fn := range fns {
 			if err := fn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -611,7 +606,7 @@ func LogicAlterTableRenameIndex(v *traverses.TraverseAlterTableRenameIndex, r *c
 	r.MergeAlter = v.Table
 
 	if !r.InspectParams.ENABLE_INDEX_RENAME {
-		r.Summary = append(r.Summary, fmt.Sprintf("不允许RENAME INDEX操作[表`%s`]", v.Table))
+		r.Warn(fmt.Sprintf("表`%s`禁止执行 `RENAME INDEX`", v.Table))
 		return
 	}
 	// 判断是否重复定义
@@ -621,15 +616,15 @@ func LogicAlterTableRenameIndex(v *traverses.TraverseAlterTableRenameIndex, r *c
 		newIndexes = append(newIndexes, item.NewIndex)
 	}
 	if ok, data := utils.IsRepeat(oldIndexes); ok {
-		r.Summary = append(r.Summary, fmt.Sprintf("发现操作重复的索引`%s`[表`%s`]", strings.Join(data, ","), v.Table))
+		r.Warn(fmt.Sprintf("表`%s`的 `RENAME INDEX` 操作中发现重复的旧索引名：`%s`", v.Table, strings.Join(data, ",")))
 	}
 	if ok, data := utils.IsRepeat(newIndexes); ok {
-		r.Summary = append(r.Summary, fmt.Sprintf("发现操作重复的索引`%s`[表`%s`]", strings.Join(data, ","), v.Table))
+		r.Warn(fmt.Sprintf("表`%s`的 `RENAME INDEX` 操作中发现重复的新索引名：`%s`", v.Table, strings.Join(data, ",")))
 	}
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -640,21 +635,21 @@ func LogicAlterTableRenameIndex(v *traverses.TraverseAlterTableRenameIndex, r *c
 	}
 	// 判断表是否存在
 	if v.Table != vAudit.Table {
-		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`不存在", v.Table))
+		r.Warn(fmt.Sprintf("表`%s`不存在，无法执行 `RENAME INDEX`", v.Table))
 	}
 	for _, item := range v.Indexes {
 		// 判断old_index_name是否存在
 		if !utils.IsContain(vAudit.Indexes, item.OldIndex) {
-			r.Summary = append(r.Summary, fmt.Sprintf("索引`%s`不存在[表`%s`]", item.OldIndex, v.Table))
+			r.Warn(fmt.Sprintf("表`%s`中旧索引`%s`不存在，无法重命名", v.Table, item.OldIndex))
 		}
 		// 判断new_index_name是否存在
 		if utils.IsContain(vAudit.Indexes, item.NewIndex) {
-			r.Summary = append(r.Summary, fmt.Sprintf("新的索引`%s`已存在[表`%s`]", item.NewIndex, v.Table))
+			r.Warn(fmt.Sprintf("表`%s`中新索引名`%s`已存在，无法重命名为该名称", v.Table, item.NewIndex))
 		}
 		// 检查索引名合法性
 		if r.InspectParams.CHECK_IDENTIFIER {
 			if ok := utils.IsMatchPattern(utils.NamePattern, item.NewIndex); !ok {
-				r.Summary = append(r.Summary, fmt.Sprintf("索引`%s`命名不符合要求，仅允许匹配正则`%s`[表`%s`]", item.NewIndex, utils.NamePattern, v.Table))
+				r.Warn(fmt.Sprintf("表`%s`中索引名`%s`不符合命名规范：仅允许匹配正则`%s`", v.Table, item.NewIndex, utils.NamePattern))
 			}
 		}
 	}
@@ -667,12 +662,12 @@ func LogicAlterTableRenameTblName(v *traverses.TraverseAlterTableRenameTblName, 
 	}
 	r.MergeAlter = v.Table
 	if !r.InspectParams.ENABLE_RENAME_TABLE_NAME {
-		r.Summary = append(r.Summary, fmt.Sprintf("不允许RENAME表名[表`%s`]", v.Table))
+		r.Warn(fmt.Sprintf("表`%s`禁止执行 `RENAME TABLE`", v.Table))
 		return
 	}
 	// 判断新表是否存在
-	if msg, err := dao.CheckIfTableExists(v.NewTblName, r.DB); err == nil {
-		r.Summary = append(r.Summary, msg)
+	if _, err := dao.CheckIfTableExists(v.NewTblName, r.DB); err == nil {
+		r.Warn(fmt.Sprintf("目标表名`%s`已存在，无法将表`%s`重命名为该名称", v.NewTblName, v.Table))
 		return
 	}
 }
@@ -682,7 +677,7 @@ func LogicAlterTableInnodbLargePrefix(v *traverses.TraverseAlterTableInnodbLarge
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.LargePrefix.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -712,7 +707,7 @@ func LogicAlterTableInnodbLargePrefix(v *traverses.TraverseAlterTableInnodbLarge
 
 	var largePrefix process.LargePrefix = tmpLargePrefix
 	if err := largePrefix.Check(r.KV); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
@@ -726,7 +721,7 @@ func LogicAlterTableInnoDBRowSize(v *traverses.TraverseAlterTableInnoDBRowSize, 
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -753,6 +748,6 @@ func LogicAlterTableInnoDBRowSize(v *traverses.TraverseAlterTableInnoDBRowSize, 
 	}
 	var rowSizeTooLarge process.InnoDBRowSize = vAudit.InnoDBRowSize
 	if err := rowSizeTooLarge.Check(r.KV); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
