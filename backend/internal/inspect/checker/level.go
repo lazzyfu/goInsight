@@ -1,7 +1,6 @@
 package checker
 
 const (
-	LevelInfo  = "INFO"
-	LevelWarn  = "WARN"
-	LevelError = "ERROR"
+	LevelInfo = "INFO"
+	LevelWarn = "WARN"
 )

@@ -33,6 +33,5 @@ func (r *RuleHint) AddSummary(level, message string) {
 	r.Summary = append(r.Summary, SummaryItem{Message: message, Level: level})
 }
 
-func (r *RuleHint) Info(message string)  { r.AddSummary("INFO", message) }
-func (r *RuleHint) Warn(message string)  { r.AddSummary("WARN", message) }
-func (r *RuleHint) Error(message string) { r.AddSummary("ERROR", message) }
+func (r *RuleHint) Info(message string) { r.AddSummary("INFO", message) }
+func (r *RuleHint) Warn(message string) { r.AddSummary("WARN", message) }

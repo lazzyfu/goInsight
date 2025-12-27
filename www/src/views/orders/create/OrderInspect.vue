@@ -161,10 +161,10 @@ const render = (res) => {
     return
   }
   if (res?.status === 0) {
-    message.success('✓ 语法检查通过，您可以提交工单了 O(∩_∩)O')
+    message.success('语法检查通过，您可以提交工单了')
   }
   if (res?.status === 1) {
-    message.error('✗ 语法检查未通过，请根据下面提示进行更正 (ㄒoㄒ)')
+    message.error('语法检查未通过，请根据下面提示进行更正')
   }
 
   const tableData = (res?.data || []).map(item => ({

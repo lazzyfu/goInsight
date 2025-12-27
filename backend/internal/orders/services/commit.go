@@ -219,26 +219,33 @@ func (s *CreateOrderService) Run() error {
 	global.App.DB.Table("`insight_db_config`").
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
+
 	// 检查DDL/DML工单语法检查是否通过
 	// 不对EXPORT工单进行语法检查，CheckSqlType已经要求EXPORT工单只能为SELECT语句
 	if s.SQLType != "EXPORT" {
-		return nil
-		// returnData, err := s.inspectSQL(config)
-		// if err != nil {
-		// 	return err
-		// }
-		// // status: 0表示语法检查通过，1表示语法检查不通过
-		// status := 0
-		// for _, row := range returnData {
-		// 	status = 0
-		// 	if row.Level != "INFO" {
-		// 		status = 1
-		// 		break
-		// 	}
-		// }
-		// if status == 1 {
-		// 	return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
-		// }
+		returnData, err := s.inspectSQL(config)
+		if err != nil {
+			return err
+		}
+
+		// 检查语法检查是否通过
+		// status: 0表示语法检查通过，1表示语法检查不通过
+		status := 0
+		for _, row := range returnData {
+			for _, sum := range row.Summary {
+				if sum.Level != "INFO" {
+					status = 1
+					break
+				}
+			}
+			if status == 1 {
+				break
+			}
+		}
+
+		if status == 1 {
+			return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
+		}
 	}
 	// 解析UUID
 	instance_id, err := utils.ParserUUID(s.InstanceID)
