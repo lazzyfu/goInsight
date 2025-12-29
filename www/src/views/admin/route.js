@@ -57,9 +57,19 @@ const route = {
           meta: { title: '实例配置', icon: 'DatabaseOutlined', keepAlive: true },
         },
         {
+          name: `view.admin.instance.inspect`,
+          path: '/admin/instance/:instance_id',
+          component: () => import('./system/instances/InstanceInspectParamsList.vue'),
+          meta: {
+            title: '实例自定义审核参数',
+            keepAlive: true,
+            hidden: true,
+          },
+        },
+        {
           name: `view.admin.inspect`,
           path: '/admin/inspect',
-          component: () => import('./system/inspect/InspectList.vue'),
+          component: () => import('./system/inspect/InspectParamsList.vue'),
           meta: { title: '审核参数', icon: 'CheckCircleOutlined', keepAlive: true },
         },
         {

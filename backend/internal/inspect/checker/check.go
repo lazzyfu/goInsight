@@ -1,7 +1,6 @@
 package checker
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,9 +21,9 @@ import (
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	_ "github.com/pingcap/tidb/pkg/types/parser_driver"
-	"gorm.io/datatypes"
 )
 
 // 返回数据
@@ -39,12 +38,12 @@ type ReturnData struct {
 // 语法check
 type SyntaxInspectService struct {
 	C             *gin.Context
+	InstanceID    uuid.UUID
 	DbUser        string
 	DbPassword    string
 	DbHost        string
 	DbPort        int
 	DBSchema      string
-	DBParams      datatypes.JSON
 	SqlText       string
 	Username      string
 	Charset       string
@@ -67,48 +66,65 @@ func (s *SyntaxInspectService) initDB() {
 
 // 初始化默认审核参数
 func (s *SyntaxInspectService) initDefaultInspectParams() error {
-	// 读取数据库参数
-	var rows []models.InsightInspectParams
-	tx := global.App.DB.Model(&models.InsightInspectParams{}).Scan(&rows)
+	// 读取全局审核参数（insight_global_inspect_params），数据由 bootstrap.initializeInspectParams 初始化
+	var rows []models.InsightGlobalInspectParams
+	tx := global.App.DB.Model(&models.InsightGlobalInspectParams{}).Scan(&rows)
+	if tx.Error != nil {
+		return fmt.Errorf("获取审核参数失败: %v", tx.Error)
+	}
 	if tx.RowsAffected == 0 {
-		return errors.New("获取审核参数失败，表insight_inspect_params未找到记录")
+		return errors.New("获取审核参数失败，表insight_global_inspect_params未找到记录")
 	}
-	// 初始化map存储参数
-	jsonParams := make(map[string]json.RawMessage)
+
+	params := make(map[string]any, len(rows))
 	for _, row := range rows {
-		err := json.Unmarshal(row.Params, &jsonParams)
+		val, err := parseInspectParamTypedValue(row.Key, row.Value, string(row.Type))
 		if err != nil {
-			return fmt.Errorf("解析JSON参数失败: %v，错误参数：%v", err, row)
+			return fmt.Errorf("解析审核参数失败: key=%s value=%s type=%s err=%v", row.Key, row.Value, row.Type, err)
 		}
+		params[row.Key] = val
 	}
-	// 序列化参数
-	jsonData, err := json.Marshal(jsonParams)
+
+	jsonData, err := json.Marshal(params)
 	if err != nil {
 		return fmt.Errorf("序列化JSON参数失败: %v", err)
 	}
-	// 转换为结构体
 	var ips config.InspectParams
-	err = json.Unmarshal(jsonData, &ips)
-	if err != nil {
+	if err := json.Unmarshal(jsonData, &ips); err != nil {
 		return fmt.Errorf("反序列化JSON参数失败: %v", err)
 	}
 	s.InspectParams = ips
 	return nil
 }
 
-// 初始化DB审核参数
+// 初始化实例审核参数
 func (s *SyntaxInspectService) initDBInspectParams() error {
-	// 序列化参数
-	jsonParams, err := json.Marshal(s.DBParams)
-	if err != nil {
-		return fmt.Errorf("序列化JSON参数失败: %v", err)
-	}
-	r := bytes.NewReader(jsonParams)
-	decoder := json.NewDecoder(r)
-	// 动态参数赋值给默认模板
-	// 优先级: post instance params > 内置默认参数
-	if err := decoder.Decode(&s.InspectParams); err != nil {
-		return err
+	// 1) 先从实例表读取审核参数（优先级高于全局默认）
+	if s.InstanceID != uuid.Nil {
+		var rows []models.InsightInstanceInspectParams
+		tx := global.App.DB.Model(&models.InsightInstanceInspectParams{}).
+			Where("instance_id = ?", s.InstanceID).
+			Scan(&rows)
+		if tx.Error != nil {
+			return fmt.Errorf("获取实例审核参数失败: %v", tx.Error)
+		}
+		if tx.RowsAffected > 0 {
+			params := make(map[string]any, len(rows))
+			for _, row := range rows {
+				val, err := parseInspectParamTypedValue(row.Key, row.Value, string(row.Type))
+				if err != nil {
+					return fmt.Errorf("解析实例审核参数失败: key=%s value=%s type=%s err=%v", row.Key, row.Value, row.Type, err)
+				}
+				params[row.Key] = val
+			}
+			b, err := json.Marshal(params)
+			if err != nil {
+				return fmt.Errorf("序列化实例审核参数失败: %v", err)
+			}
+			if err := json.Unmarshal(b, &s.InspectParams); err != nil {
+				return fmt.Errorf("反序列化实例审核参数失败: %v", err)
+			}
+		}
 	}
 	return nil
 }

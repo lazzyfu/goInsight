@@ -80,7 +80,4 @@ type InspectParams struct {
 	DISABLE_REPLACE            bool   // 是否禁用replace语句
 	DISABLE_INSERT_INTO_SELECT bool   // 是否禁用insert/replace into select语法
 	DISABLE_ON_DUPLICATE       bool   // 是否禁止insert on duplicate语法
-	// 禁止语法审核的表
-	DISABLE_AUDIT_DML_TABLES []DisableTablesAudit // 禁止指定的表的DML语句进行审核
-	DISABLE_AUDIT_DDL_TABLES []DisableTablesAudit // 禁止指定的表的DDL语句进行审核
 }

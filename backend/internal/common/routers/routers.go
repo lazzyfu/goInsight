@@ -12,16 +12,20 @@ import (
 func AdminRoutes(v1 *gin.RouterGroup) {
 	admin := v1.Group("/admin")
 	admin.Use(middleware.HasAdminPermission())
-
-	admin.GET("/environment", views.AdminGetEnvironmentView)
+	// 环境
+	admin.GET("/environments", views.AdminGetEnvironmentView)
 	admin.POST("/environment", views.AdminCreateEnvironmentView)
 	admin.PUT("/environment/:id", views.AdminUpdateEnvironmentView)
 	admin.DELETE("/environment/:id", views.AdminDeleteEnvironmentView)
-
-	admin.GET("/dbconfig", views.AdminGetDBConfigView)
-	admin.POST("/dbconfig", views.AdminCreateDBConfigView)
-	admin.PUT("/dbconfig/:id", views.AdminUpdateDBConfigView)
-	admin.DELETE("/dbconfig/:id", views.AdminDeleteDBConfigView)
+	// 实例配置
+	admin.GET("/instances", views.AdminGetInstancesView)
+	admin.POST("/instances", views.AdminCreateInstancesView)
+	admin.PUT("/instances/:id", views.AdminUpdateInstancesView)
+	admin.DELETE("/instances/:id", views.AdminDeleteInstances)
+	admin.GET("/instances/inspect/params", views.AdminGetInstanceInspectParamsView)
+	admin.POST("/instances/inspect/params", views.AdminCreateInstanceInspectParamsView)
+	admin.PUT("/instances/inspect/params/:id", views.AdminUpdateInstanceInspectParamsView)
+	admin.DELETE("/instances/inspect/params/:id", views.AdminDeleteInstanceInspectParamsView)
 }
 
 func Routers(r *gin.Engine) {

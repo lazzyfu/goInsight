@@ -30,7 +30,7 @@
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <InspectFormModal :open="uiState.isModalOpen" title="配置审核参数" v-model:modelValue="formState"
+  <InspectParamsFormModal :open="uiState.isModalOpen" title="配置审核参数" v-model:modelValue="formState"
     @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
 </template>
 
@@ -40,7 +40,7 @@ import { EditOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import InspectFormModal from './InspectFormModal.vue'
+import InspectParamsFormModal from './InspectParamsFormModal.vue'
 
 // 状态
 const uiState = reactive({

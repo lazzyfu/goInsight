@@ -3,21 +3,9 @@ package models
 import (
 	"github.com/google/uuid"
 	"github.com/lazzyfu/goinsight/internal/common/models"
-
-	"gorm.io/datatypes"
 )
 
-// 工单记录
-type InsightInspectParams struct {
-	*models.Model
-	Params datatypes.JSON `gorm:"type:json;null;default:null;comment:语法审核参数" json:"params"`
-	Remark string         `gorm:"type:varchar(256);null;default:null;uiqueIndex:uniq_remark;comment:备注" json:"remark"`
-}
-
-func (InsightInspectParams) TableName() string {
-	return "insight_inspect_params"
-}
-
+// 全局审核参数
 type InsightGlobalInspectParams struct {
 	*models.Model
 	Title string          `gorm:"type:varchar(256);not null;uniqueIndex:uniq_title;comment:审核参数描述" json:"title"`
@@ -30,6 +18,7 @@ func (InsightGlobalInspectParams) TableName() string {
 	return "insight_global_inspect_params"
 }
 
+// 实例审核参数，优先级>全局审核参数
 type InsightInstanceInspectParams struct {
 	*models.Model
 	InstanceID uuid.UUID       `gorm:"type:char(36);uniqueIndex:uniq_instance_key;comment:关联insight_db_config的instance_id" json:"instance_id"`

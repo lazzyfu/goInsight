@@ -51,10 +51,10 @@
 
 <script setup>
 import {
-  createSchemasGrantApi,
-  deleteSchemasGrantApi,
+  createDasSchemasGrantApi,
+  deleteDasSchemasGrantApi,
+  getDasSchemasListGrantApi,
   getEnvironmentsApi,
-  getSchemasListGrantApi,
   getUsersApi,
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
@@ -159,7 +159,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await getSchemasListGrantApi(params).catch(() => { })
+  const res = await getDasSchemasListGrantApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -176,7 +176,7 @@ const handleAdd = () => {
 
 // 提交
 const onSubmit = useThrottleFn(async (data) => {
-  const res = await createSchemasGrantApi(data).catch(() => { })
+  const res = await createDasSchemasGrantApi(data).catch(() => { })
   if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
@@ -186,7 +186,7 @@ const onSubmit = useThrottleFn(async (data) => {
 
 // 删除
 const handleDelete = useThrottleFn(async (record) => {
-  const res = await deleteSchemasGrantApi(record.id).catch(() => { })
+  const res = await deleteDasSchemasGrantApi(record.id).catch(() => { })
   if (res) {
     message.info('操作成功')
     fetchData()

@@ -80,7 +80,7 @@ func initializeMySQLGorm() *gorm.DB {
 		// 初始化用户允许的操作
 		initializeAllowedOperations(db)
 		// 初始化审核参数
-		initializeInspectParams(db)
+		initializeGlobalInspectParams(db)
 		// 初始化系统管理员
 		initializeAdminUser(db)
 		return db
@@ -100,7 +100,6 @@ func initializeTables(db *gorm.DB) {
 		&commonModels.InsightDBConfig{},
 		&commonModels.InsightDBSchemas{},
 		// inspect
-		&inspectModels.InsightInspectParams{},
 		&inspectModels.InsightGlobalInspectParams{},
 		&inspectModels.InsightInstanceInspectParams{},
 		// das
@@ -142,7 +141,7 @@ func initializeAdminUser(db *gorm.DB) {
 
 // 初始化用户允许的操作
 func initializeAllowedOperations(db *gorm.DB) {
-	var ops []map[string]interface{} = []map[string]interface{}{
+	var ops []map[string]any = []map[string]any{
 		{"name": "SELECT", "is_enable": true, "remark": ""},
 		{"name": "UNION", "is_enable": true, "remark": ""},
 		{"name": "Use", "is_enable": true, "remark": ""},
@@ -220,8 +219,8 @@ func initializeAllowedOperations(db *gorm.DB) {
 }
 
 // 初始化审核参数
-func initializeInspectParams(db *gorm.DB) {
-	var params []map[string]interface{} = []map[string]interface{}{
+func initializeGlobalInspectParams(db *gorm.DB) {
+	var params []map[string]any = []map[string]any{
 		// TABLE
 		{"title": "检查表名长度", "Key": "MAX_TABLE_NAME_LENGTH", "Value": "32", "Type": "number"},
 		{"title": "检查表是否有注释", "Key": "CHECK_TABLE_COMMENT", "Value": "true", "Type": "boolean"},
@@ -231,7 +230,7 @@ func initializeInspectParams(db *gorm.DB) {
 		{"title": "是否检查表的字符集和排序规则", "Key": "CHECK_TABLE_CHARSET", "Value": "true", "Type": "boolean"},
 		{"title": "表支持的字符集", "Key": "TABLE_SUPPORT_CHARSET", "Value": "utf8,utf8_general_ci;utf8mb4,utf8mb4_general_ci", "Type": "string"},
 		{"title": "是否检查表的存储引擎", "Key": "CHECK_TABLE_ENGINE", "Value": "true", "Type": "boolean"},
-		{"title": "表支持的存储引擎", "Key": "TABLE_SUPPORT_ENGINE", "Value": "InnoDB", "Type": "string"},
+		{"title": "表支持的存储引擎", "Key": "TABLE_SUPPORT_ENGINE", "Value": "InnoDB,MyISAM", "Type": "string"},
 		{"title": "是否启用分区表", "Key": "ENABLE_PARTITION_TABLE", "Value": "false", "Type": "boolean"},
 		{"title": "检查表是否有主键", "Key": "CHECK_TABLE_PRIMARY_KEY", "Value": "true", "Type": "boolean"},
 		{"title": "表至少要有一列，语法默认支持", "Key": "TABLE_AT_LEAST_ONE_COLUMN", "Value": "true", "Type": "boolean"},
@@ -241,7 +240,7 @@ func initializeInspectParams(db *gorm.DB) {
 		{"title": "是否启用外键", "Key": "ENABLE_FOREIGN_KEY", "Value": "false", "Type": "boolean"},
 		{"title": "检查建表是自增列初始值是否为1", "Key": "CHECK_TABLE_AUTOINCREMENT_INIT_VALUE", "Value": "true", "Type": "boolean"},
 		{"title": "是否支持创建和使用视图", "Key": "ENABLE_CREATE_VIEW", "Value": "true", "Type": "boolean"},
-		{"title": "InnoDB表支持的行格式", "Key": "INNODB_ROW_FORMAT", "Value": "DYNAMIC", "Type": "string"},
+		{"title": "InnoDB表支持的行格式", "Key": "INNODB_ROW_FORMAT", "Value": "DYNAMIC,COMPACT,REDUNDANT", "Type": "string"},
 		// COLUMN
 		{"title": "列名的长度", "Key": "MAX_COLUMN_NAME_LENGTH", "Value": "64", "Type": "number"},
 		{"title": "是否检查列的字符集", "Key": "CHECK_COLUMN_CHARSET", "Value": "true", "Type": "boolean"},
@@ -295,9 +294,6 @@ func initializeInspectParams(db *gorm.DB) {
 		{"title": "是否禁用replace语句", "Key": "DISABLE_REPLACE", "Value": "true", "Type": "boolean"},
 		{"title": "是否禁用insert/replace into select语法", "Key": "DISABLE_INSERT_INTO_SELECT", "Value": "true", "Type": "boolean"},
 		{"title": "是否禁止insert on duplicate语法", "Key": "DISABLE_ON_DUPLICATE", "Value": "true", "Type": "boolean"},
-		// 禁止语法审核的表
-		{"title": "禁止指定的表的DML语句进行审核", "Key": "DISABLE_AUDIT_DML_TABLES", "Value": "d1.t1,d1.t2", "Type": "string"},
-		{"title": "禁止指定的表的DDL语句进行审核", "Key": "DISABLE_AUDIT_DDL_TABLES", "Value": "d1.t1,d1.t2", "Type": "string"},
 	}
 
 	for _, param := range params {

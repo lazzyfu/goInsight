@@ -11,6 +11,7 @@ import (
 
 	"github.com/lazzyfu/goinsight/internal/common/forms"
 	"github.com/lazzyfu/goinsight/internal/common/models"
+	inspectModel "github.com/lazzyfu/goinsight/internal/inspect/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -18,12 +19,12 @@ import (
 	"gorm.io/datatypes"
 )
 
-type AdminGetDBConfigServices struct {
-	*forms.AdminGetDBConfigForm
+type AdminGetInstancesServices struct {
+	*forms.AdminGetInstancesForm
 	C *gin.Context
 }
 
-func (s *AdminGetDBConfigServices) Run() (responseData interface{}, total int64, err error) {
+func (s *AdminGetInstancesServices) Run() (responseData interface{}, total int64, err error) {
 	type DBConfig struct {
 		models.InsightDBConfig
 		EnvironmentName  string `json:"environment_name"`
@@ -75,24 +76,18 @@ func (s *AdminGetDBConfigServices) Run() (responseData interface{}, total int64,
 	return &dbs, total, nil
 }
 
-type AdminCreateDBConfigService struct {
-	*forms.AdminCreateDBConfigForm
+type AdminCreateInstancesService struct {
+	*forms.AdminCreateInstancesForm
 	C *gin.Context
 }
 
-func (s *AdminCreateDBConfigService) Run() error {
+func (s *AdminCreateInstancesService) Run() error {
 	// 组织KEY
 	organizationKey, err := json.Marshal(s.OrganizationKey)
 	if err != nil {
 		return err
 	}
 	organizationKeyJson := datatypes.JSON(organizationKey)
-
-	// 审核参数
-	jsonInspectParams, err := json.Marshal(s.InspectParams)
-	if err != nil {
-		return err
-	}
 	// 加密密码
 	encryptPassword, err := utils.Encrypt(s.Password)
 	if err != nil {
@@ -104,7 +99,6 @@ func (s *AdminCreateDBConfigService) Run() error {
 		Port:             s.Port,
 		User:             s.User,
 		Password:         encryptPassword,
-		InspectParams:    datatypes.JSON(jsonInspectParams),
 		UseType:          s.UseType,
 		DbType:           s.DbType,
 		Environment:      s.Environment,
@@ -127,13 +121,13 @@ func (s *AdminCreateDBConfigService) Run() error {
 	return nil
 }
 
-type AdminUpdateDBConfigService struct {
-	*forms.AdminUpdateDBConfigForm
+type AdminUpdateInstancesService struct {
+	*forms.AdminUpdateInstancesForm
 	C  *gin.Context
 	ID uint64
 }
 
-func (s *AdminUpdateDBConfigService) Run() error {
+func (s *AdminUpdateInstancesService) Run() error {
 	// 组织KEY
 	organizationKey, err := json.Marshal(s.OrganizationKey)
 	if err != nil {
@@ -176,13 +170,93 @@ func (s *AdminUpdateDBConfigService) Run() error {
 	return nil
 }
 
-type AdminDeleteDBConfigService struct {
+type AdminDeleteInstanceConfigsService struct {
 	C  *gin.Context
 	ID uint64
 }
 
-func (s *AdminDeleteDBConfigService) Run() error {
+func (s *AdminDeleteInstanceConfigsService) Run() error {
 	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightDBConfig{})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+type AdminGetInstanceInspectParamsService struct {
+	*forms.AdminGetInstanceInspectParamsForm
+	C *gin.Context
+}
+
+func (s *AdminGetInstanceInspectParamsService) Run() (responseData any, total int64, err error) {
+	var records []inspectModel.InsightInstanceInspectParams
+	tx := global.App.DB.Model(&inspectModel.InsightInstanceInspectParams{}).Where("instance_id=?", s.InstanceID)
+	// 搜索
+	if s.Search != "" {
+		tx = tx.Where("`title` like ? ", "%"+s.Search+"%")
+	}
+	total = pagination.Pager(&s.PaginationQ, tx, &records)
+	return &records, total, nil
+}
+
+type AdminCreateInstanceInspectParamsService struct {
+	*forms.AdminCreateInstanceInspectParamsForm
+	C *gin.Context
+}
+
+func (s *AdminCreateInstanceInspectParamsService) Run() error {
+	instanceID, err := uuid.Parse(s.InstanceID)
+	if err != nil {
+		return fmt.Errorf("invalid instance_id: %w", err)
+	}
+
+	// 新增记录
+	db := inspectModel.InsightInstanceInspectParams{
+		Title:      s.Title,
+		Type:       models.EnumType(s.Type),
+		Key:        s.Key,
+		Value:      s.Value,
+		InstanceID: instanceID,
+	}
+	tx := global.App.DB.Model(&inspectModel.InsightInstanceInspectParams{})
+	result := tx.Create(&db)
+
+	if result.Error != nil {
+		mysqlErr := result.Error.(*mysql.MySQLError)
+		switch mysqlErr.Number {
+		case 1062:
+			return fmt.Errorf("实例审核参数`%s`已存在", s.Key)
+		}
+		return result.Error
+	}
+	return nil
+}
+
+type AdminUpdateInstanceInspectParamsService struct {
+	*forms.AdminUpdateInstanceInspectParamsForm
+	C  *gin.Context
+	ID uint64
+}
+
+func (s *AdminUpdateInstanceInspectParamsService) Run() error {
+	// 只修改value
+	tx := global.App.DB.Model(&inspectModel.InsightInstanceInspectParams{}).Where("id=? and instance_id=? and `key`=?", s.ID, s.InstanceID, s.Key)
+	result := tx.Updates(map[string]any{
+		"value": s.Value,
+	})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+type AdminDeleteInstanceInspectParamsService struct {
+	C  *gin.Context
+	ID uint64
+}
+
+func (s *AdminDeleteInstanceInspectParamsService) Run() error {
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&inspectModel.InsightInstanceInspectParams{})
 	if tx.Error != nil {
 		return tx.Error
 	}

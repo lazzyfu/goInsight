@@ -80,31 +80,6 @@ func TestRuleDML(t *testing.T) {
 		wantRes []ReturnData
 	}{
 		{
-			name: "限制部分表进行语法审核",
-			form: forms.SyntaxAuditForm{
-				CustomAuditParams: map[string]interface{}{
-					"DISABLE_AUDIT_DML_TABLES": []config.DisableTablesAudit{
-						{
-							DB:     "test",
-							Tables: []string{"test_case"},
-							Reason: "研发禁止审核和提交",
-						},
-					},
-				},
-				SqlText: "delete from test_case where id > 1",
-			},
-			wantRes: []ReturnData{
-				{
-					Summary:      []string{"表`test`.`test_case`被限制进行DML语法审核,原因: 研发禁止审核和提交"},
-					Level:        "WARN",
-					AffectedRows: 0,
-					Type:         "DML",
-					FingerId:     "D3A87C5D8BFAE066",
-					Query:        "delete from test_case where id > 1",
-				},
-			},
-		},
-		{
 			name: "检查表是否存在",
 			form: forms.SyntaxAuditForm{
 				CustomAuditParams: map[string]interface{}{},

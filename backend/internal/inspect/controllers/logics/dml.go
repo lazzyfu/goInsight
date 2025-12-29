@@ -12,28 +12,6 @@ import (
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 )
 
-// LogicDisableAuditDMLTables
-func LogicDisableAuditDMLTables(v *traverses.TraverseDisableAuditDMLTables, r *controllers.RuleHint) {
-	// 禁止审核指定表：命中名单后直接拦截（常用于高风险核心表）。
-	if len(r.InspectParams.DISABLE_AUDIT_DML_TABLES) > 0 {
-		for _, item := range r.InspectParams.DISABLE_AUDIT_DML_TABLES {
-			for _, table := range v.Tables {
-				if item.DB == r.DB.Database && utils.IsContain(item.Tables, table) {
-					r.Warn(fmt.Sprintf("禁止对表`%s`.`%s`执行 DML 审核：%s", r.DB.Database, table, item.Reason))
-					r.IsBreak = true
-				}
-			}
-		}
-	}
-	// DML 前置校验：目标表必须存在。
-	for _, table := range v.Tables {
-		if msg, err := dao.CheckIfTableExists(table, r.DB); err != nil {
-			r.Warn(msg)
-			r.IsBreak = true
-		}
-	}
-}
-
 // LogicDMLInsertIntoSelect
 func LogicDMLInsertIntoSelect(v *traverses.TraverseDMLInsertIntoSelect, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {

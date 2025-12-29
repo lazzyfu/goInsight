@@ -2,35 +2,33 @@
   <a-card title="数据库实例管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
-      <a-button type="primary" @click="handleAdd"> <PlusOutlined />新增数据库实例 </a-button>
+      <a-button type="primary" @click="handleAdd">
+        <PlusOutlined />新增数据库实例
+      </a-button>
     </template>
 
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="搜索实例..."
-        style="width: 350px"
-        @search="handleSearch"
-      />
+      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索实例..." style="width: 350px"
+        @search="handleSearch" />
     </div>
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.id"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-        :scroll="{ x: 1100 }"
-      >
+      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.id"
+        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
+        :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'inspect_params'">
-            <pre>{{ JSON.stringify(record.inspect_params, null, 2) }}</pre>
+          <template v-if="column.key === 'remark'">
+            <router-link :to="{
+              name: 'view.admin.instance.inspect',
+              params: {
+                instance_id: record.instance_id,
+              },
+            }">
+              {{ record.remark }}
+            </router-link>
           </template>
           <template v-if="column.key === 'action'">
             <a-dropdown>
@@ -38,16 +36,15 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item key="1">
-                    <a @click="handleEdit(record)"> <EditOutlined /> 编辑 </a>
+                    <a @click="handleEdit(record)">
+                      <EditOutlined /> 编辑
+                    </a>
                   </a-menu-item>
                   <a-menu-item key="2">
-                    <a-popconfirm
-                      title="确认删除吗？"
-                      ok-text="是"
-                      cancel-text="否"
-                      @confirm="handleDelete(record)"
-                    >
-                      <a> <DeleteOutlined /> 删除 </a>
+                    <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
+                      <a>
+                        <DeleteOutlined /> 删除
+                      </a>
                     </a-popconfirm>
                   </a-menu-item>
                 </a-menu>
@@ -55,41 +52,35 @@
             </a-dropdown>
           </template>
         </template>
-        <template #expandedRowRender="{ record }">
-          <p style="margin: 0">
-            <highlightjs language="json" :code="JSON.stringify(record.inspect_params, null, 2)" />
-          </p>
-        </template>
       </a-table>
     </div>
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <InstanceFormModal
-    :open="uiState.isModalOpen"
-    v-model:modelValue="formState"
-    :environments="uiData.environments"
-    :organizations="uiData.organizations"
-    :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
-    @update:open="uiState.isModalOpen = $event"
-    @submit="onSubmit"
-  />
+  <InstanceFormModal :open="uiState.isModalOpen" v-model:modelValue="formState" :environments="uiData.environments"
+    :organizations="uiData.organizations" :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
+    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
 </template>
 
 <script setup>
 import {
-  createDBConfigApi,
-  deleteDBConfigApi,
-  getDBConfigApi,
+  createInstancesApi,
+  deleteInstancesApi,
   getEnvironmentsApi,
+  getInstancesApi,
   getOrganizationsApi,
-  updateDBConfigApi,
+  updateInstancesApi,
 } from '@/api/admin'
 import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import InstanceFormModal from './InstanceFormModal.vue'
+
+// 路由参数
+const route = useRoute()
+const routeParams = route.params
 
 // 状态
 const uiState = reactive({
@@ -170,7 +161,6 @@ const defaultForm = {
   port: 3306,
   user: '',
   password: '',
-  inspect_params: '{}',
   remark: '',
 }
 const formState = ref({ ...defaultForm })
@@ -207,7 +197,7 @@ const fetchData = async () => {
     is_page: true,
     search: uiData.searchValue,
   }
-  const res = await getDBConfigApi(params).catch(() => {})
+  const res = await getInstancesApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -232,7 +222,6 @@ const handleEdit = (record) => {
 
   formState.value = {
     ...record,
-    inspect_params: JSON.stringify(record.inspect_params || {}, null, 2), // 仅修改 formState，原 record 保持 Object
   }
 
   // 在打开 Modal 之前加载数据
@@ -243,14 +232,9 @@ const handleEdit = (record) => {
 
 // 提交（新增或编辑）
 const onSubmit = useThrottleFn(async (data) => {
-  // 将 inspect_params 转换为 JSON 对象
-  const payload = {
-    ...data,
-    inspect_params: JSON.parse(data.inspect_params),
-  }
   const res = uiState.isEditMode
-    ? await updateDBConfigApi(payload).catch(() => {})
-    : await createDBConfigApi(payload).catch(() => {})
+    ? await updateInstancesApi(payload).catch(() => { })
+    : await createInstancesApi(payload).catch(() => { })
   if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
@@ -260,7 +244,7 @@ const onSubmit = useThrottleFn(async (data) => {
 
 // 删除
 const handleDelete = useThrottleFn(async (record) => {
-  const res = await deleteDBConfigApi(record.id).catch(() => {})
+  const res = await deleteInstancesApi(record.id).catch(() => { })
   if (res) {
     message.info('操作成功')
     fetchData()
@@ -269,13 +253,13 @@ const handleDelete = useThrottleFn(async (record) => {
 
 // 获取环境
 const getEnvironments = async () => {
-  const res = await getEnvironmentsApi().catch(() => {})
+  const res = await getEnvironmentsApi().catch(() => { })
   uiData.environments = res?.data || []
 }
 
 // 获取组织
 const getOrganizations = async () => {
-  const res = await getOrganizationsApi().catch(() => {})
+  const res = await getOrganizationsApi().catch(() => { })
   uiData.organizations = res?.data || []
 }
 

@@ -42,11 +42,11 @@ func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightD
 	}
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
+		InstanceID: instanceCfg.InstanceID,
 		DbUser:     instanceCfg.User,
 		DbPassword: plainPassword,
 		DbHost:     instanceCfg.Hostname,
 		DbPort:     instanceCfg.Port,
-		DBParams:   instanceCfg.InspectParams,
 		DBSchema:   s.Schema,
 		Username:   s.Username,
 		SqlText:    s.Content,

@@ -21,15 +21,6 @@ func LogicAlterTableIsExist(v *traverses.TraverseAlterTableIsExist, r *controlle
 		r.Warn(msg)
 		r.IsBreak = true
 	}
-	// 禁止审核指定的表
-	if len(r.InspectParams.DISABLE_AUDIT_DDL_TABLES) > 0 {
-		for _, item := range r.InspectParams.DISABLE_AUDIT_DDL_TABLES {
-			if item.DB == r.DB.Database && utils.IsContain(item.Tables, v.Table) {
-				r.Warn(fmt.Sprintf("禁止对表`%s`.`%s`进行 DDL 审核：%s", r.DB.Database, v.Table, item.Reason))
-				r.IsBreak = true
-			}
-		}
-	}
 }
 
 // LogicAlterTableTiDBMerge
