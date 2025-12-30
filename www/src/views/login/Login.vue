@@ -69,6 +69,8 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'UserLogin' })
+
 import { Login } from '@/api/login'
 import { useUserStore } from '@/store/user'
 import { LockOutlined, SafetyOutlined, UserOutlined } from '@ant-design/icons-vue'
@@ -115,7 +117,7 @@ watch(
 const onSubmit = async () => {
   try {
     uiState.loading = true
-    const res = await Login(formState).catch((err) => {})
+    const res = await Login(formState).catch(() => {})
 
     if (res?.code === '0000') {
       // 登录成功

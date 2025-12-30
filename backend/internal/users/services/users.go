@@ -43,13 +43,13 @@ func (s *GetUsersServices) Run() (responseData interface{}, total int64, err err
 								ia.name ASC SEPARATOR '/'
 						) AS concatenated_names
 					FROM
-						insight_organizations ia
+						insight_orgs ia
 					WHERE
 						EXISTS (
 							SELECT
 								1
 							FROM
-								insight_organizations
+								insight_orgs
 							WHERE
 								JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
 						)
@@ -59,8 +59,8 @@ func (s *GetUsersServices) Run() (responseData interface{}, total int64, err err
 			),
 			c.name
 		) as organization`).
-		Joins("left join insight_organizations_users b on a.uid=b.uid").
-		Joins("left join insight_organizations c on b.organization_key=c.key").
+		Joins("left join insight_org_users b on a.uid=b.uid").
+		Joins("left join insight_orgs c on b.organization_key=c.key").
 		Joins("left join insight_roles d on d.id=a.role_id")
 	// 搜索
 	if s.Search != "" {

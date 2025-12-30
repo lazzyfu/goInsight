@@ -37,7 +37,7 @@ type InsightOrderRecords struct {
 	Approver         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单审核人" json:"approver"`
 	Reviewer         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单复核人" json:"reviewer"`
 	CC               datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单抄送人" json:"cc"`
-	InstanceID       uuid.UUID       `gorm:"type:char(36);comment:关联insight_db_config的instance_id;index" json:"instance_id"`
+	InstanceID       uuid.UUID       `gorm:"type:char(36);comment:关联insight_instances的instance_id;index" json:"instance_id"`
 	Schema           string          `gorm:"type:varchar(128);not null;default:'';comment:库名" json:"schema"`
 	Stage            int             `gorm:"type:tinyint(1);not null;default:1;comment:审批阶段" json:"stage"`
 	Progress         models.EnumType `gorm:"type:ENUM('PENDING','APPROVED','REJECTED','CLAIMED','EXECUTING','COMPLETED', 'FAILED','REVIEWED','REVOKED');default:'PENDING';comment:工单进度" json:"progress"`
@@ -51,26 +51,26 @@ func (InsightOrderRecords) TableName() string {
 }
 
 // 审批流
-type InsightApprovalFlow struct {
+type InsightApprovalFlows struct {
 	*models.Model
 	ApprovalID uuid.UUID      `gorm:"type:char(36);comment:审批流ID;uniqueIndex:uniq_approval_id" json:"approval_id"`
 	Name       string         `gorm:"type:varchar(64);not null;default:'';comment:审批流名称" json:"name"`
 	Definition datatypes.JSON `json:"definition"` // [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND", "stage_name": '部门审批'}]
 }
 
-func (InsightApprovalFlow) TableName() string {
+func (InsightApprovalFlows) TableName() string {
 	return "insight_approval_flow"
 }
 
 // 审批流和用户映射表，每个用户只能在一个审批流里面
-type InsightApprovalMaps struct {
+type InsightApprovalFlowUsers struct {
 	*models.Model
 	Username   string    `gorm:"type:varchar(32);not null;uniqueIndex:uniq_username;comment:用户名" json:"username"`
 	ApprovalID uuid.UUID `gorm:"type:char(36);comment:审批流ID;index:idx_approval_id" json:"approval_id"`
 }
 
-func (InsightApprovalMaps) TableName() string {
-	return "insight_approval_maps"
+func (InsightApprovalFlowUsers) TableName() string {
+	return "insight_approval_flow_users"
 }
 
 // 审批记录

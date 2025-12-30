@@ -60,9 +60,9 @@ func (s *GetUserGrantsService) Run() (*map[string]interface{}, error) {
 		Tables string
 	}
 	var grantResult result
-	global.App.DB.Table("insight_das_user_schema_permissions s").
+	global.App.DB.Table("insight_das_schema_perms s").
 		Select("s.`schema`, group_concat(concat(t.`table`,':',t.rule)) as tables").
-		Joins("left join insight_das_user_table_permissions t on s.`schema` = t.`schema` and s.`instance_id` = t.`instance_id`").
+		Joins("left join insight_das_table_perms t on s.`schema` = t.`schema` and s.`instance_id` = t.`instance_id`").
 		Where("t.username=? and s.instance_id=? and s.`schema`=?", s.Username, s.InstanceID, s.Schema).
 		Group("s.`schema`").
 		Scan(&grantResult)

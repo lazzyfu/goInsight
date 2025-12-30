@@ -62,10 +62,10 @@
 
 <script setup>
 import {
-  GetPermittedTablesBySchemaApi,
-  GetSchemaTablesApi,
-  GetSchemasApi,
-  GetTableInfoApi,
+    GetPermittedTablesBySchemaApi,
+    GetSchemaTablesApi,
+    GetSchemasApi,
+    GetTableInfoApi,
 } from '@/api/das'
 import { TabletTwoTone } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
@@ -244,20 +244,20 @@ const getTableMeta = async (type) => {
   const res = await GetTableInfoApi(params).catch(() => {})
   if (res) {
     if (type === 'structure') {
-      res.data.forEach((element) => {
-        for (const i in element) {
+      res.data.forEach((row) => {
+        for (const i in row) {
           if (i.toLowerCase() === 'create table' || i.toLowerCase() === 'statement') {
-            uiData.tableInfo = element[i]
+            uiData.tableInfo = row[i]
           }
         }
       })
     }
     if (type === 'base') {
-      res.data.forEach((element) => {
+      res.data.forEach(() => {
         var tableBase = []
-        res.data.forEach((element) => {
-          for (var key in element) {
-            tableBase.push(`${key}  ${element[key]}`)
+        res.data.forEach((row) => {
+          for (var key in row) {
+            tableBase.push(`${key}  ${row[key]}`)
           }
         })
         uiData.tableInfo = tableBase.join('\n')

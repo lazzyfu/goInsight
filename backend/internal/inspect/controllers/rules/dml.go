@@ -1,7 +1,6 @@
 package rules
 
 import (
-	"github.com/lazzyfu/goinsight/internal/inspect/controllers/extract"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/logics"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 
@@ -10,10 +9,6 @@ import (
 
 func DMLRules() []Rule {
 	return []Rule{
-		{
-			Hint:      "DML#限制部分表进行语法审核",
-			CheckFunc: (*Rule).RuleDisableAuditDMLTables,
-		},
 		{
 			Hint:      "DML#是否允许INSERT INTO SELECT语法",
 			CheckFunc: (*Rule).RuleDMLInsertIntoSelect,
@@ -43,13 +38,6 @@ func DMLRules() []Rule {
 			CheckFunc: (*Rule).RuleDMLMaxInsertRows,
 		},
 	}
-}
-
-// RuleDisableAuditDMLTables
-func (r *Rule) RuleDisableAuditDMLTables(tistmt *ast.StmtNode) {
-	v := &traverses.TraverseDisableAuditDMLTables{}
-	v.Tables, _ = extract.ExtractTablesFromStatement(tistmt)
-	logics.LogicDisableAuditDMLTables(v, r.RuleHint)
 }
 
 // RuleDMLInsertIntoSelect

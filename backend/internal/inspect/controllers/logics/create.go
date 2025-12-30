@@ -14,20 +14,20 @@ import (
 
 // LogicCreateTableIsExist
 func LogicCreateTableIsExist(v *traverses.TraverseCreateTableIsExist, r *controllers.RuleHint) {
-	// 检查表是否存在,如果表存在,skip下面的检查
+	// 建表前置校验：表已存在时，本次 CREATE 会失败，直接终止后续规则检查。
 	if msg, err := dao.CheckIfTableExists(v.Table, r.DB); err == nil {
-		r.Summary = append(r.Summary, msg)
-		r.IsSkipNextStep = true
+		r.Warn(msg)
+		r.IsBreak = true
 	}
 }
 
 // LogicCreateTableAs
 func LogicCreateTableAs(v *traverses.TraverseCreateTableAs, r *controllers.RuleHint) {
 	if v.IsCreateAs {
-		// 不深入检查AS后面的语法
+		// `CREATE TABLE ... AS SELECT ...`：通常会绕过字段/索引/约束等细粒度规范，默认需要显式放开。
 		if !r.InspectParams.ENABLE_CREATE_TABLE_AS {
-			r.Summary = append(r.Summary, fmt.Sprintf("不允许使用create table as语法[表`%s`]", v.Table))
-			r.IsSkipNextStep = true
+			r.Warn(fmt.Sprintf("禁止使用 `CREATE TABLE ... AS SELECT ...`（表`%s`）", v.Table))
+			r.IsBreak = true
 		}
 	}
 }
@@ -36,8 +36,8 @@ func LogicCreateTableAs(v *traverses.TraverseCreateTableAs, r *controllers.RuleH
 func LogicCreateTableLike(v *traverses.TraverseCreateTableLike, r *controllers.RuleHint) {
 	if v.IsCreateLike {
 		if !r.InspectParams.ENABLE_CREATE_TABLE_LIKE {
-			r.Summary = append(r.Summary, fmt.Sprintf("不允许使用create table like语法[表`%s`]", v.Table))
-			r.IsSkipNextStep = true
+			r.Warn(fmt.Sprintf("禁止使用 `CREATE TABLE ... LIKE ...`（表`%s`）", v.Table))
+			r.IsBreak = true
 		}
 	}
 }
@@ -58,23 +58,23 @@ func LogicCreateTableOptions(v *traverses.TraverseCreateTableOptions, r *control
 	}
 	for _, fn := range fns {
 		if err := fn(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 }
 
 // LogicCreateTablePrimaryKey
 func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *controllers.RuleHint) {
-	// 必须定义主键
+	// 主键规则：没有主键会导致 UPDATE/DELETE 定位困难、复制/分库分表不友好。
 	if r.InspectParams.CHECK_TABLE_PRIMARY_KEY {
 		if len(v.PrimaryKeys) == 0 {
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`必须定义主键", v.Table))
+			r.Warn(fmt.Sprintf("表`%s`必须定义主键（建议使用 BIGINT UNSIGNED NOT NULL AUTO_INCREMENT）", v.Table))
 		}
 		if len(v.PrimaryKeys) > 1 {
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`有且只能定义一个主键", v.Table))
+			r.Warn(fmt.Sprintf("表`%s`主键定义异常：只能定义一个主键", v.Table))
 		}
 	}
-	// 检查主键是否为bigint类型
+	// 检查主键列的类型/属性是否符合规范。
 	for _, item := range v.PrimaryKeys {
 		var p process.PrimaryKey = item
 		p.InspectParams = r.InspectParams
@@ -86,7 +86,7 @@ func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *c
 		}
 		for _, fn := range fns {
 			if err := fn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -95,17 +95,16 @@ func LogicCreateTablePrimaryKey(v *traverses.TraverseCreateTablePrimaryKey, r *c
 // LogicCreateTableConstraint
 func LogicCreateTableConstraint(v *traverses.TraverseCreateTableConstraint, r *controllers.RuleHint) {
 	if !r.InspectParams.ENABLE_FOREIGN_KEY && v.IsForeignKey {
-		// 禁止使用外键
-		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`禁止定义外键", v.Table))
+		// 外键会带来额外的锁/性能开销与跨系统耦合，默认不允许。
+		r.Warn(fmt.Sprintf("表`%s`禁止定义外键", v.Table))
 	}
 }
 
 // LogicCreateTableAuditCols
 func LogicCreateTableAuditCols(v *traverses.TraverseCreateTableAuditCols, r *controllers.RuleHint) {
 	if r.InspectParams.CHECK_TABLE_AUDIT_TYPE_COLUMNS {
-		// 启用审计类型的字段, 必须定义2个审计字段, 字段名和注释名不做要求, 如:
-		// `UPDATED_AT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-		// `CREATED_AT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+		// 审计字段：建议至少包含“创建时间/更新时间”两类字段。
+		// 这里不强制字段名，但会检查是否具备典型的默认值/自动更新时间语义。
 		var colsOptionsArray []string
 		for _, item := range v.AuditCols {
 			for _, value := range item {
@@ -113,10 +112,10 @@ func LogicCreateTableAuditCols(v *traverses.TraverseCreateTableAuditCols, r *con
 			}
 		}
 		if !utils.IsContain(colsOptionsArray, "DEFAULT CURRENT_TIMESTAMP") {
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`未定义字段类型为%s的审计字段【例如：CREATED_AT datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'】", v.Table, "DEFAULT CURRENT_TIMESTAMP"))
+			r.Warn(fmt.Sprintf("表`%s`缺少创建时间类审计字段：建议包含 `DEFAULT CURRENT_TIMESTAMP`（如 `created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP`）", v.Table))
 		}
 		if !utils.IsContain(colsOptionsArray, "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP") {
-			r.Summary = append(r.Summary, fmt.Sprintf("表`%s`未定义字段类型为%s的审计字段【例如：UPDATED_AT datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'】", v.Table, "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
+			r.Warn(fmt.Sprintf("表`%s`缺少更新时间类审计字段：建议包含 `DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`（如 `updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`）", v.Table))
 		}
 	}
 }
@@ -139,7 +138,7 @@ func LogicCreateTableColsOptions(v *traverses.TraverseCreateTableColsOptions, r 
 		}
 		for _, fn := range fns {
 			if err := fn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -147,9 +146,9 @@ func LogicCreateTableColsOptions(v *traverses.TraverseCreateTableColsOptions, r 
 
 // LogicCreateTableColsRepeatDefine
 func LogicCreateTableColsRepeatDefine(v *traverses.TraverseCreateTableColsRepeatDefine, r *controllers.RuleHint) {
-	// 查找重复的列名
+	// 列名重复通常意味着建表语句拷贝/合并出错。
 	if ok, data := utils.IsRepeat(v.Cols); ok {
-		r.Summary = append(r.Summary, fmt.Sprintf("发现重复的列名`%s`[表`%s`]", strings.Join(data, ","), v.Table))
+		r.Warn(fmt.Sprintf("表`%s`存在重复列名：`%s`", v.Table, strings.Join(data, ",")))
 	}
 }
 
@@ -159,7 +158,7 @@ func LogicCreateTableColsCharset(v *traverses.TraverseCreateTableColsCharset, r 
 	if r.InspectParams.CHECK_COLUMN_CHARSET {
 		if len(v.Cols) > 0 {
 			if err := v.CheckColumn(); err != nil {
-				r.Summary = append(r.Summary, err.Error())
+				r.Warn(err.Error())
 			}
 		}
 	}
@@ -172,19 +171,19 @@ func LogicCreateTableIndexesPrefix(v *traverses.TraverseCreateTableIndexesPrefix
 	indexPrefixCheck.InspectParams = r.InspectParams
 	if r.InspectParams.CHECK_UNIQ_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckUniquePrefix(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 	// 检查二级索引前缀、如二级索引必须以idx_为前缀
 	if r.InspectParams.CHECK_SECONDARY_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckSecondaryPrefix(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 	// 检查全文索引前缀、如全文索引必须以full_为前缀
 	if r.InspectParams.CHECK_FULLTEXT_INDEX_PREFIX {
 		if err := indexPrefixCheck.CheckFulltextPrefix(); err != nil {
-			r.Summary = append(r.Summary, err.Error())
+			r.Warn(err.Error())
 		}
 	}
 }
@@ -195,18 +194,18 @@ func LogicCreateTableIndexesCount(v *traverses.TraverseCreateTableIndexesCount, 
 	var indexNumberCheck process.IndexNumber = v.Number
 	indexNumberCheck.InspectParams = r.InspectParams
 	if err := indexNumberCheck.CheckSecondaryIndexesNum(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 	if err := indexNumberCheck.CheckPrimaryKeyColsNum(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
 // LogicCreateTableIndexesRepeatDefine
 func LogicCreateTableIndexesRepeatDefine(v *traverses.TraverseCreateTableIndexesRepeatDefine, r *controllers.RuleHint) {
-	// 查找重复的索引
+	// 索引名重复会导致建表失败；字段组合重复会造成冗余索引与写入成本上升。
 	if ok, data := utils.IsRepeat(v.Indexes); ok {
-		r.Summary = append(r.Summary, fmt.Sprintf("发现重复的索引`%s`[表`%s`]", strings.Join(data, ","), v.Table))
+		r.Warn(fmt.Sprintf("表`%s`存在重复索引：`%s`", v.Table, strings.Join(data, ",")))
 	}
 }
 
@@ -215,26 +214,26 @@ func LogicCreateTableRedundantIndexes(v *traverses.TraverseCreateTableRedundantI
 	if r.InspectParams.ENABLE_REDUNDANT_INDEX {
 		return
 	}
-	// 检查索引,建索引时,指定的列必须存在、索引中的列,不能重复、索引名不能重复
-	// 不能有重复的索引,包括(索引名不同,字段相同；冗余索引,如(a),(a,b))
+	// 冗余索引会增加写入成本、占用更多存储，且通常不会带来查询收益。
+	// 典型场景：同列重复索引、(a) 与 (a,b) 这种前缀覆盖。
 	var redundantIndexCheck process.RedundantIndex = v.Redundant
 	if err := redundantIndexCheck.CheckRepeatCols(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 	if err := redundantIndexCheck.CheckRepeatColsWithDiffIndexes(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 	if err := redundantIndexCheck.CheckRedundantColsWithDiffIndexes(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
 // LogicCreateTableDisabledIndexes
 func LogicCreateTableDisabledIndexes(v *traverses.TraverseCreateTableDisabledIndexes, r *controllers.RuleHint) {
-	// BLOB/TEXT类型不能设置为索引
+	// BLOB/TEXT 等大字段不允许建索引（存储/性能成本高，且大多场景不可用）。
 	var indexTypesCheck process.DisabledIndexes = v.DisabledIndexes
 	if err := indexTypesCheck.Check(); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
@@ -242,7 +241,7 @@ func LogicCreateTableDisabledIndexes(v *traverses.TraverseCreateTableDisabledInd
 func LogicCreateTableInnodbLargePrefix(v *traverses.TraverseCreateTableInnodbLargePrefix, r *controllers.RuleHint) {
 	var largePrefix process.LargePrefix = v.LargePrefix
 	if err := largePrefix.Check(r.KV); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
@@ -250,18 +249,18 @@ func LogicCreateTableInnodbLargePrefix(v *traverses.TraverseCreateTableInnodbLar
 func LogicCreateTableInnoDBRowSize(v *traverses.TraverseCreateTableInnoDBRowSize, r *controllers.RuleHint) {
 	var rowSize process.InnoDBRowSize = v.InnoDBRowSize
 	if err := rowSize.Check(r.KV); err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 	}
 }
 
 // LogicCreateTableInnoDBRowFormat
 func LogicCreateTableInnoDBRowFormat(v *traverses.TraverseCreateTableOptions, r *controllers.RuleHint) {
-	// 判断行格式
+	// 行格式影响行存储与溢出页策略；这里只允许白名单中的 ROW_FORMAT。
 	var rowFormat string = v.RowFormat
 	if v.RowFormat == "DEFAULT" {
 		rowFormat = r.KV.Get("innodbDefaultRowFormat").(string)
 	}
 	if !utils.IsContain(r.InspectParams.INNODB_ROW_FORMAT, rowFormat) {
-		r.Summary = append(r.Summary, fmt.Sprintf("表`%s`允许设置的行格式为%s，当前ROW_FORMAT=%s", v.Table, strings.Join(r.InspectParams.INNODB_ROW_FORMAT, ","), rowFormat))
+		r.Warn(fmt.Sprintf("表`%s`的 ROW_FORMAT=%s 不在允许列表中（允许：%s）", v.Table, rowFormat, strings.Join(r.InspectParams.INNODB_ROW_FORMAT, ",")))
 	}
 }

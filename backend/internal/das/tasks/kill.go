@@ -35,11 +35,11 @@ func (k *KillTiDBQuery) getDASRecords() *[]tidbQueryRecord {
 	// 获取global.App.Config.Config.MaxExecutionTime/1000时间内tidb异常的查询记录
 	var results []tidbQueryRecord
 	global.App.DB.Model(&models.InsightDASRecords{}).
-		Select("insight_das_records.username, insight_das_records.request_id, insight_db_config.hostname, insight_db_config.port").
-		Joins("join insight_db_config on insight_das_records.instance_id = insight_db_config.instance_id").
+		Select("insight_das_records.username, insight_das_records.request_id, insight_instances.hostname, insight_instances.port").
+		Joins("join insight_instances on insight_das_records.instance_id = insight_instances.instance_id").
 		Where("insight_das_records.is_finish=1 and insight_das_records.is_kill=0").
 		Where("insight_das_records.created_at>= date_sub(now(), interval ? second)", global.App.Config.Das.MaxExecutionTime/1000).
-		Where("insight_db_config.db_type = 'TiDB'").
+		Where("insight_instances.db_type = 'TiDB'").
 		Scan(&results)
 	return &results
 }

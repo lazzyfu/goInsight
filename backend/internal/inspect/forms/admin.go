@@ -4,12 +4,14 @@ import (
 	"github.com/lazzyfu/goinsight/pkg/pagination"
 )
 
-type AdminInspectParamsForm struct {
+type AdminGlobalInspectParamsForm struct {
 	PaginationQ pagination.Pagination
 	Search      string `form:"search"`
 }
 
-type AdminUpdateInspectParamsForm struct {
-	Params map[string]interface{} `form:"params" json:"params"`
-	Remark string                 `form:"remark"  json:"remark" binding:"required,min=3,max=256"`
+type AdminUpdateGlobalInspectParamsForm struct {
+	Title string `form:"title" json:"title" binding:"required,min=3,max=256"`
+	Type  string `form:"type"  json:"type"  binding:"required,oneof=string number boolean"`
+	Key   string `form:"key" json:"key" binding:"required,min=3,max=256"`
+	Value string `form:"value" json:"value" binding:"required,min=1,max=256"`
 }

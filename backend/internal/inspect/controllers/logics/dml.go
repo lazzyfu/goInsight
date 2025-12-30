@@ -12,40 +12,18 @@ import (
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/traverses"
 )
 
-// LogicDisableAuditDMLTables
-func LogicDisableAuditDMLTables(v *traverses.TraverseDisableAuditDMLTables, r *controllers.RuleHint) {
-	// 禁止审核指定的表
-	if len(r.InspectParams.DISABLE_AUDIT_DML_TABLES) > 0 {
-		for _, item := range r.InspectParams.DISABLE_AUDIT_DML_TABLES {
-			for _, table := range v.Tables {
-				if item.DB == r.DB.Database && utils.IsContain(item.Tables, table) {
-					r.Summary = append(r.Summary, fmt.Sprintf("表`%s`.`%s`被限制进行DML语法审核，原因: %s", r.DB.Database, table, item.Reason))
-					r.IsSkipNextStep = true
-				}
-			}
-		}
-	}
-	// DML语句检查表是否存在
-	for _, table := range v.Tables {
-		if msg, err := dao.CheckIfTableExists(table, r.DB); err != nil {
-			r.Summary = append(r.Summary, msg)
-			r.IsSkipNextStep = true
-		}
-	}
-}
-
 // LogicDMLInsertIntoSelect
 func LogicDMLInsertIntoSelect(v *traverses.TraverseDMLInsertIntoSelect, r *controllers.RuleHint) {
 	if v.IsMatch == 0 {
 		return
 	}
 	if r.InspectParams.DISABLE_INSERT_INTO_SELECT && v.HasSelectSubQuery {
-		r.Summary = append(r.Summary, fmt.Sprintf("禁止使用%s into select语法", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("禁止使用 `%s INTO SELECT` 语法", v.DMLType))
+		r.IsBreak = true
 	}
 	if r.InspectParams.DISABLE_ON_DUPLICATE && v.HasOnDuplicate {
-		r.Summary = append(r.Summary, fmt.Sprintf("禁止使用%s into on duplicate语法", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("禁止使用 `%s ... ON DUPLICATE KEY UPDATE` 语法", v.DMLType))
+		r.IsBreak = true
 	}
 }
 
@@ -55,8 +33,8 @@ func LogicDMLNoWhere(v *traverses.TraverseDMLNoWhere, r *controllers.RuleHint) {
 		return
 	}
 	if !v.HasWhere && r.InspectParams.DML_MUST_HAVE_WHERE {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句必须要有where条件", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("`%s` 语句必须包含 `WHERE` 条件（避免全表扫描/全表更新）", v.DMLType))
+		r.IsBreak = true
 	}
 }
 
@@ -66,14 +44,14 @@ func LogicDMLInsertWithColumns(v *traverses.TraverseDMLInsertWithColumns, r *con
 		return
 	}
 	if v.DMLType == "REPLACE" && r.InspectParams.DISABLE_REPLACE {
-		r.Summary = append(r.Summary, fmt.Sprintf("不允许使用%s语句", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn("禁止使用 `REPLACE` 语句（可能导致隐式删除+插入）")
+		r.IsBreak = true
 		return
 	}
 	// 获取db表结构
 	audit, err := dao.ShowCreateTable(v.Table, r.DB, r.KV)
 	if err != nil {
-		r.Summary = append(r.Summary, err.Error())
+		r.Warn(err.Error())
 		return
 	}
 	// 解析获取的db表结构
@@ -82,20 +60,20 @@ func LogicDMLInsertWithColumns(v *traverses.TraverseDMLInsertWithColumns, r *con
 	case *parser.Audit:
 		(audit.TiStmt[0]).Accept(vAudit)
 	}
-	// 判断列是否存在
+	// 校验列是否存在（避免拼写错误/脏字段导致执行失败）。
 	for _, col := range v.Columns {
 		if !utils.IsContain(vAudit.Cols, col) {
-			r.Summary = append(r.Summary, fmt.Sprintf("列`%s`不存在[表`%s`]", col, v.Table))
+			r.Warn(fmt.Sprintf("表`%s`中列`%s`不存在", v.Table, col))
 		}
 	}
-	// 强制指定列名
+	// INSERT/REPLACE 建议显式指定列名：避免表结构变更后出现列错位。
 	if v.ColumnsCount == 0 {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句必须指定列名", v.DMLType))
+		r.Warn(fmt.Sprintf("`%s` 语句必须显式指定列名（如：`%s INTO t(col1,col2) VALUES ...`）", v.DMLType, v.DMLType))
 	} else if !v.ColsValuesIsMatch {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句指定的列数量和值的数量不匹配", v.DMLType))
+		r.Warn(fmt.Sprintf("`%s` 语句列数量与 VALUES 值数量不匹配", v.DMLType))
 	}
 	if v.RowsCount > r.InspectParams.MAX_INSERT_ROWS {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句单次最多允许的行数为%d，当前行数为%d【建议拆分为多条%s语句】", v.DMLType, r.InspectParams.MAX_INSERT_ROWS, v.RowsCount, v.DMLType))
+		r.Warn(fmt.Sprintf("`%s` 单次写入行数过多：最多允许 %d 行，当前 %d 行；建议拆分为多条执行", v.DMLType, r.InspectParams.MAX_INSERT_ROWS, v.RowsCount))
 	}
 }
 
@@ -105,16 +83,16 @@ func LogicDMLHasConstraint(v *traverses.TraverseDMLHasConstraint, r *controllers
 		return
 	}
 	if v.HasLimit && r.InspectParams.DML_DISABLE_LIMIT {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句不能有LIMIT子句", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("`%s` 语句禁止使用 `LIMIT` 子句", v.DMLType))
+		r.IsBreak = true
 	}
 	if v.HasOrderBy && r.InspectParams.DML_DISABLE_ORDERBY {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句不能有ORDER BY子句", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("`%s` 语句禁止使用 `ORDER BY` 子句", v.DMLType))
+		r.IsBreak = true
 	}
 	if v.HasSubQuery && r.InspectParams.DML_DISABLE_SUBQUERY {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句不能有子查询", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("`%s` 语句禁止包含子查询（请改写为 JOIN 或分步执行）", v.DMLType))
+		r.IsBreak = true
 	}
 }
 
@@ -124,8 +102,8 @@ func LogicDMLJoinWithOn(v *traverses.TraverseDMLJoinWithOn, r *controllers.RuleH
 		return
 	}
 	if v.HasJoin && r.InspectParams.CHECK_DML_JOIN_WITH_ON && !v.IsJoinWithOn {
-		r.Summary = append(r.Summary, fmt.Sprintf("%s语句的JOIN操作必须要有ON条件", v.DMLType))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("`%s` 的 JOIN 必须包含 `ON` 条件（禁止笛卡尔积）", v.DMLType))
+		r.IsBreak = true
 	}
 }
 
@@ -138,17 +116,17 @@ func LogicDMLMaxUpdateRows(v *traverses.TraverseDMLMaxUpdateRows, r *controllers
 	affectedRows, err := explain.Get(r.InspectParams.EXPLAIN_RULE)
 	if err != nil {
 		r.AffectedRows = 0
-		r.Summary = append(r.Summary, err.Error())
-		r.IsSkipNextStep = true
+		r.Warn(err.Error())
+		r.IsBreak = true
 		return
 	}
 	if affectedRows > r.InspectParams.MAX_AFFECTED_ROWS {
 		r.AffectedRows = affectedRows
-		r.Summary = append(r.Summary, fmt.Sprintf("当前%s语句最大影响或扫描行数超过了最大允许值%d【建议您将语句拆分为多条，保证每条语句影响或扫描行数小于最大允许值%d】", v.DMLType, r.InspectParams.MAX_AFFECTED_ROWS, r.InspectParams.MAX_AFFECTED_ROWS))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("`%s` 预计影响/扫描行数 %d，超过上限 %d；建议拆分语句或缩小 WHERE 范围", v.DMLType, affectedRows, r.InspectParams.MAX_AFFECTED_ROWS))
+		r.IsBreak = true
 		return
 	}
-	r.IsSkipNextStep = true
+	r.IsBreak = true
 	r.AffectedRows = affectedRows
 }
 
@@ -158,5 +136,5 @@ func LogicDMLMaxInsertRows(v *traverses.TraverseDMLMaxInsertRows, r *controllers
 		return
 	}
 	r.AffectedRows = v.RowsCount
-	r.IsSkipNextStep = true
+	r.IsBreak = true
 }

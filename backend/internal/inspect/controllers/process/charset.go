@@ -59,12 +59,12 @@ func (c *Charset) CheckColumn() error {
 		if col.Tp == mysql.TypeVarchar || col.Tp == mysql.TypeVarString || col.Tp == mysql.TypeString || col.Tp == mysql.TypeEnum || col.Tp == mysql.TypeSet {
 			// 检查字符集
 			if len(col.Charset) == 0 || len(col.Collate) == 0 {
-				return fmt.Errorf("列`%s`必须同时指定字符集和排序规则[表`%s`]", col.Column, col.Table)
+				return fmt.Errorf("列`%s`必须同时指定字符集和排序规则（表`%s`）", col.Column, col.Table)
 			}
 			// 检查排序规则
 			if !utils.HasPrefix(col.Collate, col.Charset+"_", false) && len(col.Collate) > 0 {
 				// 检查排序规则的前缀，前缀必须为字符集+"_"
-				return fmt.Errorf("列`%s`指定的字符集排序规则`%s`不符合要求，应指定前缀为%s的排序规则[表`%s`]", col.Column, col.Charset, col.Charset+"_", col.Table)
+				return fmt.Errorf("列`%s`指定的字符集排序规则`%s`不符合要求，应指定前缀为%s的排序规则（表`%s`）", col.Column, col.Charset, col.Charset+"_", col.Table)
 			}
 		}
 	}

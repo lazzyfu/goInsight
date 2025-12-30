@@ -57,7 +57,7 @@ func (s *GetOrderListServices) Run() (responseData any, total int64, err error) 
 			a.order_id, 
 			a.created_at
 		`).
-		Joins("left join insight_db_config b on a.instance_id = b.instance_id").
+		Joins("left join insight_instances b on a.instance_id = b.instance_id").
 		Order("a.created_at desc")
 	// 仅加载我的工单
 	if s.OnlyMyOrders {
@@ -106,8 +106,8 @@ func (s *GetOrderDetailServices) Run() (responseData any, err error) {
 	// 返回记录
 	tx := global.App.DB.Table("`insight_order_records` a").
 		Select("a.*, b.name as environment, concat(c.hostname, ':', c.port) as instance").
-		Joins("left join insight_db_environments b on a.environment=b.id").
-		Joins("left join insight_db_config c on a.instance_id = c.instance_id").
+		Joins("left join insight_instance_environments b on a.environment=b.id").
+		Joins("left join insight_instances c on a.instance_id = c.instance_id").
 		Where("a.order_id=?", s.OrderID).
 		Take(&result)
 	if tx.RowsAffected == 0 {

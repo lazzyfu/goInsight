@@ -19,8 +19,8 @@ import (
 )
 
 // 获取DB配置
-func GetDBConfig(instance_id string) (instanceCfg commonModels.InsightDBConfig, err error) {
-	r := global.App.DB.Table("`insight_db_config` a").
+func GetDBConfig(instance_id string) (instanceCfg commonModels.InsightInstances, err error) {
+	r := global.App.DB.Table("`insight_instances` a").
 		Select("a.`hostname`, a.`port`, a.`User`, a.`Password`").
 		Where("a.instance_id=?", instance_id).
 		Take(&instanceCfg)
@@ -37,7 +37,7 @@ func GetDbType(instance_id string) (string, error) {
 		DbType string `json:"db_type"`
 	}
 	var result dbTypeResult
-	r := global.App.DB.Table("`insight_db_config` a").
+	r := global.App.DB.Table("`insight_instances` a").
 		Select("a.`db_type`").
 		Where("a.instance_id=?", instance_id).
 		Take(&result)
@@ -77,7 +77,7 @@ func IsConcurrentRunning(username, instance_id, schema string) error {
 }
 
 // 计算延时
-func CalculateDuration(instanceCfg commonModels.InsightDBConfig, callback func(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error)) (*[]string, *[]map[string]interface{}, int64, error) {
+func CalculateDuration(instanceCfg commonModels.InsightInstances, callback func(instanceCfg commonModels.InsightInstances) (*[]string, *[]map[string]interface{}, error)) (*[]string, *[]map[string]interface{}, int64, error) {
 	startTime := time.Now()
 	columns, data, err := callback(instanceCfg)
 	endTime := time.Now()
@@ -95,7 +95,7 @@ type ResponseData struct {
 
 // 执行接口
 type ExecuteApi interface {
-	Execute(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error)
+	Execute(instanceCfg commonModels.InsightInstances) (*[]string, *[]map[string]interface{}, error)
 }
 
 type ClickHouseExecuteApi struct {
@@ -103,7 +103,7 @@ type ClickHouseExecuteApi struct {
 	Ctx context.Context
 }
 
-func (m ClickHouseExecuteApi) Execute(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error) {
+func (m ClickHouseExecuteApi) Execute(instanceCfg commonModels.InsightInstances) (*[]string, *[]map[string]interface{}, error) {
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
@@ -131,7 +131,7 @@ type MySQLExecuteApi struct {
 	Ctx context.Context
 }
 
-func (m MySQLExecuteApi) Execute(instanceCfg commonModels.InsightDBConfig) (*[]string, *[]map[string]interface{}, error) {
+func (m MySQLExecuteApi) Execute(instanceCfg commonModels.InsightInstances) (*[]string, *[]map[string]interface{}, error) {
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {

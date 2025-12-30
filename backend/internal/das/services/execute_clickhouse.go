@@ -54,7 +54,7 @@ func (s *ExecuteClickHouseQueryService) validateStatementType(stmt ast.StmtNode)
 		Count int
 	}
 	var result Result
-	global.App.DB.Table("insight_das_allowed_operations o").
+	global.App.DB.Table("insight_das_operations o").
 		Select("count(*) as count").
 		Where("name=? and is_enable=1", statementType).
 		Scan(&result)

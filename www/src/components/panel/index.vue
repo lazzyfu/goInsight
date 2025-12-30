@@ -1,6 +1,6 @@
 <template>
   <div class="split-wrapper">
-    <div ref="scalable" class="scalable" :style="{ width: leftWidth }">
+    <div ref="scalable" class="scalable" :style="{ width: computedLeftWidth }">
       <div class="left-content">
         <slot name="left-content"> 左边内容区 </slot>
       </div>
@@ -12,50 +12,49 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { throttle } from 'lodash-es'
 import { computed, ref } from 'vue'
 
-export default {
-  props: ['leftWidth'],
-  setup(props) {
-    const leftWidth = computed(() => {
-      if (props.leftWidth) {
-        return props.leftWidth
-      } else {
-        return "250px"
-      }
-    })
-    const scalable = ref()
-    // 拖拽中
-    let startX
-    let startWidth
-    const onDrag = throttle(function (e) {
-      scalable.value && (scalable.value.style.width = `${startWidth + e.clientX - startX}px`)
-    }, 20)
+defineOptions({
+  name: 'SplitPanel',
+})
 
-    // 拖拽结束
-    const dragEnd = () => {
-      document.documentElement.style.userSelect = 'unset'
-      document.documentElement.removeEventListener('mousemove', onDrag)
-      document.documentElement.removeEventListener('mouseup', dragEnd)
-    }
+const props = defineProps({
+  leftWidth: {
+    type: String,
+    default: '',
+  },
+})
 
-    // 鼠标按下
-    const startDrag = (e) => {
-      startX = e.clientX
-      scalable.value && (startWidth = parseInt(window.getComputedStyle(scalable.value).width, 10))
-      document.documentElement.style.userSelect = 'none'
-      document.documentElement.addEventListener('mousemove', onDrag)
-      document.documentElement.addEventListener('mouseup', dragEnd)
-    }
+const computedLeftWidth = computed(() => {
+  return props.leftWidth || '250px'
+})
 
-    return {
-      leftWidth,
-      scalable,
-      startDrag
-    }
-  }
+const scalable = ref()
+
+// 拖拽中
+let startX
+let startWidth
+
+const onDrag = throttle(function (e) {
+  scalable.value && (scalable.value.style.width = `${startWidth + e.clientX - startX}px`)
+}, 20)
+
+// 拖拽结束
+const dragEnd = () => {
+  document.documentElement.style.userSelect = 'unset'
+  document.documentElement.removeEventListener('mousemove', onDrag)
+  document.documentElement.removeEventListener('mouseup', dragEnd)
+}
+
+// 鼠标按下
+const startDrag = (e) => {
+  startX = e.clientX
+  scalable.value && (startWidth = parseInt(window.getComputedStyle(scalable.value).width, 10))
+  document.documentElement.style.userSelect = 'none'
+  document.documentElement.addEventListener('mousemove', onDrag)
+  document.documentElement.addEventListener('mouseup', dragEnd)
 }
 </script>
 

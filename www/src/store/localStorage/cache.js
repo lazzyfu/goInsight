@@ -54,7 +54,7 @@ export const getStorage = (key, hour) => {
           data = false
         }
       }
-    } catch (e) {
+    } catch {
       /* empty */
       data = undefined
     }
@@ -64,7 +64,7 @@ export const getStorage = (key, hour) => {
   }
   try {
     return JSON.parse(data)
-  } catch (e) {
+  } catch {
     return data
   }
 }

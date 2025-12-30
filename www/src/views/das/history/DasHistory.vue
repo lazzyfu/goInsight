@@ -68,12 +68,12 @@
 <script setup>
 import { GetHistoryApi } from '@/api/das'
 import {
-  CheckSquareOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
-  CopyOutlined,
-  DatabaseOutlined,
-  EyeOutlined,
+    CheckSquareOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    CopyOutlined,
+    DatabaseOutlined,
+    EyeOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { h, onMounted, reactive } from 'vue'
@@ -203,7 +203,7 @@ const showSqlDetail = (record) => {
 }
 
 // 确认按钮处理函数
-const handleOk = (e) => {
+const handleOk = () => {
   uiState.open = false
 }
 
@@ -219,8 +219,8 @@ const copyRecord = async (value) => {
   try {
     await toClipboard(value)
     message.success('已拷贝到剪贴板')
-  } catch (e) {
-    message.error(e)
+  } catch {
+    message.error('拷贝失败')
   }
 }
 

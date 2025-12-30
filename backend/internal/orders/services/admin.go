@@ -25,7 +25,7 @@ func (s *AdminGetApprovalFlowUnboundService) Run() (responseData any, total int6
 	var records []userModels.InsightUsers
 
 	tx := global.App.DB.Table("insight_users a").
-		Where("NOT EXISTS (SELECT 1 FROM insight_approval_maps b WHERE b.username = a.username)")
+		Where("NOT EXISTS (SELECT 1 FROM insight_approval_flow_users b WHERE b.username = a.username)")
 
 	// 搜索（精确/模糊看你需要）
 	if s.Search != "" {
@@ -44,14 +44,14 @@ type AdminGetApprovalFlowsService struct {
 }
 
 func (s *AdminGetApprovalFlowsService) Run() (responseData any, total int64, err error) {
-	var records []models.InsightApprovalFlow
+	var records []models.InsightApprovalFlows
 
 	// 基础查询（默认不 JOIN）
 	base := global.App.DB.Table("insight_approval_flow a")
 
 	// 有搜索时才 JOIN maps
 	if s.Search != "" {
-		base = base.Joins("LEFT JOIN insight_approval_maps b ON a.approval_id = b.approval_id").
+		base = base.Joins("LEFT JOIN insight_approval_flow_users b ON a.approval_id = b.approval_id").
 			Where("a.name LIKE ? OR b.username = ?", "%"+s.Search+"%", s.Search)
 	}
 
@@ -71,7 +71,7 @@ type AdminUpdateApprovalFlowsService struct {
 
 func (s *AdminUpdateApprovalFlowsService) Run() (responseData any, total int64, err error) {
 	// 更新记录
-	result := global.App.DB.Model(&models.InsightApprovalFlow{}).Where("id=?", s.ID).Updates(map[string]any{
+	result := global.App.DB.Model(&models.InsightApprovalFlows{}).Where("id=?", s.ID).Updates(map[string]any{
 		"definition": s.Definition,
 		"name":       s.Name,
 	})
@@ -88,14 +88,14 @@ type AdminCreateApprovalFlowsService struct {
 }
 
 func (s *AdminCreateApprovalFlowsService) Run() error {
-	flow := models.InsightApprovalFlow{
+	flow := models.InsightApprovalFlows{
 		Definition: s.Definition,
 		Name:       s.Name,
 		ApprovalID: uuid.New(),
 	}
 
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&models.InsightApprovalFlow{}).Create(&flow).Error; err != nil {
+		if err := tx.Model(&models.InsightApprovalFlows{}).Create(&flow).Error; err != nil {
 			mysqlErr := err.(*mysql.MySQLError)
 			switch mysqlErr.Number {
 			case 1062:
@@ -114,7 +114,7 @@ type AdminDeleteApprovalFlowsService struct {
 }
 
 func (s *AdminDeleteApprovalFlowsService) Run() error {
-	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightApprovalFlow{})
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightApprovalFlows{})
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -129,17 +129,17 @@ type AdminBindUsersToApprovalFlowService struct {
 func (s *AdminBindUsersToApprovalFlowService) Run() error {
 	// 判断当前用户是否绑定审批流
 	for _, username := range s.Users {
-		var record models.InsightApprovalMaps
-		tx := global.App.DB.Table("insight_approval_maps").Where("username=?", username).First(&record)
+		var record models.InsightApprovalFlowUsers
+		tx := global.App.DB.Table("insight_approval_flow_users").Where("username=?", username).First(&record)
 		if tx.RowsAffected != 0 {
 			return fmt.Errorf("用户%s已经绑定审批流", username)
 		}
 	}
 
 	// 批量构造写入数据
-	records := make([]models.InsightApprovalMaps, 0, len(s.Users))
+	records := make([]models.InsightApprovalFlowUsers, 0, len(s.Users))
 	for _, u := range s.Users {
-		records = append(records, models.InsightApprovalMaps{
+		records = append(records, models.InsightApprovalFlowUsers{
 			ApprovalID: s.ApprovalID,
 			Username:   u,
 		})
@@ -158,8 +158,8 @@ type AdminGetApprovalFlowUsersService struct {
 }
 
 func (s *AdminGetApprovalFlowUsersService) Run() (responseData any, total int64, err error) {
-	var records []models.InsightApprovalMaps
-	tx := global.App.DB.Table("insight_approval_maps").Where("approval_id=?", s.ApprovalID).Scan(&records)
+	var records []models.InsightApprovalFlowUsers
+	tx := global.App.DB.Table("insight_approval_flow_users").Where("approval_id=?", s.ApprovalID).Scan(&records)
 
 	// 搜索
 	if s.Search != "" {
@@ -175,7 +175,7 @@ type AdminDeleteUsersFromApprovalFlowService struct {
 }
 
 func (s *AdminDeleteUsersFromApprovalFlowService) Run() error {
-	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightApprovalMaps{})
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightApprovalFlowUsers{})
 	if tx.Error != nil {
 		return tx.Error
 	}

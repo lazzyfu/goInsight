@@ -27,7 +27,7 @@ func (p CheckUserPerm) checkHasAllTablePerms() bool {
 			Count int
 		}
 		var result countResult
-		global.App.DB.Table("`insight_das_user_table_permissions`").
+		global.App.DB.Table("`insight_das_table_perms`").
 			Select("count(*) as count").
 			Where("username=? and instance_id=? and `schema`=?", p.UserName, p.InstanceID, t.Schema).
 			Scan(&result)
@@ -46,7 +46,7 @@ func (p CheckUserPerm) checkOnlyHasAllowTablePerms() []string {
 			Table string
 		}
 		var result []ruleResult
-		global.App.DB.Table("`insight_das_user_table_permissions`").
+		global.App.DB.Table("`insight_das_table_perms`").
 			Select("*").
 			Where("username=? and instance_id=? and `schema`=? and rule='allow'", p.UserName, p.InstanceID, t.Schema).
 			Scan(&result)
@@ -72,10 +72,10 @@ func (p CheckUserPerm) checkOnlyHasDenyTablePerms() []string {
 			Table string
 		}
 		var result []ruleResult
-		global.App.DB.Table("`insight_das_user_table_permissions`").
+		global.App.DB.Table("`insight_das_table_perms`").
 			Select("*").
 			Where("username=? and instance_id=? and `schema`=? and rule='deny'", p.UserName, p.InstanceID, t.Schema).
-			Where("not exists(select * from insight_das_user_table_permissions where username=? and instance_id=? and `schema`=? and rule='allow')", p.UserName, p.InstanceID, t.Schema).
+			Where("not exists(select * from insight_das_table_perms where username=? and instance_id=? and `schema`=? and rule='allow')", p.UserName, p.InstanceID, t.Schema).
 			Scan(&result)
 		if len(result) > 0 {
 			// 结果集大于0，表示仅有deny规则的记录
@@ -105,9 +105,9 @@ func (p CheckUserPerm) HasSchemaPerms() error {
 				Count int
 			}
 			var result countResult
-			global.App.DB.Table("`insight_das_user_schema_permissions` p").
+			global.App.DB.Table("`insight_das_schema_perms` p").
 				Select("count(*) as count").
-				Joins("join `insight_db_schemas` s on p.instance_id = s.instance_id and p.`schema` = s.`schema`").
+				Joins("join `insight_instance_schemas` s on p.instance_id = s.instance_id and p.`schema` = s.`schema`").
 				Where("s.is_deleted = 0 and p.username=? and p.instance_id=? and p.`schema`=?", p.UserName, p.InstanceID, t.Schema).
 				Scan(&result)
 			if result.Count == 0 {
@@ -124,7 +124,7 @@ func (p CheckUserPerm) HasSchemaPerms() error {
 func (p CheckUserPerm) HasTablePerms() error {
 	/*
 		优先级：allow > deny
-		前提：insight_das_user_schema_permissions表有zhangsan访问test库的授权记录
+		前提：insight_das_schema_perms表有zhangsan访问test库的授权记录
 		Case分析：
 			Case1:
 				Desc:

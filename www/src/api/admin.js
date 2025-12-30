@@ -19,13 +19,21 @@ export const createChildOrganizationsApi = (data) =>
   post('/api/v1/admin/organizations/child-node', data)
 export const updateOrganizationsApi = (data) => put(`/api/v1/admin/organizations`, data)
 export const deleteOrganizationsApi = (data) => del(`/api/v1/admin/organizations`, data)
-// dbconfig
-export const getDBConfigApi = (params) => get('/api/v1/admin/dbconfig', params)
-export const createDBConfigApi = (data) => post('/api/v1/admin/dbconfig', data)
-export const updateDBConfigApi = (data) => put(`/api/v1/admin/dbconfig/${data.id}`, data)
-export const deleteDBConfigApi = (data) => del(`/api/v1/admin/dbconfig/${data}`, data)
+// 实例
+export const getInstancesApi = (params) => get('/api/v1/admin/instances', params)
+export const createInstancesApi = (data) => post('/api/v1/admin/instances', data)
+export const updateInstancesApi = (data) => put(`/api/v1/admin/instances/${data.id}`, data)
+export const deleteInstancesApi = (data) => del(`/api/v1/admin/instances/${data}`, data)
+export const getInstanceInspectParamsApi = (params) =>
+  get('/api/v1/admin/instances/inspect/params', params)
+export const createInstanceInspectParamsApi = (data) =>
+  post('/api/v1/admin/instances/inspect/params', data)
+export const updateInstanceInspectParamsApi = (data) =>
+  put(`/api/v1/admin/instances/inspect/params/${data.id}`, data)
+export const deleteInstanceInspectParamsApi = (data) =>
+  del(`/api/v1/admin/instances/inspect/params/${data}`, data)
 // 环境
-export const getEnvironmentsApi = (params) => get('/api/v1/admin/environment', params)
+export const getEnvironmentsApi = (params) => get('/api/v1/admin/environments', params)
 export const createEnvironmentsApi = (data) => post('/api/v1/admin/environment', data)
 export const updateEnvironmentsApi = (data) => put(`/api/v1/admin/environment/${data.id}`, data)
 export const deleteEnvironmentsApi = (data) => del(`/api/v1/admin/environment/${data}`, data)
@@ -33,15 +41,16 @@ export const deleteEnvironmentsApi = (data) => del(`/api/v1/admin/environment/${
 export const getInspectParamsApi = (params) => get('/api/v1/admin/inspect/params', params)
 export const updateInspectParamsApi = (data) => put(`/api/v1/admin/inspect/params/${data.id}`, data)
 // das
-export const getSchemasListGrantApi = (params) => get('/api/v1/admin/das/schemas/grant', params)
-export const createSchemasGrantApi = (data) => post('/api/v1/admin/das/schemas/grant', data)
-export const deleteSchemasGrantApi = (data) => del(`/api/v1/admin/das/schemas/grant/${data}`, data)
-export const getTablesGrantApi = (params) => get('/api/v1/admin/das/tables/grant', params)
-export const createTablesGrantApi = (data) => post('/api/v1/admin/das/tables/grant', data)
-export const deleteTablesGrantApi = (data) => del(`/api/v1/admin/das/tables/grant/${data}`, data)
-export const getInstancesListApi = (params) => get('/api/v1/admin/das/instances/list', params)
-export const getSchemasListApi = (params) => get('/api/v1/admin/das/schemas/list', params)
-export const getTablesListApi = (params) => get('/api/v1/admin/das/tables/list', params)
+export const getDasSchemasListGrantApi = (params) => get('/api/v1/admin/das/schemas/grant', params)
+export const createDasSchemasGrantApi = (data) => post('/api/v1/admin/das/schemas/grant', data)
+export const deleteDasSchemasGrantApi = (data) =>
+  del(`/api/v1/admin/das/schemas/grant/${data}`, data)
+export const getDasTablesGrantApi = (params) => get('/api/v1/admin/das/tables/grant', params)
+export const createDasTablesGrantApi = (data) => post('/api/v1/admin/das/tables/grant', data)
+export const deleteDasTablesGrantApi = (data) => del(`/api/v1/admin/das/tables/grant/${data}`, data)
+export const getDasInstancesListApi = (params) => get('/api/v1/admin/das/instances/list', params)
+export const getDasSchemasListApi = (params) => get('/api/v1/admin/das/schemas/list', params)
+export const getDasTablesListApi = (params) => get('/api/v1/admin/das/tables/list', params)
 // 审批流
 export const getApprovalFlowUnboundUsersApi = (params) =>
   get('/api/v1/admin/approval-flows/unbound-users', params)

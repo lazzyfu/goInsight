@@ -13,6 +13,8 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'DasIndexView' })
+
 import { ref } from 'vue'
 import ConsoleIndex from './console/ConsoleIndex.vue'
 import DasFavorite from './favorite/DasFavorite.vue'

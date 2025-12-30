@@ -48,9 +48,9 @@ func (s *GetTableInfoService) validatePerms(uuid uuid.UUID) error {
 	return nil
 }
 
-func (s *GetTableInfoService) getInstanceCfg() (instance models.InsightDBConfig, err error) {
+func (s *GetTableInfoService) getInstanceCfg() (instance models.InsightInstances, err error) {
 	// 获取DB配置
-	r := global.App.DB.Table("`insight_db_config` a").
+	r := global.App.DB.Table("`insight_instances` a").
 		Select("a.`hostname`, a.`port`, a.`user`, a.`password`, a.`db_type`").
 		Where("a.instance_id=?", s.InstanceID).
 		Take(&instance)
@@ -61,7 +61,7 @@ func (s *GetTableInfoService) getInstanceCfg() (instance models.InsightDBConfig,
 	return instance, nil
 }
 
-func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightDBConfig) (data *[]map[string]interface{}, err error) {
+func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightInstances) (data *[]map[string]interface{}, err error) {
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightDBConfig) 
 	return data, err
 }
 
-func (s *GetTableInfoService) getTableBase(instanceCfg models.InsightDBConfig) (data *[]map[string]interface{}, err error) {
+func (s *GetTableInfoService) getTableBase(instanceCfg models.InsightInstances) (data *[]map[string]interface{}, err error) {
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {

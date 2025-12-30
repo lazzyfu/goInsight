@@ -1,16 +1,16 @@
 <template>
-  <a-card title="表权限管理">
+  <a-card title="实例审核参数管理">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
       <a-button type="primary" @click="handleAdd">
-        <PlusOutlined />新增表权限
+        <PlusOutlined />新增实例审核参数
       </a-button>
     </template>
 
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索环境名..." style="width: 350px"
+      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索审核参数名..." style="width: 350px"
         @search="handleSearch" />
     </div>
 
@@ -20,7 +20,17 @@
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
+          <!-- 类型转换为中文显示 -->
+          <template v-if="column.key === 'type'">
+            <template v-if="record.type === 'string'">字符串</template>
+            <template v-else-if="record.type === 'number'">数字</template>
+            <template v-else-if="record.type === 'boolean'">布尔值</template>
+            <template v-else>{{ record.type }}</template>
+          </template>
           <template v-if="column.key === 'action'">
+            <a @click="handleEdit(record)">
+              <EditOutlined /> 编辑
+            </a>
             <a-popconfirm title="确认删除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
               <a>
                 <DeleteOutlined /> 删除
@@ -32,24 +42,31 @@
     </div>
   </a-card>
 
-  <!-- 新增/编辑弹窗 -->
-  <DasTableFormModal :open="uiState.isModalOpen" v-model:modelValue="formState" :tables="uiData.tableList" title="新增表权限"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <!-- 编辑弹窗 -->
+  <InstanceInspectParamsFormModal
+    :open="uiState.isModalOpen"
+    v-model:modelValue="formState"
+    :inspect-params="uiData.inspectParamsList"
+    :title="uiState.isEditMode ? '编辑审核参数' : '新增审核参数'"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
 import {
-  createDasTablesGrantApi,
-  deleteDasTablesGrantApi,
-  getDasTablesGrantApi,
-  getDasTablesListApi,
+  createInstanceInspectParamsApi,
+  deleteInstanceInspectParamsApi,
+  getInspectParamsApi,
+  getInstanceInspectParamsApi,
+  updateInstanceInspectParamsApi,
 } from '@/api/admin'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import DasTableFormModal from './DasTableFormModal.vue'
+import InstanceInspectParamsFormModal from './InstanceInspectParamsFormModal.vue'
 
 // 路由参数
 const route = useRoute()
@@ -59,57 +76,56 @@ const routeParams = route.params
 const uiState = reactive({
   loading: false,
   isModalOpen: false,
+  isEditMode: false,
 })
 
 // 数据
 const uiData = reactive({
   searchValue: '',
-  tableList: [],
+  inspectParamsList: [],
   tableData: [],
   tableColumns: [
     {
-      title: '规则',
-      dataIndex: 'rule',
-      key: 'rule',
+      title: '描述',
+      dataIndex: 'title',
+      key: 'title',
+      fixed: 'left',
+      width: '40%',
+      ellipsis: true,
     },
     {
-      title: '用户',
-      dataIndex: 'username',
-      key: 'username',
+      title: '值',
+      dataIndex: 'value',
+      width: '20%',
+      key: 'value',
     },
     {
-      title: '库名',
-      dataIndex: 'schema',
-      key: 'schema',
-    },
-    {
-      title: '表名',
-      dataIndex: 'table',
-      key: 'table',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'created_at',
-      key: 'created_at',
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
     },
     {
       title: '更新时间',
       dataIndex: 'updated_at',
+      width: '20%',
       key: 'updated_at',
     },
     {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      fixed: 'right',
     },
   ]
 })
 
 // form表单
 const defaultForm = {
-  tables: [],
-  rule: '',
+  id: undefined,
+  title: '',
+  key: '',
+  type: '',
+  value: '',
+  _editValue: '',
 }
 const formState = ref({ ...defaultForm })
 
@@ -138,12 +154,23 @@ const handleTableChange = (pager) => {
 
 // 新增
 const handleAdd = () => {
+  uiState.isEditMode = false
   formState.value = { ...defaultForm }
-  getTables()
+  getInspectParams()
   uiState.isModalOpen = true
 }
 
-// 获取列表数据
+// 编辑
+const handleEdit = (record) => {
+  uiState.isEditMode = true
+  formState.value = {
+    ...defaultForm,
+    ...record,
+  }
+  uiState.isModalOpen = true
+}
+
+// 获取实例的审核参数
 const fetchData = async () => {
   uiState.loading = true
   const params = {
@@ -153,7 +180,7 @@ const fetchData = async () => {
     search: uiData.searchValue,
     ...routeParams,
   }
-  const res = await getDasTablesGrantApi(params).catch(() => { })
+  const res = await getInstanceInspectParamsApi(params).catch(() => { })
   if (res) {
     pagination.total = res.total
     uiData.tableData = res.data
@@ -161,10 +188,10 @@ const fetchData = async () => {
   uiState.loading = false
 }
 
-// 获取指定schema的表
-const getTables = async () => {
-  const res = await getDasTablesListApi(routeParams).catch(() => { })
-  uiData.tableList = res.data || []
+// 获取所有的审核参数
+const getInspectParams = async () => {
+  const res = await getInspectParamsApi(routeParams).catch(() => { })
+  uiData.inspectParamsList = res.data || []
 }
 
 // 提交表单
@@ -173,7 +200,9 @@ const onSubmit = useThrottleFn(async (data) => {
     ...data,
     ...routeParams,
   }
-  const res = await createDasTablesGrantApi(payload).catch(() => { })
+  const res = uiState.isEditMode
+    ? await updateInstanceInspectParamsApi(payload).catch(() => { })
+    : await createInstanceInspectParamsApi(payload).catch(() => { })
   if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false
@@ -183,7 +212,7 @@ const onSubmit = useThrottleFn(async (data) => {
 
 // 删除
 const handleDelete = useThrottleFn(async (record) => {
-  const res = await deleteDasTablesGrantApi(record.id).catch(() => { })
+  const res = await deleteInstanceInspectParamsApi(record.id).catch(() => { })
   if (res) {
     message.info('操作成功')
     fetchData()

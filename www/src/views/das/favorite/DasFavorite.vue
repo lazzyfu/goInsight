@@ -58,11 +58,11 @@
 import { DeleteFavoritesApi, GetFavoritesApi, UpdateFavoritesApi } from '@/api/das'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
 import {
-  CopyOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  EyeOutlined,
+    CopyOutlined,
+    DeleteOutlined,
+    EditOutlined,
+    EllipsisOutlined,
+    EyeOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
@@ -170,7 +170,7 @@ const showSqlDetail = (record) => {
 }
 
 // 关闭查看SQL弹窗
-const handleCancel = (e) => {
+const handleCancel = () => {
   uiState.open = false
 }
 
@@ -179,8 +179,8 @@ const copyRecord = async (value) => {
   try {
     await toClipboard(value.sqltext)
     message.success('已拷贝到剪贴板')
-  } catch (e) {
-    message.error(e)
+  } catch {
+    message.error('拷贝失败')
   }
 }
 

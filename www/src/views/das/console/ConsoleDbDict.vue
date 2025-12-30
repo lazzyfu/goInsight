@@ -14,12 +14,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 
-import { ref } from 'vue';
-
-const emit = defineEmits(["update:open"])
-const props = defineProps({
-  open: Boolean
+const emit = defineEmits(['update:open'])
+defineProps({
+  open: Boolean,
 })
 
 const dictIndex = ref('')

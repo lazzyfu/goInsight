@@ -141,7 +141,7 @@ import useClipboard from 'vue-clipboard3'
 
 const { toClipboard } = useClipboard()
 
-const props = defineProps({
+defineProps({
   open: Boolean,
 })
 

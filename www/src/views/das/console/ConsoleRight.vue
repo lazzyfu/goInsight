@@ -76,10 +76,10 @@
 
 <script setup>
 import {
-  CreateFavoritesApi,
-  ExecuteClickHouseQueryApi,
-  ExecuteMySQLQueryApi,
-  GetDBDictApi,
+    CreateFavoritesApi,
+    ExecuteClickHouseQueryApi,
+    ExecuteMySQLQueryApi,
+    GetDBDictApi,
 } from '@/api/das'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
@@ -292,9 +292,9 @@ const executeSqlQuery = async () => {
   const resMsgs = []
   try {
     if (dbType === 'mysql' || dbType === 'tidb') {
-      res = await ExecuteMySQLQueryApi(payLoad).catch((err) => {})
+      res = await ExecuteMySQLQueryApi(payLoad).catch(() => {})
     } else if (dbType === 'clickhouse') {
-      res = await ExecuteClickHouseQueryApi(payLoad).catch((err) => {})
+      res = await ExecuteClickHouseQueryApi(payLoad).catch(() => {})
     } else {
       message.error(`不支持的数据库类型: ${uiData.db_type}`)
       return

@@ -105,6 +105,7 @@ const onSubmit = async () => {
     uiState.loading = true
     emit('submit', formState)
   } catch (err) {
+    console.error(err)
   } finally {
     uiState.loading = false
   }

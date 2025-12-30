@@ -20,9 +20,9 @@ type AdminGetEnvironmentServices struct {
 }
 
 func (s *AdminGetEnvironmentServices) Run() (responseData interface{}, total int64, err error) {
-	var environments []models.InsightDBEnvironments
+	var environments []models.InsightInstanceEnvironments
 	tx := global.App.DB.
-		Table("insight_db_environments").
+		Table("insight_instance_environments").
 		Order("updated_at desc")
 	// 搜索
 	if s.Search != "" {
@@ -38,8 +38,8 @@ type AdminCreateEnvironmentService struct {
 }
 
 func (s *AdminCreateEnvironmentService) Run() error {
-	tx := global.App.DB.Model(&models.InsightDBEnvironments{})
-	db := models.InsightDBEnvironments{
+	tx := global.App.DB.Model(&models.InsightInstanceEnvironments{})
+	db := models.InsightInstanceEnvironments{
 		Name: s.Name,
 	}
 	result := tx.Create(&db)
@@ -61,7 +61,7 @@ type AdminUpdateEnvironmentService struct {
 }
 
 func (s *AdminUpdateEnvironmentService) Run() error {
-	result := global.App.DB.Model(&models.InsightDBEnvironments{}).Where("id=?", s.ID).Updates(map[string]interface{}{
+	result := global.App.DB.Model(&models.InsightInstanceEnvironments{}).Where("id=?", s.ID).Updates(map[string]interface{}{
 		"name": s.Name,
 	})
 	if result.Error != nil {
@@ -81,7 +81,7 @@ type AdminDeleteEnvironmentService struct {
 }
 
 func (s *AdminDeleteEnvironmentService) Run() error {
-	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightDBEnvironments{})
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightInstanceEnvironments{})
 	if tx.Error != nil {
 		return tx.Error
 	}

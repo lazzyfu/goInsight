@@ -8,6 +8,8 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'GoCodemirror' })
+
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
 import { historyKeymap, indentWithTab } from '@codemirror/commands'
 import { MySQL, sql, StandardSQL } from '@codemirror/lang-sql'

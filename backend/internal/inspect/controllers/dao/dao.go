@@ -54,10 +54,11 @@ func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, er
 func CheckIfTableExists(table string, db *DB) (string, error) {
 	err := db.Execute(fmt.Sprintf("DESC `%s`", table))
 	if me, ok := err.(*mysqlapi.MySQLError); ok {
-		if me.Number == 1146 {
+		switch me.Number {
+		case 1146:
 			// Table does not exist
 			return fmt.Sprintf("表或视图`%s`不存在", table), err
-		} else if me.Number == 1045 {
+		case 1045:
 			return fmt.Sprintf("无法访问目标数据库 %s:%d, %s", db.Host, db.Port, err.Error()), err
 		}
 	}

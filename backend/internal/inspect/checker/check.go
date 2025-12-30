@@ -1,7 +1,6 @@
 package checker
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +13,7 @@ import (
 	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/inspect/config"
+	"github.com/lazzyfu/goinsight/internal/inspect/controllers"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/dao"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/parser"
 	"github.com/lazzyfu/goinsight/internal/inspect/controllers/process"
@@ -21,30 +21,29 @@ import (
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	_ "github.com/pingcap/tidb/pkg/types/parser_driver"
-	"gorm.io/datatypes"
 )
 
 // 返回数据
 type ReturnData struct {
-	Summary      []string `json:"summary"`       // 摘要
-	Level        string   `json:"level"`         // 级别,INFO/WARN/ERROR
-	AffectedRows int      `json:"affected_rows"` // 影响行数
-	Type         string   `json:"type"`          // SQL类型
-	FingerId     string   `json:"finger_id"`     // 指纹
-	Query        string   `json:"query"`         // 原始SQL
+	Summary      []controllers.SummaryItem `json:"summary"`       // 摘要
+	AffectedRows int                       `json:"affected_rows"` // 影响行数
+	Type         string                    `json:"type"`          // SQL类型
+	FingerId     string                    `json:"finger_id"`     // 指纹
+	Query        string                    `json:"query"`         // 原始SQL
 }
 
 // 语法check
 type SyntaxInspectService struct {
 	C             *gin.Context
+	InstanceID    uuid.UUID
 	DbUser        string
 	DbPassword    string
 	DbHost        string
 	DbPort        int
 	DBSchema      string
-	DBParams      datatypes.JSON
 	SqlText       string
 	Username      string
 	Charset       string
@@ -67,48 +66,65 @@ func (s *SyntaxInspectService) initDB() {
 
 // 初始化默认审核参数
 func (s *SyntaxInspectService) initDefaultInspectParams() error {
-	// 读取数据库参数
-	var rows []models.InsightInspectParams
-	tx := global.App.DB.Model(&models.InsightInspectParams{}).Scan(&rows)
+	// 读取全局审核参数（insight_inspect_global_params），数据由 bootstrap.initializeInspectParams 初始化
+	var rows []models.InsightInspectGlobalParams
+	tx := global.App.DB.Model(&models.InsightInspectGlobalParams{}).Scan(&rows)
+	if tx.Error != nil {
+		return fmt.Errorf("获取审核参数失败: %v", tx.Error)
+	}
 	if tx.RowsAffected == 0 {
-		return errors.New("获取审核参数失败，表insight_inspect_params未找到记录")
+		return errors.New("获取审核参数失败，表insight_inspect_global_params未找到记录")
 	}
-	// 初始化map存储参数
-	jsonParams := make(map[string]json.RawMessage)
+
+	params := make(map[string]any, len(rows))
 	for _, row := range rows {
-		err := json.Unmarshal(row.Params, &jsonParams)
+		val, err := parseInspectParamTypedValue(row.Key, row.Value, string(row.Type))
 		if err != nil {
-			return fmt.Errorf("解析JSON参数失败: %v，错误参数：%v", err, row)
+			return fmt.Errorf("解析审核参数失败: key=%s value=%s type=%s err=%v", row.Key, row.Value, row.Type, err)
 		}
+		params[row.Key] = val
 	}
-	// 序列化参数
-	jsonData, err := json.Marshal(jsonParams)
+
+	jsonData, err := json.Marshal(params)
 	if err != nil {
 		return fmt.Errorf("序列化JSON参数失败: %v", err)
 	}
-	// 转换为结构体
 	var ips config.InspectParams
-	err = json.Unmarshal(jsonData, &ips)
-	if err != nil {
+	if err := json.Unmarshal(jsonData, &ips); err != nil {
 		return fmt.Errorf("反序列化JSON参数失败: %v", err)
 	}
 	s.InspectParams = ips
 	return nil
 }
 
-// 初始化DB审核参数
+// 初始化实例审核参数
 func (s *SyntaxInspectService) initDBInspectParams() error {
-	// 序列化参数
-	jsonParams, err := json.Marshal(s.DBParams)
-	if err != nil {
-		return fmt.Errorf("序列化JSON参数失败: %v", err)
-	}
-	r := bytes.NewReader([]byte(jsonParams))
-	decoder := json.NewDecoder(r)
-	// 动态参数赋值给默认模板
-	// 优先级: post instance params > 内置默认参数
-	if err := decoder.Decode(&s.InspectParams); err != nil {
-		return err
+	// 1) 先从实例表读取审核参数（优先级高于全局默认）
+	if s.InstanceID != uuid.Nil {
+		var rows []models.InsightInspectInstanceParams
+		tx := global.App.DB.Model(&models.InsightInspectInstanceParams{}).
+			Where("instance_id = ?", s.InstanceID).
+			Scan(&rows)
+		if tx.Error != nil {
+			return fmt.Errorf("获取实例审核参数失败: %v", tx.Error)
+		}
+		if tx.RowsAffected > 0 {
+			params := make(map[string]any, len(rows))
+			for _, row := range rows {
+				val, err := parseInspectParamTypedValue(row.Key, row.Value, string(row.Type))
+				if err != nil {
+					return fmt.Errorf("解析实例审核参数失败: key=%s value=%s type=%s err=%v", row.Key, row.Value, row.Type, err)
+				}
+				params[row.Key] = val
+			}
+			b, err := json.Marshal(params)
+			if err != nil {
+				return fmt.Errorf("序列化实例审核参数失败: %v", err)
+			}
+			if err := json.Unmarshal(b, &s.InspectParams); err != nil {
+				return fmt.Errorf("反序列化实例审核参数失败: %v", err)
+			}
+		}
 	}
 	return nil
 }
@@ -123,24 +139,21 @@ func (s *SyntaxInspectService) parser() error {
 		return fmt.Errorf("Parse Warning: %s", utils.ErrsJoin("; ", warns))
 	}
 	if err != nil {
-		return fmt.Errorf("sql解析错误：%s", err.Error())
+		return fmt.Errorf("sql解析错误：%w", err)
 	}
 	return nil
 }
 
 // 判断多条alter语句是否需要合并
 func (s *SyntaxInspectService) mergeAlters(kv *kv.KVCache, mergeAlters []string) ReturnData {
-	var data ReturnData = ReturnData{FingerId: utils.GenerateSimpleRandomString(16), Level: "INFO"}
+	data := ReturnData{FingerId: utils.GenerateSimpleRandomString(16)}
 	dbVersionIns := process.DbVersion{Version: kv.Get("dbVersion").(string)}
 	if s.InspectParams.ENABLE_MYSQL_MERGE_ALTER_TABLE && !dbVersionIns.IsTiDB() {
 		if ok, val := utils.IsRepeat(mergeAlters); ok {
 			for _, v := range val {
-				data.Summary = append(data.Summary, fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v))
+				data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: fmt.Sprintf("[MySQL数据库]表`%s`的多条ALTER操作，请合并为一条ALTER语句", v)})
 			}
 		}
-	}
-	if len(data.Summary) > 0 {
-		data.Level = "WARN"
 	}
 	return data
 }
@@ -164,7 +177,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 	var mergeAlters []string
 	// 每次请求基于RequestID初始化kv cache
 	kv := kv.NewKVCache(requestID)
-	defer kv.Delete(requestID)
+	defer kv.Clear(requestID)
 	// 获取目标数据库变量
 	dbVars, err := dao.GetDBVars(s.DB)
 	if err != nil {
@@ -180,6 +193,7 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 		return returnData, err
 	}
 	// 迭代stmt
+	st := Stmt{s}
 	for _, stmt := range s.Audit.TiStmt {
 		// 移除SQL尾部的分号
 		sqlTrim := strings.TrimSuffix(stmt.Text(), ";")
@@ -187,13 +201,11 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 		fingerId := query.Id(query.Fingerprint(sqlTrim))
 		// 存储指纹ID
 		kv.Put(fingerId, true)
-		// 迭代
-		st := Stmt{s}
 		switch stmt.(type) {
 		case *ast.SelectStmt:
 			// select语句不允许审核
-			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DML", Level: "WARN"}
-			data.Summary = append(data.Summary, "发现SELECT语句，请删除SELECT语句后重新审核")
+			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "DML"}
+			data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: "发现SELECT语句，请删除SELECT语句后重新审核"})
 			returnData = append(returnData, data)
 		case *ast.CreateTableStmt:
 			returnData = append(returnData, st.CreateTableStmt(stmt, kv, fingerId))
@@ -215,8 +227,8 @@ func (s *SyntaxInspectService) Run() (returnData []ReturnData, err error) {
 			returnData = append(returnData, st.CreateDatabaseStmt(stmt, kv, fingerId))
 		default:
 			// 不允许的其他语句，有需求可以扩展
-			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: "", Level: "WARN"}
-			data.Summary = append(data.Summary, "未识别或禁止的审核语句，请联系数据库管理员")
+			var data ReturnData = ReturnData{FingerId: fingerId, Query: stmt.Text(), Type: ""}
+			data.Summary = append(data.Summary, controllers.SummaryItem{Level: LevelWarn, Message: "未识别或禁止的审核语句，请联系数据库管理员"})
 			returnData = append(returnData, data)
 		}
 	}

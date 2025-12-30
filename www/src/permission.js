@@ -69,7 +69,7 @@ router.beforeEach(async (to, from, next) => {
       next({ ...to, replace: true })
       return
     } catch (error) {
-      console.error('[Permission] 路由生成失败:', error)
+      console.error(error)
       // 清除用户状态并重定向到登录页
       userStore.clear()
       permissionStore.reset()

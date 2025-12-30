@@ -12,24 +12,24 @@ import (
 // LogicCreateViewIsExist
 func LogicCreateViewIsExist(v *traverses.TraverseCreateViewIsExist, r *controllers.RuleHint) {
 	if !r.InspectParams.ENABLE_CREATE_VIEW {
-		r.Summary = append(r.Summary, fmt.Sprintf("不允许创建视图`%s`", v.View))
-		r.IsSkipNextStep = true
+		r.Warn(fmt.Sprintf("禁止创建视图`%s`", v.View))
+		r.IsBreak = true
 		return
 	}
 	if !v.OrReplace {
-		// create view，需要确保视图不存在
+		// `CREATE VIEW`（非 OR REPLACE）要求视图不存在，否则执行会失败。
 		if msg, err := dao.CheckIfTableExists(v.View, r.DB); err == nil {
-			newMsg := strings.Join([]string{msg, "【TiDB可以使用`CREATE OR REPLACE VIEW`语法】"}, "")
-			r.Summary = append(r.Summary, newMsg)
-			r.IsSkipNextStep = true
+			newMsg := strings.Join([]string{msg, "；建议在 TiDB 使用 `CREATE OR REPLACE VIEW` 更新视图"}, "")
+			r.Warn(newMsg)
+			r.IsBreak = true
 		}
 	}
 	for _, table := range v.Tables {
-		// 检查除视图名外的表是否存在
+		// 依赖表校验：引用的表/视图必须存在（排除当前要创建的视图名本身）。
 		if v.View != table {
 			if msg, err := dao.CheckIfDatabaseExists(table, r.DB); err != nil {
-				r.Summary = append(r.Summary, msg)
-				r.IsSkipNextStep = true
+				r.Warn(msg)
+				r.IsBreak = true
 			}
 		}
 	}

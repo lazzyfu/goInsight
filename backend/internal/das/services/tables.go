@@ -154,7 +154,7 @@ func (s *GetTablesService) Run() (responseData *[]map[string]interface{}, err er
 		return responseData, err
 	}
 	var cfg InstanceCfg
-	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
+	global.App.DB.Table("insight_instances").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
 	// 解密密码
 	plainPassword, err := utils.Decrypt(cfg.Password)
 	if err != nil {

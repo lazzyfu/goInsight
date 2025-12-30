@@ -86,6 +86,8 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'GoLayout' })
+
 import router from '@/router'
 import { usePermissionStore } from '@/store/permission'
 import { useUserStore } from '@/store/user'

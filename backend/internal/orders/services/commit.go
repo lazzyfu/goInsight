@@ -30,9 +30,9 @@ type GetOrderEnvironmentsService struct {
 	C *gin.Context
 }
 
-func (s *GetOrderEnvironmentsService) Run() ([]commonModels.InsightDBEnvironments, error) {
-	var results []commonModels.InsightDBEnvironments
-	global.App.DB.Table("`insight_db_environments` a").
+func (s *GetOrderEnvironmentsService) Run() ([]commonModels.InsightInstanceEnvironments, error) {
+	var results []commonModels.InsightInstanceEnvironments
+	global.App.DB.Table("`insight_instance_environments` a").
 		Select("a.`name`, a.id").
 		Scan(&results)
 	return results, nil
@@ -47,9 +47,9 @@ type GetOrderInstancesService struct {
 
 func (s *GetOrderInstancesService) Run() (responseData interface{}, total int64, err error) {
 	// 获取当前用户当前绑定组织和所有上级组织
-	var organization usersModels.InsightOrganizations
-	global.App.DB.Table("`insight_organizations` a").
-		Joins("join insight_organizations_users b on a.key = b.organization_key").
+	var organization usersModels.InsightOrgs
+	global.App.DB.Table("`insight_orgs` a").
+		Joins("join insight_org_users b on a.key = b.organization_key").
 		Joins("join insight_users c on c.uid = b.uid").Where("c.username=?", s.Username).Scan(&organization)
 
 	// 将path json数据转换为数组
@@ -60,8 +60,8 @@ func (s *GetOrderInstancesService) Run() (responseData interface{}, total int64,
 	pathJsonArray = append(pathJsonArray, organization.Key)
 
 	// 获取当前用户当前绑定组织和所有上级组织绑定的实例
-	var instances []commonModels.InsightDBConfig
-	tx := global.App.DB.Table("insight_db_config").
+	var instances []commonModels.InsightInstances
+	tx := global.App.DB.Table("insight_instances").
 		Where("environment=? and db_type=? and use_type='工单' and organization_key in ?", s.ID, s.DbType, pathJsonArray)
 	total = pagination.Pager(&s.PaginationQ, tx, &instances)
 	return &instances, total, nil
@@ -74,8 +74,8 @@ type GetOrderSchemasService struct {
 }
 
 func (s *GetOrderSchemasService) Run() (responseData interface{}, total int64, err error) {
-	var roles []commonModels.InsightDBSchemas
-	tx := global.App.DB.Table("insight_db_schemas").Where("instance_id=?", s.InstanceID)
+	var roles []commonModels.InsightInstanceSchemas
+	tx := global.App.DB.Table("insight_instance_schemas").Where("instance_id=?", s.InstanceID)
 	total = pagination.Pager(&s.PaginationQ, tx, &roles)
 	return &roles, total, nil
 }
@@ -109,8 +109,8 @@ func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.U
 		Approvers []string `json:"approvers"`
 	}
 
-	var record models.InsightApprovalFlow
-	flow := tx.Table("insight_approval_maps a").Select(`b.definition`).
+	var record models.InsightApprovalFlows
+	flow := tx.Table("insight_approval_flow_users a").Select(`b.definition`).
 		Joins("inner join insight_approval_flow b on a.approval_id = b.approval_id").
 		Where("a.username = ?", s.Username).Take(&record)
 	if flow.Error != nil || flow.RowsAffected == 0 {
@@ -141,18 +141,18 @@ func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.U
 }
 
 // 审核SQL
-func (s *CreateOrderService) inspectSQL(instanceCfg commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *CreateOrderService) inspectSQL(instanceCfg commonModels.InsightInstances) ([]checker.ReturnData, error) {
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
 		return nil, err
 	}
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
+		InstanceID: instanceCfg.InstanceID,
 		DbUser:     instanceCfg.User,
 		DbPassword: plainPassword,
 		DbHost:     instanceCfg.Hostname,
 		DbPort:     instanceCfg.Port,
-		DBParams:   instanceCfg.InspectParams,
 		DBSchema:   s.Schema,
 		Username:   s.Username,
 		SqlText:    s.Content,
@@ -178,13 +178,13 @@ func (s *CreateOrderService) getUserOrg() (organization string) {
 									ia.name ASC SEPARATOR '/'
 							) AS concatenated_names
 						FROM
-							insight_organizations ia
+							insight_orgs ia
 						WHERE
 							EXISTS (
 								SELECT
 									1
 								FROM
-									insight_organizations
+									insight_orgs
 								WHERE
 									JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
 							)
@@ -194,8 +194,8 @@ func (s *CreateOrderService) getUserOrg() (organization string) {
 				),
 				c.name
 			) as organization`).
-		Joins("left join insight_organizations_users b on a.uid = b.uid").
-		Joins("left join insight_organizations c on b.organization_key = c.key").
+		Joins("left join insight_org_users b on a.uid = b.uid").
+		Joins("left join insight_orgs c on b.organization_key = c.key").
 		Where("a.username = ?", s.Username).Take(&record)
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return
@@ -215,10 +215,11 @@ func (s *CreateOrderService) Run() error {
 		return err
 	}
 	// 获取实例配置
-	var config commonModels.InsightDBConfig
-	global.App.DB.Table("`insight_db_config`").
+	var config commonModels.InsightInstances
+	global.App.DB.Table("`insight_instances`").
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
+
 	// 检查DDL/DML工单语法检查是否通过
 	// 不对EXPORT工单进行语法检查，CheckSqlType已经要求EXPORT工单只能为SELECT语句
 	if s.SQLType != "EXPORT" {
@@ -226,14 +227,22 @@ func (s *CreateOrderService) Run() error {
 		if err != nil {
 			return err
 		}
+
+		// 检查语法检查是否通过
 		// status: 0表示语法检查通过，1表示语法检查不通过
 		status := 0
 		for _, row := range returnData {
-			if row.Level != "INFO" {
-				status = 1
+			for _, sum := range row.Summary {
+				if sum.Level != "INFO" {
+					status = 1
+					break
+				}
+			}
+			if status == 1 {
 				break
 			}
 		}
+
 		if status == 1 {
 			return fmt.Errorf("SQL语法检查不通过，请先执行【语法检查】")
 		}
@@ -252,8 +261,8 @@ func (s *CreateOrderService) Run() error {
 	// 生成工单ID
 	orderID := uuid.New()
 	// 获取工单环境名称
-	var env commonModels.InsightDBEnvironments
-	global.App.DB.Table("`insight_db_environments` a").
+	var env commonModels.InsightInstanceEnvironments
+	global.App.DB.Table("`insight_instance_environments` a").
 		Select("a.`name`, a.id").
 		Where("a.id=?", s.Environment).
 		Take(&env)

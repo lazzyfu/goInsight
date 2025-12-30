@@ -16,12 +16,12 @@
 <script setup>
 import { CloseCircleTwoTone, TableOutlined } from '@ant-design/icons-vue';
 
-const props = defineProps({
+defineProps({
   hasAccess: {
     type: Boolean,
     required: true,
   },
-});
+})
 </script>
 
 <style scoped>

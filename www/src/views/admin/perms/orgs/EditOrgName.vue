@@ -88,7 +88,8 @@ const onSubmit = useThrottleFn(async () => {
       emit('update:open', false)
       emit('refresh')
     }
-  } catch (err) {
+  } catch {
+    // ignore
   } finally {
     uiState.loading = false
   }

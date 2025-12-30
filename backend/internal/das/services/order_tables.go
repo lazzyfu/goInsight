@@ -72,7 +72,7 @@ func (g *GetOrderTablesService) getClickHouseMetaData(r *InstanceCfg) (data *[]m
 
 func (s *GetOrderTablesService) Run() (responseData *[]map[string]interface{}, err error) {
 	var cfg InstanceCfg
-	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
+	global.App.DB.Table("insight_instances").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
 	plainPassword, err := utils.Decrypt(cfg.Password)
 	if err != nil {
 		return

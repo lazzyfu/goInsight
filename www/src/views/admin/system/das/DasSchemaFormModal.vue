@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { getInstancesListApi, getSchemasListApi } from '@/api/admin'
+import { getDasInstancesListApi, getDasSchemasListApi } from '@/api/admin'
 import { reactive, ref } from 'vue'
 
 // 定义props和emits
@@ -124,7 +124,7 @@ const changeEnv = async (value) => {
     db_type: formState.db_type,
     is_page: false,
   }
-  const res = await getInstancesListApi(payload).catch(() => {})
+  const res = await getDasInstancesListApi(payload).catch(() => {})
   if (res) {
     uiData.instances = res.data || []
   }
@@ -136,7 +136,7 @@ const changeInstance = async (value) => {
     instance_id: value,
     is_page: false,
   }
-  const res = await getSchemasListApi(payload).catch(() => {})
+  const res = await getDasSchemasListApi(payload).catch(() => {})
   uiData.schemas = res.data || []
 }
 
@@ -152,7 +152,8 @@ const onSubmit = async () => {
     await formRef.value.validateFields()
     uiState.loading = true
     emit('submit', formState)
-  } catch (err) {
+  } catch {
+    // ignore
   } finally {
     uiState.loading = false
   }

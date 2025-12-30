@@ -22,10 +22,10 @@ type InspectOrderSyntaxService struct {
 }
 
 // 获取实例配置
-func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightDBConfig, error) {
+func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightInstances, error) {
 	// 获取实例配置
-	var config commonModels.InsightDBConfig
-	tx := global.App.DB.Table("`insight_db_config`").
+	var config commonModels.InsightInstances
+	tx := global.App.DB.Table("`insight_instances`").
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
 	if tx.RowsAffected == 0 {
@@ -35,18 +35,18 @@ func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightDBC
 }
 
 // 审核SQL
-func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightInstances) ([]checker.ReturnData, error) {
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
 		return nil, err
 	}
 	inspect := checker.SyntaxInspectService{
 		C:          s.C,
+		InstanceID: instanceCfg.InstanceID,
 		DbUser:     instanceCfg.User,
 		DbPassword: plainPassword,
 		DbHost:     instanceCfg.Hostname,
 		DbPort:     instanceCfg.Port,
-		DBParams:   instanceCfg.InspectParams,
 		DBSchema:   s.Schema,
 		Username:   s.Username,
 		SqlText:    s.Content,
@@ -85,11 +85,16 @@ func (s *InspectOrderSyntaxService) Run() (any, error) {
 	// status: 0表示语法检查通过，1表示语法检查不通过
 	status := 0
 	for _, row := range returnData {
-		if row.Level != "INFO" {
-			status = 1
+		for _, sum := range row.Summary {
+			if sum.Level != "INFO" {
+				status = 1
+				break
+			}
+		}
+		if status == 1 {
 			break
 		}
 	}
-	// return
+
 	return map[string]any{"status": status, "data": returnData}, nil
 }

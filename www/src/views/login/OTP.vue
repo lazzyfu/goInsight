@@ -79,7 +79,7 @@ const onSubmit = async () => {
         description: res.message,
       })
     }
-  } catch (e) {
+  } catch {
     message.error('请求失败')
   } finally {
     uiState.loading = false
