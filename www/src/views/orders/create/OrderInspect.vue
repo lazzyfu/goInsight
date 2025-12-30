@@ -63,7 +63,7 @@
 
 <script setup>
 import { message } from 'ant-design-vue'
-import { reactive, computed } from 'vue'
+import { reactive } from 'vue'
 
 const formData = defineModel('modelValue', {
   type: Object,
@@ -123,7 +123,7 @@ const getLevelColor = (level) => {
   return colorMap[level] || 'default'
 }
 
-const setRowClass = (record) => {
+const setRowClass = () => {
   return ''
 }
 

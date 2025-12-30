@@ -70,15 +70,15 @@
 
 <script setup>
 import {
-  approvalOrderApi,
-  claimOrderApi,
-  completeOrderApi,
-  failOrderApi,
-  generateOrderTasksApi,
-  getOrderUsersApi,
-  reviewOrderApi,
-  revokeOrderApi,
-  transferOrderApi
+    approvalOrderApi,
+    claimOrderApi,
+    completeOrderApi,
+    failOrderApi,
+    generateOrderTasksApi,
+    getOrderUsersApi,
+    reviewOrderApi,
+    revokeOrderApi,
+    transferOrderApi
 } from '@/api/order'
 import { useOrderCreatePrefillStore } from '@/store/prefill'
 import { useUserStore } from '@/store/user'
@@ -271,7 +271,7 @@ const clonePlainObject = (value) => {
     // 优先使用 structuredClone（更健壮），否则退化为 JSON 克隆
     if (typeof structuredClone === 'function') return structuredClone(value)
     return JSON.parse(JSON.stringify(value))
-  } catch (e) {
+  } catch {
     return null
   }
 }

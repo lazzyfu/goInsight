@@ -201,9 +201,18 @@ const rules = {
         if (v.length < 8 || v.length > 64) {
           return Promise.reject(new Error('密码长度需在 8 到 64 个字符之间'))
         }
-        // MySQL密码支持大多数字符，建议包含大小写字母、数字和特殊字符
-        const passwordRe = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/
-        if (!passwordRe.test(v)) {
+        // 允许字符：字母数字 + 常见符号，避免复杂正则触发 eslint no-useless-escape
+        const allowedSymbols = new Set(
+          "!@#$%^&*()_+-=[]{};'\"\\|,.<>/?".split('')
+        )
+        for (const ch of v) {
+          const code = ch.charCodeAt(0)
+          const isAZ = code >= 65 && code <= 90
+          const isaz = code >= 97 && code <= 122
+          const is09 = code >= 48 && code <= 57
+          if (isAZ || isaz || is09 || allowedSymbols.has(ch)) {
+            continue
+          }
           return Promise.reject(new Error('密码包含不支持的字符'))
         }
         return Promise.resolve()
@@ -239,6 +248,8 @@ const onSubmit = async () => {
     uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
+    // 避免空 catch 触发 lint；同时便于排查表单校验问题
+    console.error(err)
   } finally {
     uiState.loading = false
   }

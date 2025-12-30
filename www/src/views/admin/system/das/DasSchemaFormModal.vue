@@ -152,7 +152,8 @@ const onSubmit = async () => {
     await formRef.value.validateFields()
     uiState.loading = true
     emit('submit', formState)
-  } catch (err) {
+  } catch {
+    // ignore
   } finally {
     uiState.loading = false
   }

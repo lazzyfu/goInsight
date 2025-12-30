@@ -37,7 +37,7 @@ import { reactive, ref } from 'vue'
 
 // 定义props和emits
 const emit = defineEmits(['update:open', 'submit', 'refresh'])
-const props = defineProps({
+defineProps({
   open: Boolean,
 })
 
@@ -85,6 +85,7 @@ const onSubmit = useThrottleFn(async () => {
       emit('refresh')
     }
   } catch (err) {
+    console.error(err)
   } finally {
     uiState.loading = false
   }

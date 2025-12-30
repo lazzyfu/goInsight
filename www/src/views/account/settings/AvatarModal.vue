@@ -63,11 +63,11 @@
 <script setup>
 import { ChangeAvatarApi } from '@/api/profile'
 import {
-  MinusOutlined,
-  PlusOutlined,
-  RotateLeftOutlined,
-  RotateRightOutlined,
-  UploadOutlined,
+    MinusOutlined,
+    PlusOutlined,
+    RotateLeftOutlined,
+    RotateRightOutlined,
+    UploadOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
@@ -150,7 +150,7 @@ const onSave = () => {
       } else {
         message.error(res.message || '上传失败')
       }
-    } catch (error) {
+    } catch {
       message.error('网络请求异常')
     } finally {
       loading.value = false

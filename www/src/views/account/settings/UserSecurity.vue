@@ -7,8 +7,8 @@
             <a>{{ item.title }}</a>
           </template>
         </a-list-item-meta>
-        <template v-if="item.actions">
-          <a slot="actions" @click="item.actions.callback">{{ item.actions.title }}</a>
+        <template v-if="item.actions" #actions>
+          <a @click="item.actions.callback">{{ item.actions.title }}</a>
         </template>
       </a-list-item>
     </template>
@@ -122,7 +122,7 @@ const showModal = () => {
   open.value = true
 }
 
-const handleCancel = (e) => {
+const handleCancel = () => {
   open.value = false
 }
 

@@ -34,7 +34,7 @@
 import { UserOutlined } from '@ant-design/icons-vue'
 
 // props
-const props = defineProps({
+defineProps({
   definition: {
     type: Array,
     default: () => [],

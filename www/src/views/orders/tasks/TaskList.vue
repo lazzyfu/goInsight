@@ -88,7 +88,7 @@ const progressOptions = [
 ]
 
 // 定时器, 10秒刷新一次
-const { pause, resume, isActive } = useIntervalFn(
+useIntervalFn(
   () => {
     fetchData()
   },
@@ -206,7 +206,7 @@ const showSqlDetail = (record) => {
 }
 
 // 关闭查看SQL弹窗
-const handleCancel = (e) => {
+const handleCancel = () => {
   uiState.open = false
 }
 

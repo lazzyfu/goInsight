@@ -34,8 +34,8 @@
 </template>
 
 <script setup>
-import { InfoCircleOutlined, UserAddOutlined } from '@ant-design/icons-vue';
-import { computed, reactive, ref } from 'vue'; // 引入 computed
+import { InfoCircleOutlined, UserAddOutlined } from '@ant-design/icons-vue'
+import { reactive, ref } from 'vue'
 
 // 定义props和emits
 const emit = defineEmits(['update:open', 'submit'])
@@ -78,12 +78,12 @@ const onSubmit = async () => {
       ...formData.value,
     }
     emit('submit', payload)
-  } catch (err) {
+  } catch {
+    // ignore
   } finally {
     uiState.loading = false
   }
 }
-
 </script>
 
 <style scoped>

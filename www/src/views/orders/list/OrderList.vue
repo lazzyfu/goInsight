@@ -48,7 +48,7 @@ import { useIntervalFn } from '@vueuse/core'
 import { onMounted, reactive } from 'vue'
 
 // 定时器, 10秒刷新一次
-const { pause, resume, isActive } = useIntervalFn(
+useIntervalFn(
   () => {
     fetchData()
   },

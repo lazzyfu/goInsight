@@ -68,7 +68,7 @@ const orderLogs = ref([])
 const getOrderDetail = async () => {
   const res = await getOrderDetailApi({
     order_id: orderId,
-  }).catch((err) => {})
+  }).catch(() => {})
   if (res) {
     orderDetail.value = res.data
   }
@@ -77,7 +77,7 @@ const getOrderDetail = async () => {
 const getOrderApprovalStatus = async () => {
   const res = await getOrderApprovalStatusApi({
     order_id: orderId,
-  }).catch((err) => {})
+  }).catch(() => {})
   if (res) {
     approvalStatus.value = res.data
   }
@@ -86,7 +86,7 @@ const getOrderApprovalStatus = async () => {
 const getOrderLogs = async () => {
   const res = await getOrderLogsApi({
     order_id: orderId,
-  }).catch((err) => {})
+  }).catch(() => {})
   if (res) {
     orderLogs.value = res.data
   }

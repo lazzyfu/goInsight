@@ -75,12 +75,7 @@ import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@a
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import InstanceFormModal from './InstanceFormModal.vue'
-
-// 路由参数
-const route = useRoute()
-const routeParams = route.params
 
 // 状态
 const uiState = reactive({
