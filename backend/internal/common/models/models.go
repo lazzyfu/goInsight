@@ -7,17 +7,17 @@ import (
 )
 
 // 工单环境
-type InsightDBEnvironments struct {
+type InsightInstanceEnvironments struct {
 	*Model
 	Name string `gorm:"type:varchar(32);not null;default:'';comment:环境名;uniqueIndex:uniq_name" json:"name"`
 }
 
-func (InsightDBEnvironments) TableName() string {
-	return "insight_db_environments"
+func (InsightInstanceEnvironments) TableName() string {
+	return "insight_instance_environments"
 }
 
 // 工单DB配置
-type InsightDBConfig struct {
+type InsightInstances struct {
 	*Model
 	InstanceID       uuid.UUID      `gorm:"type:char(36);uniqueIndex:uniq_instance_id" json:"instance_id"`
 	Hostname         string         `gorm:"type:varchar(128);not null;default:'';uniqueIndex:uniq_hostname;comment:主机名" json:"hostname"`
@@ -32,23 +32,23 @@ type InsightDBConfig struct {
 	Remark           string         `gorm:"type:varchar(256);not null;default:'';comment:备注" json:"remark"`
 }
 
-func (InsightDBConfig) TableName() string {
-	return "insight_db_config"
+func (InsightInstances) TableName() string {
+	return "insight_instances"
 }
 
-func (u *InsightDBConfig) BeforeCreate(tx *gorm.DB) (err error) {
+func (u *InsightInstances) BeforeCreate(tx *gorm.DB) (err error) {
 	u.InstanceID, _ = uuid.NewUUID()
 	return
 }
 
-// 自动采集和存储InsightDBConfig配置实例的库
-type InsightDBSchemas struct {
+// 自动采集和存储InsightInstances配置实例的库
+type InsightInstanceSchemas struct {
 	*Model
-	InstanceID uuid.UUID `gorm:"type:char(36);comment:关联insight_db_config的instance_id;uniqueIndex:uniq_schema" json:"instance_id"`
+	InstanceID uuid.UUID `gorm:"type:char(36);comment:关联insight_instances的instance_id;uniqueIndex:uniq_schema" json:"instance_id"`
 	Schema     string    `gorm:"type:varchar(128);not null;default:'';comment:库名;uniqueIndex:uniq_schema" json:"schema"`
 	IsDeleted  bool      `gorm:"type:boolean;not null;default:false;comment:是否删除;uniqueIndex:uniq_schema" json:"is_deleted"`
 }
 
-func (InsightDBSchemas) TableName() string {
-	return "insight_db_schemas"
+func (InsightInstanceSchemas) TableName() string {
+	return "insight_instance_schemas"
 }

@@ -49,7 +49,7 @@ func (InsightRoles) TableName() string {
 
 // key全局唯一
 // ParentID+Name组成唯一索引,表示同一级别下节点名不能重复
-type InsightOrganizations struct {
+type InsightOrgs struct {
 	ID        uint64           `gorm:"primaryKey" json:"id"`
 	Name      string           `gorm:"type:varchar(32);not null;uniqueIndex:uniq_name;comment:节点名" json:"name"`
 	ParentID  uint64           `gorm:"not null;default 0;uniqueIndex:uniq_name;comment:父节点ID,0值表示父节点" json:"parent_id"`
@@ -62,16 +62,16 @@ type InsightOrganizations struct {
 	UpdatedAt models.LocalTime `gorm:"index:idx_updated_at;autoUpdateTime;comment:更新时间" json:"updated_at"`
 }
 
-func (InsightOrganizations) TableName() string {
-	return "insight_organizations"
+func (InsightOrgs) TableName() string {
+	return "insight_orgs"
 }
 
-type InsightOrganizationsUsers struct {
+type InsightOrgUsers struct {
 	*models.Model
 	Uid             uint64 `gorm:"type:bigint;not null;uniqueIndex:uniq_uid;comment:用户ID" json:"uid"`
 	OrganizationKey string `gorm:"type:varchar(256);not null;index:organization_key;comment:搜索路径" json:"organization_key"`
 }
 
-func (InsightOrganizationsUsers) TableName() string {
-	return "insight_organizations_users"
+func (InsightOrgUsers) TableName() string {
+	return "insight_org_users"
 }

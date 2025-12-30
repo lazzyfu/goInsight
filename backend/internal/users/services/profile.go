@@ -24,8 +24,8 @@ func (s *GetUserInfoServices) Run() (responseData interface{}, err error) {
 	var user map[string]interface{}
 	tx := global.App.DB.Table("insight_users a").
 		Select("a.*, ifnull(c.name, '-/-') as organization, ifnull(d.name, '-/-') as role").
-		Joins("left join insight_organizations_users b on a.uid=b.uid").
-		Joins("left join insight_organizations c on b.organization_key=c.key").
+		Joins("left join insight_org_users b on a.uid=b.uid").
+		Joins("left join insight_orgs c on b.organization_key=c.key").
 		Joins("left join insight_roles d on d.id=a.role_id").
 		Where("a.username=?", s.Username).
 		Scan(&user)

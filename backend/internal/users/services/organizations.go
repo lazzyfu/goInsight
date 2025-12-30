@@ -24,8 +24,8 @@ type GetOrganizationsServices struct {
 
 func (s *GetOrganizationsServices) getChildOrganizations(key string, level uint64) []map[string]interface{} {
 	// 迭代子节点，获取所有递归的子节点
-	var childNodes []models.InsightOrganizations
-	global.App.DB.Table("insight_organizations").Where("`key` like ? and level=?", key+"-%", level).Scan(&childNodes)
+	var childNodes []models.InsightOrgs
+	global.App.DB.Table("insight_orgs").Where("`key` like ? and level=?", key+"-%", level).Scan(&childNodes)
 	if len(childNodes) == 0 {
 		return nil
 	}
@@ -48,8 +48,8 @@ func (s *GetOrganizationsServices) getChildOrganizations(key string, level uint6
 
 func (s *GetOrganizationsServices) Run() (responseData interface{}) {
 	// 获取ROOT组织
-	var rootNodes []models.InsightOrganizations
-	global.App.DB.Table("insight_organizations").
+	var rootNodes []models.InsightOrgs
+	global.App.DB.Table("insight_orgs").
 		Where("parent_id=0 and level=1").
 		Scan(&rootNodes)
 	if len(rootNodes) == 0 {
@@ -79,8 +79,8 @@ type CreateRootOrganizationsService struct {
 }
 
 func (s *CreateRootOrganizationsService) Run() error {
-	tx := global.App.DB.Model(&models.InsightOrganizations{})
-	organization := models.InsightOrganizations{Name: s.Name, ParentID: 0, Creator: s.Username, Updater: s.Username, Level: 1}
+	tx := global.App.DB.Model(&models.InsightOrgs{})
+	organization := models.InsightOrgs{Name: s.Name, ParentID: 0, Creator: s.Username, Updater: s.Username, Level: 1}
 	result := tx.Create(&organization)
 	if result.Error != nil {
 		mysqlErr := result.Error.(*mysql.MySQLError)
@@ -92,7 +92,7 @@ func (s *CreateRootOrganizationsService) Run() error {
 	}
 	// 更新key
 	key := fmt.Sprintf("0-%d", organization.ID)
-	global.App.DB.Model(&models.InsightOrganizations{}).Where("id=?", organization.ID).Update("key", key)
+	global.App.DB.Model(&models.InsightOrgs{}).Where("id=?", organization.ID).Update("key", key)
 	return nil
 }
 
@@ -104,8 +104,8 @@ type CreateChildOrganizationsService struct {
 
 func (s *CreateChildOrganizationsService) Run() error {
 	// 判断父节点是否存在
-	var parentOrganization models.InsightOrganizations
-	parentResult := global.App.DB.Table("insight_organizations").Where("`key`=? and `name`=?", s.ParentNodeKey, s.ParentNodeName).First(&parentOrganization)
+	var parentOrganization models.InsightOrgs
+	parentResult := global.App.DB.Table("insight_orgs").Where("`key`=? and `name`=?", s.ParentNodeKey, s.ParentNodeName).First(&parentOrganization)
 	if parentResult.RowsAffected == 0 {
 		return fmt.Errorf("父节点%s不存在", s.ParentNodeName)
 	}
@@ -124,9 +124,9 @@ func (s *CreateChildOrganizationsService) Run() error {
 		return err
 	}
 
-	tx := global.App.DB.Model(&models.InsightOrganizations{})
+	tx := global.App.DB.Model(&models.InsightOrgs{})
 	levelLength := parentOrganization.Level + 1
-	organization := models.InsightOrganizations{
+	organization := models.InsightOrgs{
 		Name:     s.Name,
 		ParentID: parentOrganization.ID,
 		Path:     datatypes.JSON(pathJson),
@@ -145,7 +145,7 @@ func (s *CreateChildOrganizationsService) Run() error {
 	}
 	// 更新key
 	key := fmt.Sprintf("%s-%d", parentOrganization.Key, organization.ID)
-	global.App.DB.Model(&models.InsightOrganizations{}).Where("id=?", organization.ID).Update("key", key)
+	global.App.DB.Model(&models.InsightOrgs{}).Where("id=?", organization.ID).Update("key", key)
 	return nil
 }
 
@@ -156,7 +156,7 @@ type UpdateOrganizationsService struct {
 }
 
 func (s *UpdateOrganizationsService) Run() error {
-	tx := global.App.DB.Table("insight_organizations").Where("`key`=?", s.Key)
+	tx := global.App.DB.Table("insight_orgs").Where("`key`=?", s.Key)
 	result := tx.Updates(map[string]interface{}{
 		"name":    s.Name,
 		"Updater": s.Username,
@@ -178,8 +178,8 @@ type DeleteOrganizationsService struct {
 }
 
 func (s *DeleteOrganizationsService) Run() error {
-	var organization models.InsightOrganizations
-	result := global.App.DB.Table("insight_organizations").Where("`key`=? and `name`=?", s.Key, s.Name).First(&organization)
+	var organization models.InsightOrgs
+	result := global.App.DB.Table("insight_orgs").Where("`key`=? and `name`=?", s.Key, s.Name).First(&organization)
 	if result.RowsAffected == 0 {
 		return fmt.Errorf("节点`%s`不存在", s.Name)
 	}
@@ -187,13 +187,13 @@ func (s *DeleteOrganizationsService) Run() error {
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 删除当前节点
 		if err := tx.Where("`key`=? and `name`=?", s.Key, s.Name).
-			Delete(&models.InsightOrganizations{}).Error; err != nil {
+			Delete(&models.InsightOrgs{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}
 		// 删除所有的子节点
 		if err := tx.Where("`key` like ? and `parent_id`=?", s.Key+"-%", organization.ID).
-			Delete(&models.InsightOrganizations{}).Error; err != nil {
+			Delete(&models.InsightOrgs{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}
@@ -224,9 +224,9 @@ func (s *GetOrganizationsUsersServices) Run() (responseData interface{}, total i
                 concat(
                     (
                         SELECT GROUP_CONCAT(a.name ORDER BY a.name ASC SEPARATOR '/') AS concatenated_names
-                        FROM insight_organizations a
+                        FROM insight_orgs a
                         WHERE EXISTS (
-                            SELECT 1 FROM insight_organizations b
+                            SELECT 1 FROM insight_orgs b
                             WHERE JSON_CONTAINS(c.path, CONCAT('\"', a.key, '\"'))
                         )
                     ),
@@ -237,8 +237,8 @@ func (s *GetOrganizationsUsersServices) Run() (responseData interface{}, total i
             ) as organization_name,
             b.organization_key as organization_key
         `).
-		Joins("JOIN insight_organizations_users b ON a.uid=b.uid").
-		Joins("JOIN insight_organizations c ON c.key=b.organization_key").
+		Joins("JOIN insight_org_users b ON a.uid=b.uid").
+		Joins("JOIN insight_orgs c ON c.key=b.organization_key").
 		Where("b.`organization_key` LIKE ?", s.Key+"%")
 
 	// 搜索
@@ -256,21 +256,21 @@ type BindOrganizationsUsersService struct {
 
 func (s *BindOrganizationsUsersService) Run() error {
 	// 判断节点是否存在
-	var organization models.InsightOrganizations
-	tx := global.App.DB.Table("insight_organizations").Where("`key`=?", s.Key).First(&organization)
+	var organization models.InsightOrgs
+	tx := global.App.DB.Table("insight_orgs").Where("`key`=?", s.Key).First(&organization)
 	if tx.RowsAffected == 0 {
 		return fmt.Errorf("节点[%s]不存在", s.Key)
 	}
 	// 创建记录
 	for _, uid := range s.Users {
-		result := global.App.DB.Create(&models.InsightOrganizationsUsers{Uid: uid, OrganizationKey: s.Key})
+		result := global.App.DB.Create(&models.InsightOrgUsers{Uid: uid, OrganizationKey: s.Key})
 		if result.Error != nil {
 			type user struct {
 				Username         string
 				OrganizationName string
 			}
 			var record user
-			global.App.DB.Table("insight_organizations_users a").
+			global.App.DB.Table("insight_org_users a").
 				Select(`b.username,ifnull(
 					concat(
 						(
@@ -281,13 +281,13 @@ func (s *BindOrganizationsUsersService) Run() error {
 										ia.name ASC SEPARATOR '/'
 								) AS concatenated_names
 							FROM
-								insight_organizations ia
+								insight_orgs ia
 							WHERE
 								EXISTS (
 									SELECT
 										1
 									FROM
-										insight_organizations
+										insight_orgs
 									WHERE
 										JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
 								)
@@ -298,7 +298,7 @@ func (s *BindOrganizationsUsersService) Run() error {
 					c.name
 				) as organization_name`).
 				Joins("join insight_users b on a.uid = b.uid").
-				Joins("join insight_organizations c on a.organization_key = c.key").
+				Joins("join insight_orgs c on a.organization_key = c.key").
 				Where("b.uid=?", uid).Scan(&record)
 			mysqlErr := result.Error.(*mysql.MySQLError)
 			switch mysqlErr.Number {
@@ -317,8 +317,8 @@ type DeleteOrganizationsUsersService struct {
 }
 
 func (s *DeleteOrganizationsUsersService) Run() error {
-	var organizationUsers models.InsightOrganizationsUsers
-	result := global.App.DB.Table("insight_organizations_users").Where("`organization_key`=? and `uid`=?", s.Key, s.Uid).First(&organizationUsers)
+	var organizationUsers models.InsightOrgUsers
+	result := global.App.DB.Table("insight_org_users").Where("`organization_key`=? and `uid`=?", s.Key, s.Uid).First(&organizationUsers)
 	if result.RowsAffected == 0 {
 		return errors.New("记录`%s`不存在")
 	}
@@ -326,7 +326,7 @@ func (s *DeleteOrganizationsUsersService) Run() error {
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 删除当前节点
 		if err := tx.Where("`organization_key`=? and `uid`=?", s.Key, s.Uid).
-			Delete(&models.InsightOrganizationsUsers{}).Error; err != nil {
+			Delete(&models.InsightOrgUsers{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}

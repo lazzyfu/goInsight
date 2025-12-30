@@ -48,9 +48,9 @@ func HasAdminPermission() gin.HandlerFunc {
 // 		}
 // 		var resultOrganization organization
 // 		if err := global.App.DB.Select("io.key, io.path").
-// 			Table("insight_organizations_users ou").
+// 			Table("insight_org_users ou").
 // 			Joins("join insight_users iu on ou.uid=iu.uid").
-// 			Joins("join insight_organizations io on io.key=ou.organization_key").
+// 			Joins("join insight_orgs io on io.key=ou.organization_key").
 // 			Where("iu.username=?", username).
 // 			Scan(&resultOrganization).Error; err != nil {
 // 			// 处理数据库查询错误
@@ -78,7 +78,7 @@ func HasAdminPermission() gin.HandlerFunc {
 // 		if err := global.App.DB.Select("count(*) as count").
 // 			Table("insight_permissions_organizations a").
 // 			Joins("join insight_permissions b on a.permission_id=b.id").
-// 			Joins("join insight_organizations c on a.organization_key=c.key").
+// 			Joins("join insight_orgs c on a.organization_key=c.key").
 // 			Where("c.key in ? and b.name=?", okeys, permission).Scan(&resultCount).Error; err != nil {
 // 			// 处理数据库查询错误
 // 			global.App.Log.WithFields(logrus.Fields{"request_id": requestid.Get(c), "username": username, "error": err}).Error("无法查询用户的权限信息")

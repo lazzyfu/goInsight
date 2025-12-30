@@ -222,6 +222,8 @@ const handleEdit = (record) => {
 
   formState.value = {
     ...record,
+    // 编辑时不回显后端返回的密文/加密串；仅在用户重新输入时才更新
+    password: '',
   }
 
   // 在打开 Modal 之前加载数据
@@ -232,9 +234,15 @@ const handleEdit = (record) => {
 
 // 提交（新增或编辑）
 const onSubmit = useThrottleFn(async (data) => {
+  // 编辑模式下，如果没填写密码，则不提交 password 字段，避免把“空密码”写入或误更新
+  if (uiState.isEditMode && (!data.password || !(data.password + '').trim())) {
+    // eslint-disable-next-line no-unused-vars
+    const { password, ...rest } = data
+    data = rest
+  }
   const res = uiState.isEditMode
-    ? await updateInstancesApi(payload).catch(() => { })
-    : await createInstancesApi(payload).catch(() => { })
+    ? await updateInstancesApi(data).catch(() => { })
+    : await createInstancesApi(data).catch(() => { })
   if (res) {
     message.success('操作成功')
     uiState.isModalOpen = false

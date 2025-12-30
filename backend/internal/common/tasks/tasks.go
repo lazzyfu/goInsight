@@ -50,23 +50,23 @@ var clickhouseQuery string = fmt.Sprintf(`
 // 插入schema数据
 func CreateSchemaRecord(instanceID uuid.UUID, row map[string]interface{}) {
 	// 如果记录不存在，插入
-	var schemas models.InsightDBSchemas
-	result := global.App.DB.Table("insight_db_schemas").Where("`instance_id`=? and `schema`=?", instanceID, row["TABLE_SCHEMA"]).First(&schemas)
+	var schemas models.InsightInstanceSchemas
+	result := global.App.DB.Table("insight_instance_schemas").Where("`instance_id`=? and `schema`=?", instanceID, row["TABLE_SCHEMA"]).First(&schemas)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			schema := models.InsightDBSchemas{InstanceID: instanceID, Schema: row["TABLE_SCHEMA"].(string)}
+			schema := models.InsightInstanceSchemas{InstanceID: instanceID, Schema: row["TABLE_SCHEMA"].(string)}
 			global.App.DB.Create(&schema)
 		}
 	} else {
 		// 如果schema删除后又被新建，更新is_deleted状态
-		global.App.DB.Model(&models.InsightDBSchemas{}).Where("instance_id = ? and `schema`=?", instanceID, row["TABLE_SCHEMA"]).Update(`IsDeleted`, false)
+		global.App.DB.Model(&models.InsightInstanceSchemas{}).Where("instance_id = ? and `schema`=?", instanceID, row["TABLE_SCHEMA"]).Update(`IsDeleted`, false)
 	}
 }
 
 // 将schema记录更新为软删除
 func UpdateSchemaRecordAsSoftDel(instanceID uuid.UUID, schema string) {
 	// 将指定的schema更新为软删除
-	global.App.DB.Model(&models.InsightDBSchemas{}).Where("instance_id=? and `schema`=?", instanceID, schema).Update(`IsDeleted`, true)
+	global.App.DB.Model(&models.InsightInstanceSchemas{}).Where("instance_id=? and `schema`=?", instanceID, schema).Update(`IsDeleted`, true)
 }
 
 // 检查源schema是否被删除
@@ -82,7 +82,7 @@ func CheckSourceSchemasIsDeleted(instanceID uuid.UUID, data *[]map[string]interf
 	}
 	var result []Result
 	var localSchemas []string
-	global.App.DB.Table("insight_db_schemas").Where("`instance_id`=?", instanceID).Scan(&result)
+	global.App.DB.Table("insight_instance_schemas").Where("`instance_id`=?", instanceID).Scan(&result)
 	for _, i := range result {
 		localSchemas = append(localSchemas, i.Schema)
 	}
@@ -97,8 +97,8 @@ func CheckSourceSchemasIsDeleted(instanceID uuid.UUID, data *[]map[string]interf
 // 从用户定义的远程数据库实例同步库信息
 func SyncDBMeta() {
 	// 获取数据库配置列表
-	var records []models.InsightDBConfig
-	global.App.DB.Table("insight_db_config").Scan(&records)
+	var records []models.InsightInstances
+	global.App.DB.Table("insight_instances").Scan(&records)
 	// 启动4个并发
 	var wg sync.WaitGroup
 	ch := make(chan struct{}, 4)
@@ -106,7 +106,7 @@ func SyncDBMeta() {
 		ch <- struct{}{}
 		wg.Add(1)
 		// 获取目标数据库的库信息
-		go func(row models.InsightDBConfig) {
+		go func(row models.InsightInstances) {
 			defer func() {
 				<-ch
 				wg.Done()

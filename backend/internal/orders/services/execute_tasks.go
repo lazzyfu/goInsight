@@ -153,7 +153,7 @@ func executeTask(task ordersModels.InsightOrderTasks) (string, error) {
 	var record Record
 	tx := global.App.DB.Table("`insight_order_records` a").
 		Select("a.db_type,a.sql_type,a.schema,a.export_file_format,b.hostname,b.port,b.user,b.password").
-		Joins("join `insight_db_config` b on a.instance_id=b.instance_id").
+		Joins("join `insight_instances` b on a.instance_id=b.instance_id").
 		Where("a.order_id=?", task.OrderID).Take(&record)
 	if tx.RowsAffected == 0 {
 		returnData := base.ReturnData{Error: "执行失败，没有发现工单关联的数据库信息"}

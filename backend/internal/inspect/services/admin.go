@@ -17,8 +17,8 @@ type AdminGlobalInspectParamsServices struct {
 }
 
 func (s *AdminGlobalInspectParamsServices) Run() (responseData any, total int64, err error) {
-	var params []models.InsightGlobalInspectParams
-	tx := global.App.DB.Model(&models.InsightGlobalInspectParams{})
+	var params []models.InsightInspectGlobalParams
+	tx := global.App.DB.Model(&models.InsightInspectGlobalParams{})
 	// 搜索
 	if s.Search != "" {
 		tx = tx.Where("`title` like ?", "%"+s.Search+"%")
@@ -35,7 +35,7 @@ type AdminUpdateGlobalInspectParamsService struct {
 
 func (s *AdminUpdateGlobalInspectParamsService) Run() error {
 	// 只修改value
-	tx := global.App.DB.Model(&models.InsightGlobalInspectParams{}).Where("id=? and `key`=?", s.ID, s.Key)
+	tx := global.App.DB.Model(&models.InsightInspectGlobalParams{}).Where("id=? and `key`=?", s.ID, s.Key)
 	result := tx.Updates(map[string]any{
 		"value": s.Value,
 	})

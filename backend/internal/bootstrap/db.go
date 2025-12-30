@@ -93,28 +93,28 @@ func initializeTables(db *gorm.DB) {
 		// 用户
 		&usersModels.InsightUsers{},
 		&usersModels.InsightRoles{},
-		&usersModels.InsightOrganizations{},
-		&usersModels.InsightOrganizationsUsers{},
+		&usersModels.InsightOrgs{},
+		&usersModels.InsightOrgUsers{},
 		// common
-		&commonModels.InsightDBEnvironments{},
-		&commonModels.InsightDBConfig{},
-		&commonModels.InsightDBSchemas{},
+		&commonModels.InsightInstanceEnvironments{},
+		&commonModels.InsightInstances{},
+		&commonModels.InsightInstanceSchemas{},
 		// inspect
-		&inspectModels.InsightGlobalInspectParams{},
-		&inspectModels.InsightInstanceInspectParams{},
+		&inspectModels.InsightInspectGlobalParams{},
+		&inspectModels.InsightInspectInstanceParams{},
 		// das
-		&dasModels.InsightDASUserSchemaPermissions{},
-		&dasModels.InsightDASUserTablePermissions{},
+		&dasModels.InsightDasSchemaPerms{},
+		&dasModels.InsightDasTablePerms{},
 		&dasModels.InsightDASRecords{},
-		&dasModels.InsightDASAllowedOperations{},
+		&dasModels.InsightDASOperations{},
 		&dasModels.InsightDASFavorites{},
 		// orders
 		&ordersModels.InsightOrderRecords{},
 		&ordersModels.InsightOrderTasks{},
 		&ordersModels.InsightOrderMessages{},
-		&ordersModels.InsightApprovalFlow{},
+		&ordersModels.InsightApprovalFlows{},
 		&ordersModels.InsightApprovalRecords{},
-		&ordersModels.InsightApprovalMaps{},
+		&ordersModels.InsightApprovalFlowUsers{},
 		&ordersModels.InsightOrderLogs{},
 	)
 	if err != nil {
@@ -209,8 +209,8 @@ func initializeAllowedOperations(db *gorm.DB) {
 		{"name": "ShowSessionStates", "is_enable": false, "remark": ""},
 	}
 	for _, i := range ops {
-		var allowedOperations dasModels.InsightDASAllowedOperations
-		_ = db.FirstOrCreate(&allowedOperations, dasModels.InsightDASAllowedOperations{
+		var allowedOperations dasModels.InsightDASOperations
+		_ = db.FirstOrCreate(&allowedOperations, dasModels.InsightDASOperations{
 			Name:     i["name"].(string),
 			IsEnable: i["is_enable"].(bool),
 			Remark:   i["remark"].(string),
@@ -297,10 +297,10 @@ func initializeGlobalInspectParams(db *gorm.DB) {
 	}
 
 	for _, param := range params {
-		var inspectGlobalParam inspectModels.InsightGlobalInspectParams
+		var inspectGlobalParam inspectModels.InsightInspectGlobalParams
 		err := db.Where("`key` = ?", param["Key"].(string)).First(&inspectGlobalParam).Error
 		if err == gorm.ErrRecordNotFound {
-			newParam := inspectModels.InsightGlobalInspectParams{
+			newParam := inspectModels.InsightInspectGlobalParams{
 				Title: param["title"].(string),
 				Key:   param["Key"].(string),
 				Value: param["Value"].(string),

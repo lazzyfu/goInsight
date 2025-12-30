@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// parseInspectParamTypedValue 解析从 InsightGlobalInspectParams / InsightInstanceInspectParams 读出的 Value。
+// parseInspectParamTypedValue 解析从 InsightInspectGlobalParams / InsightInspectInstanceParams 读出的 Value。
 // rawType 仅允许：number / boolean / string（与 initializeInspectParams 的 Type 一致）。
 // string 类型目前只有两种“写法”：
 // 1) TABLE_SUPPORT_CHARSET: "utf8,utf8_general_ci;utf8mb4,utf8mb4_general_ci" -> []map[string]string

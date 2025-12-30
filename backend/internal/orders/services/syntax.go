@@ -22,10 +22,10 @@ type InspectOrderSyntaxService struct {
 }
 
 // 获取实例配置
-func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightDBConfig, error) {
+func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightInstances, error) {
 	// 获取实例配置
-	var config commonModels.InsightDBConfig
-	tx := global.App.DB.Table("`insight_db_config`").
+	var config commonModels.InsightInstances
+	tx := global.App.DB.Table("`insight_instances`").
 		Where("instance_id=?", s.InstanceID).
 		First(&config)
 	if tx.RowsAffected == 0 {
@@ -35,7 +35,7 @@ func (s *InspectOrderSyntaxService) getInstanceConfig() (commonModels.InsightDBC
 }
 
 // 审核SQL
-func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightDBConfig) ([]checker.ReturnData, error) {
+func (s *InspectOrderSyntaxService) inspectSQL(instanceCfg commonModels.InsightInstances) ([]checker.ReturnData, error) {
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
 		return nil, err

@@ -66,20 +66,15 @@
         <a-input v-model:value="formData.user" placeholder="请输入用户" />
       </a-form-item>
 
-      <a-form-item label="密码" name="password" has-feedback>
-        <a-input-password v-model:value="formData.password" placeholder="请输入密码" />
-      </a-form-item>
-
       <a-form-item
-        label="审核参数"
-        name="inspect_params"
+        label="密码"
+        name="password"
         has-feedback
-        help="格式要求为JSON类型，默认为{}，表示继承全局审核参数"
+        :extra="isEditMode ? '留空表示不修改密码；如需修改，请输入新密码。' : ''"
       >
-        <a-textarea
-          :rows="8"
-          v-model:value="formData.inspect_params"
-          placeholder=" 请输入自定义审核参数，默认为{}"
+        <a-input-password
+          v-model:value="formData.password"
+          :placeholder="isEditMode ? '留空则不修改密码' : '请输入密码'"
         />
       </a-form-item>
 
@@ -91,7 +86,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 // 定义props和emits
 const props = defineProps({
@@ -101,6 +96,10 @@ const props = defineProps({
   organizations: Array,
 })
 const emit = defineEmits(['update:open', 'submit'])
+
+// 是否编辑态：通过 title 粗略判断（InstanceList.vue 传入“编辑数据库实例/新增数据库实例”）
+// 这里不新增 props 字段，保持兼容；若后续需要更严谨，可改为显式传 isEdit。
+const isEditMode = computed(() => (props.title || '').includes('编辑'))
 
 // 表单数据
 const formData = defineModel('modelValue', {
@@ -187,9 +186,17 @@ const rules = {
     },
   ],
   password: [
-    { required: true, message: '请输入访问数据库的密码', trigger: 'blur' },
+    {
+      required: !isEditMode.value,
+      message: '请输入访问数据库的密码',
+      trigger: ['change', 'blur'],
+    },
     {
       validator: (_, value) => {
+        // 编辑态：不改密码则允许留空
+        if (isEditMode.value && (!value || !(value + '').trim())) {
+          return Promise.resolve()
+        }
         const v = (value || '').trim()
         if (v.length < 8 || v.length > 64) {
           return Promise.reject(new Error('密码长度需在 8 到 64 个字符之间'))
@@ -201,25 +208,7 @@ const rules = {
         }
         return Promise.resolve()
       },
-      trigger: 'blur',
-    },
-  ],
-  inspect_params: [
-    {
-      validator: (_, value) => {
-        const v = (value || '').trim()
-        if (!v) return Promise.resolve() // 空表示继承全局参数
-        try {
-          const parsed = JSON.parse(v)
-          if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-            return Promise.reject(new Error('审核参数需为 JSON 对象，如 {}'))
-          }
-        } catch {
-          return Promise.reject(new Error('请输入合法的 JSON 格式，如 {"key":"value"}'))
-        }
-        return Promise.resolve()
-      },
-      trigger: 'blur',
+      trigger: ['change', 'blur'],
     },
   ],
   remark: [

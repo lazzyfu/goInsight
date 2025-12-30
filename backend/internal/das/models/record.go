@@ -10,7 +10,7 @@ import (
 type InsightDASRecords struct {
 	*models.Model
 	Username       string         `gorm:"type:varchar(128);not null;comment:执行的用户;index:idx_username" json:"username"`
-	InstanceID     uuid.UUID      `gorm:"type:char(36);comment:关联insight_db_config的instance_id;index:idx_instance_id" json:"instance_id"`
+	InstanceID     uuid.UUID      `gorm:"type:char(36);comment:关联insight_instances的instance_id;index:idx_instance_id" json:"instance_id"`
 	Schema         string         `gorm:"type:varchar(512);not null;default:'';comment:执行的库名;index:idx_schema" json:"schema"`
 	Tables         string         `gorm:"type:varchar(4096);not null;default:'';comment:提取的库表名" json:"tables"`
 	Sqltext        string         `gorm:"type:text;null;default:null;comment:用户输入的原始SQL" json:"sqltext"`

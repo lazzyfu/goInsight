@@ -26,13 +26,13 @@ type AdminGetInstancesServices struct {
 
 func (s *AdminGetInstancesServices) Run() (responseData interface{}, total int64, err error) {
 	type DBConfig struct {
-		models.InsightDBConfig
+		models.InsightInstances
 		EnvironmentName  string `json:"environment_name"`
 		OrganizationName string `json:"organization_name"`
 		OrganizationKey  string `json:"organization_key"`
 	}
 	var dbs []DBConfig
-	tx := global.App.DB.Select(`a.id,a.instance_id,a.hostname,a.port,a.user,a.password,a.use_type,a.db_type,a.inspect_params,a.organization_path,b.id as environment, 
+	tx := global.App.DB.Select(`a.id,a.instance_id,a.hostname,a.port,a.user,a.use_type,a.db_type,a.organization_path,b.id as environment, 
 							b.name as environment_name, a.remark, ifnull(
 								concat(
 									(
@@ -43,13 +43,13 @@ func (s *AdminGetInstancesServices) Run() (responseData interface{}, total int64
 													ia.name ASC SEPARATOR '/'
 											) AS concatenated_names
 										FROM
-											insight_organizations ia
+											insight_orgs ia
 										WHERE
 											EXISTS (
 												SELECT
 													1
 												FROM
-													insight_organizations
+													insight_orgs
 												WHERE
 													JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
 											)
@@ -59,9 +59,9 @@ func (s *AdminGetInstancesServices) Run() (responseData interface{}, total int64
 								),
 								c.name
 							) as organization_name, a.created_at, a.updated_at`).
-		Table("insight_db_config a").
-		Joins("left join insight_db_environments b on a.environment=b.id").
-		Joins("left join insight_organizations c on a.organization_key=c.key")
+		Table("insight_instances a").
+		Joins("left join insight_instance_environments b on a.environment=b.id").
+		Joins("left join insight_orgs c on a.organization_key=c.key")
 	// 搜索
 	if s.Search != "" {
 		tx = tx.Where("`hostname` like ? or `remark` like ? or `instance_id` like ?", "%"+s.Search+"%", "%"+s.Search+"%", "%"+s.Search+"%")
@@ -94,7 +94,7 @@ func (s *AdminCreateInstancesService) Run() error {
 		return err
 	}
 	// 新增记录
-	db := models.InsightDBConfig{
+	db := models.InsightInstances{
 		Hostname:         s.Hostname,
 		Port:             s.Port,
 		User:             s.User,
@@ -107,7 +107,7 @@ func (s *AdminCreateInstancesService) Run() error {
 		Remark:           s.Remark,
 		InstanceID:       uuid.New(),
 	}
-	tx := global.App.DB.Model(&models.InsightDBConfig{})
+	tx := global.App.DB.Model(&models.InsightInstances{})
 	result := tx.Create(&db)
 
 	if result.Error != nil {
@@ -135,30 +135,29 @@ func (s *AdminUpdateInstancesService) Run() error {
 	}
 	organizationKeyJson := datatypes.JSON(organizationKey)
 
-	// 审核参数
-	jsonInspectParams, err := json.Marshal(s.InspectParams)
-	if err != nil {
-		return err
-	}
-	// 加密密码
-	encryptPassword, err := utils.Encrypt(s.Password)
-	if err != nil {
-		return err
-	}
-	// 更新记录
-	result := global.App.DB.Model(&models.InsightDBConfig{}).Where("id=?", s.ID).Updates(map[string]interface{}{
+	updates := map[string]interface{}{
 		"hostname":          s.Hostname,
 		"port":              s.Port,
 		"user":              s.User,
-		"password":          encryptPassword,
-		"inspect_params":    datatypes.JSON(jsonInspectParams),
 		"use_type":          s.UseType,
 		"db_type":           s.DbType,
 		"environment":       s.Environment,
 		"organization_key":  s.OrganizationKey[len(s.OrganizationKey)-1],
 		"organization_path": organizationKeyJson,
 		"remark":            s.Remark,
-	})
+	}
+
+	// 仅当传入非空 password 时才更新密码
+	if s.Password != "" {
+		encryptPassword, err := utils.Encrypt(s.Password)
+		if err != nil {
+			return err
+		}
+		updates["password"] = encryptPassword
+	}
+
+	// 更新记录
+	result := global.App.DB.Model(&models.InsightInstances{}).Where("id=?", s.ID).Updates(updates)
 	if result.Error != nil {
 		mysqlErr := result.Error.(*mysql.MySQLError)
 		switch mysqlErr.Number {
@@ -176,7 +175,7 @@ type AdminDeleteInstanceConfigsService struct {
 }
 
 func (s *AdminDeleteInstanceConfigsService) Run() error {
-	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightDBConfig{})
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&models.InsightInstances{})
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -189,8 +188,8 @@ type AdminGetInstanceInspectParamsService struct {
 }
 
 func (s *AdminGetInstanceInspectParamsService) Run() (responseData any, total int64, err error) {
-	var records []inspectModel.InsightInstanceInspectParams
-	tx := global.App.DB.Model(&inspectModel.InsightInstanceInspectParams{}).Where("instance_id=?", s.InstanceID)
+	var records []inspectModel.InsightInspectInstanceParams
+	tx := global.App.DB.Model(&inspectModel.InsightInspectInstanceParams{}).Where("instance_id=?", s.InstanceID)
 	// 搜索
 	if s.Search != "" {
 		tx = tx.Where("`title` like ? ", "%"+s.Search+"%")
@@ -211,14 +210,14 @@ func (s *AdminCreateInstanceInspectParamsService) Run() error {
 	}
 
 	// 新增记录
-	db := inspectModel.InsightInstanceInspectParams{
+	db := inspectModel.InsightInspectInstanceParams{
 		Title:      s.Title,
 		Type:       models.EnumType(s.Type),
 		Key:        s.Key,
 		Value:      s.Value,
 		InstanceID: instanceID,
 	}
-	tx := global.App.DB.Model(&inspectModel.InsightInstanceInspectParams{})
+	tx := global.App.DB.Model(&inspectModel.InsightInspectInstanceParams{})
 	result := tx.Create(&db)
 
 	if result.Error != nil {
@@ -240,7 +239,7 @@ type AdminUpdateInstanceInspectParamsService struct {
 
 func (s *AdminUpdateInstanceInspectParamsService) Run() error {
 	// 只修改value
-	tx := global.App.DB.Model(&inspectModel.InsightInstanceInspectParams{}).Where("id=? and instance_id=? and `key`=?", s.ID, s.InstanceID, s.Key)
+	tx := global.App.DB.Model(&inspectModel.InsightInspectInstanceParams{}).Where("id=? and instance_id=? and `key`=?", s.ID, s.InstanceID, s.Key)
 	result := tx.Updates(map[string]any{
 		"value": s.Value,
 	})
@@ -256,7 +255,7 @@ type AdminDeleteInstanceInspectParamsService struct {
 }
 
 func (s *AdminDeleteInstanceInspectParamsService) Run() error {
-	tx := global.App.DB.Where("id=?", s.ID).Delete(&inspectModel.InsightInstanceInspectParams{})
+	tx := global.App.DB.Where("id=?", s.ID).Delete(&inspectModel.InsightInspectInstanceParams{})
 	if tx.Error != nil {
 		return tx.Error
 	}

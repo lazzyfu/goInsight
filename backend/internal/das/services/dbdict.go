@@ -48,9 +48,9 @@ func (s *GetDbDictService) validatePerms(uuid uuid.UUID) error {
 	return nil
 }
 
-func (s *GetDbDictService) getInstanceCfg() (record models.InsightDBConfig, err error) {
+func (s *GetDbDictService) getInstanceCfg() (record models.InsightInstances, err error) {
 	// 获取DB配置
-	r := global.App.DB.Table("`insight_db_config` a").
+	r := global.App.DB.Table("`insight_instances` a").
 		Select("a.`hostname`, a.`port`, a.`user`, a.`password`").
 		Where("a.instance_id=?", s.InstanceID).
 		Take(&record)
@@ -67,7 +67,7 @@ func (s *GetDbDictService) getDbType() (string, error) {
 		DbType string `json:"db_type"`
 	}
 	var result dbTypeResult
-	r := global.App.DB.Table("`insight_db_config` a").
+	r := global.App.DB.Table("`insight_instances` a").
 		Select("a.`db_type`").
 		Where("a.instance_id=?", s.InstanceID).
 		Take(&result)
@@ -78,7 +78,7 @@ func (s *GetDbDictService) getDbType() (string, error) {
 	return result.DbType, nil
 }
 
-func (s *GetDbDictService) getDbDict(instanceCfg models.InsightDBConfig) (data *[]map[string]interface{}, err error) {
+func (s *GetDbDictService) getDbDict(instanceCfg models.InsightInstances) (data *[]map[string]interface{}, err error) {
 	query := fmt.Sprintf(`
 					select
 						t.TABLE_NAME,

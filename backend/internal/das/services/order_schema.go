@@ -22,10 +22,10 @@ type GetOrderSchemasService struct {
 
 func (s *GetOrderSchemasService) Run() ([]OrderSchemasResult, error) {
 	var results []OrderSchemasResult
-	global.App.DB.Table("`insight_db_schemas` a").
+	global.App.DB.Table("`insight_instance_schemas` a").
 		Select("a.`instance_id`, a.`schema`, b.`remark`").
-		Joins("join `insight_db_config` b on a.instance_id = b.instance_id").
-		Joins("join `insight_db_environments` c on b.environment = c.id").
+		Joins("join `insight_instances` b on a.instance_id = b.instance_id").
+		Joins("join `insight_instance_environments` c on b.environment = c.id").
 		Where("c.name=?", s.Environment).
 		Group("a.`instance_id`, a.`schema`, b.`remark`").
 		Scan(&results)

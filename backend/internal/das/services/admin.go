@@ -27,7 +27,7 @@ type AdminGetSchemasGrantService struct {
 
 func (s *AdminGetSchemasGrantService) Run() (responseData any, total int64, err error) {
 	type result struct {
-		models.InsightDASUserSchemaPermissions
+		models.InsightDasSchemaPerms
 		Hostname    string `json:"hostname"`
 		Port        int    `json:"port"`
 		DBType      string `json:"db_type"`
@@ -36,9 +36,9 @@ func (s *AdminGetSchemasGrantService) Run() (responseData any, total int64, err 
 	}
 	var schemaPerms []result
 	tx := global.App.DB.Select("a.id, a.username,a.schema,a.instance_id, b.hostname, b.port,b.db_type, c.name as environment, b.remark").
-		Table("insight_das_user_schema_permissions a").
-		Joins("left join insight_db_config b on a.instance_id=b.instance_id").
-		Joins("left join insight_db_environments c on b.environment=c.id").
+		Table("insight_das_schema_perms a").
+		Joins("left join insight_instances b on a.instance_id=b.instance_id").
+		Joins("left join insight_instance_environments c on b.environment=c.id").
 		Order("a.updated_at desc")
 	// 搜索
 	if s.Search != "" {
@@ -58,8 +58,8 @@ type AdminGetInstancesListService struct {
 }
 
 func (s *AdminGetInstancesListService) Run() (responseData any, total int64, err error) {
-	var configs []commonModels.InsightDBConfig
-	tx := global.App.DB.Table("insight_db_config").Where("environment=? and db_type=? and use_type='查询'", s.ID, s.DbType)
+	var configs []commonModels.InsightInstances
+	tx := global.App.DB.Table("insight_instances").Where("environment=? and db_type=? and use_type='查询'", s.ID, s.DbType)
 	total = pagination.Pager(&s.PaginationQ, tx, &configs)
 	return &configs, total, nil
 }
@@ -70,8 +70,8 @@ type AdminGetSchemasListService struct {
 }
 
 func (s *AdminGetSchemasListService) Run() (responseData any, total int64, err error) {
-	var roles []commonModels.InsightDBSchemas
-	tx := global.App.DB.Table("insight_db_schemas").Where("instance_id=?", s.InstanceID)
+	var roles []commonModels.InsightInstanceSchemas
+	tx := global.App.DB.Table("insight_instance_schemas").Where("instance_id=?", s.InstanceID)
 	total = pagination.Pager(&s.PaginationQ, tx, &roles)
 	return &roles, total, nil
 }
@@ -136,7 +136,7 @@ func (g *AdminGetTablesListService) getClickHouseMetaData(r *InstanceCfg) (data 
 
 func (s *AdminGetTablesListService) Run() (responseData *[]map[string]any, err error) {
 	var cfg InstanceCfg
-	global.App.DB.Table("insight_db_config").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
+	global.App.DB.Table("insight_instances").Where("`instance_id`=?", s.InstanceID).Take(&cfg)
 
 	plainPassword, err := utils.Decrypt(cfg.Password)
 	if err != nil {
@@ -165,14 +165,14 @@ func (s *AdminCreateSchemasGrantService) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	schemaRecord := models.InsightDASUserSchemaPermissions{
+	schemaRecord := models.InsightDasSchemaPerms{
 		Username:   s.Username,
 		Schema:     s.Schema,
 		InstanceID: instance_id,
 	}
-	tableRecords := []models.InsightDASUserTablePermissions{}
+	tableRecords := []models.InsightDasTablePerms{}
 	for _, table := range s.Tables {
-		tableRecords = append(tableRecords, models.InsightDASUserTablePermissions{
+		tableRecords = append(tableRecords, models.InsightDasTablePerms{
 			Username:   s.Username,
 			Schema:     s.Schema,
 			InstanceID: instance_id,
@@ -181,7 +181,7 @@ func (s *AdminCreateSchemasGrantService) Run() (err error) {
 		})
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&models.InsightDASUserSchemaPermissions{}).Create(&schemaRecord).Error; err != nil {
+		if err := tx.Model(&models.InsightDasSchemaPerms{}).Create(&schemaRecord).Error; err != nil {
 			mysqlErr := err.(*mysql.MySQLError)
 			switch mysqlErr.Number {
 			case 1062:
@@ -190,7 +190,7 @@ func (s *AdminCreateSchemasGrantService) Run() (err error) {
 			global.App.Log.Error(err)
 			return err
 		}
-		if err := tx.Model(&models.InsightDASUserTablePermissions{}).CreateInBatches(&tableRecords, len(tableRecords)).Error; err != nil {
+		if err := tx.Model(&models.InsightDasTablePerms{}).CreateInBatches(&tableRecords, len(tableRecords)).Error; err != nil {
 			mysqlErr := err.(*mysql.MySQLError)
 			switch mysqlErr.Number {
 			case 1062:
@@ -209,8 +209,8 @@ type AdminGetTablesGrantService struct {
 }
 
 func (s *AdminGetTablesGrantService) Run() (responseData any, total int64, err error) {
-	var tables []models.InsightDASUserTablePermissions
-	tx := global.App.DB.Model(&models.InsightDASUserTablePermissions{}).
+	var tables []models.InsightDasTablePerms
+	tx := global.App.DB.Model(&models.InsightDasTablePerms{}).
 		Where("username=? and instance_id=? and `schema`=?", s.Username, s.InstanceID, s.Schema).
 		Order("created_at asc").
 		Scan(&tables)
@@ -233,9 +233,9 @@ func (s *AdminCreateTablesGrantService) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	tableRecords := []models.InsightDASUserTablePermissions{}
+	tableRecords := []models.InsightDasTablePerms{}
 	for _, table := range s.Tables {
-		tableRecords = append(tableRecords, models.InsightDASUserTablePermissions{
+		tableRecords = append(tableRecords, models.InsightDasTablePerms{
 			Username:   s.Username,
 			Schema:     s.Schema,
 			InstanceID: instance_id,
@@ -244,7 +244,7 @@ func (s *AdminCreateTablesGrantService) Run() (err error) {
 		})
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&models.InsightDASUserTablePermissions{}).CreateInBatches(&tableRecords, len(tableRecords)).Error; err != nil {
+		if err := tx.Model(&models.InsightDasTablePerms{}).CreateInBatches(&tableRecords, len(tableRecords)).Error; err != nil {
 			mysqlErr := err.(*mysql.MySQLError)
 			switch mysqlErr.Number {
 			case 1062:
@@ -263,8 +263,8 @@ type AdminDeleteSchemasGrantService struct {
 }
 
 func (s *AdminDeleteSchemasGrantService) Run() error {
-	var schemaPerms models.InsightDASUserSchemaPermissions
-	tx := global.App.DB.Model(&models.InsightDASUserSchemaPermissions{}).
+	var schemaPerms models.InsightDasSchemaPerms
+	tx := global.App.DB.Model(&models.InsightDasSchemaPerms{}).
 		Where("id=?", s.ID).
 		Take(&schemaPerms)
 	if tx.RowsAffected == 0 {
@@ -272,12 +272,12 @@ func (s *AdminDeleteSchemasGrantService) Run() error {
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("id=?", s.ID).
-			Delete(&models.InsightDASUserSchemaPermissions{}).Error; err != nil {
+			Delete(&models.InsightDasSchemaPerms{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}
 		if err := tx.Where("username=? and instance_id=? AND `schema`=?", schemaPerms.Username, schemaPerms.InstanceID, schemaPerms.Schema).
-			Delete(&models.InsightDASUserTablePermissions{}).Error; err != nil {
+			Delete(&models.InsightDasTablePerms{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}
@@ -292,7 +292,7 @@ type AdminDeleteTablesGrantService struct {
 
 func (s *AdminDeleteTablesGrantService) Run() error {
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Where("id=?", s.ID).Delete(&models.InsightDASUserTablePermissions{}).Error; err != nil {
+		if err := tx.Where("id=?", s.ID).Delete(&models.InsightDasTablePerms{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}

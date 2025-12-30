@@ -66,14 +66,14 @@ func (s *SyntaxInspectService) initDB() {
 
 // 初始化默认审核参数
 func (s *SyntaxInspectService) initDefaultInspectParams() error {
-	// 读取全局审核参数（insight_global_inspect_params），数据由 bootstrap.initializeInspectParams 初始化
-	var rows []models.InsightGlobalInspectParams
-	tx := global.App.DB.Model(&models.InsightGlobalInspectParams{}).Scan(&rows)
+	// 读取全局审核参数（insight_inspect_global_params），数据由 bootstrap.initializeInspectParams 初始化
+	var rows []models.InsightInspectGlobalParams
+	tx := global.App.DB.Model(&models.InsightInspectGlobalParams{}).Scan(&rows)
 	if tx.Error != nil {
 		return fmt.Errorf("获取审核参数失败: %v", tx.Error)
 	}
 	if tx.RowsAffected == 0 {
-		return errors.New("获取审核参数失败，表insight_global_inspect_params未找到记录")
+		return errors.New("获取审核参数失败，表insight_inspect_global_params未找到记录")
 	}
 
 	params := make(map[string]any, len(rows))
@@ -101,8 +101,8 @@ func (s *SyntaxInspectService) initDefaultInspectParams() error {
 func (s *SyntaxInspectService) initDBInspectParams() error {
 	// 1) 先从实例表读取审核参数（优先级高于全局默认）
 	if s.InstanceID != uuid.Nil {
-		var rows []models.InsightInstanceInspectParams
-		tx := global.App.DB.Model(&models.InsightInstanceInspectParams{}).
+		var rows []models.InsightInspectInstanceParams
+		tx := global.App.DB.Model(&models.InsightInspectInstanceParams{}).
 			Where("instance_id = ?", s.InstanceID).
 			Scan(&rows)
 		if tx.Error != nil {
