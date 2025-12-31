@@ -3,8 +3,8 @@
     <a-layout class="layout" style="min-height: 100vh">
       <a-layout-header class="header">
         <a-row type="flex">
-          <a-col :flex="12">
-            <img src="@/assets/logo.svg" width="100" height="60" />
+          <a-col :flex="24">
+            <img class="app-logo" src="@/assets/logo.svg" />
           </a-col>
           <a-col :flex="4">
             <menu-unfold-outlined v-if="data.collapsed" @click="toggleCollapse" />
@@ -199,6 +199,15 @@ onMounted(async () => {
 
 <style scoped>
 /* 样式保持不变 */
+.app-logo {
+  height: 60px;
+  width: auto;
+  max-width: 360px;
+  object-fit: contain;
+  display: block;
+  transform: translateY(-2px);
+}
+
 .layout-sider {
   overflow: auto;
   height: calc(100vh - 60px);
@@ -225,5 +234,6 @@ onMounted(async () => {
 .ant-row {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
 }
 </style>

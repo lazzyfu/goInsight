@@ -1,7 +1,6 @@
 package config
 
 type App struct {
-	Title         string `mapstructure:"title" json:"title" yaml:"title"`
 	ListenAddress string `mapstructure:"listen_address" json:"listen_address" yaml:"listen_address"`
 	Environment   string `mapstructure:"environment" json:"environment" yaml:"environment"`
 	SECRET_KEY    string `mapstructure:"secret_key" json:"secret_key" yaml:"secret_key"`
@@ -38,10 +37,9 @@ type Redis struct {
 }
 
 type Das struct {
-	MaxExecutionTime  uint64   `mapstructure:"max_execution_time" json:"max_execution_time" yaml:"max_execution_time"`
-	DefaultReturnRows uint64   `mapstructure:"default_return_rows" json:"default_return_rows" yaml:"default_return_rows"`
-	MaxReturnRows     uint64   `mapstructure:"max_return_rows" json:"max_return_rows" yaml:"max_return_rows"`
-	AllowedUserAgents []string `mapstructure:"allowed_useragents" json:"allowed_useragents" yaml:"allowed_useragents"`
+	MaxExecutionTime  uint64 `mapstructure:"max_execution_time" json:"max_execution_time" yaml:"max_execution_time"`
+	DefaultReturnRows uint64 `mapstructure:"default_return_rows" json:"default_return_rows" yaml:"default_return_rows"`
+	MaxReturnRows     uint64 `mapstructure:"max_return_rows" json:"max_return_rows" yaml:"max_return_rows"`
 }
 
 type Ghost struct {

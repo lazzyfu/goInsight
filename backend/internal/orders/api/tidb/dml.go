@@ -2,6 +2,7 @@ package tidb
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/pkg/utils"
@@ -20,7 +21,8 @@ func (e *ExecuteTiDBDML) Run() (data base.ReturnData, err error) {
 	publisher := base.NewRedisPublisher()
 
 	log := func(msg string) {
-		formatted := logger.Add(msg)
+		cleaned := strings.TrimSpace(msg)
+		formatted := logger.Add(cleaned) + "\n"
 		publisher.Publish(e.OrderID, formatted, "")
 	}
 

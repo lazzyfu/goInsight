@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/lazzyfu/goinsight/internal/global"
 
@@ -21,5 +22,13 @@ func InitializeConfig(config string) *viper.Viper {
 		fmt.Println(err)
 	}
 
+	sanitizeConfig()
+
 	return v
+}
+
+// sanitizeConfig cleans up loaded configuration values for safe use.
+// Example: trim trailing slashes from base URLs to avoid double slashes when concatenating paths.
+func sanitizeConfig() {
+	global.App.Config.Notify.NoticeURL = strings.TrimRight(global.App.Config.Notify.NoticeURL, "/")
 }

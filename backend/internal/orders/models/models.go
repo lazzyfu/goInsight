@@ -119,7 +119,7 @@ func (InsightOrderTasks) TableName() string {
 	return "insight_order_tasks"
 }
 
-// 消息推送记录
+// 消息推送记录，暂时没有用到
 type InsightOrderMessages struct {
 	*models.Model
 	OrderID  uuid.UUID      `gorm:"type:char(36);comment:关联insight_order_records的order_id;index" json:"order_id"`

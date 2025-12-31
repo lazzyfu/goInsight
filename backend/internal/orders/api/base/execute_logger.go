@@ -23,7 +23,7 @@ func (l *ExecuteLogger) Add(msg string) string {
 		msg,
 	)
 	l.logs = append(l.logs, formatted)
-	return formatted + "\n"
+	return formatted
 }
 
 func (l *ExecuteLogger) String() string {

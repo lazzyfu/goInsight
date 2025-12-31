@@ -10,9 +10,6 @@ import (
 func Routers(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 	{
-		// app
-		v1.GET("/app/title", views.GetAppTitleView)
-
 		// user auth
 		v1.POST("/user/login", middleware.OTPMiddleware(), global.App.JWT.LoginHandler)
 		v1.POST("/user/logout", global.App.JWT.LogoutHandler)

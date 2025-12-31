@@ -7,7 +7,7 @@
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
           </svg>
         </div>
-        <h1>Ark 运维平台</h1>
+        <h1>{{ appTitle }}</h1>
         <p>安全登录以访问控制台</p>
       </div>
 
@@ -60,7 +60,7 @@
       </a-form>
 
       <div class="login-footer">
-        <span>© 2025 Ark Platform</span>
+        <span>© 2025 goinsight</span>
       </div>
     </div>
   </div>
@@ -78,6 +78,8 @@ import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import BindOTPModal from './OTP.vue'
+
+const appTitle = import.meta.env.VITE_APP_TITLE || '数据库工单平台'
 
 const formRef = ref(null)
 const router = useRouter()

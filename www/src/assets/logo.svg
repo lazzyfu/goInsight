@@ -1,4 +1,4 @@
-<svg width="525.32153539382" height="393.991151545365" xmlns="http://www.w3.org/2000/svg" ref="svg_canvas" preserveAspectRatio="none" version="1.1">
+<svg width="900" height="300" viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" ref="svg_canvas" preserveAspectRatio="xMinYMid meet" version="1.1">
  <g>
   <title>Layer 1</title>
   <g id="shape_OYqKI1CcvR" ref="shape_OYqKI1CcvR" key="shape_OYqKI1CcvR" transform="translate(98 221.991) scale(1 1)" display="inline">
@@ -16,7 +16,7 @@
     </g>
    </g>
   </g>
-  <text style="cursor: move;" transform="matrix(4.03344 0 0 3.95408 -893.925 -779.486)" stroke="#000" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_38" y="268.83223" x="283.73953" stroke-width="0" fill="#000000">Ark</text>
+  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="90" id="svg_38" x="320" y="220" fill="#000000">goinsight</text>
  </g>
 
 </svg>
