@@ -13,7 +13,7 @@
       </span>
     </div>
 
-    <a-table size="small" class="ant-table-striped" bordered :data-source="data.tableData" :columns="tableColumns"
+    <a-table size="small" bordered :data-source="data.tableData" :columns="tableColumns"
       :rowClassName="setRowClass" :scroll="{ x: 1100 }"
       :pagination="{ pageSize: 10, showSizeChanger: true, showTotal: (total) => `共 ${total} 条` }">
       <template #bodyCell="{ column, record }">
@@ -21,9 +21,8 @@
           <div v-if="record.summary && record.summary.length > 0" class="summary-container">
             <!-- Added expand/collapse for many items -->
             <div v-for="(item, index) in getVisibleSummary(record)" :key="index" class="summary-item">
-              <span :class="`summary-level-${item.level?.toLowerCase()}`">
-                {{ item.level }}：{{ item.message }}
-              </span>
+              <span class="summary-badge" :class="`summary-badge-${item.level?.toLowerCase()}`">{{ item.level }}</span>
+              <span class="summary-message">{{ item.message }}</span>
             </div>
             <a v-if="record.summary.length > 3 && !record.expanded" class="expand-link" @click="toggleExpand(record)">
               + 展开全部 ({{ record.summary.length - 3 }} 条)
@@ -82,7 +81,7 @@ const tableColumns = [
     title: 'SQL语句',
     dataIndex: 'query',
     key: 'query',
-    width: '30%',
+    width: '22%',
   },
   {
     title: '操作类型',
@@ -101,7 +100,7 @@ const tableColumns = [
     title: '检查提示',
     dataIndex: 'summary',
     key: 'summary',
-    width: '35%',
+    width: '43%',
   },
 ]
 
@@ -187,11 +186,11 @@ defineExpose({
 .stats-bar {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 12px 16px;
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
+  gap: 14px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
   margin-bottom: 12px;
   font-size: 13px;
 }
@@ -237,60 +236,82 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 4px 0;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
 }
 
 .summary-item {
-  line-height: 1.8;
-  padding-left: 12px;
-  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fafafa;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.summary-item::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  font-weight: bold;
+.summary-item:hover {
+  background: #f5f8ff;
+  border-color: rgba(24, 144, 255, 0.18);
 }
 
-.summary-level-info {
-  color: #52c41a;
-  font-weight: 500;
+.summary-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
 }
 
-.summary-level-info::before {
-  color: #52c41a;
+.summary-badge-info {
+  color: #389e0d;
+  background: #f6ffed;
+  border-color: rgba(82, 196, 26, 0.35);
 }
 
-.summary-level-warn {
-  color: #faad14;
-  font-weight: 500;
+.summary-badge-warn {
+  color: #d48806;
+  background: #fffbe6;
+  border-color: rgba(250, 173, 20, 0.35);
 }
 
-.summary-level-warn::before {
-  color: #faad14;
+.summary-badge-error {
+  color: #cf1322;
+  background: #fff1f0;
+  border-color: rgba(255, 77, 79, 0.35);
 }
 
-.summary-level-error {
-  color: #ff4d4f;
-  font-weight: 500;
-}
-
-.summary-level-error::before {
-  color: #ff4d4f;
+.summary-message {
+  flex: 1 1 auto;
+  line-height: 1.65;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  word-break: break-word;
 }
 
 /* Added expand link styling */
 .expand-link {
-  color: #1890ff;
+  color: #1677ff;
   font-size: 12px;
   cursor: pointer;
-  padding-left: 12px;
+  align-self: flex-start;
   user-select: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #f5f8ff;
 }
 
 .expand-link:hover {
-  text-decoration: underline;
+  background: #e6f4ff;
 }
 
 .empty-summary {
@@ -334,7 +355,5 @@ defineExpose({
   font-style: italic;
 }
 
-:deep(.ant-table-striped .ant-table-tbody > tr:nth-child(2n)) {
-  background-color: #fafafa;
-}
+/* 表格行保持默认背景色（不启用斑马纹/条纹背景） */
 </style>

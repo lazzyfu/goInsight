@@ -1,5 +1,5 @@
 <template>
-  <a-card title="审核参数配置">
+  <a-card title="全局审核参数配置">
     <!-- 搜索区域 -->
     <div class="search-wrapper">
       <!-- 搜索 -->

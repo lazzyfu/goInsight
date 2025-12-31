@@ -1,5 +1,5 @@
 <template>
-  <a-card title="表权限管理">
+  <a-card title="配置用户表访问权限">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
       <a-button type="primary" @click="handleAdd">

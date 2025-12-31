@@ -127,8 +127,8 @@ const uiData = reactive({
   ],
 })
 
-// 表单校验规则
-const rules = {
+// 表单校验规则（需响应式：编辑/新增切换时 password 是否必填不同）
+const rules = computed(() => ({
   environment: [{ required: true, message: '请选择所属环境', trigger: 'change' }],
   organization_key: [{ required: true, message: '请选择组织/部门', trigger: 'change' }],
   db_type: [{ required: true, message: '请选择数据库类型', trigger: 'change' }],
@@ -186,11 +186,16 @@ const rules = {
     },
   ],
   password: [
-    {
-      required: !isEditMode.value,
-      message: '请输入访问数据库的密码',
-      trigger: ['change', 'blur'],
-    },
+    // 新增态必须输入密码；编辑态允许留空（留空表示不修改密码）
+    ...(!isEditMode.value
+      ? [
+          {
+            required: true,
+            message: '请输入访问数据库的密码',
+            trigger: ['change', 'blur'],
+          },
+        ]
+      : []),
     {
       validator: (_, value) => {
         // 编辑态：不改密码则允许留空
@@ -233,7 +238,7 @@ const rules = {
       trigger: 'blur',
     },
   ],
-}
+}))
 
 // 取消按钮
 const handleCancel = () => {
@@ -246,7 +251,15 @@ const onSubmit = async () => {
   try {
     await formRef.value.validateFields()
     uiState.loading = true
-    emit('submit', formData.value)
+
+    // 编辑态如果密码留空：不提交 password 字段（语义 = 不修改密码）
+    // 这里不直接改 v-model 的 formData，以免影响 UI；只在提交 payload 中剔除。
+    const payload = { ...(formData.value || {}) }
+    if (isEditMode.value && (!payload.password || !(String(payload.password).trim()))) {
+      delete payload.password
+    }
+
+    emit('submit', payload)
   } catch (err) {
     // 避免空 catch 触发 lint；同时便于排查表单校验问题
     console.error(err)
