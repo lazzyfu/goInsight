@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lazzyfu/goinsight/internal/global"
 	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
 )
 
@@ -238,6 +239,15 @@ func BuildMessage(msgType MessageType, params MessageParams) string {
 		if err != nil {
 			return "解析导出文件信息异常"
 		}
+		// 兼容历史字段：
+		// - file.FilePath 可能是相对路径（如 /orders/tasks/download/...）
+		// - 也可能已经是完整 URL（例如 API 已拼接 NoticeURL）
+		downloadURL := file.FilePath
+		if !strings.HasPrefix(downloadURL, "http://") && !strings.HasPrefix(downloadURL, "https://") {
+			base := strings.TrimRight(global.App.Config.Notify.NoticeURL, "/")
+			path := "/" + strings.TrimLeft(downloadURL, "/")
+			downloadURL = base + path
+		}
 		return fmt.Sprintf(
 			"您好，导出文件信息如下，请查收\n"+
 				">工单标题：%s\n"+
@@ -254,7 +264,7 @@ func BuildMessage(msgType MessageType, params MessageParams) string {
 			file.ExportRows,
 			file.EncryptionKey,
 			file.ContentType,
-			file.FilePath,
+			downloadURL,
 		)
 
 	default:

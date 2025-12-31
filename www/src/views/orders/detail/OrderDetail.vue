@@ -43,7 +43,7 @@
   </a-card>
 
   <a-card size="small" title="工单内容" style="margin-top: 12px">
-    <CodeMirror ref="codemirrorRef" />
+    <CodeMirror ref="codemirrorRef" :height="'500px'"/>
   </a-card>
 </template>
 

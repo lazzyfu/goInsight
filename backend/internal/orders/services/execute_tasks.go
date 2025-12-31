@@ -239,16 +239,17 @@ func (s *ExecuteTaskService) Run() (err error) {
 		return global.App.DB.Transaction(func(tx *gorm.DB) error {
 			if tx = tx.Model(&ordersModels.InsightOrderTasks{}).
 				Where("task_id=? and order_id=?", s.TaskID, s.OrderID).
-				Update("progress", "EXECUTING"); tx.Error != nil {
+				Updates(map[string]any{"progress": "EXECUTING", "executor": s.Username}); tx.Error != nil {
 				global.App.Log.Error(tx.Error)
 				return tx.Error
 			}
 			if tx = tx.Model(&ordersModels.InsightOrderRecords{}).
 				Where("order_id=?", s.OrderID).
-				Update("progress", "EXECUTING"); tx.Error != nil {
+				Updates(map[string]any{"progress": "EXECUTING", "executor": s.Username}); tx.Error != nil {
 				global.App.Log.Error(tx.Error)
 				return tx.Error
 			}
+
 			return nil
 		})
 	}(); err != nil {
@@ -331,7 +332,7 @@ func (s *ExecuteBatchTasksService) Run() (err error) {
 	// 更新当前工单进度为执行中
 	if tx = global.App.DB.Model(&ordersModels.InsightOrderRecords{}).
 		Where("order_id=?", s.OrderID).
-		Update("progress", "EXECUTING"); tx.Error != nil {
+		Updates(map[string]any{"progress": "EXECUTING", "executor": s.Username}); tx.Error != nil {
 		global.App.Log.Error(tx.Error)
 		return tx.Error
 	}
