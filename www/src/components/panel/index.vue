@@ -12,13 +12,15 @@
   </div>
 </template>
 
-<script setup>
-import { throttle } from 'lodash-es'
-import { computed, ref } from 'vue'
-
-defineOptions({
+<script>
+export default {
   name: 'SplitPanel',
-})
+}
+</script>
+
+<script setup>
+import { throttle } from 'lodash-es';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
   leftWidth: {

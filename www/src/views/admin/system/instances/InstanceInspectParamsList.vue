@@ -1,9 +1,9 @@
 <template>
-  <a-card title="实例审核参数管理">
+  <a-card title="实例自定义审核参数（优先级大于全局审核参数）">
     <!-- 卡片右上角的新增按钮 -->
     <template #extra>
       <a-button type="primary" @click="handleAdd">
-        <PlusOutlined />新增实例审核参数
+        <PlusOutlined />新增
       </a-button>
     </template>
 

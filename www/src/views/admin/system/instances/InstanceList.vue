@@ -20,15 +20,17 @@
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'remark'">
-            <router-link :to="{
-              name: 'view.admin.instance.inspect',
-              params: {
-                instance_id: record.instance_id,
-              },
-            }">
-              {{ record.remark }}
-            </router-link>
+          <template v-if="column.key === 'remark' && record.use_type === '工单'">
+            <a-tooltip title="点击自定义实例审核参数（优先级大于全局审核参数）">
+              <router-link :to="{
+                name: 'view.admin.instance.inspect',
+                params: {
+                  instance_id: record.instance_id,
+                },
+              }">
+                {{ record.remark }}
+              </router-link>
+            </a-tooltip>
           </template>
           <template v-if="column.key === 'action'">
             <a-dropdown>
