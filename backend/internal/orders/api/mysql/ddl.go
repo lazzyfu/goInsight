@@ -53,7 +53,8 @@ func (e *ExecuteMySQLDDL) ExecuteOnlineDDL() (data base.ReturnData, err error) {
 	publisher := base.NewRedisPublisher()
 
 	log := func(msg string) {
-		formatted := logger.Add(msg)
+		cleaned := strings.TrimSpace(msg)
+		formatted := logger.Add(cleaned) + "\n"
 		publisher.Publish(e.OrderID, formatted, "")
 	}
 
@@ -106,7 +107,8 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	publisher := base.NewRedisPublisher()
 
 	log := func(msg string) {
-		formatted := logger.Add(msg)
+		cleaned := strings.TrimSpace(msg)
+		formatted := logger.Add(cleaned) + "\n"
 		publisher.Publish(e.OrderID, formatted, "")
 	}
 
