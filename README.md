@@ -1,84 +1,91 @@
-## GoInsight
+# 🚀 GoInsight
 
-![](https://img.shields.io/static/v1?label=License&message=MIT&color=green&?style=flat-square)
-[![downloads](https://img.shields.io/github/downloads/lazzyfu/goInsight/total.svg)](https://github.com/lazzyfu/goInsight/releases)
-[![release](https://img.shields.io/github/v/release/lazzyfu/goInsight.svg)](https://github.com/lazzyfu/goInsight/releases)
-<img alt="Github Stars" src="https://img.shields.io/github/stars/lazzyfu/goInsight?logo=github">
+<p align="center">
+  <img src="https://img.shields.io/static/v1?label=License&message=MIT&color=2ea44f&style=flat-square" />
+  <a href="https://github.com/lazzyfu/goInsight/releases">
+    <img src="https://img.shields.io/github/v/release/lazzyfu/goInsight.svg?style=flat-square&color=orange" />
+  </a>
+  <a href="https://github.com/lazzyfu/goInsight/releases">
+    <img src="https://img.shields.io/github/downloads/lazzyfu/goInsight/total.svg?style=flat-square&color=blue" />
+  </a>
+  <img src="https://img.shields.io/github/stars/lazzyfu/goInsight?style=flat-square&logo=github" />
+</p>
 
-`GoInsight` 是一个基于 `Gin` 和 `Vue3` 开发的企业级前后端分离的 WEB 平台，支持 MySQL/TiDB 数据库，提供 **工单管理** 和 **数据查询** 功能。
+<p align="center">
+  <b>🌟 企业级数据库工单与数据查询平台 🌟</b><br/>
+  打造更安全、更高效、可审计的数据库协同体验
+  <blockquote>
+    “不要在意项目命名，其实跟『阿弥陀佛』是一样的”
+  </blockquote>
+</p>
 
-## 文档
+<p align="center">
+  <img src="https://img.shields.io/badge/Backend-Gin-00ADD8?style=for-the-badge&logo=go" />
+  <img src="https://img.shields.io/badge/Frontend-Vue3-4FC08D?style=for-the-badge&logo=vue.js" />
+  <img src="https://img.shields.io/badge/Database-MySQL%20%7C%20TiDB-4479A1?style=for-the-badge&logo=mysql" />
+</p>
 
-- [功能预览](https://github.com/lazzyfu/goInsight/wiki/Feature-Preview)
-- [使用文档](https://github.com/lazzyfu/goInsight/wiki)
+## 📖 项目简介
 
-## 主要功能
+**GoInsight** 是一个基于 **Gin + Vue3** 的企业级数据库WEB管理平台，提供**数据库工单**和**数据查询**能力，解决DBA与开发人员之间协作低效、操作高危、审计缺失等痛点。
 
-- **工单管理**
-  - 支持提交 DDL/DML/数据导出（CSV/XLSX 格式）工单
-  - 支持工单审批、执行、回滚、HOOK 等功能
-  - 支持钉钉 / 企业微信机器人 / 邮件推送工单消息
+## 🗺️ 文档与预览
 
-- **审批流**
-  - 支持会签、或签
-  - 自定义审批流程和审批层级
+* 📌 [功能预览图](https://github.com/lazzyfu/goInsight/wiki/Feature-Preview)
+* 📖 [完整使用手册](https://github.com/lazzyfu/goInsight/wiki)
 
-- **SQL 审计**
-  - 内置语法审核器，支持多达 68 种语法审核规则
-  - 支持全局审核参数、实例自定义审核参数，优先级：实例级别 > 全局级别
+## 🛠️ 核心功能模块
 
-- **数据查询**
-  - 强大的库表数据检索引擎，支持多达 65 种只读查询语句类型（SELECT、CTE、EXPLAIN、SHOW 等）
-  - 支持用户库表级权限管理、支持数据字典、查询记录审计等功能
+| 功能模块       | 功能说明                                                                        |
+| :------------- | :------------------------------------------------------------------------------ |
+| **📝 工单管理** | 支持DDL/DML/数据导出（CSV / XLSX）工单；支持审批、执行、回滚及一键复制工单 |
+| **⚖️ 审批流**   | 支持会签/或签，可按组织架构自定义审批流程与层级                          |
+| **🔍 SQL 审计** | 内置高性能语法审核器，支持68种审核规则；支持全局及实例级参数配置         |
+| **🔓 数据查询** | 支持库表级访问权限控制与查询审计           |
+| **👥 权限组织** | 基于组织架构的用户角色管理；DB实例按组织绑定，实现物理级访问隔离               |
+| **🌐 环境隔离** | 支持自定义多个工单环境（测试、预发、生产），确保变更发布流程规范化              |
+| **🔔 消息通知** | 集成钉钉/企业微信/邮件，工单状态变更实时异步推送                       |
+| **🛡️ 安全防护** | 支持双因素认证；提供详尽的操作日志与审计日志                        |
 
-- **组织管理**
-  - 支持用户组织和角色管理
-  - 支持 DB 实例绑定组织，实现用户访问权限控制
+## 🗄️ 支持数据库
 
-- **自定义工单环境**
-  - 支持定义多个工单环境（如研发、预发布、测试、生产等）
-  - 支持为不同环境配置独立的审批与参数
+| 数据库引擎         | 版本要求 | 核心能力说明                                                        |
+| :----------------- | :------- | :------------------------------------------------------------------ |
+| **MySQL / 云服务** | ≥ 5.7    | DML工单（含回滚）；Online DDL (gh-ost)；数据加密导出；数据查询库表级权限控制 |
+| **TiDB**           | ≥ 4.0    | DML工单（不支持生成回滚SQL）；原生Online DDL；数据加密导出；数据查询库表级权限控制     |
 
-- **安全**
-  - 支持双因素身份认证登录
-  - 支持日志审计
+## 🚀 快速部署
 
-## 支持数据库
+### 1. 下载二进制包
 
-| 数据库 | 版本 | 功能概览 |
-| --- | --- | --- |
-| MySQL 数据库（含分支、云厂商数据库、AWS Aurora） | >= 5.7 | ✓ DML 工单（含回滚语句）；✓ ONLINE DDL（gh-ost）；✓ 导出 XLSX/CSV（加密可选）；✓ 库表级查询权限 |
-| TiDB | >= 4.0 | ✓ DML 工单（暂不生成回滚）；✓ 原生 ONLINE DDL；✓ 导出 XLSX/CSV（加密可选）；✓ 库表级查询权限 |
+前往 [Releases](https://github.com/lazzyfu/goInsight/releases) 页面获取对应平台的压缩包。
 
-## 快速部署
->
-> [使用Supervisor管理服务](https://github.com/lazzyfu/goInsight/wiki/Service-Deployment)
-
-### 1、下载二进制包
-
-```
-# 下载前请更新下载链接中的`版本号`为最新的`发行版本`
+```bash
+# 以 v2.0.0 版本为例
 wget https://github.com/lazzyfu/goInsight/releases/download/v2.0.0/goinsight-linux-amd64-v2.0.0.tar.gz
+tar -zxvf goinsight-linux-amd64-v2.0.0.tar.gz
 ```
 
-### 2、配置 config.yaml
+### 2. 启动服务
 
-配置文件相对简单，请参考: [如何配置config.yaml](https://github.com/lazzyfu/goInsight/wiki/Config)
-
-### 3、启动服务
-
-```
+```bash
 ./goinsight-linux-amd64 -config config.yaml
 ```
 
-### 4、访问服务
+### 3. 访问系统
 
-服务启动后，请通过 <http://ip:port> 访问，首次登录后请立即修改默认密码。生产环境强烈建议在服务前加一层 HTTPS 反向代理。
+在浏览器打开：<http://your-ip:port>
 
-- 默认管理员账号：`admin`
-- 默认管理员密码：`1234.Com!`，请登录后立刻更改并妥善保管。
+* 默认管理员： admin
 
-## 联系开发者
+* 默认密码： 1234.Com!
 
-- E-mail: [1126227133@qq.com](mailto:1126227133@qq.com)
-- 微信号: Lazzyfu
+⚠️ 安全建议： 首次登录请立即修改密码。生产环境强烈建议在 GoInsight 前置部署 Nginx 并配置 HTTPS 反向代理。
+
+## 🤝 联系与支持
+
+如果您在使用过程中发现 Bug 或有功能建议，欢迎提交 Issue 或 Pull Request（不一定有时间改）。
+
+* 📧 Email: <1126227133@qq.com>
+
+* 💬 微信: Lazzyfu
