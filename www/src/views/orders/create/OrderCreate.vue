@@ -17,8 +17,9 @@
           </a-form-item>
 
           <a-form-item label="环境" name="environment" has-feedback>
-            <a-select v-model:value="formState.environment" :options="uiData.environments"
-              :field-names="{ label: 'name', value: 'id' }" @change="onEnvChange" allowClear />
+            <a-select v-model:value="formState.environment" show-search :filter-option="filterEnvOption"
+              :options="uiData.environments" :field-names="{ label: 'name', value: 'id' }" @change="onEnvChange"
+              allowClear />
           </a-form-item>
 
           <a-form-item label="数据库" name="db_type" has-feedback>
@@ -27,18 +28,20 @@
           </a-form-item>
 
           <a-form-item label="实例" name="instance_id" has-feedback>
-            <a-select v-model:value="formState.instance_id" :options="uiData.instances"
-              :field-names="{ label: 'remark', value: 'instance_id' }" @change="onInstanceChange"
-              :disabled="!formState.db_type" allowClear />
+            <a-select v-model:value="formState.instance_id" show-search :filter-option="filterInstanceOption"
+              :options="uiData.instances" :field-names="{ label: 'remark', value: 'instance_id' }"
+              @change="onInstanceChange" :disabled="!formState.db_type" allowClear />
           </a-form-item>
 
           <a-form-item label="库名" name="schema" has-feedback>
-            <a-select v-model:value="formState.schema" :options="uiData.schemas"
+            <a-select v-model:value="formState.schema" show-search :filter-option="filterSchemaOption"
+              :options="uiData.schemas"
               :field-names="{ label: 'schema', value: 'schema' }" :disabled="!formState.instance_id" allowClear />
           </a-form-item>
 
           <a-form-item label="抄送" name="cc">
-            <a-select v-model:value="formState.cc" mode="multiple" :options="uiData.users"
+            <a-select v-model:value="formState.cc" mode="multiple" show-search :filter-option="filterCcOption"
+              :options="uiData.users"
               :field-names="{ label: 'nick_name', value: 'username' }" allowClear />
           </a-form-item>
 
@@ -161,6 +164,22 @@ const resetDbLevel = () => {
   formState.schema = ''
   uiData.instances = []
   uiData.schemas = []
+}
+
+const filterEnvOption = (input, option) => {
+  return option?.name?.toLowerCase().includes(input.toLowerCase())
+}
+
+const filterInstanceOption = (input, option) => {
+  return option?.remark?.toLowerCase().includes(input.toLowerCase())
+}
+
+const filterSchemaOption = (input, option) => {
+  return option?.schema?.toLowerCase().includes(input.toLowerCase())
+}
+
+const filterCcOption = (input, option) => {
+  return option?.nick_name?.toLowerCase().includes(input.toLowerCase())
 }
 
 // 环境变化
