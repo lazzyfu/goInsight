@@ -54,13 +54,7 @@
 
 ### 1. 下载二进制包
 
-前往 [Releases](https://github.com/lazzyfu/goInsight/releases) 页面获取对应平台的压缩包。
-
-```bash
-# 以 v2.0.0 版本为例
-wget https://github.com/lazzyfu/goInsight/releases/download/v2.0.0/goinsight-linux-amd64-v2.0.0.tar.gz
-tar -zxvf goinsight-linux-amd64-v2.0.0.tar.gz
-```
+前往 [Releases](https://github.com/lazzyfu/goInsight/releases) 页面获取最新的安装包。
 
 ### 2. 启动服务
 
