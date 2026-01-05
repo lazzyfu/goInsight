@@ -3,20 +3,18 @@
     <a-layout class="layout" style="min-height: 100vh">
       <a-layout-header class="header">
         <a-row type="flex">
-          <a-col :flex="24">
+          <a-col :flex="14">
             <img class="app-logo" src="@/assets/logo.svg" />
           </a-col>
           <a-col :flex="4">
-            <menu-unfold-outlined v-if="data.collapsed" @click="toggleCollapse" />
-            <menu-fold-outlined v-else @click="toggleCollapse" />
+            <MenuUnfoldOutlined v-if="uiState.collapsed" @click="toggleCollapse" />
+            <MenuFoldOutlined v-else @click="toggleCollapse" />
           </a-col>
           <a-col :flex="200">
             <a-breadcrumb style="margin-top: 22px">
               <a-breadcrumb-item v-for="(item, index) in route.matched" :key="item.name">
-                <router-link
-                  v-if="item.meta.title && index !== route.matched.length - 1"
-                  :to="{ path: item.path === '' ? '/' : item.path }"
-                  >{{ item.meta.title }}
+                <router-link v-if="item.meta.title && index !== route.matched.length - 1"
+                  :to="{ path: item.path === '' ? '/' : item.path }">{{ item.meta.title }}
                 </router-link>
                 <span v-else>{{ item.meta.title }}</span>
               </a-breadcrumb-item>
@@ -33,43 +31,33 @@
               </span>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item @click="userCenter"> <UserOutlined /> 个人中心 </a-menu-item>
-                  <a-menu-item @click="state.openPasswordModal = true">
+                  <a-menu-item @click="userCenter">
+                    <UserOutlined /> 个人中心
+                  </a-menu-item>
+                  <a-menu-item @click="uiState.openPasswordModal = true">
                     <SafetyOutlined /> 修改密码
                   </a-menu-item>
-                  <a-menu-item @click="Logout()"> <LogoutOutlined /> 注销登录 </a-menu-item>
+                  <a-menu-item @click="Logout()">
+                    <LogoutOutlined /> 注销登录
+                  </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
           </a-col>
         </a-row>
       </a-layout-header>
-      <a-layout
-        :style="{
-          background: '#fff',
-          padding: '14px',
-          marginTop: '60px',
-          marginLeft: data.collapsed ? '80px' : '280px',
-          minHeight: '360px',
-          transition: 'margin-left 0.2s'
-        }"
-      >
-        <a-layout-sider
-          class="layout-sider"
-          :collapsed="data.collapsed"
-          :collapsed-width="80"
-          :width="280"
-        >
+      <a-layout :style="{
+        background: '#fff',
+        padding: '14px',
+        marginTop: '60px',
+        marginLeft: uiState.collapsed ? '80px' : '260px',
+        minHeight: '360px',
+        transition: 'margin-left 0.2s'
+      }">
+        <a-layout-sider class="layout-sider" :collapsed="uiState.collapsed" :collapsed-width="80" :width="260">
           <div style="padding-top: 20px"></div>
-          <a-menu
-            theme="light"
-            mode="inline"
-            :openKeys="data.openKeys"
-            :selectedKeys="[route.path]"
-            :items="menuItems"
-            @select="select"
-            @openChange="openChange"
-          >
+          <a-menu theme="light" mode="inline" :openKeys="uiData.openKeys" :selectedKeys="[route.path]"
+            :items="menuItems" @select="select" @openChange="openChange">
           </a-menu>
         </a-layout-sider>
         <a-layout-content>
@@ -78,10 +66,7 @@
       </a-layout>
     </a-layout>
 
-    <UserPassword
-      :open="state.openPasswordModal"
-      @update:open="state.openPasswordModal = $event"
-    ></UserPassword>
+    <UserPassword :open="uiState.openPasswordModal" @update:open="uiState.openPasswordModal = $event"></UserPassword>
   </div>
 </template>
 
@@ -116,13 +101,13 @@ const renderIcon = (iconName) => {
   return h(iconComponent)
 }
 
-const state = reactive({
-  openPasswordModal: false,
+const uiState = reactive({
+  collapsed: false,
+  openPasswordModal: false
 })
 
-const data = reactive({
+const uiData = reactive({
   openKeys: [],
-  collapsed: false,
 })
 
 // 转换路由数据为菜单项
@@ -145,10 +130,10 @@ const menuItems = computed(() => {
 
 
 const initializeLayoutData = async () => {
-    const storedOpenKeys = sessionStorage.getItem('openKeys')
-    if (storedOpenKeys && storedOpenKeys !== null) {
-      data.openKeys = JSON.parse(storedOpenKeys)
-    }
+  const storedOpenKeys = sessionStorage.getItem('openKeys')
+  if (storedOpenKeys && storedOpenKeys !== null) {
+    uiData.openKeys = JSON.parse(storedOpenKeys)
+  }
 }
 
 const select = (value) => {
@@ -157,15 +142,17 @@ const select = (value) => {
 
 const openChange = (openKeys) => {
   if (openKeys?.length > 0) {
-    data.openKeys = openKeys
-    sessionStorage.setItem('openKeys', JSON.stringify(data.openKeys))
+    uiData.openKeys = openKeys
+    sessionStorage.setItem('openKeys', JSON.stringify(uiData.openKeys))
   }
 }
 
+// toggle
 const toggleCollapse = () => {
-  data.collapsed = !data.collapsed
+  uiState.collapsed = !uiState.collapsed
 }
 
+// 跳转到用户中心
 const userCenter = () => {
   router.push({
     name: 'account.basic',
@@ -234,6 +221,5 @@ onMounted(async () => {
 .ant-row {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
 }
 </style>
