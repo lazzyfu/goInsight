@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
+	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 
@@ -175,7 +176,7 @@ func DaoMySQLGetProcesslist(dbconfig *base.DBConfig, order_id string, connection
 		row := (*data)[0]
 		// Publish the process information
 		publisher := base.NewRedisPublisher()
-		publisher.Publish(order_id, row, "processlist")
+		publisher.Publish(order_id, dbconfig.TaskID, utils.RenderProcessListStream, row)
 	}
 }
 

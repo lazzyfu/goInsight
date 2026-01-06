@@ -28,6 +28,8 @@
     "@highlightjs/vue-plugin": "^2.1.0",
     "@types/node": "^24.3.0",
     "@vueuse/core": "^14.1.0",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.11.0",
     "bootstrap-table": "^1.24.2",

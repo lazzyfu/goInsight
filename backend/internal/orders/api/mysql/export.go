@@ -105,7 +105,7 @@ func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
 	log := func(msg string) {
 		cleaned := strings.TrimSpace(msg)
 		formatted := logger.Add(cleaned) + "\n"
-		publisher.Publish(e.OrderID, formatted, "")
+		publisher.Publish(e.OrderID, e.TaskID, utils.RenderLogStream, formatted)
 	}
 
 	// Establish database connection

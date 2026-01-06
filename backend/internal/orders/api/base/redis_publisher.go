@@ -14,12 +14,13 @@ func NewRedisPublisher() *RedisPublisher {
 }
 
 // PublishWithRenderType publishes message with specified render type (processlist, gh-ost, etc.)
-func (p *RedisPublisher) Publish(channel string, msg any, renderType string) {
+func (p *RedisPublisher) Publish(channel string, executionID string, renderType string, data any) {
 	if err := utils.Publish(
 		context.Background(),
 		channel,
-		msg,
+		executionID,
 		renderType,
+		data,
 	); err != nil {
 		global.App.Log.Error(err)
 	}

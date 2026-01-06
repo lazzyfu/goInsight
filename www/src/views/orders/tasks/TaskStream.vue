@@ -1,172 +1,214 @@
 <template>
-  <a-card title="执行输出" v-show="uiState.open" class="mt-2">
-    <CodeMirror ref="cmRef" :height="'380px'" />
+  <a-card title="执行输出" v-show="uiState.open" class="log-card" :bodyStyle="{ padding: 0 }">
+    <div class="terminal-wrapper">
+      <div ref="termRef" class="xterm-container"></div>
+    </div>
   </a-card>
 </template>
 
 <script setup>
-import CodeMirror from '@/components/edit/Codemirror.vue'
-import { message } from 'ant-design-vue'
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { FitAddon } from '@xterm/addon-fit'
+import { Terminal } from '@xterm/xterm'
+import '@xterm/xterm/css/xterm.css'
+import { nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-// 状态
+// 状态与路由
+const route = useRoute()
+const orderID = route.params.order_id
+const termRef = ref(null)
+
 const uiState = reactive({
   open: false,
 })
 
-const cmRef = ref(null)
-const route = useRoute()
-const orderID = route.params.order_id
+// 核心变量（非响应式，保证性能）
+let term = null
+let fitAddon = null
+let ws = null
+let flushTimer = null
+let outputBuffer = ''
+let isInitializing = false
 
-// WebSocket URL
-let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
-const wsURL = `${protocol}${window.location.host}/ws/${orderID}`
+// 执行流控制
+let currentExecutionID = null
 
-// WebSocket 实例
-const ws = ref(null)
+// Terminal 初始化
+const initTerm = async () => {
+  if (term || isInitializing) return
+  isInitializing = true
 
-// 心跳定时器
-let heartbeatTimer = null
-const heartbeatInterval = 15000 // 15秒发一次 ping
+  await nextTick()
 
-// 重连控制
-let reconnectTimer = null
-let reconnecting = false
-const reconnectInterval = 3000 // 3秒重试一次
+  term = new Terminal({
+    cursorBlink: true,
+    convertEol: true,
+    fontSize: 13,
+    disableStdin: true,
+    scrollback: 10000,
+  })
 
-// 初始化 WebSocket
+  fitAddon = new FitAddon()
+  term.loadAddon(fitAddon)
+  term.open(termRef.value)
+
+  setTimeout(() => {
+    fitAddon.fit()
+  }, 100)
+
+  window.addEventListener('resize', onResize)
+  isInitializing = false
+}
+
+const onResize = () => fitAddon && fitAddon.fit()
+
+// Flush（缓冲写入，防止卡死）
+const startFlush = () => {
+  if (flushTimer) return
+
+  flushTimer = setInterval(() => {
+    if (!term || !outputBuffer) return
+
+    const buffer = term.buffer.active
+    const isAtBottom = (buffer.baseY - buffer.viewportY) <= term.rows
+
+    term.write(outputBuffer)
+    outputBuffer = ''
+
+    if (isAtBottom) {
+      term.scrollToBottom()
+    }
+  }, 30)
+}
+
+// WebSocket 逻辑
 const initWebsocket = () => {
-  if (typeof WebSocket === 'undefined') {
-    message.error('您的浏览器不支持 WebSocket')
-    return
+  closeWs()
+
+  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+  const wsURL = `${protocol}${window.location.host}/ws/${orderID}`
+  ws = new WebSocket(wsURL)
+
+  ws.onopen = () => {
+    startFlush()
   }
 
-  // 清理旧连接
-  if (ws.value) {
-    ws.value.close()
-    ws.value = null
-  }
+  ws.onmessage = (msg) => {
+    if (msg.data === 'pong') return
 
-  clearReconnectState()
-
-  ws.value = new WebSocket(wsURL)
-  ws.value.onopen = onOpen
-  ws.value.onerror = onError
-  ws.value.onclose = onClose
-  ws.value.onmessage = onMessage
-}
-
-// WebSocket 打开
-const onOpen = () => {
-  reconnecting = false
-  startHeartbeat()
-}
-
-// WebSocket 错误
-const onError = (error) => {
-  console.error('[WebSocket] 连接错误:', error)
-  stopHeartbeat()
-}
-
-// WebSocket 关闭
-const onClose = (event) => {
-  stopHeartbeat()
-
-  // 正常关闭不重连
-  if (event.code === 1000) return
-
-  tryReconnect()
-}
-
-// WebSocket 接收消息
-const onMessage = (msg) => {
-  // 后端可能发心跳 pong
-  if (msg.data === 'pong') return
-
-  try {
-    const result = JSON.parse(msg.data)
-    uiState.open = true
-
-    // 确保组件已挂载
-    if (!cmRef.value) return
-    if (result.type === 'processlist') {
-      cmRef.value.setContent(renderProcesslist(result.data))
-    } else {
-      cmRef.value.appendContent(result.data)
+    let result
+    try {
+      result = JSON.parse(msg.data)
+    } catch {
+      outputBuffer += msg.data
+      return
     }
-  } catch (error) {
-    console.error('[WebSocket] 消息解析失败:', error, msg.data)
-  }
-}
 
-// 渲染 processlist
-const renderProcesslist = (data) => {
-  return Object.keys(data)
-    .map((key) => `${key}: ${data[key]}`)
-    .join('\n') + '\n'
-}
+    const { execution_id, type, data } = result
 
-// 心跳机制
-const startHeartbeat = () => {
-  stopHeartbeat()
-  heartbeatTimer = setInterval(() => {
-    if (ws.value && ws.value.readyState === WebSocket.OPEN) {
-      ws.value.send('ping') // 发送心跳
+    // 自动打开面板
+    if (!uiState.open) {
+      uiState.open = true
     }
-  }, heartbeatInterval)
-}
 
-const stopHeartbeat = () => {
-  if (heartbeatTimer) {
-    clearInterval(heartbeatTimer)
-    heartbeatTimer = null
+    // execution_id 变化：新的一次执行
+    if (execution_id && execution_id !== currentExecutionID) {
+      currentExecutionID = execution_id
+
+      // 清空历史执行
+      outputBuffer = ''
+      if (term) term.reset()
+    }
+
+    // 根据 type 决定渲染策略
+    switch (type) {
+      case 'log':
+      case 'gh-ost':
+        outputBuffer += data
+        break
+
+      case 'processlist':
+        // 每条都是快照：清空 + 重绘
+        outputBuffer = ''
+        if (term) term.reset()
+        outputBuffer = formatProcessList(data)
+        break
+
+      default:
+        // 兜底
+        outputBuffer += String(data ?? '')
+    }
+  }
+
+  ws.onclose = (e) => {
+    if (e.code !== 1000) {
+      setTimeout(initWebsocket, 3000)
+    }
   }
 }
 
-// 自动重连机制
-const tryReconnect = () => {
-  if (reconnecting) return
-
-  reconnecting = true
-  reconnectTimer = setTimeout(() => {
-    if (!reconnecting) return // 防止在清理后执行
-    initWebsocket()
-  }, reconnectInterval)
-}
-
-const clearReconnectState = () => {
-  reconnecting = false
-  if (reconnectTimer) {
-    clearTimeout(reconnectTimer)
-    reconnectTimer = null
+const closeWs = () => {
+  if (ws) {
+    ws.close(1000)
+    ws = null
   }
 }
 
-// 关闭 WebSocket
-const closeWS = () => {
-  stopHeartbeat()
-  clearReconnectState()
-
-  if (ws.value) {
-    // 使用正常关闭码，避免触发重连
-    ws.value.close(1000, 'Component unmounted')
-    ws.value = null
-  }
+// 工具函数
+const formatProcessList = (data) => {
+  return Object.entries(data)
+    .map(([k, v]) => `\x1b[32m${k}\x1b[0m: ${v}`)
+    .join('\r\n') + '\r\n'
 }
 
 // 生命周期
+watch(() => uiState.open, (val) => {
+  if (val) initTerm()
+})
+
 onMounted(() => {
   initWebsocket()
 })
 
 onBeforeUnmount(() => {
-  closeWS()
+  window.removeEventListener('resize', onResize)
+  if (flushTimer) clearInterval(flushTimer)
+  closeWs()
+  if (term) term.dispose()
 })
 </script>
 
 <style scoped>
-.mt-2 {
-  margin-top: 8px;
+.log-card {
+  margin-top: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.terminal-wrapper {
+  background-color: #181818;
+  padding: 12px;
+}
+
+.xterm-container {
+  height: 400px;
+  width: 100%;
+}
+
+:deep(.xterm-viewport::-webkit-scrollbar) {
+  width: 10px;
+}
+
+:deep(.xterm-viewport::-webkit-scrollbar-track) {
+  background: #181818;
+}
+
+:deep(.xterm-viewport::-webkit-scrollbar-thumb) {
+  background: #444;
+  border-radius: 5px;
+}
+
+:deep(.xterm-viewport::-webkit-scrollbar-thumb:hover) {
+  background: #666;
 }
 </style>
