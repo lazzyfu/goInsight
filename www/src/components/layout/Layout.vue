@@ -1,73 +1,65 @@
 <template>
-  <div>
-    <a-layout class="layout" style="min-height: 100vh">
-      <a-layout-header class="header">
-        <a-row type="flex">
-          <a-col :flex="14">
-            <img class="app-logo" src="@/assets/logo.svg" />
-          </a-col>
-          <a-col :flex="4">
-            <MenuUnfoldOutlined v-if="uiState.collapsed" @click="toggleCollapse" />
-            <MenuFoldOutlined v-else @click="toggleCollapse" />
-          </a-col>
-          <a-col :flex="200">
-            <a-breadcrumb style="margin-top: 22px">
-              <a-breadcrumb-item v-for="(item, index) in route.matched" :key="item.name">
-                <router-link v-if="item.meta.title && index !== route.matched.length - 1"
-                  :to="{ path: item.path === '' ? '/' : item.path }">{{ item.meta.title }}
-                </router-link>
-                <span v-else>{{ item.meta.title }}</span>
-              </a-breadcrumb-item>
-            </a-breadcrumb>
-          </a-col>
-          <a-col>
-            <a-dropdown>
-              <span class="ant-dropdown-link">
-                <a-badge>
-                  <a-avatar v-if="userStore.avatar" :src="userStore.avatar" icon="user" />
-                  <a-avatar v-else src="/avatar.png" icon="user" />
-                </a-badge>
-                <span style="padding-left: 8px"> {{ userStore.nickname }}</span>
-              </span>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="userCenter">
-                    <UserOutlined /> 个人中心
-                  </a-menu-item>
-                  <a-menu-item @click="uiState.openPasswordModal = true">
-                    <SafetyOutlined /> 修改密码
-                  </a-menu-item>
-                  <a-menu-item @click="Logout()">
-                    <LogoutOutlined /> 注销登录
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </a-col>
-        </a-row>
-      </a-layout-header>
-      <a-layout :style="{
-        background: '#fff',
-        padding: '14px',
-        marginTop: '60px',
-        marginLeft: uiState.collapsed ? '80px' : '260px',
-        minHeight: '360px',
-        transition: 'margin-left 0.2s'
-      }">
-        <a-layout-sider class="layout-sider" :collapsed="uiState.collapsed" :collapsed-width="80" :width="260">
-          <div style="padding-top: 20px"></div>
-          <a-menu theme="light" mode="inline" :openKeys="uiData.openKeys" :selectedKeys="[route.path]"
-            :items="menuItems" @select="select" @openChange="openChange">
-          </a-menu>
-        </a-layout-sider>
-        <a-layout-content>
-          <router-view></router-view>
-        </a-layout-content>
-      </a-layout>
-    </a-layout>
+  <a-layout>
+    <!-- 左侧siderbar -->
+    <a-layout-sider breakpoint="lg" collapsed-width="0" v-model:collapsed="uiState.collapsed" :trigger="null"
+      collapsible>
+      <!-- 左上角logo -->
+      <img class="app-logo" src="@/assets/logo.svg" />
+      <!-- 菜单 -->
+      <a-menu theme="dark" mode="inline" :openKeys="uiData.openKeys" :selectedKeys="[route.path]" :items="menuItems"
+        @select="select" @openChange="openChange">
+      </a-menu>
+    </a-layout-sider>
 
-    <UserPassword :open="uiState.openPasswordModal" @update:open="uiState.openPasswordModal = $event"></UserPassword>
-  </div>
+    <a-layout>
+      <!-- 折叠图标 -->
+      <a-layout-header class="layout-header">
+        <div class="header-left">
+          <MenuUnfoldOutlined v-if="uiState.collapsed" class="trigger" @click="toggleCollapse" />
+          <MenuFoldOutlined v-else class="trigger" @click="toggleCollapse" />
+          <!-- 面包屑 -->
+          <a-breadcrumb>
+            <a-breadcrumb-item v-for="(item, index) in route.matched" :key="item.name">
+              <router-link v-if="item.meta.title && index !== route.matched.length - 1"
+                :to="{ path: item.path === '' ? '/' : item.path }">{{ item.meta.title }}
+              </router-link>
+              <span v-else>{{ item.meta.title }}</span>
+            </a-breadcrumb-item>
+          </a-breadcrumb>
+        </div>
+        <!-- 右上角用户 -->
+        <div class="header-right">
+          <a-dropdown placement="bottomRight">
+            <span class="user-info">
+              <a-avatar v-if="userStore.avatar" :src="userStore.avatar" />
+              <a-avatar v-else src="/avatar.png" />
+              <span class="nickname">{{ userStore.nickname }}</span>
+            </span>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="userCenter">
+                  <UserOutlined /> 个人中心
+                </a-menu-item>
+                <a-menu-item @click="uiState.openPasswordModal = true">
+                  <SafetyOutlined /> 修改密码
+                </a-menu-item>
+                <a-menu-item @click="Logout">
+                  <LogoutOutlined /> 注销登录
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
+      </a-layout-header>
+
+      <!-- 内容区域 -->
+      <a-layout-content :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }">
+        <router-view></router-view>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
+
+  <UserPassword :open="uiState.openPasswordModal" @update:open="uiState.openPasswordModal = $event"></UserPassword>
 </template>
 
 <script setup>
@@ -103,7 +95,7 @@ const renderIcon = (iconName) => {
 
 const uiState = reactive({
   collapsed: false,
-  openPasswordModal: false
+  openPasswordModal: false,
 })
 
 const uiData = reactive({
@@ -113,7 +105,7 @@ const uiData = reactive({
 // 转换路由数据为菜单项
 const transformRoutesToMenuItems = (routes) => {
   return routes
-    .filter(route => !route.meta?.hidden) // 过滤掉 hidden 的路由
+    .filter((route) => !route.meta?.hidden) // 过滤掉 hidden 的路由
     .map((route) => ({
       key: route.path,
       label: route.meta?.title,
@@ -126,8 +118,7 @@ const transformRoutesToMenuItems = (routes) => {
 // 使用 permission store 的 getter
 const menuItems = computed(() => {
   return transformRoutesToMenuItems(permissionStore.menuRoutes)
-});
-
+})
 
 const initializeLayoutData = async () => {
   const storedOpenKeys = sessionStorage.getItem('openKeys')
@@ -185,41 +176,49 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 样式保持不变 */
+.layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 左右分开 */
+
+  height: 48px;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.trigger {
+  font-size: 18px;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.nickname {
+  margin-left: 8px;
+}
+
 .app-logo {
   height: 60px;
   width: auto;
-  max-width: 360px;
+  /* 自动缩放宽度 */
+  max-width: 182px;
   object-fit: contain;
   display: block;
-  transform: translateY(-2px);
 }
 
-.layout-sider {
-  overflow: auto;
-  height: calc(100vh - 60px);
-  position: fixed;
-  top: 60px;
-  left: 0;
+
+.site-layout .site-layout-background {
   background: #fff;
-  z-index: 100;
-  border-right: 1px solid rgb(235, 237, 240);
-  transition: all 0.2s;
-}
-
-.header {
-  position: fixed;
-  right: 0;
-  top: 0;
-  left: 0;
-  background: #fff;
-  z-index: 999;
-  box-shadow: 0 2px 4px 0 var(--cb-color-shadow, rgba(0, 0, 0, 0.16));
-  padding: 0 30px;
-}
-
-.ant-row {
-  display: flex;
-  justify-content: flex-start;
 }
 </style>

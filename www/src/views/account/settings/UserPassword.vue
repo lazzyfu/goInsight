@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="修改密码" v-model:open="modalOpen" width="50%" :footer="null" @cancel="handleCancel">
+  <a-modal title="修改密码" v-model:open="modalOpen" :footer="null" @cancel="handleCancel">
     <a-form ref="formRef" :model="formState" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }"
       autocomplete="off" @finish="onSubmit">
       <a-form-item label="当前密码" has-feedback name="old_password">
