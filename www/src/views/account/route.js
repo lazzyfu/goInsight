@@ -1,6 +1,7 @@
 const route = {
   name: 'account',
   path: '/account',
+  redirect: '/account/basic',
   component: () => import('./index.vue'),
   meta: { title: '个人中心', icon: 'UserOutlined', keepAlive: true, hidden: true },
   children: [

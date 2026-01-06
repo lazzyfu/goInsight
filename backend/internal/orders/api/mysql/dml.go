@@ -23,7 +23,7 @@ func (e *ExecuteMySQLDML) Run() (data base.ReturnData, err error) {
 	log := func(msg string) {
 		cleaned := strings.TrimSpace(msg)
 		formatted := logger.Add(cleaned) + "\n"
-		publisher.Publish(e.OrderID, formatted, "")
+		publisher.Publish(e.OrderID, e.TaskID, utils.RenderLogStream, formatted)
 	}
 
 	// CREATE A NEW DATABASE CONNECTION

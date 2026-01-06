@@ -60,7 +60,8 @@
   <TaskResult :open="uiState.taskResultOpen" v-model:modelValue="taskResultData"
     @update:open="uiState.taskResultOpen = $event">
   </TaskResult>
-  <TaskStream />
+
+  <TaskStream ref="taskStreamRef" />
 </template>
 
 <script setup>
@@ -86,6 +87,8 @@ const progressOptions = [
   { value: 'COMPLETED', label: '已完成' },
   { value: 'FAILED', label: '已失败' },
 ]
+
+const taskStreamRef = ref(null)
 
 // 定时器, 10秒刷新一次
 useIntervalFn(
@@ -231,7 +234,6 @@ const executeBatchTasks = useThrottleFn(async () => {
 // 查看任务结果
 const showTaskResult = (record) => {
   taskResultData.value = record || {}
-  console.log('taskResultData.value: ', taskResultData.value);
   uiState.taskResultOpen = true
 }
 

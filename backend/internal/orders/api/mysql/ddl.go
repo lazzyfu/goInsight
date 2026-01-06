@@ -34,7 +34,7 @@ func (e *ExecuteMySQLDDL) ExecuteCommand(command string) (data []string, err err
 		for v := range ch {
 			data = append(data, v)
 
-			if perr := utils.Publish(context.Background(), e.OrderID, v, "ghost"); perr != nil {
+			if perr := utils.Publish(context.Background(), e.OrderID, e.TaskID, utils.RenderGhostStream, v); perr != nil {
 				global.App.Log.Error(perr)
 			}
 		}
@@ -55,7 +55,7 @@ func (e *ExecuteMySQLDDL) ExecuteOnlineDDL() (data base.ReturnData, err error) {
 	log := func(msg string) {
 		cleaned := strings.TrimSpace(msg)
 		formatted := logger.Add(cleaned) + "\n"
-		publisher.Publish(e.OrderID, formatted, "")
+		publisher.Publish(e.OrderID, e.TaskID, utils.RenderLogStream, formatted)
 	}
 
 	// CREATE A NEW DATABASE CONNECTION
@@ -109,7 +109,7 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	log := func(msg string) {
 		cleaned := strings.TrimSpace(msg)
 		formatted := logger.Add(cleaned) + "\n"
-		publisher.Publish(e.OrderID, formatted, "")
+		publisher.Publish(e.OrderID, e.TaskID, utils.RenderGhostStream, formatted)
 	}
 
 	// 移除字符串前后的所有空白字符，包括空格、制表符、换行符等

@@ -1,1 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" ref="svg_canvas" preserveAspectRatio="none" version="1.1"><g><title>Layer 1</title><g id="shape_OYqKI1CcvR" ref="shape_OYqKI1CcvR" key="shape_OYqKI1CcvR" transform="translate(98 221.991) scale(1 1)" display="inline"><g display="inline" id="svg_5"><rect fill="rgba(0,0,0,0)" width="237.20239" height="185.64036" x="-24" y="-112" id="svg_6" /><g id="svg_10"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg_11" x="-14" y="-102" width="217.20239" height="165.64036" viewBox="2.5 23.899999618530273 196.29998779296875 149.70001220703125" xml:space="preserve" class="style-removed" preserveAspectRatio="none" data-parent="shape_OYqKI1CcvR"><path d="m2.5,173.5l15.7,-55.8c1.9,-6.7 8,-11.3 14.9,-11.3l77.7,0l-15.8,55.9c-1.9,6.7 -8,11.3 -14.9,11.3l-77.6,0l0,-0.1z" fill="#0348FE" stroke-width="0" id="svg_17" /><path d="m50.3,50.5l6.2,-22.1c0.7,-2.6 3.2,-4.5 5.9,-4.5l30.7,0l-6.2,22.1c-0.7,2.6 -3.2,4.5 -5.9,4.5l-30.7,0z" fill="#027DFF" stroke-width="0" id="svg_16" /><path d="m46.5,132.3l15.7,-55.8c1.9,-6.7 8,-11.3 14.9,-11.3l77.7,0l-15.7,55.8c-1.9,6.7 -8,11.3 -14.9,11.3l-77.7,0z" fill="#027DFF" stroke-width="0" id="svg_15" /><path d="m77.1,65.3c-6.9,0 -13,4.6 -14.9,11.3l28.3,14.4c0,0 7.3,-25.8 7.3,-25.8l-20.7,0l0,0.1z" fill="#0507D9" stroke-width="0" id="svg_14" /><path d="m33.1,106.5c-6.9,0 -13,4.6 -14.9,11.3l28.3,14.5c0,0 7.3,-25.8 7.3,-25.8l-20.7,0z" fill="#0507D9" stroke-width="0" id="svg_13" /><path d="m90.5,91l15.7,-55.8c1.9,-6.7 8,-11.3 14.9,-11.3l77.7,0l-15.7,55.8c-1.9,6.7 -8,11.3 -14.9,11.3l-77.7,0z" fill="#0348FE" stroke-width="0" id="svg_12" /></svg></g></g></g><text style="cursor: move;" transform="matrix(4.03344 0 0 3.95408 -893.925 -779.486)" stroke="#000" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_38" y="268.83223" x="283.73953" stroke-width="0" fill="#000000">GoInsight</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" class="app-logo">
+  <!-- 整体组合居中 -->
+  <g transform="translate(25,0)">
+    <!-- 图标 -->
+    <rect x="0" y="5" width="20" height="40" rx="4" ry="4" fill="url(#blue-gradient)" />
+    <rect x="25" y="0" width="20" height="50" rx="4" ry="4" fill="url(#blue-gradient)" />
+    <rect x="50" y="10" width="20" height="30" rx="4" ry="4" fill="url(#blue-gradient)" />
+
+    <!-- 文字 -->
+    <text x="80" y="35" font-family="Noto Sans JP, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">
+      GoInsight
+    </text>
+  </g>
+
+  <defs>
+    <linearGradient id="blue-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B3D91"/>
+      <stop offset="100%" stop-color="#0550B3"/>
+    </linearGradient>
+  </defs>
+</svg>
