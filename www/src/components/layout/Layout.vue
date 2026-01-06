@@ -1,5 +1,5 @@
 <template>
-  <a-layout>
+  <a-layout class="layout" style="min-height: 100vh">
     <!-- 左侧siderbar -->
     <a-layout-sider breakpoint="lg" collapsed-width="0" v-model:collapsed="uiState.collapsed" :trigger="null"
       collapsible>
@@ -181,7 +181,6 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   /* 左右分开 */
-
   height: 48px;
   padding: 0 16px;
   background: #fff;
