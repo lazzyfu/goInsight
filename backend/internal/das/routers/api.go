@@ -11,7 +11,7 @@ func RegisterDasRoutes(das *gin.RouterGroup) {
 	das.GET("schema/tables", views.GetTablesView)
 	das.GET("schema/grants", views.GetUserGrantsView)
 	das.POST("query/mysql", views.ExecuteMySQLQueryView)
-	das.POST("execute/query/clickhouse", views.ExecuteClickHouseQueryView)
+	das.POST("query/clickhouse", views.ExecuteClickHouseQueryView)
 	das.GET("table-info", views.GetTableInfoView)
 	das.GET("dbdict", views.GetDbDictView)
 	das.GET("history", views.GetHistoryView)

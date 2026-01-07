@@ -16,7 +16,7 @@
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
@@ -55,11 +55,11 @@
 
 <script setup>
 import {
-  createInstanceInspectParamsApi,
-  deleteInstanceInspectParamsApi,
-  getInspectParamsApi,
-  getInstanceInspectParamsApi,
-  updateInstanceInspectParamsApi,
+    createInstanceInspectParamsApi,
+    deleteInstanceInspectParamsApi,
+    getInspectParamsApi,
+    getInstanceInspectParamsApi,
+    updateInstanceInspectParamsApi,
 } from '@/api/admin'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
