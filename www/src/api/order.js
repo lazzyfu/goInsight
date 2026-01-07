@@ -12,26 +12,24 @@ export const getOrderListApi = (params) => get('/api/v1/orders', params)
 export const getOrderDetailApi = (params) => get(`/api/v1/orders/${params.order_id}`)
 
 export const getOrderApprovalStatusApi = (params) =>
-  get(`/api/v1/orders/${params.order_id}/approvals`)
-export const getOrderLogsApi = (params) => get(`/api/v1/orders/${params.order_id}/logs`)
+  get(`/api/v1/orders/approvals/${params.order_id}`)
+export const getOrderLogsApi = (params) => get(`/api/v1/orders/logs/${params.order_id}`)
 
-export const approvalOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/approval`, data)
-export const claimOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/claim`, data)
-export const revokeOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/revoke`, data)
-export const transferOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/transfer`, data)
-export const completeOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/complete`, data)
-export const failOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/fail`, data)
-export const reviewOrderApi = (data) => put(`/api/v1/orders/${data.order_id}/actions/review`, data)
+export const approvalOrderApi = (data) => put(`/api/v1/orders/actions/approval`, data)
+export const claimOrderApi = (data) => put(`/api/v1/orders/actions/claim`, data)
+export const revokeOrderApi = (data) => put(`/api/v1/orders/actions/revoke`, data)
+export const transferOrderApi = (data) => put(`/api/v1/orders/actions/transfer`, data)
+export const completeOrderApi = (data) => put(`/api/v1/orders/actions/complete`, data)
+export const failOrderApi = (data) => put(`/api/v1/orders/actions/fail`, data)
+export const reviewOrderApi = (data) => put(`/api/v1/orders/actions/review`, data)
 
 // 生成tasks
-export const generateOrderTasksApi = (data) => post(`/api/v1/orders/${data.order_id}/tasks`, data)
+export const generateOrderTasksApi = (data) => post(`/api/v1/orders/tasks`, data)
 
 // 获取tasks
-export const getOrderTasksApi = (params) => get(`/api/v1/orders/${params.order_id}/tasks`, params)
-export const executeTaskApi = (data) => post(`/api/v1/orders/${data.order_id}/tasks/execute`, data)
-export const executebatchTasksApi = (data) =>
-  post(`/api/v1/orders/${data.order_id}/tasks/execute-batch`, data)
+export const getOrderTasksApi = (params) => get(`/api/v1/orders/tasks/${params.order_id}`, params)
+export const executeTaskApi = (data) => post(`/api/v1/orders/tasks/execute`, data)
+export const executebatchTasksApi = (data) => post(`/api/v1/orders/tasks/execute-batch`, data)
 
 // 下载导出文件
-export const downloadExportFileApi = (params) =>
-  getBlob(`/api/v1/orders/${params.order_id}/tasks/exports/${params}`)
+export const downloadExportFileApi = (params) => getBlob(`/api/v1/orders/tasks/exports/${params}`)

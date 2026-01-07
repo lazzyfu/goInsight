@@ -25,13 +25,13 @@ const route = {
     },
     {
       name: 'orders.tasks',
-      path: '/orders/:order_id/tasks',
+      path: '/orders/tasks/:order_id',
       component: () => import('./tasks/TaskList.vue'),
       meta: { title: '工单任务', keepAlive: true, hidden: true },
     },
     {
       name: 'orders.exportfile.download',
-      path: '/orders/:order_id/tasks/exports/:filename',
+      path: '/orders/tasks/exports/:filename',
       component: () => import('./tasks/ExportfileDownload.vue'),
       meta: { title: '下载导出文件', keepAlive: true, hidden: true },
     },
