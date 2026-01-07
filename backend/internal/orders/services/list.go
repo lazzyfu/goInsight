@@ -127,13 +127,13 @@ func (s *GetOrderDetailServices) Run() (responseData any, err error) {
 	return result, nil
 }
 
-type GetOrderApprovalServices struct {
+type GetOrderApprovalsServices struct {
 	C        *gin.Context
 	OrderID  string
 	Username string
 }
 
-func (s *GetOrderApprovalServices) Run() (responseData any, err error) {
+func (s *GetOrderApprovalsServices) Run() (responseData any, err error) {
 	var result []ordersModels.InsightApprovalRecords
 	// 返回记录
 	tx := global.App.DB.Table("`insight_approval_records` a").

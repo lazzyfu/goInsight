@@ -18,25 +18,26 @@ func RegisterApiRoutes(v1 *gin.RouterGroup) {
 	v1.GET("", views.GetOrderListView)
 	v1.GET(":order_id", views.GetOrderDetailView)
 	// 获取审批流和日志
-	v1.GET("approval/:order_id", views.GetOrderApprovalView)
-	v1.GET("logs/:order_id", views.GetOrderLogsView)
+	v1.GET(":order_id/approvals", views.GetOrderApprovalsView)
+	v1.GET(":order_id/logs", views.GetOrderLogsView)
 	// 操作
-	v1.PUT("approval", views.ApprovalOrderView)
-	v1.PUT("claim", views.ClaimOrderView)
-	v1.PUT("transfer", views.TransferOrderView)
-	v1.PUT("revoke", views.RevokeOrderView)
-	v1.PUT("complete", views.CompleteOrderView)
-	v1.PUT("fail", views.FailOrderView)
-	v1.PUT("review", views.ReviewOrderView)
+	v1.PUT(":order_id/actions/approval", views.ApprovalOrderView)
+	v1.PUT(":order_id/actions/claim", views.ClaimOrderView)
+	v1.PUT(":order_id/actions/transfer", views.TransferOrderView)
+	v1.PUT(":order_id/actions/revoke", views.RevokeOrderView)
+	v1.PUT(":order_id/actions/complete", views.CompleteOrderView)
+	v1.PUT(":order_id/actions/fail", views.FailOrderView)
+	v1.PUT(":order_id/actions/review", views.ReviewOrderView)
 	// 新增生成执行任务接口
-	v1.POST("generate-tasks", views.GenOrderTasksView)
+	v1.POST(":order_id/tasks", views.GenOrderTasksView)
 	// 获取执行任务列表
-	v1.GET("tasks/:order_id", views.GetTasksView)
+	v1.GET(":order_id/tasks", views.GetTasksView)
 	// 执行任务
-	v1.POST("tasks/execute", views.ExecuteTaskView)
+	v1.POST(":order_id/tasks/execute", views.ExecuteTaskView)
 	// 批量执行任务
-	v1.POST("tasks/execute-batch", views.ExecuteBatchTasksView)
-	v1.GET("tasks/preview", views.PreviewTasksView)
+	v1.POST(":order_id/tasks/execute-batch", views.ExecuteBatchTasksView)
+	// 预览
+	v1.GET(":order_id/tasks/preview", views.PreviewTasksView)
 	// 下载导出文件
-	v1.GET("tasks/download/exportfile/:task_id", views.DownloadExportFileView)
+	v1.GET(":order_id/tasks/exports/:task_id", views.DownloadExportFileView)
 }
