@@ -132,7 +132,18 @@ const renderExecutionMessage = (value) => {
   overflow: auto;
 }
 
+/* 结果集表格字体更小（仅影响 Console 结果区） */
+.console-result :deep(.ant-table) {
+  font-size: 12px;
+}
+
+.console-result :deep(.ant-table-thead > tr > th),
+.console-result :deep(.ant-table-tbody > tr > td) {
+  font-size: 12px;
+}
+
 .exec-message {
   white-space: pre-wrap;
+  font-size: 12px;
 }
 </style>
