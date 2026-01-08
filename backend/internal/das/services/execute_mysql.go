@@ -68,10 +68,6 @@ func (s *ExecuteMySQLQueryService) Run() (ResponseData, error) {
 	// 初始化SQLText为用户输入的SQLText
 	var responseData ResponseData = ResponseData{SQLText: s.SQLText}
 	var data *[]map[string]any
-	// 判断当前用户是否正在对当前实例当前库进行查询，如果有，禁止执行，防止并发
-	if err := IsConcurrentRunning(s.Username, s.InstanceID, s.Schema); err != nil {
-		return responseData, err
-	}
 	// 创建数据库记录
 	jsonParams, err := json.Marshal(s.Params)
 	if err != nil {

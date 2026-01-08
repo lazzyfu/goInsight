@@ -12,7 +12,6 @@ import (
 	commonModels "github.com/lazzyfu/goinsight/internal/common/models"
 	"github.com/lazzyfu/goinsight/internal/das/dao"
 	"github.com/lazzyfu/goinsight/internal/das/forms"
-	"github.com/lazzyfu/goinsight/internal/das/models"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -55,25 +54,6 @@ func ParserUUID(instance_id string) (id uuid.UUID, err error) {
 		return id, err
 	}
 	return id, nil
-}
-
-// 判断当前用户在max_execution_time内是否在对当前实例当前库进行查询，如果有，禁止执行，防止并发
-func IsConcurrentRunning(username, instance_id, schema string) error {
-	// 逻辑1，返回响应会更新IsRunning=false
-	// 定时任务会定时去目标库按照request_id检索正在运行的SQL，当超过阈值，会自动kill并更新IsRunning=false
-	type isRunning struct {
-		Count int
-	}
-	var result isRunning
-	global.App.DB.Model(&models.InsightDASRecords{}).
-		Select("count(*) as count").
-		Where("username=? and instance_id=? and `schema`=? and is_finish=? and created_at>= date_sub(now(), interval ? second)",
-			username, instance_id, schema, false, global.App.Config.Das.MaxExecutionTime/1000).
-		Take(&result)
-	if result.Count > 0 {
-		return fmt.Errorf("您有`%s`库的查询正在执行,请等待当前SQL执行完成或%ds后重试", schema, global.App.Config.Das.MaxExecutionTime/1000)
-	}
-	return nil
 }
 
 // 计算延时

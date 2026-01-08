@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <a-select style="width: 90%" @change="loadTablesBySchema">
+    <a-select style="width: 90%" @change="loadTablesBySchema" placeholder="选择有权限的库">
       <a-select-option
         v-for="(s, index) in uiData.dbList"
         :key="index"
@@ -62,10 +62,10 @@
 
 <script setup>
 import {
-    GetPermittedTablesBySchemaApi,
-    GetSchemaTablesApi,
-    GetSchemasApi,
-    GetTableInfoApi,
+  GetPermittedTablesBySchemaApi,
+  GetSchemaTablesApi,
+  GetSchemasApi,
+  GetTableInfoApi,
 } from '@/api/das'
 import { TabletTwoTone } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
@@ -128,6 +128,8 @@ const loadTablesBySchema = async (value) => {
 
   uiState.isSearchTable = true
   uiState.isTreeLoading = true
+  console.log('uiData.instanceData: ', uiData.instanceData);
+
   const res = await GetSchemaTablesApi(uiData.instanceData).catch(() => {})
   if (res) {
     // 获取指定schema的表权限
@@ -139,7 +141,7 @@ const loadTablesBySchema = async (value) => {
   } else {
     renderTree([], [])
     uiState.isTreeLoading = false
-    message.error(res.message)
+    message.error(res?.message)
   }
 }
 
