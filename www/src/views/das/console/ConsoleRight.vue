@@ -76,10 +76,10 @@
 
 <script setup>
 import {
-    CreateFavoritesApi,
-    ExecuteClickHouseQueryApi,
-    ExecuteMySQLQueryApi,
-    GetDBDictApi,
+  CreateFavoritesApi,
+  ExecuteClickHouseQueryApi,
+  ExecuteMySQLQueryApi,
+  GetDBDictApi,
 } from '@/api/das'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'

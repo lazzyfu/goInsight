@@ -13,12 +13,14 @@
       </a-select-option>
     </a-select>
   </div>
+
   <a-input-search
     style="margin: 5px 0px; width: 90%"
     placeholder="输入要搜索的表名"
     @search="handleSearch"
     :disabled="!uiState.isSearchTable"
   />
+
   <a-spin :spinning="uiState.isTreeLoading" tip="加载中...">
     <div id="tree-container">
       <div class="block">
@@ -122,13 +124,16 @@ const handleSearch = (value) => {
 // 获取指定实例和schema的表
 const loadTablesBySchema = async (value) => {
   const vals = value.split(';')
-  uiData.instanceData.instance_id = vals[0]
-  uiData.instanceData.schema = vals[1]
-  uiData.instanceData.db_type = vals[2]
+  console.log('vals: ', vals);
+  uiData.instanceData = {
+    instance_id: vals[0],
+    schema: vals[1],
+    db_type: vals[2],
+    tables: {},
+  }
 
   uiState.isSearchTable = true
   uiState.isTreeLoading = true
-  console.log('uiData.instanceData: ', uiData.instanceData);
 
   const res = await GetSchemaTablesApi(uiData.instanceData).catch(() => {})
   if (res) {
