@@ -5,32 +5,34 @@
         <ConsoleLeft />
       </template>
       <template #right-content>
-        <ConsoleRight @renderResultTable="renderResultTable" />
+        <div class="console-right">
+          <ConsoleRight @renderResultTable="renderResultTable" />
+
+          <div v-if="uiState.showbTable" class="console-result">
+            <a-tabs default-active-key="1">
+              <a-tab-pane key="1" tab="结果集">
+                <a-table
+                  size="small"
+                  class="ant-table-striped"
+                  bordered
+                  :data-source="uiData.tableData"
+                  :scroll="{ x: 1100 }"
+                  style="min-width: 100%"
+                >
+                  <a-table-column
+                    v-for="item in uiData.tableColumns"
+                    :key="item"
+                    :title="item"
+                    :data-index="item"
+                  />
+                </a-table>
+              </a-tab-pane>
+            </a-tabs>
+          </div>
+        </div>
       </template>
     </SplitPanel>
   </a-card>
-
-  <div v-if="uiState.showbTable" style="margin-top: 15px; overflow-x: auto">
-    <a-tabs default-active-key="1">
-      <a-tab-pane key="1" tab="结果集">
-        <a-table
-          size="small"
-          class="ant-table-striped"
-          bordered
-          :data-source="uiData.tableData"
-          :scroll="{ x: 1100 }"
-          style="min-width: 100%"
-        >
-          <a-table-column
-            v-for="item in uiData.tableColumns"
-            :key="item"
-            :title="item"
-            :data-index="item"
-          />
-        </a-table>
-      </a-tab-pane>
-    </a-tabs>
-  </div>
 </template>
 
 <script setup>
@@ -77,5 +79,10 @@ const renderResultTable = (value) => {
 
 :deep(.ant-tabs-nav) {
   margin: 0 0 10px 0;
+}
+
+.console-result {
+  margin-top: 15px;
+  overflow-x: auto;
 }
 </style>

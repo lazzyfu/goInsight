@@ -1,73 +1,76 @@
 <template>
-  <div class="header">
-    <a-select style="width: 90%" @change="loadTablesBySchema" placeholder="选择有权限的库">
-      <a-select-option
-        v-for="(s, index) in uiData.dbList"
-        :key="index"
-        :label="`${s.remark}:${s.schema}`"
-        :value="`${s.instance_id};${s.schema};${s.db_type}`"
-        :disabled="s.is_deleted"
-      >
-        <ConsoleDbIcon :type="s.db_type.toLowerCase()" /> {{ s.remark }}:{{ s.schema }}
-        <i v-if="s.is_deleted" style="color: #c0c4cc">已删除</i>
-      </a-select-option>
-    </a-select>
-  </div>
-
-  <a-input-search
-    style="margin: 5px 0px; width: 90%"
-    placeholder="输入要搜索的表名"
-    @search="handleSearch"
-    :disabled="!uiState.isSearchTable"
-  />
-
-  <a-spin :spinning="uiState.isTreeLoading" tip="加载中...">
-    <div id="tree-container">
-      <div class="block">
-        <a-tree
-          :tree-data="uiData.searchTreeData"
-          show-line
-          class="tree filter-tree"
-          :defaultExpandAll="true"
+  <div class="console-left-root">
+    <div class="header">
+      <a-select style="width: 90%" @change="loadTablesBySchema" placeholder="选择有权限的库">
+        <a-select-option
+          v-for="(s, index) in uiData.dbList"
+          :key="index"
+          :label="`${s.remark}:${s.schema}`"
+          :value="`${s.instance_id};${s.schema};${s.db_type}`"
+          :disabled="s.is_deleted"
         >
-          <template #icon="record">
-            <span v-if="record.isLeaf">
-              <TabletTwoTone />
-            </span>
-          </template>
-          <template #title="{ key: treeKey, title, isLeaf }">
-            <PermissionHint
-              v-if="title.split('#').length === 2"
-              :hasAccess="title.split('#')[1] === 'allow'"
-            />
-            <a-dropdown :trigger="['contextmenu']">
-              <span>{{ title.split('#')[0] }}</span>
-              <template #overlay>
-                <a-menu
-                  v-if="!isLeaf"
-                  @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey)"
-                >
-                  <a-menu-item key="showTableStructure">查看表结构</a-menu-item>
-                  <a-menu-item key="showTableMetadata">查看表信息</a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </template>
-        </a-tree>
-      </div>
+          <ConsoleDbIcon :type="s.db_type.toLowerCase()" /> {{ s.remark }}:{{ s.schema }}
+          <i v-if="s.is_deleted" style="color: #c0c4cc">已删除</i>
+        </a-select-option>
+      </a-select>
     </div>
-  </a-spin>
-  <a-drawer v-model:open="uiState.open" width="50%" title="表元信息" placement="right">
-    <highlightjs language="sql" :code="uiData.tableInfo" />
-  </a-drawer>
+
+    <a-input-search
+      style="margin: 5px 0px; width: 90%"
+      placeholder="输入要搜索的表名"
+      @search="handleSearch"
+      :disabled="!uiState.isSearchTable"
+    />
+
+    <a-spin class="tree-area" :spinning="uiState.isTreeLoading" tip="加载中...">
+      <div id="tree-container">
+        <div class="block">
+          <a-tree
+            :tree-data="uiData.searchTreeData"
+            show-line
+            class="tree filter-tree"
+            :defaultExpandAll="true"
+          >
+            <template #icon="record">
+              <span v-if="record.isLeaf">
+                <TabletTwoTone />
+              </span>
+            </template>
+            <template #title="{ key: treeKey, title, isLeaf }">
+              <PermissionHint
+                v-if="title.split('#').length === 2"
+                :hasAccess="title.split('#')[1] === 'allow'"
+              />
+              <a-dropdown :trigger="['contextmenu']">
+                <span>{{ title.split('#')[0] }}</span>
+                <template #overlay>
+                  <a-menu
+                    v-if="!isLeaf"
+                    @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey)"
+                  >
+                    <a-menu-item key="showTableStructure">查看表结构</a-menu-item>
+                    <a-menu-item key="showTableMetadata">查看表信息</a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </template>
+          </a-tree>
+        </div>
+      </div>
+    </a-spin>
+
+    <a-drawer v-model:open="uiState.open" width="50%" title="表元信息" placement="right">
+      <highlightjs language="sql" :code="uiData.tableInfo" />
+    </a-drawer>
+  </div>
 </template>
 
 <script setup>
 import {
-  GetPermittedTablesBySchemaApi,
-  GetSchemaTablesApi,
-  GetSchemasApi,
-  GetTableInfoApi,
+    GetPermittedTablesBySchemaApi,
+    GetSchemaTablesApi,
+    GetSchemasApi,
+    GetTableInfoApi,
 } from '@/api/das'
 import { TabletTwoTone } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
@@ -293,9 +296,21 @@ onMounted(() => {
   --border: 1;
 }
 
+.console-left-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tree-area {
+  flex: 1;
+  min-height: 0;
+}
+
 :deep(#tree-container) {
-  overflow: scroll;
-  height: 580px;
+  overflow: auto;
+  overflow-x: hidden;
+  height: 100%;
   border-radius: 4px;
   border-left-width: 0px;
   border-right-width: 0px;
