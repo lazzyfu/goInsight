@@ -6,12 +6,16 @@
       </template>
       <template #right-content>
         <div class="console-right">
-          <ConsoleRight @renderResultTable="renderResultTable" />
+          <ConsoleRight
+            @renderResultTable="renderResultTable"
+            @renderExecutionMessage="renderExecutionMessage"
+          />
 
-          <div v-if="uiState.showbTable" class="console-result">
-            <a-tabs default-active-key="1">
-              <a-tab-pane key="1" tab="结果集">
+          <div v-if="uiState.showbTable || uiData.executionMessage" class="console-result">
+            <a-tabs default-active-key="result">
+              <a-tab-pane key="result" tab="结果集">
                 <a-table
+                  v-if="uiState.showbTable"
                   size="small"
                   class="ant-table-striped"
                   bordered
@@ -26,6 +30,9 @@
                     :data-index="item"
                   />
                 </a-table>
+              </a-tab-pane>
+              <a-tab-pane key="message" tab="执行消息">
+                <div class="exec-message" v-html="uiData.executionMessage" />
               </a-tab-pane>
             </a-tabs>
           </div>
@@ -54,6 +61,7 @@ const uiState = reactive({
 const uiData = reactive({
   tableColumns: [],
   tableData: [],
+  executionMessage: '',
 })
 
 // 渲染结果表格
@@ -65,6 +73,10 @@ const renderResultTable = (value) => {
   } else {
     uiState.showbTable = false
   }
+}
+
+const renderExecutionMessage = (value) => {
+  uiData.executionMessage = value || ''
 }
 </script>
 
@@ -81,8 +93,46 @@ const renderResultTable = (value) => {
   margin: 0 0 10px 0;
 }
 
+/* 不分页：限制左右面板最大高度，超出滚动 */
+:deep(.split-wrapper) {
+  height: 80vh;
+  max-height: 80vh;
+}
+
+/* 右侧不整体滚动：让结果集区域单独滚动 */
+:deep(.split-wrapper .right-content) {
+  overflow: hidden;
+}
+
+.console-right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 .console-result {
   margin-top: 15px;
-  overflow-x: auto;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  min-height: 240px;
+}
+
+/* 只滚动内容区：Tab 标题栏固定 */
+.console-result :deep(.ant-tabs) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.console-result :deep(.ant-tabs-content-holder) {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.exec-message {
+  white-space: pre-wrap;
 }
 </style>

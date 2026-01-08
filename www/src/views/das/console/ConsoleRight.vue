@@ -52,11 +52,8 @@
     </span>
   </a-space>
   <div style="margin-top: 6px">
-    <a-spin :spinning="uiState.tableLoading" tip="Loading...">
-      <CodeMirror ref="codemirrorRef" :height="'470px'" />
-      <a-card class="box-card" style="margin-top: 8px; padding: 8px">
-        <div v-html="uiData.queryResultMessage" style="white-space: pre-wrap"></div>
-      </a-card>
+    <a-spin :spinning="currentTabLoading" tip="Loading...">
+      <CodeMirror ref="codemirrorRef" :height="'300px'" />
     </a-spin>
   </div>
   <!-- 数据字典 -->
@@ -85,7 +82,7 @@ import CodeMirror from '@/components/edit/Codemirror.vue'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
 import { BookOutlined, CodeOutlined, PlayCircleOutlined, StarOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import ConsoleDbDict from './ConsoleDbDict.vue'
 
 // 每个浏览器窗口(tab)独立：使用 sessionStorage 持久化 Console 状态
@@ -95,6 +92,7 @@ const storage = sessionStorage
 const runtime = reactive({
   queryResultMessageByTab: {},
   resultByTab: {},
+  tableLoadingByTab: {},
 })
 
 // 字符集选项
@@ -108,7 +106,6 @@ const characterSets = [
 const uiState = reactive({
   isDbDictOpen: false,
   isFavoritesOpen: false,
-  tableLoading: false,
 })
 
 // 引用
@@ -122,7 +119,7 @@ const favoritesFormState = ref({
 // 获取共享数据
 const dasInstanceData = inject('dasInstanceData')
 
-const emit = defineEmits(['renderResultTable'])
+const emit = defineEmits(['renderResultTable', 'renderExecutionMessage'])
 const uiData = reactive({
   panes: [],
   activeKey: 1,
@@ -133,6 +130,14 @@ const uiData = reactive({
   queryResultMessage: undefined,
 })
 
+const currentTabLoading = computed(() => {
+  return !!runtime.tableLoadingByTab[uiData.activeKey]
+})
+
+const emitActiveExecutionMessage = () => {
+  emit('renderExecutionMessage', runtime.queryResultMessageByTab[uiData.activeKey])
+}
+
 const applyActiveTabRuntime = () => {
   const key = uiData.activeKey
   uiData.queryResultMessage = runtime.queryResultMessageByTab[key]
@@ -142,6 +147,7 @@ const applyActiveTabRuntime = () => {
   } else {
     emit('renderResultTable', null)
   }
+  emitActiveExecutionMessage()
 }
 
 // tab编辑
@@ -183,6 +189,7 @@ const removeTab = (targetKey) => {
   uiData.activeKey = activeKey
   delete runtime.queryResultMessageByTab[targetKey]
   delete runtime.resultByTab[targetKey]
+  delete runtime.tableLoadingByTab[targetKey]
   storage.removeItem('das#tab#' + targetKey)
   storage.setItem('das#panes', JSON.stringify(uiData.panes))
 
@@ -287,6 +294,7 @@ const executeSqlQuery = async () => {
       "sqltext": "select * from das_records"
     }
   */
+  const tabKey = uiData.activeKey
   saveTabToCache()
   if (!uiData.schema) {
     message.warning('请先选择左侧的DB库')
@@ -315,7 +323,7 @@ const executeSqlQuery = async () => {
   }
 
   let res = null
-  uiState.tableLoading = true
+  runtime.tableLoadingByTab[tabKey] = true
   const resMsgs = []
   try {
     if (dbType === 'mysql' || dbType === 'tidb') {
@@ -332,13 +340,19 @@ const executeSqlQuery = async () => {
       resMsgs.push(`耗时: ${res.data?.duration ?? '-'}${dbType === 'clickhouse' ? 'ms' : ''}`)
       resMsgs.push(`SQL: ${res.data?.sqltext ?? sqltext}`)
       resMsgs.push(`请求ID: ${res.request_id}`)
-      runtime.resultByTab[uiData.activeKey] = res.data
-      emit('renderResultTable', res.data)
+      runtime.resultByTab[tabKey] = res.data
+      if (uiData.activeKey === tabKey) {
+        emit('renderResultTable', res.data)
+      }
     }
   } finally {
-    uiState.tableLoading = false
-    uiData.queryResultMessage = resMsgs.join('<br>')
-    runtime.queryResultMessageByTab[uiData.activeKey] = uiData.queryResultMessage
+    runtime.tableLoadingByTab[tabKey] = false
+    const msg = resMsgs.join('<br>')
+    runtime.queryResultMessageByTab[tabKey] = msg
+    if (uiData.activeKey === tabKey) {
+      uiData.queryResultMessage = msg
+      emit('renderExecutionMessage', msg)
+    }
   }
 }
 
