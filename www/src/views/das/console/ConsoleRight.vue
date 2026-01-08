@@ -88,6 +88,15 @@ import { message } from 'ant-design-vue'
 import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import ConsoleDbDict from './ConsoleDbDict.vue'
 
+// 每个浏览器窗口(tab)独立：使用 sessionStorage 持久化 Console 状态
+const storage = sessionStorage
+
+// 每个 Console Tab(内部窗口)独立：运行时状态按 activeKey 隔离
+const runtime = reactive({
+  queryResultMessageByTab: {},
+  resultByTab: {},
+})
+
 // 字符集选项
 const characterSets = [
   { key: 'utf8', value: 'utf8' },
@@ -123,6 +132,17 @@ const uiData = reactive({
   db_type: '',
   queryResultMessage: undefined,
 })
+
+const applyActiveTabRuntime = () => {
+  const key = uiData.activeKey
+  uiData.queryResultMessage = runtime.queryResultMessageByTab[key]
+  const res = runtime.resultByTab[key]
+  if (res) {
+    emit('renderResultTable', res)
+  } else {
+    emit('renderResultTable', null)
+  }
+}
 
 // tab编辑
 const handleTabEdit = (targetKey, action) => {
@@ -161,8 +181,14 @@ const removeTab = (targetKey) => {
   }
   uiData.panes = newPanes
   uiData.activeKey = activeKey
-  localStorage.removeItem('das#tab#' + targetKey)
-  localStorage.setItem('das#panes', JSON.stringify(uiData.panes))
+  delete runtime.queryResultMessageByTab[targetKey]
+  delete runtime.resultByTab[targetKey]
+  storage.removeItem('das#tab#' + targetKey)
+  storage.setItem('das#panes', JSON.stringify(uiData.panes))
+
+  // 关闭 Tab 后同步恢复当前 Tab 的独立状态
+  loadTabFromCache()
+  applyActiveTabRuntime()
 }
 
 // 切换tab
@@ -170,11 +196,12 @@ const handleTabChange = (value) => {
   saveTabToCache()
   uiData.activeKey = value
   loadTabFromCache()
+  applyActiveTabRuntime()
 }
 
 // 加载tab
 const loadTab = () => {
-  const panes = JSON.parse(localStorage.getItem('das#panes'))
+  const panes = JSON.parse(storage.getItem('das#panes'))
   if (panes?.length > 0) {
     uiData.panes = panes
   } else {
@@ -188,12 +215,12 @@ const saveTabToCache = () => {
     characterSet: uiData.characterSet,
     userInput: codemirrorRef.value.getContent(),
   }
-  localStorage.setItem('das#tab#' + uiData.activeKey, JSON.stringify(tabData))
+  storage.setItem('das#tab#' + uiData.activeKey, JSON.stringify(tabData))
 }
 
 // 加载tab cache
 const loadTabFromCache = () => {
-  var tabData = JSON.parse(localStorage.getItem('das#tab#' + uiData.activeKey))
+  var tabData = JSON.parse(storage.getItem('das#tab#' + uiData.activeKey))
   if (tabData != null) {
     codemirrorRef.value.setContent(tabData.userInput)
     uiData.characterSet = tabData.characterSet
@@ -305,11 +332,13 @@ const executeSqlQuery = async () => {
       resMsgs.push(`耗时: ${res.data?.duration ?? '-'}${dbType === 'clickhouse' ? 'ms' : ''}`)
       resMsgs.push(`SQL: ${res.data?.sqltext ?? sqltext}`)
       resMsgs.push(`请求ID: ${res.request_id}`)
+      runtime.resultByTab[uiData.activeKey] = res.data
       emit('renderResultTable', res.data)
     }
   } finally {
     uiState.tableLoading = false
     uiData.queryResultMessage = resMsgs.join('<br>')
+    runtime.queryResultMessageByTab[uiData.activeKey] = uiData.queryResultMessage
   }
 }
 
@@ -331,6 +360,7 @@ watch(dasInstanceData, (newVal) => {
 onMounted(() => {
   loadTab()
   loadTabFromCache()
+  applyActiveTabRuntime()
 })
 
 onBeforeUnmount(() => {
