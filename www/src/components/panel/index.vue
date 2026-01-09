@@ -118,10 +118,14 @@ const startDrag = (e) => {
     position: relative;
     min-width: 0;
     max-width: 50vw;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 
     .left-content {
-      height: 100%;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
       padding: 5px;
     }
 
@@ -197,7 +201,6 @@ const startDrag = (e) => {
     }
   }
 
-  .left-content,
   .right-content {
     overflow: auto;
   }

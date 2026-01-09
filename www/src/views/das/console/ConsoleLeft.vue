@@ -1,63 +1,49 @@
 <template>
-  <div class="console-left-root">
-    <div class="header">
-      <a-select style="width: 90%" @change="loadTablesBySchema" placeholder="选择有权限的库">
-        <a-select-option
-          v-for="(s, index) in uiData.dbList"
-          :key="index"
-          :label="`${s.remark}:${s.schema}`"
-          :value="`${s.instance_id};${s.schema};${s.db_type}`"
-          :disabled="s.is_deleted"
-        >
-          <ConsoleDbIcon :type="s.db_type.toLowerCase()" /> {{ s.remark }}:{{ s.schema }}
-          <i v-if="s.is_deleted" style="color: #c0c4cc">已删除</i>
-        </a-select-option>
-      </a-select>
+  <div class="console-left-root" :style="{ height: leftHeight }">
+    <!-- 将 header 和 search 放在固定的头部区域，不随tree滚动 -->
+    <div class="fixed-header">
+      <div class="header">
+        <a-select style="width: 90%" @change="loadTablesBySchema" placeholder="选择有权限的库">
+          <a-select-option v-for="(s, index) in uiData.dbList" :key="index" :label="`${s.remark}:${s.schema}`"
+            :value="`${s.instance_id};${s.schema};${s.db_type}`" :disabled="s.is_deleted">
+            <ConsoleDbIcon :type="s.db_type.toLowerCase()" /> {{ s.remark }}:{{ s.schema }}
+            <i v-if="s.is_deleted" style="color: #c0c4cc">已删除</i>
+          </a-select-option>
+        </a-select>
+      </div>
+
+      <a-input-search style="margin: 5px 0px; width: 90%" placeholder="输入要搜索的表名" @search="handleSearch"
+        :disabled="!uiState.isSearchTable" />
     </div>
 
-    <a-input-search
-      style="margin: 5px 0px; width: 90%"
-      placeholder="输入要搜索的表名"
-      @search="handleSearch"
-      :disabled="!uiState.isSearchTable"
-    />
-
-    <a-spin class="tree-area" :spinning="uiState.isTreeLoading" tip="加载中...">
-      <div id="tree-container">
-        <div class="block">
-          <a-tree
-            :tree-data="uiData.searchTreeData"
-            show-line
-            class="tree filter-tree"
-            :defaultExpandAll="true"
-          >
-            <template #icon="record">
-              <span v-if="record.isLeaf">
-                <TabletTwoTone />
-              </span>
-            </template>
-            <template #title="{ key: treeKey, title, isLeaf }">
-              <PermissionHint
-                v-if="title.split('#').length === 2"
-                :hasAccess="title.split('#')[1] === 'allow'"
-              />
-              <a-dropdown :trigger="['contextmenu']">
-                <span>{{ title.split('#')[0] }}</span>
-                <template #overlay>
-                  <a-menu
-                    v-if="!isLeaf"
-                    @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey)"
-                  >
-                    <a-menu-item key="showTableStructure">查看表结构</a-menu-item>
-                    <a-menu-item key="showTableMetadata">查看表信息</a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-            </template>
-          </a-tree>
+    <!-- tree-area 现在是一个独立的滚动容器 -->
+    <div class="tree-area">
+      <a-spin :spinning="uiState.isTreeLoading" tip="加载中...">
+        <div id="tree-container">
+          <div class="block">
+            <a-tree :tree-data="uiData.searchTreeData" show-line class="tree filter-tree" :defaultExpandAll="true">
+              <template #icon="record">
+                <span v-if="record.isLeaf">
+                  <TabletTwoTone />
+                </span>
+              </template>
+              <template #title="{ key: treeKey, title, isLeaf }">
+                <PermissionHint v-if="title.split('#').length === 2" :hasAccess="title.split('#')[1] === 'allow'" />
+                <a-dropdown :trigger="['contextmenu']">
+                  <span>{{ title.split('#')[0] }}</span>
+                  <template #overlay>
+                    <a-menu v-if="!isLeaf" @click="({ key: menuKey }) => onContextMenuClick(treeKey, menuKey)">
+                      <a-menu-item key="showTableStructure">查看表结构</a-menu-item>
+                      <a-menu-item key="showTableMetadata">查看表信息</a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </template>
+            </a-tree>
+          </div>
         </div>
-      </div>
-    </a-spin>
+      </a-spin>
+    </div>
 
     <a-drawer v-model:open="uiState.open" width="50%" title="表元信息" placement="right">
       <highlightjs language="sql" :code="uiData.tableInfo" />
@@ -67,14 +53,14 @@
 
 <script setup>
 import {
-    GetPermittedTablesBySchemaApi,
-    GetSchemaTablesApi,
-    GetSchemasApi,
-    GetTableInfoApi,
+  GetPermittedTablesBySchemaApi,
+  GetSchemaTablesApi,
+  GetSchemasApi,
+  GetTableInfoApi,
 } from '@/api/das'
 import { TabletTwoTone } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { inject, onMounted, reactive } from 'vue'
+import { inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import PermissionHint from './components/PermissionHint.vue'
 import ConsoleDbIcon from './ConsoleDbIcon.vue'
 
@@ -100,7 +86,7 @@ const uiData = reactive({
 
 // 获取schema列表
 const fetchSchemas = async () => {
-  const res = await GetSchemasApi().catch(() => {})
+  const res = await GetSchemasApi().catch(() => { })
   if (res) {
     uiData.dbList = res.data
   }
@@ -127,7 +113,6 @@ const handleSearch = (value) => {
 // 获取指定实例和schema的表
 const loadTablesBySchema = async (value) => {
   const vals = value.split(';')
-  console.log('vals: ', vals);
   uiData.instanceData = {
     instance_id: vals[0],
     schema: vals[1],
@@ -138,10 +123,10 @@ const loadTablesBySchema = async (value) => {
   uiState.isSearchTable = true
   uiState.isTreeLoading = true
 
-  const res = await GetSchemaTablesApi(uiData.instanceData).catch(() => {})
+  const res = await GetSchemaTablesApi(uiData.instanceData).catch(() => { })
   if (res) {
     // 获取指定schema的表权限
-    const tableRes = await GetPermittedTablesBySchemaApi(uiData.instanceData).catch(() => {})
+    const tableRes = await GetPermittedTablesBySchemaApi(uiData.instanceData).catch(() => { })
     if (tableRes) {
       renderTree(tableRes.data, res.data)
       uiState.isTreeLoading = false
@@ -251,7 +236,7 @@ const getTableMeta = async (type) => {
     instance_id: uiData.instanceData.instance_id,
   }
 
-  const res = await GetTableInfoApi(params).catch(() => {})
+  const res = await GetTableInfoApi(params).catch(() => { })
   if (res) {
     if (type === 'structure') {
       res.data.forEach((row) => {
@@ -286,8 +271,35 @@ const showTableMetadata = () => {
   getTableMeta('base')
 }
 
+const leftHeight = ref('auto')
+const resizeObserver = ref(null)
+
+const syncHeightWithRightPanel = () => {
+  // 查找父容器中的右侧区域
+  const rightPanel = document.querySelector('.right-content')
+  if (rightPanel) {
+    // 创建 ResizeObserver 监听右侧区域高度变化
+    resizeObserver.value = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height
+        leftHeight.value = `${height}px`
+      }
+    })
+    resizeObserver.value.observe(rightPanel)
+  }
+}
+
 onMounted(() => {
   fetchSchemas()
+  setTimeout(() => {
+    syncHeightWithRightPanel()
+  }, 100)
+})
+
+onBeforeUnmount(() => {
+  if (resizeObserver.value) {
+    resizeObserver.value.disconnect()
+  }
 })
 </script>
 
@@ -296,24 +308,37 @@ onMounted(() => {
   --border: 1;
 }
 
+/* 设置根容器为flex布局，确保不超出父容器的88vh高度 */
 .console-left-root {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  /* 确保padding不会增加总高度 */
 }
 
+/* 固定头部样式，减少padding避免增加总高度 */
+.fixed-header {
+  flex-shrink: 0;
+  padding: 8px 0 4px 0;
+  /* 减少底部padding */
+  background: inherit;
+}
+
+/* tree-area 占据剩余空间并独立滚动，设置最小高度0允许flex收缩 */
 .tree-area {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 8px;
+  /* 底部留一点空间 */
+  box-sizing: border-box;
 }
 
+/* tree-container 设置为可滚动，显示垂直滚动条 */
 :deep(#tree-container) {
-  overflow: auto;
-  overflow-x: hidden;
-  height: 100%;
-  border-radius: 4px;
-  border-left-width: 0px;
-  border-right-width: 0px;
+  min-height: 100%;
 }
 
 :deep(.ant-tree.ant-tree-show-line li span.ant-tree-switcher) {

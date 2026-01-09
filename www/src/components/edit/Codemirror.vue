@@ -1,10 +1,9 @@
 <template>
-  <div
-    ref="editor"
-    :initVal="props.initVal"
-    :height="props.height"
-    style="height: 100%"
-  ></div>
+  <!-- resize 的唯一尺寸源 -->
+  <div ref="wrapper" class="cm-wrapper" :initVal="props.initVal" :height="props.height">
+    <!-- CodeMirror 挂载点 -->
+    <div ref="editor" style="height: 100%"></div>
+  </div>
 </template>
 
 <script setup>
@@ -17,12 +16,15 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { format } from 'sql-formatter'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const editor = ref(null) // template ref
-const editorView = ref(null) // 编辑器实例
+/* refs */
+const wrapper = ref(null)
+const editor = ref(null)
+const editorView = ref(null)
+let resizeObserver = null
 
-// 定义props
+/* props（原样保留） */
 const props = defineProps({
   initVal: {
     type: String,
@@ -34,30 +36,29 @@ const props = defineProps({
   },
 })
 
+/* compartments */
 const languageCompartment = new Compartment()
 const editableCompartment = new Compartment()
 const readonlyCompartment = new Compartment()
 
-// 初始化扩展
+/* 固定扩展 */
 const fixedExtensions = [
-  basicSetup, // basicSetup 包含了 history, defaultKeymap 等基础配置
+  basicSetup,
   keymap.of([
-    // ...completionKeymap 包含了处理自动补全的快捷键 (如回车、上下箭头)
     ...completionKeymap,
-    // ...historyKeymap 提供了撤销/重做功能
     ...historyKeymap,
     indentWithTab,
   ]),
-  // 启用自动补全
   autocompletion(),
   EditorView.lineWrapping,
 ]
 
-// 初始化编辑器
+/* 初始化编辑器（initVal 只在初始化时生效，行为不变） */
 const initEditor = () => {
   if (editorView.value) {
     editorView.value.destroy()
   }
+
   const startState = EditorState.create({
     doc: props.initVal,
     extensions: [
@@ -67,15 +68,14 @@ const initEditor = () => {
       editableCompartment.of(EditorView.editable.of(true)),
     ],
   })
+
   editorView.value = new EditorView({
     state: startState,
     parent: editor.value,
   })
-  editorView.value.dom.style.border = '1px solid #f0f0f0'
-  editorView.value.dom.style.height = props.height
 }
 
-// 设置为只读，但可选中、可复制
+/* 设置只读 */
 const setReadonly = (readonly) => {
   if (!editorView.value) return
   editorView.value.dispatch({
@@ -83,39 +83,46 @@ const setReadonly = (readonly) => {
   })
 }
 
-// 设置编辑器高度
+/* 设置高度（外部强制覆盖） */
 const setHeight = (height) => {
-  if (!editorView.value) return
-  editorView.value.dom.style.height = height
+  if (!wrapper.value) return
+  wrapper.value.style.height = height
+  editorView.value?.requestMeasure()
 }
 
-// 设置自动补全
+/* 设置自动补全 */
 const setCompletion = (completionData) => {
   if (!editorView.value) return
-
   editorView.value.dispatch({
-    effects: languageCompartment.reconfigure(sql({ dialect: MySQL, schema: completionData })),
+    effects: languageCompartment.reconfigure(
+      sql({ dialect: MySQL, schema: completionData }),
+    ),
   })
 }
 
-// 格式化内容
+/* 格式化 */
 const formatContent = () => {
   if (!editorView.value) return
   const formatted = format(editorView.value.state.doc.toString())
   editorView.value.dispatch({
-    changes: { from: 0, to: editorView.value.state.doc.length, insert: formatted },
+    changes: {
+      from: 0,
+      to: editorView.value.state.doc.length,
+      insert: formatted,
+    },
   })
 }
 
-// 获取全部内容
+/* 获取内容 */
 const getContent = () => {
-  return editorView.value.state.doc.toString()
+  return editorView.value?.state.doc.toString() || ''
 }
 
-// 获取选中内容
+/* 获取选中内容 */
 const getSelectedText = () => {
+  if (!editorView.value) return ''
   let text = ''
-  for (let range of editorView.value.state.selection.ranges) {
+  for (const range of editorView.value.state.selection.ranges) {
     if (!range.empty) {
       text += editorView.value.state.doc.sliceString(range.from, range.to)
     }
@@ -123,58 +130,84 @@ const getSelectedText = () => {
   return text
 }
 
-// 设置内容
+/* 设置内容 */
 const setContent = (content) => {
   if (!editorView.value) return
   editorView.value.dispatch({
-    changes: { from: 0, to: editorView.value.state.doc.length, insert: content },
+    changes: {
+      from: 0,
+      to: editorView.value.state.doc.length,
+      insert: content,
+    },
   })
 }
 
-// 追加内容
-const appendContent = (text) => {
-  if (!editorView.value) return
-  const docLen = editorView.value.state.doc.length
-  editorView.value.dispatch({
-    changes: { from: docLen, to: docLen, insert: text },
-  })
-  // 自动滚动到底部
-  editorView.value.dispatch({
-    selection: { anchor: editorView.value.state.doc.length },
-  })
-}
 
+/* lifecycle */
 onMounted(() => {
+  // height 初始生效
+  if (wrapper.value) {
+    wrapper.value.style.height = props.height
+  }
+
   initEditor()
+
+  // resize 时通知 CodeMirror 重算
+  resizeObserver = new ResizeObserver(() => {
+    editorView.value?.requestMeasure()
+  })
+
+  resizeObserver.observe(wrapper.value)
 })
 
 onBeforeUnmount(() => {
-  if (editorView.value) {
-    editorView.value.destroy()
-  }
+  resizeObserver?.disconnect()
+  editorView.value?.destroy()
 })
 
+/* 外部动态修改 height 时仍然生效 */
+watch(
+  () => props.height,
+  (val) => {
+    if (!wrapper.value) return
+    wrapper.value.style.height = val
+    editorView.value?.requestMeasure()
+  },
+)
+
+/* expose（原样保留） */
 defineExpose({
   formatContent,
   getContent,
   getSelectedText,
   setCompletion,
   setContent,
-  editorView,
   setReadonly,
   setHeight,
-  appendContent,
+  editorView,
 })
 </script>
 
 <style scoped>
+.cm-wrapper {
+  resize: vertical;
+  overflow: auto;
+  border: 1px solid #f0f0f0;
+}
+
+/* CodeMirror 填满容器 */
+.cm-wrapper :deep(.cm-editor) {
+  height: 100%;
+}
+
+/* gutter 样式 */
 :deep(.cm-gutters) {
   color: #9f9d9d;
   background-color: #f7f7f7;
 }
 
+/* 去焦点 outline */
 :deep(.cm-editor.cm-focused) {
   outline: none !important;
-  /* 去掉浏览器默认的焦点高亮，CodeMirror 6 的容器 <div class="cm-editor"> 在获得焦点时，默认会被加上 */
 }
 </style>

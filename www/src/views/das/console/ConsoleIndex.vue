@@ -164,8 +164,8 @@ const renderExecutionMessage = (value) => {
 
 /* 不分页：限制左右面板最大高度，超出滚动 */
 :deep(.split-wrapper) {
-  height: 88vh;
-  max-height: 88vh;
+  height: 82vh;
+  max-height: 82vh;
 }
 
 /* 右侧不整体滚动：让结果集区域单独滚动 */
@@ -185,8 +185,10 @@ const renderExecutionMessage = (value) => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding-bottom: 8px;
+  padding: 8px;
   box-sizing: border-box;
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
 }
 
 /* 只滚动内容区：Tab 标题栏固定 */
