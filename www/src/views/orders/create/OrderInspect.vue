@@ -13,7 +13,7 @@
       </span>
     </div>
 
-    <a-table size="small" bordered :data-source="data.tableData" :columns="tableColumns"
+    <a-table size="middle" bordered :data-source="data.tableData" :columns="tableColumns"
       :rowClassName="setRowClass" :scroll="{ x: 1100 }"
       :pagination="{ pageSize: 10, showSizeChanger: true, showTotal: (total) => `共 ${total} 条` }">
       <template #bodyCell="{ column, record }">

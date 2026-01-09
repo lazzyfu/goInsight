@@ -1,6 +1,7 @@
 const route = {
   name: 'orders',
   path: '/orders',
+  redirect: '/orders/list',
   component: () => import('./index.vue'),
   meta: { title: '数据库工单', icon: 'DatabaseOutlined', keepAlive: true },
   children: [
@@ -29,8 +30,8 @@ const route = {
       meta: { title: '工单任务', keepAlive: true, hidden: true },
     },
     {
-      name: 'orders.tasks.exportfile.download',
-      path: '/orders/tasks/download/exportfile/:filename',
+      name: 'orders.exportfile.download',
+      path: '/orders/tasks/exports/:filename',
       component: () => import('./tasks/ExportfileDownload.vue'),
       meta: { title: '下载导出文件', keepAlive: true, hidden: true },
     },

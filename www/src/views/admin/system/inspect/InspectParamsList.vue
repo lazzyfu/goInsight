@@ -9,7 +9,7 @@
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.id" :scroll="{ x: 1100 }"
+      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.id" :scroll="{ x: 1100 }"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <!-- 类型转换为中文显示 -->

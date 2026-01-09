@@ -21,7 +21,7 @@
 
     <!-- 表格 -->
     <div style="margin-top: 12px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
@@ -91,20 +91,20 @@
 
 <script setup>
 import {
-  addUsersApi,
-  deleteUsersApi,
-  getOrganizationsApi,
-  getRolesApi,
-  getUsersApi,
-  ResetPasswordApi,
-  updateUsersApi,
+    addUsersApi,
+    deleteUsersApi,
+    getOrganizationsApi,
+    getRolesApi,
+    getUsersApi,
+    ResetPasswordApi,
+    updateUsersApi,
 } from '@/api/admin'
 import {
-  DeleteOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  KeyOutlined,
-  PlusOutlined,
+    DeleteOutlined,
+    EditOutlined,
+    EllipsisOutlined,
+    KeyOutlined,
+    PlusOutlined,
 } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'

@@ -47,10 +47,10 @@ func GetOrderDetailView(c *gin.Context) {
 	}
 }
 
-func GetOrderApprovalView(c *gin.Context) {
+func GetOrderApprovalsView(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims["id"].(string)
-	service := services.GetOrderApprovalServices{
+	service := services.GetOrderApprovalsServices{
 		OrderID:  c.Param("order_id"),
 		C:        c,
 		Username: username,

@@ -5,7 +5,7 @@
         @search="handleSearch" />
     </div>
     <div style="margin-top: 14px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
@@ -58,11 +58,11 @@
 import { DeleteFavoritesApi, GetFavoritesApi, UpdateFavoritesApi } from '@/api/das'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
 import {
-    CopyOutlined,
-    DeleteOutlined,
-    EditOutlined,
-    EllipsisOutlined,
-    EyeOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'

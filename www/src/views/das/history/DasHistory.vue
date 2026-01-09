@@ -5,7 +5,7 @@
         @search="handleSearch" />
     </div>
     <div style="margin-top: 14px">
-      <a-table size="small" :columns="uiData.tableColumns" :row-key="(record) => record.key"
+      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
@@ -68,12 +68,12 @@
 <script setup>
 import { GetHistoryApi } from '@/api/das'
 import {
-    CheckSquareOutlined,
-    ClockCircleOutlined,
-    CloseCircleOutlined,
-    CopyOutlined,
-    DatabaseOutlined,
-    EyeOutlined,
+  CheckSquareOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+  CopyOutlined,
+  DatabaseOutlined,
+  EyeOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { h, onMounted, reactive } from 'vue'

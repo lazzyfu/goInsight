@@ -41,7 +41,6 @@ const download = async () => {
   }
 
   const task_id = getTaskId(urlSuffix)
-  console.log('task_id: ', task_id);
 
   try {
     const res = await downloadExportFileApi(task_id)
@@ -61,7 +60,6 @@ const download = async () => {
     // 延迟释放 URL
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   } catch (error) {
-    console.log('error: ', error);
     const status = error?.status
     uiData.type = status || 500
 

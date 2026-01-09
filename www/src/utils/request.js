@@ -63,7 +63,7 @@ const errorHandle = (response) => {
 
 // 创建 axios 实例
 const service = axios.create({
-  timeout: 60000,
+  timeout: 600000,
   baseURL: '',
 })
 

@@ -1,5 +1,6 @@
 <template>
   <a-tabs
+    class="console-tabs"
     v-model="uiData.activeKey"
     type="editable-card"
     size="small"
@@ -14,7 +15,7 @@
     >
     </a-tab-pane>
   </a-tabs>
-  <a-space size="small">
+  <a-space class="console-toolbar" size="small">
     <a-button type="primary" @click="executeSqlQuery()">
       <template #icon>
         <PlayCircleOutlined />
@@ -51,12 +52,11 @@
       </a-select>
     </span>
   </a-space>
-  <div style="margin-top: 6px">
-    <a-spin :spinning="uiState.tableLoading" tip="Loading...">
-      <CodeMirror ref="codemirrorRef" :height="'470px'" />
-      <a-card class="box-card" style="margin-top: 8px; padding: 8px">
-        <div v-html="uiData.queryResultMessage" style="white-space: pre-wrap"></div>
-      </a-card>
+  <div class="console-editor-wrap">
+    <a-spin :spinning="currentTabLoading" tip="Loading...">
+      <div class="console-editor-surface">
+        <CodeMirror ref="codemirrorRef" :height="'300px'" />
+      </div>
     </a-spin>
   </div>
   <!-- 数据字典 -->
@@ -76,17 +76,27 @@
 
 <script setup>
 import {
-    CreateFavoritesApi,
-    ExecuteClickHouseQueryApi,
-    ExecuteMySQLQueryApi,
-    GetDBDictApi,
+  CreateFavoritesApi,
+  ExecuteClickHouseQueryApi,
+  ExecuteMySQLQueryApi,
+  GetDBDictApi,
 } from '@/api/das'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
 import { BookOutlined, CodeOutlined, PlayCircleOutlined, StarOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import ConsoleDbDict from './ConsoleDbDict.vue'
+
+// 每个浏览器窗口(tab)独立：使用 sessionStorage 持久化 Console 状态
+const storage = sessionStorage
+
+// 每个 Console Tab(内部窗口)独立：运行时状态按 activeKey 隔离
+const runtime = reactive({
+  queryResultMessageByTab: {},
+  resultByTab: {},
+  tableLoadingByTab: {},
+})
 
 // 字符集选项
 const characterSets = [
@@ -99,7 +109,6 @@ const characterSets = [
 const uiState = reactive({
   isDbDictOpen: false,
   isFavoritesOpen: false,
-  tableLoading: false,
 })
 
 // 引用
@@ -113,7 +122,7 @@ const favoritesFormState = ref({
 // 获取共享数据
 const dasInstanceData = inject('dasInstanceData')
 
-const emit = defineEmits(['renderResultTable'])
+const emit = defineEmits(['renderResultTable', 'renderExecutionMessage'])
 const uiData = reactive({
   panes: [],
   activeKey: 1,
@@ -123,6 +132,26 @@ const uiData = reactive({
   db_type: '',
   queryResultMessage: undefined,
 })
+
+const currentTabLoading = computed(() => {
+  return !!runtime.tableLoadingByTab[uiData.activeKey]
+})
+
+const emitActiveExecutionMessage = () => {
+  emit('renderExecutionMessage', runtime.queryResultMessageByTab[uiData.activeKey])
+}
+
+const applyActiveTabRuntime = () => {
+  const key = uiData.activeKey
+  uiData.queryResultMessage = runtime.queryResultMessageByTab[key]
+  const res = runtime.resultByTab[key]
+  if (res) {
+    emit('renderResultTable', res)
+  } else {
+    emit('renderResultTable', null)
+  }
+  emitActiveExecutionMessage()
+}
 
 // tab编辑
 const handleTabEdit = (targetKey, action) => {
@@ -161,8 +190,15 @@ const removeTab = (targetKey) => {
   }
   uiData.panes = newPanes
   uiData.activeKey = activeKey
-  localStorage.removeItem('das#tab#' + targetKey)
-  localStorage.setItem('das#panes', JSON.stringify(uiData.panes))
+  delete runtime.queryResultMessageByTab[targetKey]
+  delete runtime.resultByTab[targetKey]
+  delete runtime.tableLoadingByTab[targetKey]
+  storage.removeItem('das#tab#' + targetKey)
+  storage.setItem('das#panes', JSON.stringify(uiData.panes))
+
+  // 关闭 Tab 后同步恢复当前 Tab 的独立状态
+  loadTabFromCache()
+  applyActiveTabRuntime()
 }
 
 // 切换tab
@@ -170,11 +206,12 @@ const handleTabChange = (value) => {
   saveTabToCache()
   uiData.activeKey = value
   loadTabFromCache()
+  applyActiveTabRuntime()
 }
 
 // 加载tab
 const loadTab = () => {
-  const panes = JSON.parse(localStorage.getItem('das#panes'))
+  const panes = JSON.parse(storage.getItem('das#panes'))
   if (panes?.length > 0) {
     uiData.panes = panes
   } else {
@@ -188,12 +225,12 @@ const saveTabToCache = () => {
     characterSet: uiData.characterSet,
     userInput: codemirrorRef.value.getContent(),
   }
-  localStorage.setItem('das#tab#' + uiData.activeKey, JSON.stringify(tabData))
+  storage.setItem('das#tab#' + uiData.activeKey, JSON.stringify(tabData))
 }
 
 // 加载tab cache
 const loadTabFromCache = () => {
-  var tabData = JSON.parse(localStorage.getItem('das#tab#' + uiData.activeKey))
+  var tabData = JSON.parse(storage.getItem('das#tab#' + uiData.activeKey))
   if (tabData != null) {
     codemirrorRef.value.setContent(tabData.userInput)
     uiData.characterSet = tabData.characterSet
@@ -260,6 +297,7 @@ const executeSqlQuery = async () => {
       "sqltext": "select * from das_records"
     }
   */
+  const tabKey = uiData.activeKey
   saveTabToCache()
   if (!uiData.schema) {
     message.warning('请先选择左侧的DB库')
@@ -288,7 +326,7 @@ const executeSqlQuery = async () => {
   }
 
   let res = null
-  uiState.tableLoading = true
+  runtime.tableLoadingByTab[tabKey] = true
   const resMsgs = []
   try {
     if (dbType === 'mysql' || dbType === 'tidb') {
@@ -305,11 +343,19 @@ const executeSqlQuery = async () => {
       resMsgs.push(`耗时: ${res.data?.duration ?? '-'}${dbType === 'clickhouse' ? 'ms' : ''}`)
       resMsgs.push(`SQL: ${res.data?.sqltext ?? sqltext}`)
       resMsgs.push(`请求ID: ${res.request_id}`)
-      emit('renderResultTable', res.data)
+      runtime.resultByTab[tabKey] = res.data
+      if (uiData.activeKey === tabKey) {
+        emit('renderResultTable', res.data)
+      }
     }
   } finally {
-    uiState.tableLoading = false
-    uiData.queryResultMessage = resMsgs.join('<br>')
+    runtime.tableLoadingByTab[tabKey] = false
+    const msg = resMsgs.join('<br>')
+    runtime.queryResultMessageByTab[tabKey] = msg
+    if (uiData.activeKey === tabKey) {
+      uiData.queryResultMessage = msg
+      emit('renderExecutionMessage', msg)
+    }
   }
 }
 
@@ -331,6 +377,7 @@ watch(dasInstanceData, (newVal) => {
 onMounted(() => {
   loadTab()
   loadTabFromCache()
+  applyActiveTabRuntime()
 })
 
 onBeforeUnmount(() => {
@@ -339,9 +386,42 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+:deep(.ant-tabs-nav::before) {
+  border-bottom-color: var(--ant-colorSplit, #f0f0f0);
+}
+
+.console-tabs :deep(.ant-tabs-nav) {
+  padding: 4px 8px;
+  background: var(--ant-colorFillAlter, #fafafa);
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
+}
+
+.console-tabs :deep(.ant-tabs-nav-wrap) {
+  margin: 0;
+}
+
+.console-toolbar {
+  padding: 8px;
+  background: var(--ant-colorFillAlter, #fafafa);
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
+}
+
+.console-editor-wrap {
+  margin-top: 8px;
+}
+
+.console-editor-surface {
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
+  background: var(--ant-colorBgContainer, #ffffff);
+  overflow: hidden;
+}
+
 :deep(.cm-gutters) {
-  color: #9f9d9d;
-  background-color: #f7f7f7;
+  color: var(--ant-colorTextTertiary, rgba(0, 0, 0, 0.45));
+  background-color: var(--ant-colorFillAlter, #fafafa);
 }
 
 :deep(.box-card) {

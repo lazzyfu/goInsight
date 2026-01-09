@@ -3,7 +3,7 @@
     <a-page-header
       :title="orderDetail.title"
       class="site-page-header"
-      :avatar="{ src: userStore.avatar }"
+      :avatar="{ src: userStore.avatar || '/avatar.png' }"
       @back="() => $router.go(-1)"
     >
       <template #tags>

@@ -1,10 +1,10 @@
 <template>
-  <a-layout>
+  <a-layout class="layout">
     <!-- 左侧siderbar -->
     <a-layout-sider breakpoint="lg" collapsed-width="0" v-model:collapsed="uiState.collapsed" :trigger="null"
       collapsible>
       <!-- 左上角logo -->
-      <img class="app-logo" src="@/assets/logo.svg" />
+      <img class="logo" src="@/assets/logo.svg" />
       <!-- 菜单 -->
       <a-menu theme="dark" mode="inline" :openKeys="uiData.openKeys" :selectedKeys="[route.path]" :items="menuItems"
         @select="select" @openChange="openChange">
@@ -53,7 +53,7 @@
       </a-layout-header>
 
       <!-- 内容区域 -->
-      <a-layout-content :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }">
+      <a-layout-content class="layout-content">
         <router-view></router-view>
       </a-layout-content>
     </a-layout>
@@ -176,18 +176,48 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* 根布局 */
+.layout {
+  height: 100vh;
+  display: flex;
+}
+
+/* 左侧 sider（可滚） */
+.layout :deep(.ant-layout-sider) {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* logo 固定高度 */
+.logo {
+  height: 60px;
+  max-width: 182px;
+  margin: 8px auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* 右侧整体区域 */
+.layout>.ant-layout {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header（不滚） */
 .layout-header {
+  flex: 0 0 48px;
+  height: 48px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* 左右分开 */
-
-  height: 48px;
-  padding: 0 16px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
 }
 
+/* header 内部 */
 .header-left,
 .header-right {
   display: flex;
@@ -208,17 +238,11 @@ onMounted(async () => {
   margin-left: 8px;
 }
 
-.app-logo {
-  height: 60px;
-  width: auto;
-  /* 自动缩放宽度 */
-  max-width: 182px;
-  object-fit: contain;
-  display: block;
-}
-
-
-.site-layout .site-layout-background {
+/* 内容区域（可滚） */
+.layout-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
   background: #fff;
 }
 </style>

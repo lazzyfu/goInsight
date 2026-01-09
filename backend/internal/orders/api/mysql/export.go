@@ -177,7 +177,7 @@ func (e *ExecuteMySQLExportToFile) Run() (data base.ReturnData, err error) {
 		ContentType:   "xlsx",
 		FileSize:      FileSize,
 		ExportRows:    rowCount,
-		DownloadUrl:   fmt.Sprintf("%s/orders/tasks/download/exportfile/%s", global.App.Config.Notify.NoticeURL, encryptFileName),
+		DownloadUrl:   fmt.Sprintf("%s/orders/tasks/exports/%s", global.App.Config.Notify.NoticeURL, encryptFileName),
 	}
 	data.ExecuteLog = logger.String()
 	data.ExecuteCostTime = executeCostTime
