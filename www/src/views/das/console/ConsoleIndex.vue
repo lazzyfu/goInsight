@@ -11,13 +11,12 @@
             @renderExecutionMessage="renderExecutionMessage"
           />
 
-          <div v-if="uiState.showbTable || uiData.executionMessage" class="console-result">
+          <div class="console-result">
             <a-tabs default-active-key="result">
               <a-tab-pane key="result" tab="结果集">
                 <div class="result-pane">
                   <div ref="resultTableRegionRef" class="result-table-region">
                     <a-table
-                      v-if="uiState.showbTable"
                       size="small"
                       bordered
                       :data-source="uiData.tableData"
@@ -56,11 +55,6 @@ import ConsoleRight from './ConsoleRight.vue'
 // 父子组件或深层嵌套组件间的数据共享
 const dasInstanceData = reactive({})
 provide('dasInstanceData', dasInstanceData)
-
-// 状态
-const uiState = reactive({
-  showbTable: false,
-})
 
 // 数据
 const uiData = reactive({
@@ -133,9 +127,8 @@ watch(
 )
 
 watch(
-  () => [uiState.showbTable, uiData.tableColumns.length, uiData.tableData.length],
+  () => [uiData.tableColumns.length, uiData.tableData.length],
   async () => {
-    if (!uiState.showbTable) return
     await nextTick()
     recomputeTableBodyHeight()
   },
@@ -145,12 +138,13 @@ watch(
 // 渲染结果表格
 const renderResultTable = (value) => {
   if (value) {
-    uiState.showbTable = true
     uiData.tableColumns = value.columns
     uiData.tableData = value.data
     nextTick(recomputeTableBodyHeight)
   } else {
-    uiState.showbTable = false
+    uiData.tableColumns = []
+    uiData.tableData = []
+    nextTick(recomputeTableBodyHeight)
   }
 }
 
