@@ -14,25 +14,30 @@
           <div v-if="uiState.showbTable || uiData.executionMessage" class="console-result">
             <a-tabs default-active-key="result">
               <a-tab-pane key="result" tab="结果集">
-                <a-table
-                  v-if="uiState.showbTable"
-                  size="small"
-                  class="ant-table-striped"
-                  bordered
-                  :data-source="uiData.tableData"
-                  :scroll="{ x: 1100 }"
-                  style="min-width: 100%"
-                >
-                  <a-table-column
-                    v-for="item in uiData.tableColumns"
-                    :key="item"
-                    :title="item"
-                    :data-index="item"
-                  />
-                </a-table>
+                <div class="result-pane">
+                  <div ref="resultTableRegionRef" class="result-table-region">
+                    <a-table
+                      v-if="uiState.showbTable"
+                      size="small"
+                      bordered
+                      :data-source="uiData.tableData"
+                      :scroll="tableScroll"
+                      style="min-width: 100%"
+                    >
+                      <a-table-column
+                        v-for="item in uiData.tableColumns"
+                        :key="item"
+                        :title="item"
+                        :data-index="item"
+                      />
+                    </a-table>
+                  </div>
+                </div>
               </a-tab-pane>
               <a-tab-pane key="message" tab="执行消息">
-                <div class="exec-message" v-html="uiData.executionMessage" />
+                <div class="message-pane">
+                  <div class="exec-message" v-html="uiData.executionMessage" />
+                </div>
               </a-tab-pane>
             </a-tabs>
           </div>
@@ -44,7 +49,7 @@
 
 <script setup>
 import SplitPanel from '@/components/panel/index.vue'
-import { provide, reactive } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue'
 import ConsoleLeft from './ConsoleLeft.vue'
 import ConsoleRight from './ConsoleRight.vue'
 
@@ -64,12 +69,86 @@ const uiData = reactive({
   executionMessage: '',
 })
 
+const resultTableRegionRef = ref(null)
+const tableBodyScrollY = ref(null)
+
+const tableScroll = computed(() => ({
+  x: 1100,
+  y: tableBodyScrollY.value ?? 360,
+}))
+
+const recomputeTableBodyHeight = () => {
+  const regionEl = resultTableRegionRef.value
+  if (!regionEl) return
+
+  const regionHeight = regionEl.clientHeight
+  if (!regionHeight) return
+
+  const theadEl = regionEl.querySelector('.ant-table-thead')
+  const paginationEl = regionEl.querySelector('.ant-table-pagination')
+
+  const theadHeight = theadEl ? theadEl.getBoundingClientRect().height : 0
+  const paginationHeight = paginationEl ? paginationEl.getBoundingClientRect().height : 0
+
+  const reserved = 8
+  const bodyHeight = Math.max(240, Math.floor(regionHeight - theadHeight - paginationHeight - reserved))
+  tableBodyScrollY.value = bodyHeight
+}
+
+let tableRegionResizeObserver
+const handleWindowResize = () => {
+  nextTick(recomputeTableBodyHeight)
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleWindowResize)
+  }
+
+  if (typeof ResizeObserver !== 'undefined') {
+    tableRegionResizeObserver = new ResizeObserver(() => {
+      nextTick(recomputeTableBodyHeight)
+    })
+  }
+})
+
+onBeforeUnmount(() => {
+  tableRegionResizeObserver?.disconnect?.()
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleWindowResize)
+  }
+})
+
+watch(
+  () => resultTableRegionRef.value,
+  async (el) => {
+    tableRegionResizeObserver?.disconnect?.()
+    if (el) {
+      tableRegionResizeObserver?.observe?.(el)
+      await nextTick()
+      recomputeTableBodyHeight()
+    }
+  },
+  { immediate: true },
+)
+
+watch(
+  () => [uiState.showbTable, uiData.tableColumns.length, uiData.tableData.length],
+  async () => {
+    if (!uiState.showbTable) return
+    await nextTick()
+    recomputeTableBodyHeight()
+  },
+  { immediate: true },
+)
+
 // 渲染结果表格
 const renderResultTable = (value) => {
   if (value) {
     uiState.showbTable = true
     uiData.tableColumns = value.columns
     uiData.tableData = value.data
+    nextTick(recomputeTableBodyHeight)
   } else {
     uiState.showbTable = false
   }
@@ -81,10 +160,6 @@ const renderExecutionMessage = (value) => {
 </script>
 
 <style scoped>
-:deep(.ant-table-tbody tr:nth-child(2n)) {
-  background-color: #fafafa;
-}
-
 :deep(.ant-card-body) {
   padding: 10px;
 }
@@ -95,8 +170,8 @@ const renderExecutionMessage = (value) => {
 
 /* 不分页：限制左右面板最大高度，超出滚动 */
 :deep(.split-wrapper) {
-  height: 80vh;
-  max-height: 80vh;
+  height: 88vh;
+  max-height: 88vh;
 }
 
 /* 右侧不整体滚动：让结果集区域单独滚动 */
@@ -116,7 +191,8 @@ const renderExecutionMessage = (value) => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  min-height: 240px;
+  padding-bottom: 8px;
+  box-sizing: border-box;
 }
 
 /* 只滚动内容区：Tab 标题栏固定 */
@@ -129,17 +205,48 @@ const renderExecutionMessage = (value) => {
 .console-result :deep(.ant-tabs-content-holder) {
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.console-result :deep(.ant-tabs-content) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.console-result :deep(.ant-tabs-tabpane) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.result-table-region {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.message-pane {
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
-/* 固定分页：结果区滚动时，分页吸底不随滚动消失 */
+/* 预留底部空间：避免分页默认 margin 导致被裁切 */
 .console-result :deep(.ant-table-wrapper .ant-table-pagination) {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
   margin: 0;
-  padding: 8px 0;
-  background: #fff;
+  padding: 8px 0 0;
 }
 
 /* 结果集表格字体更小（仅影响 Console 结果区） */
@@ -150,6 +257,12 @@ const renderExecutionMessage = (value) => {
 .console-result :deep(.ant-table-thead > tr > th),
 .console-result :deep(.ant-table-tbody > tr > td) {
   font-size: 12px;
+}
+
+/* 表头：加粗 + 浅色背景 */
+.console-result :deep(.ant-table-thead > tr > th) {
+  font-weight: 600;
+  background: var(--ant-colorFillAlter, #fafafa);
 }
 
 .exec-message {
