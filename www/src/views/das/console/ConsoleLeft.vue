@@ -7,7 +7,7 @@
           <a-select-option v-for="(s, index) in uiData.dbList" :key="index" :label="`${s.remark}:${s.schema}`"
             :value="`${s.instance_id};${s.schema};${s.db_type}`" :disabled="s.is_deleted">
             <ConsoleDbIcon :type="s.db_type.toLowerCase()" /> {{ s.remark }}:{{ s.schema }}
-            <i v-if="s.is_deleted" style="color: #c0c4cc">已删除</i>
+            <i v-if="s.is_deleted" class="db-deleted">已删除</i>
           </a-select-option>
         </a-select>
       </div>
@@ -315,14 +315,28 @@ onBeforeUnmount(() => {
   overflow: hidden;
   box-sizing: border-box;
   /* 确保padding不会增加总高度 */
+  background: var(--ant-colorBgContainer, #ffffff);
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
 }
 
 /* 固定头部样式，减少padding避免增加总高度 */
 .fixed-header {
   flex-shrink: 0;
-  padding: 8px 0 4px 0;
-  /* 减少底部padding */
-  background: inherit;
+  padding: 8px;
+  background: var(--ant-colorFillAlter, #fafafa);
+  border-bottom: 1px solid var(--ant-colorSplit, #f0f0f0);
+}
+
+/* 头部控件与面板对齐 */
+.fixed-header :deep(.ant-select),
+.fixed-header :deep(.ant-input-search) {
+  width: 100% !important;
+}
+
+.db-deleted {
+  color: var(--ant-colorTextQuaternary, rgba(0, 0, 0, 0.25));
+  margin-left: 6px;
 }
 
 /* tree-area 占据剩余空间并独立滚动，设置最小高度0允许flex收缩 */
@@ -331,9 +345,9 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 8px;
-  /* 底部留一点空间 */
+  padding: 8px;
   box-sizing: border-box;
+  background: var(--ant-colorBgContainer, #ffffff);
 }
 
 /* tree-container 设置为可滚动，显示垂直滚动条 */
@@ -347,5 +361,9 @@ onBeforeUnmount(() => {
 
 :deep(.ant-tree li) {
   padding: 2px 0;
+}
+
+:deep(.ant-tree-node-content-wrapper:hover) {
+  background: var(--ant-colorFillAlter, #fafafa);
 }
 </style>

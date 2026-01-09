@@ -1,5 +1,6 @@
 <template>
   <a-tabs
+    class="console-tabs"
     v-model="uiData.activeKey"
     type="editable-card"
     size="small"
@@ -14,7 +15,7 @@
     >
     </a-tab-pane>
   </a-tabs>
-  <a-space size="small">
+  <a-space class="console-toolbar" size="small">
     <a-button type="primary" @click="executeSqlQuery()">
       <template #icon>
         <PlayCircleOutlined />
@@ -51,9 +52,11 @@
       </a-select>
     </span>
   </a-space>
-  <div style="margin-top: 6px">
+  <div class="console-editor-wrap">
     <a-spin :spinning="currentTabLoading" tip="Loading...">
-      <CodeMirror ref="codemirrorRef" :height="'300px'" />
+      <div class="console-editor-surface">
+        <CodeMirror ref="codemirrorRef" :height="'300px'" />
+      </div>
     </a-spin>
   </div>
   <!-- 数据字典 -->
@@ -383,9 +386,42 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+:deep(.ant-tabs-nav::before) {
+  border-bottom-color: var(--ant-colorSplit, #f0f0f0);
+}
+
+.console-tabs :deep(.ant-tabs-nav) {
+  padding: 4px 8px;
+  background: var(--ant-colorFillAlter, #fafafa);
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
+}
+
+.console-tabs :deep(.ant-tabs-nav-wrap) {
+  margin: 0;
+}
+
+.console-toolbar {
+  padding: 8px;
+  background: var(--ant-colorFillAlter, #fafafa);
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
+}
+
+.console-editor-wrap {
+  margin-top: 8px;
+}
+
+.console-editor-surface {
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 8px);
+  background: var(--ant-colorBgContainer, #ffffff);
+  overflow: hidden;
+}
+
 :deep(.cm-gutters) {
-  color: #9f9d9d;
-  background-color: #f7f7f7;
+  color: var(--ant-colorTextTertiary, rgba(0, 0, 0, 0.45));
+  background-color: var(--ant-colorFillAlter, #fafafa);
 }
 
 :deep(.box-card) {

@@ -158,14 +158,38 @@ const renderExecutionMessage = (value) => {
   padding: 10px;
 }
 
-:deep(.ant-tabs-nav) {
-  margin: 0 0 10px 0;
+/* 仅影响 Console 页内 Tabs */
+.console-result :deep(.ant-tabs-nav) {
+  margin: 0 0 8px 0;
 }
 
 /* 不分页：限制左右面板最大高度，超出滚动 */
 :deep(.split-wrapper) {
   height: 82vh;
   max-height: 82vh;
+}
+
+/* SplitPanel 皮肤：更像业界查询控制台的柔和分区 */
+:deep(.split-wrapper) {
+  background: var(--ant-colorBgLayout, #f5f5f5);
+}
+
+:deep(.split-wrapper .left-content) {
+  background: var(--ant-colorBgLayout, #f5f5f5);
+}
+
+:deep(.split-wrapper .right-content) {
+  background: var(--ant-colorBgLayout, #f5f5f5);
+}
+
+:deep(.split-wrapper .separator) {
+  background-color: var(--ant-colorFillAlter, #fafafa);
+  box-shadow: none;
+}
+
+:deep(.split-wrapper .collapsed-handle) {
+  background-color: var(--ant-colorFillAlter, #fafafa);
+  border-right-color: var(--ant-colorSplit, #f0f0f0);
 }
 
 /* 右侧不整体滚动：让结果集区域单独滚动 */
@@ -181,7 +205,7 @@ const renderExecutionMessage = (value) => {
 }
 
 .console-result {
-  margin-top: 15px;
+  margin-top: 8px;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -189,6 +213,11 @@ const renderExecutionMessage = (value) => {
   box-sizing: border-box;
   border: 1px solid var(--ant-colorSplit, #f0f0f0);
   border-radius: var(--ant-borderRadiusLG, 8px);
+  background: var(--ant-colorBgContainer, #ffffff);
+}
+
+.console-result :deep(.ant-tabs-nav::before) {
+  border-bottom-color: var(--ant-colorSplit, #f0f0f0);
 }
 
 /* 只滚动内容区：Tab 标题栏固定 */
