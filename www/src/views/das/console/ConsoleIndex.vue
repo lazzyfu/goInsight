@@ -132,6 +132,16 @@ const renderExecutionMessage = (value) => {
   overflow: auto;
 }
 
+/* 固定分页：结果区滚动时，分页吸底不随滚动消失 */
+.console-result :deep(.ant-table-wrapper .ant-table-pagination) {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 8px 0;
+  background: #fff;
+}
+
 /* 结果集表格字体更小（仅影响 Console 结果区） */
 .console-result :deep(.ant-table) {
   font-size: 12px;
