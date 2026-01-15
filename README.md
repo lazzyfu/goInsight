@@ -27,7 +27,7 @@
 
 ## 🗺️ 文档与预览
 
-* 📌 [功能预览](https://github.com/lazzyfu/goInsight/wiki/Feature-Preview)
+* 📌 [功能预览](https://github.com/lazzyfu/goInsight/wiki/Screenshots)
 
 ## 🛠️ 核心功能模块
 
