@@ -73,7 +73,7 @@
 
 ## 🤝 联系与支持
 
-如果您在使用过程中发现 Bug 或有功能建议，欢迎提交 Issue 或 Pull Request（不一定有时间改）。
+如果您在使用过程中发现 Bug 或有功能建议，欢迎提交 Issue 或 Pull Request。
 
 * 📧 Email: <1126227133@qq.com>
 
