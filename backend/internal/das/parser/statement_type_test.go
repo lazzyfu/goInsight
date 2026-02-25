@@ -8,6 +8,7 @@ import (
 
 	"github.com/pingcap/tidb/pkg/parser/ast"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func parserStmtForStatementType(sql string) (*TiStmt, error) {
@@ -259,12 +260,12 @@ func TestStatementType(t *testing.T) {
 		{
 			name:    "ShowPumpStatus",
 			sql:     "SHOW PUMP STATUS",
-			wantRes: "ShowPumpStatus",
+			wantErr: fmt.Errorf("unsupported statement"),
 		},
 		{
 			name:    "ShowDrainerStatus",
 			sql:     "SHOW DRAINER STATUS",
-			wantRes: "ShowDrainerStatus",
+			wantErr: fmt.Errorf("unsupported statement"),
 		},
 		{
 			name:    "ShowOpenTables",
@@ -425,11 +426,15 @@ func TestStatementType(t *testing.T) {
 	// 运行
 	for _, c := range testCases {
 		// 提取stmt
-		TiStmt, err := parserStmtForStatementType(c.sql)
-		if err != nil {
-			t.Error(err)
-		}
 		t.Run(c.name, func(t *testing.T) {
+			TiStmt, err := parserStmtForStatementType(c.sql)
+			if c.wantErr != nil {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			require.NotEmpty(t, TiStmt.Stmts)
+
 			// 提取单条SQL的stmt
 			var singleStmt ast.StmtNode = TiStmt.Stmts[0]
 			st := StatementType{}

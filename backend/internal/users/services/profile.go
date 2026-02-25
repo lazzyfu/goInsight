@@ -68,6 +68,10 @@ type ChangeUserPasswordService struct {
 }
 
 func (s *ChangeUserPasswordService) Run() error {
+	if err := validatePasswordConfirmation(s.NewPassword, s.ConfirmPassword); err != nil {
+		return err
+	}
+
 	var user models.InsightUsers
 	global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Scan(&user)
 	// 验证老密码是否正确
@@ -83,6 +87,13 @@ func (s *ChangeUserPasswordService) Run() error {
 	// 加密密码
 	hashedPassword := models.BcryptPW(s.NewPassword)
 	global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Update("password", hashedPassword)
+	return nil
+}
+
+func validatePasswordConfirmation(newPassword, confirmPassword string) error {
+	if newPassword != confirmPassword {
+		return fmt.Errorf("密码更改失败，两次输入的新密码不一致")
+	}
 	return nil
 }
 

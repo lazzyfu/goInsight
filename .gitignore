@@ -43,9 +43,12 @@ github.goinsight.code-workspace
 
 # Project specific
 # Backend
+backend/config.yaml
 backend/logs/
 backend/media/
-backend/web/dist/
+backend/web/dist/*
+!backend/web/dist/
+!backend/web/dist/index.html
 backend/code.code-workspace
 
 # Frontend

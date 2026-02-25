@@ -13,8 +13,8 @@ func Routers(r *gin.Engine) {
 		// user auth
 		v1.POST("/user/login", middleware.OTPMiddleware(), global.App.JWT.LoginHandler)
 		v1.POST("/user/logout", global.App.JWT.LogoutHandler)
-		v1.GET("/user/otp-auth-url", views.GetOTPAuthURLView)
-		v1.GET("/user/otp-auth-callback", views.GetOTPAuthCallbackView)
+		v1.POST("/user/otp-auth-url", views.GetOTPAuthURLView)
+		v1.POST("/user/otp-auth-callback", views.GetOTPAuthCallbackView)
 		v1.GET("/user/refresh_token", global.App.JWT.RefreshHandler)
 	}
 

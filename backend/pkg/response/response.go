@@ -25,9 +25,8 @@ type PaginationResponse struct {
 }
 
 func writeResponse(c *gin.Context, code string, data interface{}, msg string) {
-	claims := jwt.ExtractClaims(c)
 	requestID := requestid.Get(c)
-	username := claims["id"].(string)
+	username := extractUserName(c)
 
 	if code == "0000" {
 		global.App.Log.WithField("request_id", requestID).WithField("username", username).Info(msg)
@@ -39,9 +38,8 @@ func writeResponse(c *gin.Context, code string, data interface{}, msg string) {
 }
 
 func writeResponseWithPagination(c *gin.Context, code string, data interface{}, msg string, total int64) {
-	claims := jwt.ExtractClaims(c)
 	requestID := requestid.Get(c)
-	username := claims["id"].(string)
+	username := extractUserName(c)
 
 	if code == "0000" {
 		global.App.Log.WithField("request_id", requestID).WithField("username", username).Info(msg)
@@ -66,4 +64,17 @@ func ValidateFail(c *gin.Context, msg string) {
 
 func PaginationSuccess(c *gin.Context, total int64, data interface{}) {
 	writeResponseWithPagination(c, "0000", data, "success", total)
+}
+
+func extractUserName(c *gin.Context) string {
+	claims := jwt.ExtractClaims(c)
+	raw, ok := claims["id"]
+	if !ok {
+		return "-"
+	}
+	username, ok := raw.(string)
+	if !ok || username == "" {
+		return "-"
+	}
+	return username
 }

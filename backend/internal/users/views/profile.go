@@ -4,17 +4,21 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/lazzyfu/goinsight/middleware"
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/users/forms"
 	"github.com/lazzyfu/goinsight/internal/users/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
 func GetUserInfoView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := middleware.GetUserNameFromJWT(c)
+	if !ok {
+		response.Fail(c, "认证信息无效")
+		return
+	}
 	service := services.GetUserInfoServices{C: c, Username: username}
 	returnData, err := service.Run()
 	if err != nil {
@@ -46,8 +50,11 @@ func UpdateUserInfoView(c *gin.Context) {
 
 // 用户修改密码
 func ChangeUserPasswordView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := middleware.GetUserNameFromJWT(c)
+	if !ok {
+		response.Fail(c, "认证信息无效")
+		return
+	}
 	var form *forms.ChangeUserPasswordForm = &forms.ChangeUserPasswordForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.ChangeUserPasswordService{ChangeUserPasswordForm: form, C: c, Username: username}
