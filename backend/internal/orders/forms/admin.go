@@ -19,11 +19,13 @@ type AdminGetApprovalFlowsForm struct {
 type AdminUpdateApprovalFlowsForm struct {
 	Definition datatypes.JSON `form:"definition" json:"definition"`
 	Name       string         `form:"name"  json:"name" binding:"required,min=3,max=256"`
+	ClaimUsers []string       `form:"claim_users" json:"claim_users" binding:"required,min=1,dive,required"`
 }
 
 type AdminCreateApprovalFlowsForm struct {
 	Definition datatypes.JSON `form:"definition" json:"definition"`
 	Name       string         `form:"name"  json:"name" binding:"required,min=3,max=256"`
+	ClaimUsers []string       `form:"claim_users" json:"claim_users" binding:"required,min=1,dive,required"`
 }
 
 type AdminBindUsersToApprovalFlowForm struct {

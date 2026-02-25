@@ -19,6 +19,30 @@
         <a-input v-model:value="formData.name" placeholder="请输入审批流名称" allow-clear />
       </a-form-item>
 
+      <a-form-item
+        label="可领取人"
+        name="claim_users"
+        :rules="[
+          {
+            required: true,
+            message: '请选择可领取人',
+          }
+        ]"
+        has-feedback
+      >
+        <a-select
+          v-model:value="formData.claim_users"
+          mode="multiple"
+          show-search
+          :filter-option="filterUserOption"
+          style="width: 100%"
+          placeholder="请选择可领取人（谁领取谁执行）"
+          :options="props.userOptions"
+          option-label-prop="label"
+          :max-tag-count="4"
+        />
+      </a-form-item>
+
       <div class="divider-section">
         <div class="divider-title">
           <span class="divider-icon">📋</span>
@@ -184,6 +208,10 @@ const handleCancel = () => {
 
 // 自定义校验（对动态数组字段使用自定义校验更可控）
 const validateDefinition = async () => {
+  const claimUsers = formData.value.claim_users || []
+  if (claimUsers.length === 0) {
+    return Promise.reject('请至少选择一个可领取人。')
+  }
   const definition = formData.value.definition
   if (!definition || definition.length === 0) {
     return Promise.reject('请至少配置一个审批阶段。')

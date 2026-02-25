@@ -102,7 +102,7 @@ type CreateOrderService struct {
 	Audit    *parser.TiStmt
 }
 
-func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.UUID) error {
+func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.UUID) (datatypes.JSON, error) {
 	type FlowStage struct {
 		Type      string   `json:"type"`
 		Stage     int      `json:"stage"`
@@ -111,16 +111,25 @@ func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.U
 	}
 
 	var record models.InsightApprovalFlows
-	flow := tx.Table("insight_approval_flow_users a").Select(`b.definition`).
+	flow := tx.Table("insight_approval_flow_users a").Select(`b.definition, b.claim_users`).
 		Joins("inner join insight_approval_flow b on a.approval_id = b.approval_id").
 		Where("a.username = ?", s.Username).Take(&record)
 	if flow.Error != nil || flow.RowsAffected == 0 {
-		return fmt.Errorf("未找到您的审批流配置，请联系管理员设置")
+		return nil, fmt.Errorf("未找到您的审批流配置，请联系管理员设置")
+	}
+
+	claimUsers, err := parseClaimUsers(record.ClaimUsers)
+	if err != nil {
+		return nil, err
+	}
+	claimUsersJSON, err := marshalClaimUsers(claimUsers)
+	if err != nil {
+		return nil, err
 	}
 	// [{"type": "OR", "stage": 1, "approvers": ["zhangsan", "lisi"], "stage_name": "安全组审批"}, {"type": "AND", "stage": 1, "approvers": ["admin"], "stage_name": "部门负责人审批"}]
 	var stages []FlowStage
-	if err := json.Unmarshal(record.Definition, &stages); err != nil {
-		return fmt.Errorf("解析审批流JSON失败: %w", err)
+	if err = json.Unmarshal(record.Definition, &stages); err != nil {
+		return nil, fmt.Errorf("解析审批流JSON失败: %w", err)
 	}
 
 	for _, s := range stages {
@@ -134,11 +143,11 @@ func (s *CreateOrderService) generateApprovalRecords(tx *gorm.DB, orderID uuid.U
 				ApprovalType:   commonModels.EnumType(s.Type),
 			}
 			if err := tx.Create(&audit).Error; err != nil {
-				return fmt.Errorf("创建审批记录失败: %w", err)
+				return nil, fmt.Errorf("创建审批记录失败: %w", err)
 			}
 		}
 	}
-	return nil
+	return claimUsersJSON, nil
 }
 
 // 审核SQL
@@ -299,8 +308,13 @@ func (s *CreateOrderService) Run() error {
 			return err
 		}
 		// 生成审批流
-		err = s.generateApprovalRecords(tx, orderID)
+		claimUsers, err := s.generateApprovalRecords(tx, orderID)
 		if err != nil {
+			return err
+		}
+		if err := tx.Model(&models.InsightOrderRecords{}).
+			Where("order_id=?", orderID).
+			Update("claim_users", claimUsers).Error; err != nil {
 			return err
 		}
 		// 记录操作日志
