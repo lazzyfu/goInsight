@@ -21,7 +21,7 @@ type ExecuteMySQLDDL struct {
 	*base.DBConfig
 }
 
-func (e *ExecuteMySQLDDL) ExecuteCommand(command string) (data []string, err error) {
+func (e *ExecuteMySQLDDL) ExecuteCommand(binary string, args []string) (data []string, err error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -40,7 +40,7 @@ func (e *ExecuteMySQLDDL) ExecuteCommand(command string) (data []string, err err
 		}
 	}()
 
-	err = base.Command(ctx, ch, command)
+	err = base.Command(ctx, ch, binary, args)
 	close(ch) // 明确关闭
 	<-done    // 等待消费完成
 
@@ -148,29 +148,30 @@ func (e *ExecuteMySQLDDL) ExecuteDDLWithGhost(sql string) (data base.ReturnData,
 	// 生成ghost命令
 	log("生成gh-ost执行命令")
 
-	ghostCMDParts := []string{
-		global.App.Config.Ghost.Path,
-		strings.Join(global.App.Config.Ghost.Args, " "),
-		fmt.Sprintf("--user=\"%s\" --password=\"%s\"", e.UserName, e.Password),
-		fmt.Sprintf("--host=\"%s\" --port=%d", e.Hostname, e.Port),
-		fmt.Sprintf("--database=%s --table=%s", e.Schema, tableName),
-		fmt.Sprintf("--alter=\"%s\" --execute", vv),
-	}
+	ghostBinary := global.App.Config.Ghost.Path
+	ghostArgs := make([]string, 0, len(global.App.Config.Ghost.Args)+8)
+	ghostArgs = append(ghostArgs, global.App.Config.Ghost.Args...)
+	ghostArgs = append(ghostArgs,
+		fmt.Sprintf("--user=%s", e.UserName),
+		fmt.Sprintf("--password=%s", e.Password),
+		fmt.Sprintf("--host=%s", e.Hostname),
+		fmt.Sprintf("--port=%d", e.Port),
+		fmt.Sprintf("--database=%s", e.Schema),
+		fmt.Sprintf("--table=%s", tableName),
+		fmt.Sprintf("--alter=%s", vv),
+		"--execute",
+	)
 
 	if strings.Contains(e.Hostname, "rds.aliyuncs.com") {
-		ghostCMDParts = append(ghostCMDParts, "-aliyun-rds=true")
-		ghostCMDParts = append(ghostCMDParts, fmt.Sprintf("-assume-master-host=\"%s\"", e.Hostname))
+		ghostArgs = append(ghostArgs, "-aliyun-rds=true")
+		ghostArgs = append(ghostArgs, fmt.Sprintf("-assume-master-host=%s", e.Hostname))
 	}
 
-	ghostCMD := strings.Join(ghostCMDParts, " ")
-
 	startTime := time.Now()
-	// 打印命令，已掩码password
-	re = regexp.MustCompile(`--password="([^"]*)"`)
-	printGhostCMD := re.ReplaceAllString(ghostCMD, `--password="..."`)
+	printGhostCMD := base.RenderCommandForLog(ghostBinary, ghostArgs)
 	log(fmt.Sprintf("执行gh-ost命令：%s", printGhostCMD))
 	// 执行ghost命令
-	elog, eerr := e.ExecuteCommand(ghostCMD)
+	elog, eerr := e.ExecuteCommand(ghostBinary, ghostArgs)
 	for _, l := range elog {
 		log(l)
 	}

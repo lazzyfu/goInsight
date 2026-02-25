@@ -83,10 +83,12 @@ func (s *CreateRootOrganizationsService) Run() error {
 	organization := models.InsightOrgs{Name: s.Name, ParentID: 0, Creator: s.Username, Updater: s.Username, Level: 1}
 	result := tx.Create(&organization)
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("记录`%s`已存在", s.Name)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("记录`%s`已存在", s.Name)
+			}
 		}
 		return result.Error
 	}
@@ -136,10 +138,12 @@ func (s *CreateChildOrganizationsService) Run() error {
 	}
 	result := tx.Create(&organization)
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("记录`%s`已存在", s.Name)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("记录`%s`已存在", s.Name)
+			}
 		}
 		return result.Error
 	}
@@ -162,10 +166,12 @@ func (s *UpdateOrganizationsService) Run() error {
 		"Updater": s.Username,
 	})
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("记录`%s`已存在", s.Username)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("记录`%s`已存在", s.Username)
+			}
 		}
 		return result.Error
 	}
@@ -300,10 +306,12 @@ func (s *BindOrganizationsUsersService) Run() error {
 				Joins("join insight_users b on a.uid = b.uid").
 				Joins("join insight_orgs c on a.organization_key = c.key").
 				Where("b.uid=?", uid).Scan(&record)
-			mysqlErr := result.Error.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("绑定失败，当前用户%s已绑定到组织[%s]，不能重复绑定", record.Username, record.OrganizationName)
+			var mysqlErr *mysql.MySQLError
+			if errors.As(result.Error, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("绑定失败，当前用户%s已绑定到组织[%s]，不能重复绑定", record.Username, record.OrganizationName)
+				}
 			}
 			return result.Error
 		}
@@ -320,7 +328,7 @@ func (s *DeleteOrganizationsUsersService) Run() error {
 	var organizationUsers models.InsightOrgUsers
 	result := global.App.DB.Table("insight_org_users").Where("`organization_key`=? and `uid`=?", s.Key, s.Uid).First(&organizationUsers)
 	if result.RowsAffected == 0 {
-		return errors.New("记录`%s`不存在")
+		return fmt.Errorf("记录不存在")
 	}
 
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {

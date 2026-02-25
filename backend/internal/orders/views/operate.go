@@ -6,13 +6,15 @@ import (
 	"github.com/lazzyfu/goinsight/internal/orders/forms"
 	"github.com/lazzyfu/goinsight/internal/orders/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
 // 审批
 func ApprovalOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.ApprovalOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -32,7 +34,10 @@ func ApprovalOrderView(c *gin.Context) {
 
 // 认领
 func ClaimOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.ClaimOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -52,7 +57,10 @@ func ClaimOrderView(c *gin.Context) {
 
 // 转交工单给其他执行人
 func TransferOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.TransferOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -72,7 +80,10 @@ func TransferOrderView(c *gin.Context) {
 
 // 撤销工单
 func RevokeOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.RevokeOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -92,7 +103,10 @@ func RevokeOrderView(c *gin.Context) {
 
 // 手动更新工单为已完成
 func CompleteOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.CompleteOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -112,7 +126,10 @@ func CompleteOrderView(c *gin.Context) {
 
 // 手动更新工单为失败
 func FailOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.FailOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -132,7 +149,10 @@ func FailOrderView(c *gin.Context) {
 
 // 复核
 func ReviewOrderView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.ReviewOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())

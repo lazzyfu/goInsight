@@ -1,8 +1,6 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/inspect/forms"
@@ -30,7 +28,10 @@ func AdminGetGlobalInspectParamsView(c *gin.Context) {
 }
 
 func AdminUpdateGlobalInspectParamsView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	var form forms.AdminUpdateGlobalInspectParamsForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -39,7 +40,7 @@ func AdminUpdateGlobalInspectParamsView(c *gin.Context) {
 	service := services.AdminUpdateGlobalInspectParamsService{
 		AdminUpdateGlobalInspectParamsForm: &form,
 		C:                                  c,
-		ID:                                 uint64(id),
+		ID:                                 id,
 	}
 	err := service.Run()
 	if err != nil {

@@ -6,7 +6,6 @@ import (
 	"github.com/lazzyfu/goinsight/internal/orders/forms"
 	"github.com/lazzyfu/goinsight/internal/orders/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,8 +22,10 @@ func GetOrderEnvironmentsView(c *gin.Context) {
 
 // 获取指定环境的Schemas
 func GetOrderInstancesView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.GetOrderInstancesForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -83,8 +84,10 @@ func GetOrderUsersView(c *gin.Context) {
 
 // 提交工单
 func CreateOrderView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.CreateOrderForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())

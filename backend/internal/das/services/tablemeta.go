@@ -62,6 +62,13 @@ func (s *GetTableInfoService) getInstanceCfg() (instance models.InsightInstances
 }
 
 func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightInstances) (data *[]map[string]interface{}, err error) {
+	if err := validateIdentifier(s.Schema, "schema"); err != nil {
+		return nil, err
+	}
+	if err := validateIdentifier(s.Table, "table"); err != nil {
+		return nil, err
+	}
+
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
@@ -79,7 +86,7 @@ func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightInstances)
 			Ctx:      s.C.Request.Context(),
 		}
 
-		_, data, err = db.Query(fmt.Sprintf("show create table `%s`.`%s`", s.Schema, s.Table))
+		_, data, err = db.Query(fmt.Sprintf("show create table %s.%s", quoteIdentifier(s.Schema), quoteIdentifier(s.Table)))
 		if err != nil {
 			global.App.Log.Error(err.Error())
 		}
@@ -92,7 +99,7 @@ func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightInstances)
 			Port:     instanceCfg.Port,
 			Ctx:      s.C.Request.Context(),
 		}
-		_, data, err = db.Query(fmt.Sprintf("show create table `%s`.`%s`", s.Schema, s.Table))
+		_, data, err = db.Query(fmt.Sprintf("show create table %s.%s", quoteIdentifier(s.Schema), quoteIdentifier(s.Table)))
 		if err != nil {
 			global.App.Log.Error(err.Error())
 		}
@@ -101,6 +108,13 @@ func (s *GetTableInfoService) getTableStruc(instanceCfg models.InsightInstances)
 }
 
 func (s *GetTableInfoService) getTableBase(instanceCfg models.InsightInstances) (data *[]map[string]interface{}, err error) {
+	if err := validateIdentifier(s.Schema, "schema"); err != nil {
+		return nil, err
+	}
+	if err := validateIdentifier(s.Table, "table"); err != nil {
+		return nil, err
+	}
+
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)
 	if err != nil {
@@ -115,9 +129,9 @@ func (s *GetTableInfoService) getTableBase(instanceCfg models.InsightInstances) 
 						*
 					from 
 						information_schema.tables 
-					where 
-						table_schema='%s' and table_name='%s'
-				`, s.Schema, s.Table)
+						where 
+							table_schema=%s and table_name=%s
+					`, quoteStringLiteral(s.Schema), quoteStringLiteral(s.Table))
 
 		db := dao.DB{
 			User:     instanceCfg.User,

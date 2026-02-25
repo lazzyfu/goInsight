@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
@@ -96,10 +97,12 @@ func (s *AdminCreateApprovalFlowsService) Run() error {
 
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightApprovalFlows{}).Create(&flow).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("审批流`%s`已存在", s.Name)
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("审批流`%s`已存在", s.Name)
+				}
 			}
 			global.App.Log.Error(err)
 			return err

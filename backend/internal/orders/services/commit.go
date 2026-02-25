@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -287,10 +288,12 @@ func (s *CreateOrderService) Run() error {
 	err = global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 插入工单记录
 		if err := tx.Model(&models.InsightOrderRecords{}).Create(&record).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("记录已存在，错误:%s", err.Error())
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("记录已存在，错误:%s", err.Error())
+				}
 			}
 			global.App.Log.Error(err)
 			return err

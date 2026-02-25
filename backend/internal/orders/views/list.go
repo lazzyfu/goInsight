@@ -6,13 +6,14 @@ import (
 	"github.com/lazzyfu/goinsight/internal/orders/forms"
 	"github.com/lazzyfu/goinsight/internal/orders/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
 func GetOrderListView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.GetOrderListForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -32,8 +33,10 @@ func GetOrderListView(c *gin.Context) {
 }
 
 func GetOrderDetailView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	service := services.GetOrderDetailServices{
 		OrderID:  c.Param("order_id"),
 		C:        c,
@@ -48,8 +51,10 @@ func GetOrderDetailView(c *gin.Context) {
 }
 
 func GetOrderApprovalsView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	service := services.GetOrderApprovalsServices{
 		OrderID:  c.Param("order_id"),
 		C:        c,

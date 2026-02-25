@@ -14,14 +14,16 @@ import (
 	ordersModels "github.com/lazzyfu/goinsight/internal/orders/models"
 	"github.com/lazzyfu/goinsight/internal/orders/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 )
 
 // 生成执行任务
 func GenOrderTasksView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.GenOrderTasksForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -41,8 +43,10 @@ func GenOrderTasksView(c *gin.Context) {
 
 // 获取任务列表
 func GetTasksView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.GetTasksForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -83,8 +87,10 @@ func PreviewTasksView(c *gin.Context) {
 
 // 执行单个任务
 func ExecuteTaskView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.ExecuteTaskForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -106,8 +112,10 @@ func ExecuteTaskView(c *gin.Context) {
 
 // 批量执行任务
 func ExecuteBatchTasksView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form forms.ExecuteBatchTasksForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -128,8 +136,10 @@ func ExecuteBatchTasksView(c *gin.Context) {
 
 // 下载导出文件
 func DownloadExportFileView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	task_id := c.Param("task_id")
 	requestID := requestid.Get(c)
 	// 判断下载记录是否存在

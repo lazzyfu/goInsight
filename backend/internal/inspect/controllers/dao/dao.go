@@ -16,6 +16,9 @@ import (
 
 // ShowCreateTable retrieves the structure of the specified table.
 func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, err error) {
+	if err := validateIdentifier(table, "table"); err != nil {
+		return nil, err
+	}
 	// Return table structure from cache if available
 	data = kv.Get(table)
 	if data != nil {
@@ -52,6 +55,9 @@ func ShowCreateTable(table string, db *DB, kv *kv.KVCache) (data interface{}, er
 
 // CheckIfTableExists checks if the specified table exists in the current database.
 func CheckIfTableExists(table string, db *DB) (string, error) {
+	if err := validateIdentifier(table, "table"); err != nil {
+		return "", err
+	}
 	err := db.Execute(fmt.Sprintf("DESC `%s`", table))
 	if me, ok := err.(*mysqlapi.MySQLError); ok {
 		switch me.Number {
@@ -67,6 +73,9 @@ func CheckIfTableExists(table string, db *DB) (string, error) {
 
 // CheckIfDatabaseExists checks if the specified database exists.
 func CheckIfDatabaseExists(database string, db *DB) (string, error) {
+	if err := validateIdentifier(database, "database"); err != nil {
+		return "", err
+	}
 	// Query the information_schema.schemata to check if the database exists
 	result, err := db.Query(fmt.Sprintf("SELECT COUNT(*) as count FROM information_schema.schemata WHERE schema_name='%s'", database))
 	if err != nil {
@@ -87,6 +96,9 @@ func CheckIfDatabaseExists(database string, db *DB) (string, error) {
 
 // CheckIfTableExistsCrossDB checks if the specified table exists across databases.
 func CheckIfTableExistsCrossDB(table string, db *DB) (string, error) {
+	if err := validateIdentifier(table, "table"); err != nil {
+		return "", err
+	}
 	// Check if the table exists using information_schema.tables, suitable for cross-database checks
 	result, err := db.Query(fmt.Sprintf("SELECT COUNT(*) as count FROM information_schema.tables WHERE table_name='%s'", table))
 	if err != nil {

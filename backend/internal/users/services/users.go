@@ -97,10 +97,12 @@ func (s *CreateUsersService) Run() error {
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightUsers{}).Create(&user).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("用户`%s`已存在", s.Username)
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("用户`%s`已存在", s.Username)
+				}
 			}
 			global.App.Log.Error(err)
 			return err
@@ -127,10 +129,12 @@ func (s *UpdateUsersService) Run() error {
 			"is_active":    s.IsActive,
 			"is_superuser": s.IsSuperuser,
 		}).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("用户`%s`已存在", s.Username)
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("用户`%s`已存在", s.Username)
+				}
 			}
 			global.App.Log.Error(err)
 			return err
@@ -183,8 +187,9 @@ func (s *ChangeUserAvatarService) Run() error {
 	}
 
 	// 调用业务逻辑
-	global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Update("avatar_file", "/media/avatars/"+fileName)
-	if err != nil {
+	if err := global.App.DB.Model(&models.InsightUsers{}).
+		Where("username=?", s.Username).
+		Update("avatar_file", "/media/avatars/"+fileName).Error; err != nil {
 		return err
 	}
 	return nil

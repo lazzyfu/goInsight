@@ -3,11 +3,79 @@
     <a-spin tip="加载中..." :spinning="loading">
       <div>
         <strong class="dict-title">一、表名索引</strong>
-        <div class="table-container" v-html="dictIndex"></div>
+        <div class="table-container">
+          <div
+            v-for="(item, idx) in dictIndexItems"
+            :key="item.tableName + idx"
+            style="margin-top: 8px; padding-left: 12px"
+          >
+            <a
+              :href="'#' + item.tableName"
+              style="color: #1890ff; text-decoration: none; font-weight: 500"
+            >
+              {{ idx + 1 }}、{{ item.tableName }} ............ {{ item.tableComment }}
+            </a>
+          </div>
+        </div>
       </div>
       <div>
         <strong class="dict-title">二、表结构详情</strong>
-        <div v-html="dictData"></div>
+        <div v-for="(section, idx) in dictSections" :key="section.tableName + idx" class="table-container">
+          <a
+            :id="section.tableName"
+            style="color: #262626; font-weight: 600; font-size: 14px"
+          >
+            {{ idx + 1 }}、表名: {{ section.tableName }} 备注: {{ section.tableComment }} 创建时间: {{ section.createTime }}
+          </a>
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>序列</th>
+                <th>列名</th>
+                <th>数据类型</th>
+                <th>可空</th>
+                <th>默认值</th>
+                <th>字符集</th>
+                <th>排序规则</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rowIdx) in section.columns" :key="section.tableName + '-col-' + rowIdx">
+                <td>{{ rowIdx + 1 }}</td>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="modern-table index-table">
+            <thead>
+              <tr>
+                <th>序列</th>
+                <th>索引名</th>
+                <th>唯一</th>
+                <th>基数</th>
+                <th>类型</th>
+                <th>包含字段</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rowIdx) in section.indexes" :key="section.tableName + '-idx-' + rowIdx">
+                <td>{{ rowIdx + 1 }}</td>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </a-spin>
   </a-modal>
@@ -21,8 +89,8 @@ defineProps({
   open: Boolean,
 })
 
-const dictIndex = ref('')
-const dictData = ref('')
+const dictIndexItems = ref([])
+const dictSections = ref([])
 const loading = ref(false)
 
 
@@ -30,84 +98,35 @@ const handleCancel = () => {
   emit('update:open')
 }
 
+const splitRows = (raw, splitByField) => {
+  if (!raw) return []
+  return String(raw)
+    .split('<a>')
+    .filter((v) => v !== '')
+    .map((item) => item.split(splitByField))
+}
+
 const render = (data) => {
-  loading.value = true;
+  loading.value = true
+  dictIndexItems.value = []
+  dictSections.value = []
 
-  const generatorTableRows = (items, separator) => {
-    let html = '';
-    items.forEach((item, index) => {
-      html += `<tr><td>${index + 1}</td>`;
-      item.split(separator).forEach((field) => {
-        html += `<td>${field}</td>`;
-      });
-      html += '</tr>';
-    });
-    return html;
-  };
+  const rows = Array.isArray(data) ? data : []
+  dictIndexItems.value = rows.map((row) => ({
+    tableName: row.TABLE_NAME ?? '',
+    tableComment: row.TABLE_COMMENT || 'None',
+  }))
 
-  let num = 0;
-  dictIndex.value = '';
-  dictData.value = '';
+  dictSections.value = rows.map((row) => ({
+    tableName: row.TABLE_NAME ?? '',
+    tableComment: row.TABLE_COMMENT || 'None',
+    createTime: row.CREATE_TIME ?? '',
+    columns: splitRows(row.COLUMNS_INFO, '<b>'),
+    indexes: splitRows(row.INDEXES_INFO, '<b>'),
+  }))
 
-  data.forEach((row) => {
-    num += 1;
-    const { TABLE_NAME, TABLE_COMMENT, CREATE_TIME, COLUMNS_INFO, INDEXES_INFO } = row;
-    const tableComment = TABLE_COMMENT || 'None';
-
-    // 生成索引链接
-    dictIndex.value += `
-      <div style="margin-top: 8px; padding-left: 12px;">
-        <a href="#${TABLE_NAME}" style="color: #1890ff; text-decoration: none; font-weight: 500;">${num}、${TABLE_NAME} ............ ${tableComment}</a><br>
-      </div>
-    `;
-
-    // 生成表格内容
-    const tableRows = generatorTableRows(COLUMNS_INFO.split('<a>'), '<b>');
-    const indexRows = generatorTableRows(INDEXES_INFO.split('<a>'), '<b>');
-
-    dictData.value += `
-     <div class="table-container">
-        <a style="color: #262626; font-weight: 600; font-size: 14px;" name="${TABLE_NAME}">
-          ${num}、表名: ${TABLE_NAME} 备注: ${tableComment} 创建时间: ${CREATE_TIME}
-        </a>
-        <table class="modern-table">
-          <thead>
-            <tr>
-              <th>序列</th>
-              <th>列名</th>
-              <th>数据类型</th>
-              <th>可空</th>
-              <th>默认值</th>
-              <th>字符集</th>
-              <th>排序规则</th>
-              <th>备注</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-          </tbody>
-        </table>
-        <table class="modern-table index-table">
-          <thead>
-            <tr>
-              <th>序列</th>
-              <th>索引名</th>
-              <th>唯一</th>
-              <th>基数</th>
-              <th>类型</th>
-              <th>包含字段</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${indexRows}
-          </tbody>
-        </table>
-      </div>
-    `;
-  });
-
-  loading.value = false;
-};
+  loading.value = false
+}
 
 defineExpose({
   render
