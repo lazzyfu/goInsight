@@ -34,7 +34,6 @@ goInsight/cmd/__debug_bin
 goInsight_windows.code-workspace
 goInsight-fe/node_modules
 goInsight-fe/yarn-error.log
-goInsight/config.yaml
 goInsight/dist/
 goInsight/goinsight/dist
 goinsight/bin/
@@ -43,7 +42,6 @@ github.goinsight.code-workspace
 
 # Project specific
 # Backend
-backend/config.yaml
 backend/logs/
 backend/media/
 backend/web/dist/*
