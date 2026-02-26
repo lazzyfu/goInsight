@@ -64,9 +64,12 @@ func InitAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
-			claims := jwt.ExtractClaims(c)
+			username, ok := GetUserNameFromJWT(c)
+			if !ok {
+				return &User{}
+			}
 			return &User{
-				UserName: claims[identityKey].(string),
+				UserName: username,
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -115,7 +118,7 @@ func InitAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		// - "query:<name>"
 		// - "cookie:<name>"
 		// - "param:<name>"
-		TokenLookup: "header: Authorization, query: token, cookie: jwt",
+		TokenLookup: "header: Authorization, cookie: jwt",
 		// TokenLookup: "query:token",
 		// TokenLookup: "cookie:token",
 

@@ -1,8 +1,6 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/users/forms"
@@ -48,13 +46,16 @@ func CreateRolesView(c *gin.Context) {
 }
 
 func UpdateRolesView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	var form *forms.UpdateRolesForm = &forms.UpdateRolesForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.UpdateRolesService{
 			UpdateRolesForm: form,
 			C:               c,
-			ID:              uint64(id),
+			ID:              id,
 		}
 		err := service.Run()
 		if err != nil {
@@ -68,10 +69,13 @@ func UpdateRolesView(c *gin.Context) {
 }
 
 func DeleteRolesView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.DeleteRolesService{
 		C:  c,
-		ID: uint64(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {

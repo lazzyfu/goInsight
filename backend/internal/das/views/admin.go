@@ -1,8 +1,6 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/das/forms"
@@ -134,10 +132,13 @@ func AdminCreateTablesGrantView(c *gin.Context) {
 }
 
 func AdminDeleteSchemasGrantView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint32Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteSchemasGrantService{
 		C:  c,
-		ID: uint32(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {
@@ -148,10 +149,13 @@ func AdminDeleteSchemasGrantView(c *gin.Context) {
 }
 
 func AdminDeleteTablesGrantView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint32Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteTablesGrantService{
 		C:  c,
-		ID: uint32(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {

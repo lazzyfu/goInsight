@@ -188,6 +188,13 @@ func (s *ClaimOrderService) Run() (err error) {
 	if !utils.IsContain([]string{"APPROVED"}, string(record.Progress)) {
 		return fmt.Errorf("当前工单没有审批通过，无法认领")
 	}
+	allowed, err := canUserClaim(record.ClaimUsers, s.Username)
+	if err != nil {
+		return err
+	}
+	if !allowed {
+		return fmt.Errorf("您不在可领取人员列表中，无法认领工单")
+	}
 	// 认领操作
 	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {
 		// 更新工单认领人
@@ -248,6 +255,13 @@ func (s *TransferOrderService) Run() (err error) {
 	// 判断当前工单认领人是否等于操作人
 	if record.Claimer != s.Username {
 		return fmt.Errorf("只有工单认领人才能转交工单")
+	}
+	allowed, err := canUserClaim(record.ClaimUsers, s.NewClaimer)
+	if err != nil {
+		return err
+	}
+	if !allowed {
+		return fmt.Errorf("转交目标用户不在可领取人员列表中")
 	}
 	// 转交操作
 	txErr := global.App.DB.Transaction(func(tx *gorm.DB) error {

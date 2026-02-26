@@ -79,6 +79,10 @@ func (s *GetDbDictService) getDbType() (string, error) {
 }
 
 func (s *GetDbDictService) getDbDict(instanceCfg models.InsightInstances) (data *[]map[string]interface{}, err error) {
+	if err := validateIdentifier(s.Schema, "schema"); err != nil {
+		return nil, err
+	}
+
 	query := fmt.Sprintf(`
 					select
 						t.TABLE_NAME,
@@ -112,13 +116,13 @@ func (s *GetDbDictService) getDbDict(instanceCfg models.InsightInstances) (data 
 						and c.TABLE_NAME = t.TABLE_NAME
 						left join STATISTICS s on c.TABLE_SCHEMA = s.TABLE_SCHEMA
 						and c.TABLE_NAME = s.TABLE_NAME
-					where
-						t.TABLE_SCHEMA = '%s'
-					group by
-						t.TABLE_NAME,
-						t.TABLE_COMMENT,
-						t.CREATE_TIME
-				`, s.Schema)
+						where
+							t.TABLE_SCHEMA = %s
+						group by
+							t.TABLE_NAME,
+							t.TABLE_COMMENT,
+							t.CREATE_TIME
+					`, quoteStringLiteral(s.Schema))
 
 	// 解密密码
 	plainPassword, err := utils.Decrypt(instanceCfg.Password)

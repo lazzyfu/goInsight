@@ -1,21 +1,20 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/das/forms"
 	"github.com/lazzyfu/goinsight/internal/das/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
 // 获取收藏的SQL
 func GetFavoritesView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.GetFavoritesForm = &forms.GetFavoritesForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.GetFavoritesService{
@@ -36,8 +35,10 @@ func GetFavoritesView(c *gin.Context) {
 
 // 新建
 func CreateFavoritesView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.CreateFavoritesForm = &forms.CreateFavoritesForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.CreateFavoritesService{
@@ -58,15 +59,20 @@ func CreateFavoritesView(c *gin.Context) {
 
 // 更新
 func UpdateFavoritesView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.UpdateFavoritesForm = &forms.UpdateFavoritesForm{}
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint32Param(c, "id")
+	if !ok {
+		return
+	}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.UpdateFavoritesService{
 			UpdateFavoritesForm: form,
 			C:                   c,
-			ID:                  uint32(id),
+			ID:                  id,
 			Username:            username,
 		}
 		err := service.Run()
@@ -82,12 +88,17 @@ func UpdateFavoritesView(c *gin.Context) {
 
 // 删除
 func DeleteFavoritesView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
-	id, _ := strconv.Atoi(c.Param("id"))
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
+	id, ok := parseUint32Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.DeleteFavoritesService{
 		C:        c,
-		ID:       uint32(id),
+		ID:       id,
 		Username: username,
 	}
 	err := service.Run()

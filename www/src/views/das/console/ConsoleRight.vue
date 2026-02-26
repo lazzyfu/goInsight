@@ -350,7 +350,7 @@ const executeSqlQuery = async () => {
     }
   } finally {
     runtime.tableLoadingByTab[tabKey] = false
-    const msg = resMsgs.join('<br>')
+    const msg = resMsgs.join('\n')
     runtime.queryResultMessageByTab[tabKey] = msg
     if (uiData.activeKey === tabKey) {
       uiData.queryResultMessage = msg

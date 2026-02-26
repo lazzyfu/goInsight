@@ -6,7 +6,6 @@ import (
 	"github.com/lazzyfu/goinsight/internal/users/forms"
 	"github.com/lazzyfu/goinsight/internal/users/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,8 +16,10 @@ func GetOrganizationsView(c *gin.Context) {
 }
 
 func CreateRootOrganizationsView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.CreateRootOrganizationsForm = &forms.CreateRootOrganizationsForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.CreateRootOrganizationsService{
@@ -38,8 +39,10 @@ func CreateRootOrganizationsView(c *gin.Context) {
 }
 
 func CreateChildOrganizationsView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.CreateChildOrganizationsForm = &forms.CreateChildOrganizationsForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.CreateChildOrganizationsService{
@@ -59,8 +62,10 @@ func CreateChildOrganizationsView(c *gin.Context) {
 }
 
 func UpdateOrganizationsView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.UpdateOrganizationsForm = &forms.UpdateOrganizationsForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.UpdateOrganizationsService{
@@ -116,8 +121,6 @@ func GetOrganizationsUsersView(c *gin.Context) {
 }
 
 func BindOrganizationsUsersView(c *gin.Context) {
-	// claims := jwt.ExtractClaims(c)
-	// username := claims["id"].(string)
 	var form *forms.BindOrganizationsUsersForm = &forms.BindOrganizationsUsersForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.BindOrganizationsUsersService{

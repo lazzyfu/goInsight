@@ -1,8 +1,6 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/common/forms"
@@ -48,13 +46,16 @@ func AdminCreateEnvironmentView(c *gin.Context) {
 }
 
 func AdminUpdateEnvironmentView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	var form *forms.AdminUpdateEnvironmentForm = &forms.AdminUpdateEnvironmentForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.AdminUpdateEnvironmentService{
 			AdminUpdateEnvironmentForm: form,
 			C:                          c,
-			ID:                         uint64(id),
+			ID:                         id,
 		}
 		err := service.Run()
 		if err != nil {
@@ -68,10 +69,13 @@ func AdminUpdateEnvironmentView(c *gin.Context) {
 }
 
 func AdminDeleteEnvironmentView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteEnvironmentService{
 		C:  c,
-		ID: uint64(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {

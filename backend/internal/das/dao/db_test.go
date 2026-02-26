@@ -110,7 +110,7 @@ var testCaseData [][]string = [][]string{
 		`insert into testcase_enum_set values (null, ('a,d'))`,
 	},
 	{
-		`insert into testcase_spatial values (geomfromtext('point(108.9498710632 34.2588125935)'))`,
+		`insert into testcase_spatial values (ST_GeomFromText('point(108.9498710632 34.2588125935)'))`,
 		`insert into testcase_spatial values (null)`,
 	},
 	{
@@ -345,7 +345,7 @@ func TestDb(t *testing.T) {
 		},
 		{
 			name: "TEST SPATIAL",
-			sql:  "select astext(col_geometry) as col_geometry from testcase_spatial",
+			sql:  "select ST_AsText(col_geometry) as col_geometry from testcase_spatial",
 			wantRes: []map[string]interface{}{
 				{"col_geometry": "POINT(108.9498710632 34.2588125935)"},
 				{"col_geometry": interface{}(nil)},
@@ -374,7 +374,7 @@ func TestDb(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			_, data, err := db.Query(c.sql)
 			if err != nil {
-				t.Error(err)
+				t.Fatal(err)
 			}
 			assert.EqualValues(t, c.wantRes, *data)
 		})

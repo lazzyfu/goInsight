@@ -35,7 +35,7 @@
               </a-tab-pane>
               <a-tab-pane key="message" tab="执行消息">
                 <div class="message-pane">
-                  <div class="exec-message" v-html="uiData.executionMessage" />
+                  <pre class="exec-message">{{ uiData.executionMessage }}</pre>
                 </div>
               </a-tab-pane>
             </a-tabs>
@@ -260,6 +260,12 @@ const renderExecutionMessage = (value) => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+.exec-message {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .message-pane {

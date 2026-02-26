@@ -1,8 +1,6 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/common/forms"
@@ -48,7 +46,10 @@ func AdminCreateInstancesView(c *gin.Context) {
 }
 
 func AdminUpdateInstancesView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	var form forms.AdminUpdateInstancesForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -57,7 +58,7 @@ func AdminUpdateInstancesView(c *gin.Context) {
 	service := services.AdminUpdateInstancesService{
 		AdminUpdateInstancesForm: &form,
 		C:                        c,
-		ID:                       uint64(id),
+		ID:                       id,
 	}
 	err := service.Run()
 	if err != nil {
@@ -68,10 +69,13 @@ func AdminUpdateInstancesView(c *gin.Context) {
 }
 
 func AdminDeleteInstances(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteInstanceConfigsService{
 		C:  c,
-		ID: uint64(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {
@@ -117,7 +121,10 @@ func AdminCreateInstanceInspectParamsView(c *gin.Context) {
 }
 
 func AdminUpdateInstanceInspectParamsView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	var form forms.AdminUpdateInstanceInspectParamsForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -126,7 +133,7 @@ func AdminUpdateInstanceInspectParamsView(c *gin.Context) {
 	service := services.AdminUpdateInstanceInspectParamsService{
 		AdminUpdateInstanceInspectParamsForm: &form,
 		C:                                    c,
-		ID:                                   uint64(id),
+		ID:                                   id,
 	}
 	err := service.Run()
 	if err != nil {
@@ -137,10 +144,13 @@ func AdminUpdateInstanceInspectParamsView(c *gin.Context) {
 }
 
 func AdminDeleteInstanceInspectParamsView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteInstanceInspectParamsService{
 		C:  c,
-		ID: uint64(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {

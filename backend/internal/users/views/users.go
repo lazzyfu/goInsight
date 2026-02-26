@@ -1,14 +1,11 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/users/forms"
 	"github.com/lazzyfu/goinsight/internal/users/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,7 +46,10 @@ func CreateUsersView(c *gin.Context) {
 }
 
 func UpdateUsersView(c *gin.Context) {
-	uid, _ := strconv.Atoi(c.Param("uid"))
+	uid, ok := parseUint64Param(c, "uid")
+	if !ok {
+		return
+	}
 	var form forms.UpdateUsersForm
 	if err := c.ShouldBind(&form); err != nil {
 		response.ValidateFail(c, err.Error())
@@ -58,7 +58,7 @@ func UpdateUsersView(c *gin.Context) {
 	service := services.UpdateUsersService{
 		UpdateUsersForm: &form,
 		C:               c,
-		UID:             uint64(uid),
+		UID:             uid,
 	}
 	err := service.Run()
 	if err != nil {
@@ -69,10 +69,13 @@ func UpdateUsersView(c *gin.Context) {
 }
 
 func DeleteUsersView(c *gin.Context) {
-	uid, _ := strconv.Atoi(c.Param("uid"))
+	uid, ok := parseUint64Param(c, "uid")
+	if !ok {
+		return
+	}
 	service := services.DeleteUsersService{
 		C:   c,
-		UID: uint64(uid),
+		UID: uid,
 	}
 	err := service.Run()
 	if err != nil {
@@ -101,7 +104,10 @@ func ResetUsersPasswordView(c *gin.Context) {
 }
 
 func ChangeUserAvatarView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	file, err := c.FormFile("file")
 	if err != nil {
 		response.Fail(c, err.Error())

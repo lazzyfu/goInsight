@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -111,10 +112,12 @@ func (s *AdminCreateInstancesService) Run() error {
 	result := tx.Create(&db)
 
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("使用类型为%s的%s:%d记录已存在", s.UseType, s.Hostname, s.Port)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("使用类型为%s的%s:%d记录已存在", s.UseType, s.Hostname, s.Port)
+			}
 		}
 		return result.Error
 	}
@@ -159,10 +162,12 @@ func (s *AdminUpdateInstancesService) Run() error {
 	// 更新记录
 	result := global.App.DB.Model(&models.InsightInstances{}).Where("id=?", s.ID).Updates(updates)
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("使用类型为%s的%s:%d记录已存在", s.UseType, s.Hostname, s.Port)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("使用类型为%s的%s:%d记录已存在", s.UseType, s.Hostname, s.Port)
+			}
 		}
 		return result.Error
 	}
@@ -221,10 +226,12 @@ func (s *AdminCreateInstanceInspectParamsService) Run() error {
 	result := tx.Create(&db)
 
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("实例审核参数`%s`已存在", s.Key)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("实例审核参数`%s`已存在", s.Key)
+			}
 		}
 		return result.Error
 	}

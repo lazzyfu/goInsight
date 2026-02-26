@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -66,17 +68,67 @@ func LoggerRequestToFile(logger *logrus.Logger) gin.HandlerFunc {
 		endTime := time.Now()
 		latencyTime := fmt.Sprintf("%dms", endTime.Sub(startTime).Milliseconds())
 
+		safeURI := sanitizeRequestURI(c.Request.URL)
+		safeHeaders := sanitizeRequestHeaders(c.Request.Header)
+
 		//日志格式
 		logger.WithFields(logrus.Fields{
 			"status_code":       c.Writer.Status(),
 			"latency_time":      latencyTime,
 			"request_client_ip": c.ClientIP(),
 			"request_method":    c.Request.Method,
-			"request_uri":       c.Request.RequestURI,
+			"request_uri":       safeURI,
 			"request_ua":        c.Request.UserAgent(),
 			"request_referer":   c.Request.Referer(),
 			"request_id":        requestid.Get(c),
-			"request_header":    c.Request.Header,
+			"request_header":    safeHeaders,
 		}).Info()
 	}
+}
+
+var sensitiveHeaderKeys = map[string]struct{}{
+	"authorization": {},
+	"cookie":        {},
+	"set-cookie":    {},
+	"x-api-key":     {},
+}
+
+var sensitiveQueryKeys = map[string]struct{}{
+	"token":        {},
+	"password":     {},
+	"old_password": {},
+	"new_password": {},
+	"otp_code":     {},
+}
+
+func sanitizeRequestHeaders(headers http.Header) map[string][]string {
+	if headers == nil {
+		return map[string][]string{}
+	}
+	masked := make(map[string][]string, len(headers))
+	for k, values := range headers {
+		if _, ok := sensitiveHeaderKeys[strings.ToLower(k)]; ok {
+			masked[k] = []string{"***"}
+			continue
+		}
+		copied := make([]string, len(values))
+		copy(copied, values)
+		masked[k] = copied
+	}
+	return masked
+}
+
+func sanitizeRequestURI(u *url.URL) string {
+	if u == nil {
+		return ""
+	}
+	query := u.Query()
+	for key := range query {
+		if _, ok := sensitiveQueryKeys[strings.ToLower(key)]; ok {
+			query.Set(key, "***")
+		}
+	}
+	safeURL := *u
+	safeURL.RawQuery = query.Encode()
+	return safeURL.RequestURI()
 }

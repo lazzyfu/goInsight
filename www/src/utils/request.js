@@ -10,10 +10,11 @@ axios.defaults.headers.put['Content-Type'] = 'application/json;charset=UTF-8'
 
 // 跳转登录页
 const toLogin = () => {
+  const currentRoute = router.currentRoute?.value
   router.push({
     path: '/login',
     query: {
-      redirect: router.currentRoute.fullPath,
+      redirect: currentRoute?.fullPath || '/',
     },
   })
 }
@@ -126,7 +127,7 @@ export const get = (url, params) => {
         resolve(res.data)
       })
       .catch((err) => {
-        reject(err.data)
+        reject(err?.data ?? err)
       })
   })
 }
@@ -147,7 +148,7 @@ export function post(url, params, headers = {}) {
         resolve(res.data)
       })
       .catch((err) => {
-        reject(err.data)
+        reject(err?.data ?? err)
       })
   })
 }
@@ -160,7 +161,7 @@ export function del(url, params) {
         resolve(res.data)
       })
       .catch((err) => {
-        reject(err.data)
+        reject(err?.data ?? err)
       })
   })
 }
@@ -172,7 +173,7 @@ export function put(url, params) {
         resolve(res.data)
       })
       .catch((err) => {
-        reject(err.data)
+        reject(err?.data ?? err)
       })
   })
 }

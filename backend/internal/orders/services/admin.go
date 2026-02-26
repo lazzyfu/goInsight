@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
@@ -56,7 +57,7 @@ func (s *AdminGetApprovalFlowsService) Run() (responseData any, total int64, err
 	}
 
 	// 固定字段 + 去重
-	base = base.Select("a.id, a.name, a.definition, a.approval_id, a.created_at, a.updated_at").
+	base = base.Select("a.id, a.name, a.definition, a.claim_users, a.approval_id, a.created_at, a.updated_at").
 		Group("a.id")
 
 	total = pagination.Pager(&s.PaginationQ, base, &records)
@@ -70,10 +71,15 @@ type AdminUpdateApprovalFlowsService struct {
 }
 
 func (s *AdminUpdateApprovalFlowsService) Run() (responseData any, total int64, err error) {
+	claimUsers, err := marshalClaimUsers(s.ClaimUsers)
+	if err != nil {
+		return nil, 0, err
+	}
 	// 更新记录
 	result := global.App.DB.Model(&models.InsightApprovalFlows{}).Where("id=?", s.ID).Updates(map[string]any{
-		"definition": s.Definition,
-		"name":       s.Name,
+		"definition":  s.Definition,
+		"name":        s.Name,
+		"claim_users": claimUsers,
 	})
 
 	if result.Error != nil {
@@ -88,18 +94,25 @@ type AdminCreateApprovalFlowsService struct {
 }
 
 func (s *AdminCreateApprovalFlowsService) Run() error {
+	claimUsers, err := marshalClaimUsers(s.ClaimUsers)
+	if err != nil {
+		return err
+	}
 	flow := models.InsightApprovalFlows{
 		Definition: s.Definition,
+		ClaimUsers: claimUsers,
 		Name:       s.Name,
 		ApprovalID: uuid.New(),
 	}
 
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightApprovalFlows{}).Create(&flow).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("审批流`%s`已存在", s.Name)
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("审批流`%s`已存在", s.Name)
+				}
 			}
 			global.App.Log.Error(err)
 			return err
@@ -159,7 +172,7 @@ type AdminGetApprovalFlowUsersService struct {
 
 func (s *AdminGetApprovalFlowUsersService) Run() (responseData any, total int64, err error) {
 	var records []models.InsightApprovalFlowUsers
-	tx := global.App.DB.Table("insight_approval_flow_users").Where("approval_id=?", s.ApprovalID).Scan(&records)
+	tx := global.App.DB.Table("insight_approval_flow_users").Where("approval_id=?", s.ApprovalID)
 
 	// 搜索
 	if s.Search != "" {

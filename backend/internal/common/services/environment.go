@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -44,10 +45,12 @@ func (s *AdminCreateEnvironmentService) Run() error {
 	}
 	result := tx.Create(&db)
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("记录`%s`已存在", s.Name)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("记录`%s`已存在", s.Name)
+			}
 		}
 		return result.Error
 	}
@@ -65,10 +68,12 @@ func (s *AdminUpdateEnvironmentService) Run() error {
 		"name": s.Name,
 	})
 	if result.Error != nil {
-		mysqlErr := result.Error.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			return fmt.Errorf("记录`%s`已存在", s.Name)
+		var mysqlErr *mysql.MySQLError
+		if errors.As(result.Error, &mysqlErr) {
+			switch mysqlErr.Number {
+			case 1062:
+				return fmt.Errorf("记录`%s`已存在", s.Name)
+			}
 		}
 		return result.Error
 	}

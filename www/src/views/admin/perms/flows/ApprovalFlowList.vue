@@ -23,6 +23,9 @@
           <template v-if="column.key === 'flow'">
             <a-tag color="blue">{{ record.definition.length }} 个阶段</a-tag>
           </template>
+          <template v-if="column.key === 'claim_users'">
+            <a-tag color="cyan">{{ record.claim_users.length }} 人</a-tag>
+          </template>
 
           <template v-if="column.key === 'action'">
             <a-space>
@@ -108,6 +111,7 @@ const uiData = reactive({
   tableColumns: [
     { title: '审批流名称', dataIndex: 'name', key: 'name', width: 150 },
     { title: '流程阶段数', dataIndex: 'definition', key: 'flow', width: 120 },
+    { title: '可领取人', dataIndex: 'claim_users', key: 'claim_users', width: 120 },
     { title: '创建时间', dataIndex: 'created_at', key: 'created_at' },
     { title: '更新时间', dataIndex: 'updated_at', key: 'updated_at' },
     { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', width: 250 },
@@ -117,6 +121,7 @@ const uiData = reactive({
 // form表单
 const defaultForm = {
   name: '',
+  claim_users: [],
   definition: [
     {
       stage: 1,
@@ -167,6 +172,11 @@ const fetchData = async () => {
         ? item.definition
         : item.definition
           ? JSON.parse(item.definition)
+          : [],
+      claim_users: Array.isArray(item.claim_users)
+        ? item.claim_users
+        : item.claim_users
+          ? JSON.parse(item.claim_users)
           : [],
     }))
 
@@ -219,6 +229,11 @@ const handleEdit = (record) => {
 
   formState.value = {
     ...record,
+    claim_users: Array.isArray(record.claim_users)
+      ? record.claim_users
+      : typeof record.claim_users === 'string'
+        ? JSON.parse(record.claim_users)
+        : [],
     definition: definition.length > 0 ? definition : defaultForm.definition,
   }
   uiState.isModalOpen = true

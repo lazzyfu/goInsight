@@ -5,7 +5,6 @@ import (
 
 	userModels "github.com/lazzyfu/goinsight/internal/users/models"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -16,7 +15,11 @@ func HasAdminPermission() gin.HandlerFunc {
 	// This anonymous function is used to handle the request
 	return func(c *gin.Context) {
 		// Extract the username from the JWT claims
-		username := jwt.ExtractClaims(c)["id"].(string)
+		username, ok := GetUserNameFromJWT(c)
+		if !ok {
+			c.AbortWithStatusJSON(401, gin.H{"code": 401, "msg": "认证信息无效", "data": nil, "request_id": requestid.Get(c)})
+			return
+		}
 		// Declare a variable to store the user
 		var user userModels.InsightUsers
 

@@ -9,15 +9,16 @@ import (
 	"github.com/lazzyfu/goinsight/internal/das/models"
 	"github.com/lazzyfu/goinsight/internal/das/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 )
 
 // 执行MySQL/TiDB查询
 func ExecuteMySQLQueryView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.ExecuteMySQLQueryForm = &forms.ExecuteMySQLQueryForm{}
 	var RequestID string = requestid.Get(c)
 
@@ -52,8 +53,10 @@ func ExecuteMySQLQueryView(c *gin.Context) {
 
 // 执行ClickHouse查询
 func ExecuteClickHouseQueryView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.ExecuteClickHouseQueryForm = &forms.ExecuteClickHouseQueryForm{}
 	var RequestID string = requestid.Get(c)
 

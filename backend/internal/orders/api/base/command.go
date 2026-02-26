@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"strings"
 	"sync"
 	"syscall"
 )
@@ -29,8 +30,8 @@ func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser, ch chan<- 
 	}
 }
 
-func Command(ctx context.Context, ch chan<- string, cmd string) error {
-	c := exec.CommandContext(ctx, "bash", "-c", cmd)
+func Command(ctx context.Context, ch chan<- string, binary string, args []string) error {
+	c := exec.CommandContext(ctx, binary, args...)
 
 	stdout, err := c.StdoutPipe()
 	if err != nil {
@@ -62,4 +63,15 @@ func Command(ctx context.Context, ch chan<- string, cmd string) error {
 	}
 
 	return nil
+}
+
+func RenderCommandForLog(binary string, args []string) string {
+	logArgs := make([]string, len(args))
+	copy(logArgs, args)
+	for i, arg := range logArgs {
+		if strings.HasPrefix(arg, "--password=") {
+			logArgs[i] = "--password=..."
+		}
+	}
+	return strings.TrimSpace(strings.Join(append([]string{binary}, logArgs...), " "))
 }

@@ -1,8 +1,6 @@
 package views
 
 import (
-	"strconv"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/orders/forms"
@@ -48,7 +46,10 @@ func AdminGetApprovalFlowsView(c *gin.Context) {
 }
 
 func AdminUpdateApprovalFlowsView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	var form forms.AdminUpdateApprovalFlowsForm
 
 	if err := c.ShouldBind(&form); err != nil {
@@ -58,7 +59,7 @@ func AdminUpdateApprovalFlowsView(c *gin.Context) {
 	service := services.AdminUpdateApprovalFlowsService{
 		AdminUpdateApprovalFlowsForm: &form,
 		C:                            c,
-		ID:                           uint64(id),
+		ID:                           id,
 	}
 	returnData, total, err := service.Run()
 	if err != nil {
@@ -88,10 +89,13 @@ func AdminCreateApprovalFlowsView(c *gin.Context) {
 }
 
 func AdminDeleteApprovalFlowsView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteApprovalFlowsService{
 		C:  c,
-		ID: uint64(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {
@@ -140,10 +144,13 @@ func AdminGetApprovalFlowUsersView(c *gin.Context) {
 }
 
 func AdminDeleteUsersFromApprovalFlowView(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, ok := parseUint64Param(c, "id")
+	if !ok {
+		return
+	}
 	service := services.AdminDeleteUsersFromApprovalFlowService{
 		C:  c,
-		ID: uint64(id),
+		ID: id,
 	}
 	err := service.Run()
 	if err != nil {

@@ -83,14 +83,17 @@ type AdminGetTablesListService struct {
 
 // 获取MySQL/TiDB的表信息
 func (g *AdminGetTablesListService) getMySQLMetaData(r *InstanceCfg) (data *[]map[string]any, err error) {
+	if err := validateIdentifier(r.Schema, "schema"); err != nil {
+		return nil, err
+	}
 	var query string = fmt.Sprintf(`
 		select 
 			table_name as table_name
 		from 
 			information_schema.tables
-		where 
-			table_schema='%s' and table_name not regexp '^_(.*)[_ghc|_gho|_del]$'
-		`, r.Schema)
+			where 
+				table_schema=%s and table_name not regexp '^_(.*)[_ghc|_gho|_del]$'
+			`, quoteStringLiteral(r.Schema))
 
 	db := dao.DB{
 		User:     r.User,
@@ -110,14 +113,17 @@ func (g *AdminGetTablesListService) getMySQLMetaData(r *InstanceCfg) (data *[]ma
 
 // 获取ClickHouse的表信息
 func (g *AdminGetTablesListService) getClickHouseMetaData(r *InstanceCfg) (data *[]map[string]any, err error) {
+	if err := validateIdentifier(r.Schema, "schema"); err != nil {
+		return nil, err
+	}
 	var query string = fmt.Sprintf(`
 	select 
 		name as table_name
 	from 
 		system.tables 
-	where 
-		(database = '%s')
-	`, r.Schema)
+		where 
+			(database = %s)
+		`, quoteStringLiteral(r.Schema))
 
 	db := dao.ClickhouseDB{
 		User:     r.User,
@@ -182,19 +188,23 @@ func (s *AdminCreateSchemasGrantService) Run() (err error) {
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightDasSchemaPerms{}).Create(&schemaRecord).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("记录已存在，错误:%s", err.Error())
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("记录已存在，错误:%s", err.Error())
+				}
 			}
 			global.App.Log.Error(err)
 			return err
 		}
 		if err := tx.Model(&models.InsightDasTablePerms{}).CreateInBatches(&tableRecords, len(tableRecords)).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("记录已存在，错误:%s", err.Error())
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("记录已存在，错误:%s", err.Error())
+				}
 			}
 			global.App.Log.Error(err)
 			return err
@@ -212,8 +222,7 @@ func (s *AdminGetTablesGrantService) Run() (responseData any, total int64, err e
 	var tables []models.InsightDasTablePerms
 	tx := global.App.DB.Model(&models.InsightDasTablePerms{}).
 		Where("username=? and instance_id=? and `schema`=?", s.Username, s.InstanceID, s.Schema).
-		Order("created_at asc").
-		Scan(&tables)
+		Order("created_at asc")
 	// 搜索
 	if s.Search != "" {
 		tx = tx.Where("`table` like ? or `rule` like ?", "%"+s.Search+"%", "%"+s.Search+"%")
@@ -245,10 +254,12 @@ func (s *AdminCreateTablesGrantService) Run() (err error) {
 	}
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.InsightDasTablePerms{}).CreateInBatches(&tableRecords, len(tableRecords)).Error; err != nil {
-			mysqlErr := err.(*mysql.MySQLError)
-			switch mysqlErr.Number {
-			case 1062:
-				return fmt.Errorf("记录已存在，错误:%s", err.Error())
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				switch mysqlErr.Number {
+				case 1062:
+					return fmt.Errorf("记录已存在，错误:%s", err.Error())
+				}
 			}
 			global.App.Log.Error(err)
 			return err

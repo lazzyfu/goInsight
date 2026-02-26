@@ -78,7 +78,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 GOOS=darwin GOARCH=arm64 \
 go build \
   -o "$BIN_DIR/goinsight-osx-arm64" \
-  -ldflags "-X main.version=$VERSION" \
+  -ldflags "-X main.Version=$VERSION" \
   "$MAIN_GO"
 
 FILE_SIZE=$(du -h "$BIN_DIR/goinsight-osx-arm64" | cut -f1)
@@ -112,7 +112,7 @@ cd "$BACKEND_DIR"
 GOOS=linux GOARCH=amd64 \
 go build \
   -o "$BIN_DIR/goinsight-linux-amd64" \
-  -ldflags "-X main.version=$VERSION" \
+  -ldflags "-X main.Version=$VERSION" \
   "$MAIN_GO"
 
 FILE_SIZE=$(du -h "$BIN_DIR/goinsight-linux-amd64" | cut -f1)

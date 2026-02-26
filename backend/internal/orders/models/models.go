@@ -33,6 +33,7 @@ type InsightOrderRecords struct {
 	Applicant        string          `gorm:"type:varchar(32);not null;default:'';comment:申请人;index" json:"applicant"`
 	Organization     string          `gorm:"type:varchar(256);not null;default:'';index;comment:组织" json:"organization"`
 	Claimer          string          `gorm:"type:varchar(32);not null;default:'';comment:认领人;index" json:"claimer"`
+	ClaimUsers       datatypes.JSON  `gorm:"type:json;null;default:null;comment:可认领人员列表" json:"claim_users"`
 	Executor         string          `gorm:"type:varchar(32);not null;default:'';comment:工单执行人;index" json:"executor"`
 	Approver         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单审核人" json:"approver"`
 	Reviewer         datatypes.JSON  `gorm:"type:json;null;default:null;comment:工单复核人" json:"reviewer"`
@@ -55,6 +56,7 @@ type InsightApprovalFlows struct {
 	*models.Model
 	ApprovalID uuid.UUID      `gorm:"type:char(36);comment:审批流ID;uniqueIndex:uniq_approval_id" json:"approval_id"`
 	Name       string         `gorm:"type:varchar(64);not null;default:'';comment:审批流名称" json:"name"`
+	ClaimUsers datatypes.JSON `gorm:"type:json;null;default:null;comment:可认领人员列表" json:"claim_users"`
 	Definition datatypes.JSON `json:"definition"` // [{"stage":1, "approvers":["zhangsan","lisi"], "type":"AND", "stage_name": '部门审批'}]
 }
 

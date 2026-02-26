@@ -240,6 +240,22 @@ const handleCancel = closeModal
 
 // 获取用户列表
 const fetchUsers = async () => {
+  const claimUsers = props.orderDetail?.claim_users
+  if (Array.isArray(claimUsers) && claimUsers.length > 0) {
+    uiData.userList = claimUsers.map((username) => ({ username, nick_name: username }))
+    return
+  }
+  if (typeof claimUsers === 'string' && claimUsers.length > 0) {
+    try {
+      const parsed = JSON.parse(claimUsers)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        uiData.userList = parsed.map((username) => ({ username, nick_name: username }))
+        return
+      }
+    } catch {
+      // Ignore parse failure and fallback to full user list.
+    }
+  }
   const res = await getOrderUsersApi().catch(() => null)
   if (res) uiData.userList = res.data
 }

@@ -2,19 +2,20 @@ package views
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/users/forms"
 	"github.com/lazzyfu/goinsight/internal/users/services"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
 func GetUserInfoView(c *gin.Context) {
-	username := jwt.ExtractClaims(c)["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	service := services.GetUserInfoServices{C: c, Username: username}
 	returnData, err := service.Run()
 	if err != nil {
@@ -26,7 +27,10 @@ func GetUserInfoView(c *gin.Context) {
 
 func UpdateUserInfoView(c *gin.Context) {
 	var form *forms.UpdateUserInfoForm = &forms.UpdateUserInfoForm{}
-	uid, _ := strconv.Atoi(c.Param("uid"))
+	uid, ok := parseUint64Param(c, "uid")
+	if !ok {
+		return
+	}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.UpdateUserInfoService{
 			UpdateUserInfoForm: form,
@@ -46,8 +50,10 @@ func UpdateUserInfoView(c *gin.Context) {
 
 // 用户修改密码
 func ChangeUserPasswordView(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	username := claims["id"].(string)
+	username, ok := getUsername(c)
+	if !ok {
+		return
+	}
 	var form *forms.ChangeUserPasswordForm = &forms.ChangeUserPasswordForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.ChangeUserPasswordService{ChangeUserPasswordForm: form, C: c, Username: username}
