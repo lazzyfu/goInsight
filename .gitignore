@@ -63,3 +63,4 @@ bin/
 www/README.md
 logs/
 media/
+.worktrees/
