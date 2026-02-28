@@ -44,6 +44,7 @@
     :open="uiState.isModalOpen"
     :nodeKey="props.nodeKey"
     :users="uiData.users"
+    :roles="uiData.roles"
     v-model:modelValue="formState"
     @update:open="uiState.isModalOpen = $event"
     @submit="onSubmit"
@@ -55,6 +56,7 @@ import {
   bindOrganizationsUsersApi,
   deleteOrganizationsUsersApi,
   getOrganizationsUsersApi,
+  getRolesApi,
   getUsersApi,
 } from '@/api/admin'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
@@ -74,6 +76,7 @@ const props = defineProps({
 // form表单
 const defaultForm = {
   users: [],
+  roles: null,
 }
 const formState = ref({ ...defaultForm })
 
@@ -99,6 +102,11 @@ const uiData = reactive({
       title: '昵称',
       dataIndex: 'nick_name',
       key: 'nick_name',
+    },
+    {
+      title: '角色',
+      dataIndex: 'role_name',
+      key: 'role_name',
     },
     {
       title: '组织',
@@ -206,5 +214,8 @@ const handleDelete = useThrottleFn(async (record) => {
 const getUsers = async () => {
   const res = await getUsersApi().catch(() => {})
   uiData.users = res.data || []
+
+  const rolesRes = await getRolesApi().catch(() => { })
+  uiData.roles = rolesRes.data || []
 }
 </script>

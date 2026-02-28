@@ -22,16 +22,16 @@ type GetOrganizationsServices struct {
 	C *gin.Context
 }
 
-func (s *GetOrganizationsServices) getChildOrganizations(key string, level uint64) []map[string]interface{} {
+func (s *GetOrganizationsServices) getChildOrganizations(key string, level uint64) []map[string]any {
 	// 迭代子节点，获取所有递归的子节点
 	var childNodes []models.InsightOrgs
 	global.App.DB.Table("insight_orgs").Where("`key` like ? and level=?", key+"-%", level).Scan(&childNodes)
 	if len(childNodes) == 0 {
 		return nil
 	}
-	var data []map[string]interface{} = []map[string]interface{}{}
+	var data []map[string]any = []map[string]any{}
 	for _, row := range childNodes {
-		var childNode map[string]interface{} = map[string]interface{}{
+		var childNode map[string]any = map[string]any{
 			"title": row.Name,
 			"key":   row.Key,
 		}
@@ -46,7 +46,7 @@ func (s *GetOrganizationsServices) getChildOrganizations(key string, level uint6
 	return data
 }
 
-func (s *GetOrganizationsServices) Run() (responseData interface{}) {
+func (s *GetOrganizationsServices) Run() (responseData any) {
 	// 获取ROOT组织
 	var rootNodes []models.InsightOrgs
 	global.App.DB.Table("insight_orgs").
@@ -55,10 +55,10 @@ func (s *GetOrganizationsServices) Run() (responseData interface{}) {
 	if len(rootNodes) == 0 {
 		return
 	}
-	var data []map[string]interface{} = []map[string]interface{}{}
+	var data []map[string]any = []map[string]any{}
 	for _, row := range rootNodes {
 		// 迭代父节点
-		var rootNode map[string]interface{} = map[string]interface{}{
+		var rootNode map[string]any = map[string]any{
 			"title": row.Name,
 			"key":   row.Key,
 		}
@@ -161,7 +161,7 @@ type UpdateOrganizationsService struct {
 
 func (s *UpdateOrganizationsService) Run() error {
 	tx := global.App.DB.Table("insight_orgs").Where("`key`=?", s.Key)
-	result := tx.Updates(map[string]interface{}{
+	result := tx.Updates(map[string]any{
 		"name":    s.Name,
 		"Updater": s.Username,
 	})
@@ -212,45 +212,48 @@ type GetOrganizationsUsersServices struct {
 	C *gin.Context
 }
 
-func (s *GetOrganizationsUsersServices) Run() (responseData interface{}, total int64, err error) {
+func (s *GetOrganizationsUsersServices) Run() (responseData any, total int64, err error) {
 	type user struct {
 		models.InsightUsers
 		OrganizationKey  string `json:"organization_key"`
 		OrganizationName string `json:"organization_name"`
+		RoleID           uint64 `json:"role_id"`
+		RoleName         string `json:"role_name"`
 	}
 
 	var users []user
 
-	tx := global.App.DB.Table("insight_users a").
+	tx := global.App.DB.Table("insight_users u").
 		Select(`
-            a.uid,
-            a.username,
-			a.nick_name,
-            ifnull(
-                concat(
+            u.uid,
+            u.username,
+            u.nick_name,
+            IFNULL(
+                CONCAT(
                     (
-                        SELECT GROUP_CONCAT(a.name ORDER BY a.name ASC SEPARATOR '/') AS concatenated_names
-                        FROM insight_orgs a
-                        WHERE EXISTS (
-                            SELECT 1 FROM insight_orgs b
-                            WHERE JSON_CONTAINS(c.path, CONCAT('\"', a.key, '\"'))
-                        )
+                        SELECT GROUP_CONCAT(o.name ORDER BY o.name ASC SEPARATOR '/')
+                        FROM insight_orgs o
+                        WHERE JSON_CONTAINS(c.path, CONCAT('"', o.key, '"'))
                     ),
                     '/',
                     c.name
                 ),
                 c.name
-            ) as organization_name,
-            b.organization_key as organization_key
+            ) AS organization_name,
+            b.organization_key,
+            b.role_id,
+            r.name AS role_name
         `).
-		Joins("JOIN insight_org_users b ON a.uid=b.uid").
-		Joins("JOIN insight_orgs c ON c.key=b.organization_key").
-		Where("b.`organization_key` LIKE ?", s.Key+"%")
+		Joins("JOIN insight_org_users b ON u.uid = b.uid").
+		Joins("JOIN insight_orgs c ON c.key = b.organization_key").
+		Joins("LEFT JOIN insight_roles r ON b.role_id = r.id").
+		Where("b.organization_key LIKE ?", s.Key+"%")
 
 	// 搜索
 	if s.Search != "" {
-		tx = tx.Where("a.`username` like ? ", "%"+s.Search+"%")
+		tx = tx.Where("u.username LIKE ?", "%"+s.Search+"%")
 	}
+
 	total = pagination.Pager(&s.PaginationQ, tx, &users)
 	return &users, total, nil
 }
@@ -267,56 +270,64 @@ func (s *BindOrganizationsUsersService) Run() error {
 	if tx.RowsAffected == 0 {
 		return fmt.Errorf("节点[%s]不存在", s.Key)
 	}
-	// 创建记录
-	for _, uid := range s.Users {
-		result := global.App.DB.Create(&models.InsightOrgUsers{Uid: uid, OrganizationKey: s.Key})
-		if result.Error != nil {
-			type user struct {
-				Username         string
-				OrganizationName string
-			}
-			var record user
-			global.App.DB.Table("insight_org_users a").
-				Select(`b.username,ifnull(
-					concat(
-						(
-							SELECT
-								GROUP_CONCAT(
-									ia.name
-									ORDER BY
-										ia.name ASC SEPARATOR '/'
-								) AS concatenated_names
-							FROM
-								insight_orgs ia
-							WHERE
-								EXISTS (
-									SELECT
-										1
-									FROM
-										insight_orgs
-									WHERE
-										JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
-								)
-						),
-						'/',
-						c.name
-					),
-					c.name
-				) as organization_name`).
-				Joins("join insight_users b on a.uid = b.uid").
-				Joins("join insight_orgs c on a.organization_key = c.key").
-				Where("b.uid=?", uid).Scan(&record)
-			var mysqlErr *mysql.MySQLError
-			if errors.As(result.Error, &mysqlErr) {
-				switch mysqlErr.Number {
-				case 1062:
-					return fmt.Errorf("绑定失败，当前用户%s已绑定到组织[%s]，不能重复绑定", record.Username, record.OrganizationName)
+
+	// 使用事务确保所有绑定操作要么全部成功，要么全部失败
+	return global.App.DB.Transaction(func(tx *gorm.DB) error {
+		// 先检查所有用户是否已经绑定
+		for _, uid := range s.Users {
+			var count int64
+			tx.Model(&models.InsightOrgUsers{}).Where("uid=? AND organization_key=?", uid, s.Key).Count(&count)
+			if count > 0 {
+				// 检查用户信息
+				type user struct {
+					Username         string
+					OrganizationName string
 				}
+				var record user
+				tx.Table("insight_org_users a").
+					Select(`b.username,ifnull(
+						concat(
+							(
+								SELECT
+									GROUP_CONCAT(
+										ia.name
+										ORDER BY
+											ia.name ASC SEPARATOR '/'
+									) AS concatenated_names
+								FROM
+									insight_orgs ia
+								WHERE
+									EXISTS (
+										SELECT
+											1
+										FROM
+											insight_orgs
+										WHERE
+											JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
+									)
+							),
+							'/',
+							c.name
+						),
+						c.name
+					) as organization_name`).
+					Joins("join insight_users b on a.uid = b.uid").
+					Joins("join insight_orgs c on a.organization_key = c.key").
+					Where("b.uid=?", uid).Scan(&record)
+				return fmt.Errorf("绑定失败，当前用户%s已绑定到组织[%s]，不能重复绑定", record.Username, record.OrganizationName)
 			}
-			return result.Error
 		}
-	}
-	return nil
+
+		// 所有用户都未绑定，开始创建记录
+		for _, uid := range s.Users {
+			result := tx.Create(&models.InsightOrgUsers{Uid: uid, OrganizationKey: s.Key, RoleID: s.Roles})
+			if result.Error != nil {
+				return result.Error
+			}
+		}
+
+		return nil
+	})
 }
 
 type DeleteOrganizationsUsersService struct {

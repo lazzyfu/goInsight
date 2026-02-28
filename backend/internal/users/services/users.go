@@ -26,42 +26,50 @@ type GetUsersServices struct {
 func (s *GetUsersServices) Run() (responseData interface{}, total int64, err error) {
 	type user struct {
 		models.InsightUsers
-		Organization    string `json:"organization,omitempty"`
-		OrganizationKey string `json:"organization_key,omitempty"`
-		Role            string `json:"role,omitempty"`
-		RoleID          uint64 `json:"role_id,omitempty"`
+		Organization string `json:"organization,omitempty"`
+		Role         string `json:"role,omitempty"`
 	}
 	var users []user
 	tx := global.App.DB.Table("insight_users a").
-		Select(`a.*, c.key as organization_key, ifnull(d.name, '-/-') as role,ifnull(
-			concat(
-				(
-					SELECT
-						GROUP_CONCAT(
-							ia.name
-							ORDER BY
-								ia.name ASC SEPARATOR '/'
-						) AS concatenated_names
-					FROM
-						insight_orgs ia
-					WHERE
-						EXISTS (
-							SELECT
-								1
-							FROM
-								insight_orgs
-							WHERE
-								JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
-						)
-				),
-				'/',
-				c.name
-			),
-			c.name
-		) as organization`).
+		Select(`a.*, 
+			ifnull(
+				GROUP_CONCAT(
+					DISTINCT ifnull(
+						concat(
+							(
+								SELECT
+									GROUP_CONCAT(
+										ia.name
+										ORDER BY
+											ia.name ASC SEPARATOR '/'
+									) AS concatenated_names
+								FROM
+									insight_orgs ia
+								WHERE
+									EXISTS (
+										SELECT
+											1
+										FROM
+											insight_orgs
+										WHERE
+											JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
+									)
+							),
+							'/',
+							c.name
+						),
+						c.name
+					) ORDER BY c.name ASC SEPARATOR '; '), 
+				'-/-'
+			) as organization, 
+			ifnull(
+				GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR '; '), 
+				'-/-'
+			) as role`).
 		Joins("left join insight_org_users b on a.uid=b.uid").
 		Joins("left join insight_orgs c on b.organization_key=c.key").
-		Joins("left join insight_roles d on d.id=a.role_id")
+		Joins("left join insight_roles d on d.id=b.role_id").
+		Group("a.uid")
 	// 搜索
 	if s.Search != "" {
 		tx = tx.Where("`username` like ? or `nick_name` like ? or `email` like ? or `mobile` like ?", "%"+s.Search+"%", "%"+s.Search+"%", "%"+s.Search+"%", "%"+s.Search+"%")
@@ -70,7 +78,7 @@ func (s *GetUsersServices) Run() (responseData interface{}, total int64, err err
 		tx = tx.Where("c.key like ?", s.OrganizationKey+"%")
 	}
 	if s.RoleID > 0 {
-		tx = tx.Where("a.role_id=?", s.RoleID)
+		tx = tx.Where("b.role_id=?", s.RoleID)
 	}
 	total = pagination.Pager(&s.PaginationQ, tx, &users)
 	return &users, total, nil
@@ -90,7 +98,6 @@ func (s *CreateUsersService) Run() error {
 		Email:       s.Email,
 		NickName:    s.NickName,
 		Mobile:      s.Mobile,
-		RoleID:      s.RoleID,
 		IsTwoFA:     s.IsTwoFA,
 		IsSuperuser: s.IsSuperuser,
 		IsActive:    s.IsActive,
@@ -124,7 +131,6 @@ func (s *UpdateUsersService) Run() error {
 			"email":        s.Email,
 			"nick_name":    s.NickName,
 			"mobile":       s.Mobile,
-			"role_id":      s.RoleID,
 			"is_two_fa":    s.IsTwoFA,
 			"is_active":    s.IsActive,
 			"is_superuser": s.IsSuperuser,
@@ -176,6 +182,46 @@ type ChangeUserAvatarService struct {
 	C        *gin.Context
 	Username string
 	File     *multipart.FileHeader
+}
+
+type GetUserOrganizationsService struct {
+	UID uint64
+}
+
+func (s *GetUserOrganizationsService) Run() (responseData interface{}, err error) {
+	type organization struct {
+		OrganizationKey  string `json:"organization_key"`
+		OrganizationName string `json:"organization_name"`
+		RoleID           uint64 `json:"role_id"`
+		RoleName         string `json:"role_name"`
+	}
+
+	var organizations []organization
+
+	global.App.DB.Table("insight_org_users b").
+		Select(`
+			b.organization_key,
+			ifnull(
+				concat(
+					(
+						SELECT GROUP_CONCAT(o.name ORDER BY o.name ASC SEPARATOR '/')
+						FROM insight_orgs o
+						WHERE JSON_CONTAINS(c.path, CONCAT('"', o.key, '"'))
+					),
+					'/',
+					c.name
+				),
+				c.name
+			) as organization_name,
+			b.role_id,
+			d.name as role_name
+		`).
+		Joins("JOIN insight_orgs c ON c.key = b.organization_key").
+		Joins("LEFT JOIN insight_roles d ON d.id = b.role_id").
+		Where("b.uid = ?", s.UID).
+		Scan(&organizations)
+
+	return organizations, nil
 }
 
 func (s *ChangeUserAvatarService) Run() error {

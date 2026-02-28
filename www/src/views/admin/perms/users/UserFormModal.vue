@@ -28,14 +28,6 @@
       <a-form-item label="手机号" name="mobile" has-feedback>
         <a-input v-model:value="formData.mobile" placeholder="请输入手机号" allow-clear />
       </a-form-item>
-      <a-form-item label="角色" name="role_id" has-feedback>
-        <a-select
-          v-model:value="formData.role_id"
-          :options="props.roles"
-          :field-names="{ label: 'name', value: 'id' }"
-          allowClear
-        />
-      </a-form-item>
       <a-form-item label="激活状态" name="is_active" has-feedback>
         <a-switch v-model:checked="formData.is_active" />
       </a-form-item>
@@ -50,18 +42,14 @@
 </template>
 
 <script setup>
-import {} from '@/api/admin'
+import { } from '@/api/admin'
 import { regEmail, regPassword, regPhone } from '@/utils/validate'
-import { computed, ref, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 // 定义props和emits
 const props = defineProps({
   open: Boolean,
   title: String,
-  roles: {
-    type: Array,
-    default: () => [],
-  },
 })
 const emit = defineEmits(['update:open', 'submit'])
 

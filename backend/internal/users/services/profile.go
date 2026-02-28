@@ -23,11 +23,46 @@ type GetUserInfoServices struct {
 func (s *GetUserInfoServices) Run() (responseData interface{}, err error) {
 	var user map[string]interface{}
 	tx := global.App.DB.Table("insight_users a").
-		Select("a.*, ifnull(c.name, '-/-') as organization, ifnull(d.name, '-/-') as role").
+		Select(`a.*, 
+			ifnull(
+				GROUP_CONCAT(
+					DISTINCT ifnull(
+						concat(
+							(
+								SELECT
+									GROUP_CONCAT(
+										ia.name
+										ORDER BY
+											ia.name ASC SEPARATOR '/'
+									) AS concatenated_names
+								FROM
+									insight_orgs ia
+								WHERE
+									EXISTS (
+										SELECT
+											1
+										FROM
+											insight_orgs
+										WHERE
+											JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
+									)
+							),
+							'/',
+							c.name
+						),
+						c.name
+					) ORDER BY c.name ASC SEPARATOR '; '), 
+				'-/-'
+			) as organization, 
+			ifnull(
+				GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR '; '), 
+				'-/-'
+			) as role`).
 		Joins("left join insight_org_users b on a.uid=b.uid").
 		Joins("left join insight_orgs c on b.organization_key=c.key").
-		Joins("left join insight_roles d on d.id=a.role_id").
+		Joins("left join insight_roles d on d.id=b.role_id").
 		Where("a.username=?", s.Username).
+		Group("a.uid").
 		Scan(&user)
 	if tx.RowsAffected == 0 {
 		return user, fmt.Errorf("用户`%s`不存在", s.Username)

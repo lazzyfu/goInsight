@@ -11,6 +11,7 @@ func RegisterAdminRoutes(v1 *gin.RouterGroup) {
 	v1.POST("/users", views.CreateUsersView)
 	v1.PUT("/users/:uid", views.UpdateUsersView)
 	v1.DELETE("/users/:uid", views.DeleteUsersView)
+	v1.GET("/users/:uid/organizations", views.GetUserOrganizationsView)
 	v1.POST("/users/reset-password", views.ResetUsersPasswordView)
 	// 角色
 	v1.GET("/roles", views.GetRolesView)

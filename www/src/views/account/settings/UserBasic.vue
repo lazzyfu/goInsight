@@ -2,13 +2,24 @@
   <div class="account-settings-info-view">
     <a-row :gutter="16" type="flex" justify="center">
       <a-col :order="1" :md="24" :lg="16">
-        <a-form layout="vertical" :model="formState" :rules="rules" name="basic" autocomplete="off" @finish="onFinish">
+        <a-form
+          layout="vertical"
+          :model="formState"
+          :rules="rules"
+          name="basic"
+          autocomplete="off"
+          @finish="onFinish"
+        >
           <a-form-item label="用户名" name="username">
             <a-input disabled v-model:value="formState.username" placeholder="用户名不可修改" />
           </a-form-item>
 
-          <a-form-item label="昵称" has-feedback name="nick_name"
-            :rules="[{ required: true, min: 1, max: 32, message: '昵称不能为空且长度为1-32位' }]">
+          <a-form-item
+            label="昵称"
+            has-feedback
+            name="nick_name"
+            :rules="[{ required: true, min: 1, max: 32, message: '昵称不能为空且长度为1-32位' }]"
+          >
             <a-input v-model:value="formState.nick_name" placeholder="请输入昵称" />
           </a-form-item>
 
@@ -20,12 +31,23 @@
             <a-input v-model:value="formState.mobile" placeholder="请输入手机号" />
           </a-form-item>
 
-          <a-form-item label="角色" help="请联系系统管理员配置" name="role">
-            <a-input v-model:value="formState.role" disabled />
-          </a-form-item>
-
-          <a-form-item label="组织" help="请联系系统管理员配置" name="organization">
-            <a-input v-model:value="formState.organization" disabled />
+          <a-form-item label="组织与角色" help="请联系系统管理员配置" name="organizations">
+            <div
+              v-if="!formState.organization || formState.organization === '-/-'"
+              class="empty-value"
+            >
+              -/-
+            </div>
+            <ul v-else class="org-role-list">
+              <li
+                v-for="(org, index) in formState.organization.split('; ').filter((item) => item)"
+                :key="index"
+                class="org-role-item"
+              >
+                <span class="org-name">{{ org }}</span>
+                <span class="role-name">{{ formState.role.split('; ')[index] || '-/-' }}</span>
+              </li>
+            </ul>
           </a-form-item>
 
           <a-form-item>
@@ -52,13 +74,13 @@
 <script setup>
 import { GetUserProfileApi } from '@/api/login'; // 保持原引用
 import { UpdateUserInfoApi } from '@/api/profile'; // 保持原引用
-import { useUserStore } from '@/store/user';
-import { regEmail, regPhone } from '@/utils/validate';
-import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { useThrottleFn } from '@vueuse/core';
-import { message } from 'ant-design-vue';
-import { onMounted, reactive, ref, watch } from 'vue';
-import AvatarModal from './AvatarModal.vue';
+import { useUserStore } from '@/store/user'
+import { regEmail, regPhone } from '@/utils/validate'
+import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { useThrottleFn } from '@vueuse/core'
+import { message } from 'ant-design-vue'
+import { onMounted, reactive, ref, watch } from 'vue'
+import AvatarModal from './AvatarModal.vue'
 
 const userStore = useUserStore()
 const open = ref(false)
@@ -153,7 +175,7 @@ const onFinish = useThrottleFn(async (values) => {
     uid: userStore.uid,
   }
 
-  const res = await UpdateUserInfoApi(params).catch(() => { })
+  const res = await UpdateUserInfoApi(params).catch(() => {})
   if (res) {
     message.success('更新成功')
     await reloadUserProfile()
@@ -271,5 +293,52 @@ watch(
     overflow: hidden;
     object-fit: cover; // 防止图片变形
   }
+}
+
+.org-role-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.org-role-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  margin-bottom: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateX(4px);
+  }
+}
+
+.org-name {
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+  margin-right: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-name {
+  padding: 4px 12px;
+  background: #f0f9ff;
+  color: #1890ff;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.empty-value {
+  color: #999;
+  font-style: italic;
+  line-height: 40px;
+  font-size: 14px;
 }
 </style>
