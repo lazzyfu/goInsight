@@ -17,7 +17,7 @@
       <a-table
         size="small"
         :columns="uiData.tableColumns"
-        :row-key="(record) => record.uid"
+        :row-key="(record) => `${record.uid}-${record.role_name || 'default'}`"
         :data-source="uiData.tableData"
         :pagination="pagination"
         :loading="uiState.loading"

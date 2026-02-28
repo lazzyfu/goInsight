@@ -188,11 +188,6 @@ const uiData = reactive({
       key: 'nick_name',
     },
     {
-      title: '角色',
-      dataIndex: 'role',
-      key: 'role',
-    },
-    {
       title: '激活',
       dataIndex: 'is_active',
       key: 'is_active',
@@ -216,11 +211,6 @@ const uiData = reactive({
       title: '手机号',
       dataIndex: 'mobile',
       key: 'mobile',
-    },
-    {
-      title: '组织',
-      dataIndex: 'organization',
-      key: 'organization',
     },
     {
       title: '加入时间',
