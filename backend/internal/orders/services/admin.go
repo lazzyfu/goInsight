@@ -71,15 +71,31 @@ type AdminUpdateApprovalFlowsService struct {
 }
 
 func (s *AdminUpdateApprovalFlowsService) Run() (responseData any, total int64, err error) {
-	claimUsers, err := marshalClaimUsers(s.ClaimUsers)
+	definition, approvers, err := normalizeAndValidateApprovalDefinition(s.Definition)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	claimUsers, err := normalizeClaimUsers(s.ClaimUsers)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	allUsers := append([]string{}, approvers...)
+	allUsers = append(allUsers, claimUsers...)
+	if err := validateActiveUsersExist(allUsers); err != nil {
+		return nil, 0, err
+	}
+
+	claimUsersJSON, err := marshalClaimUsers(claimUsers)
 	if err != nil {
 		return nil, 0, err
 	}
 	// 更新记录
 	result := global.App.DB.Model(&models.InsightApprovalFlows{}).Where("id=?", s.ID).Updates(map[string]any{
-		"definition":  s.Definition,
+		"definition":  definition,
 		"name":        s.Name,
-		"claim_users": claimUsers,
+		"claim_users": claimUsersJSON,
 	})
 
 	if result.Error != nil {
@@ -94,13 +110,29 @@ type AdminCreateApprovalFlowsService struct {
 }
 
 func (s *AdminCreateApprovalFlowsService) Run() error {
-	claimUsers, err := marshalClaimUsers(s.ClaimUsers)
+	definition, approvers, err := normalizeAndValidateApprovalDefinition(s.Definition)
+	if err != nil {
+		return err
+	}
+
+	claimUsers, err := normalizeClaimUsers(s.ClaimUsers)
+	if err != nil {
+		return err
+	}
+
+	allUsers := append([]string{}, approvers...)
+	allUsers = append(allUsers, claimUsers...)
+	if err := validateActiveUsersExist(allUsers); err != nil {
+		return err
+	}
+
+	claimUsersJSON, err := marshalClaimUsers(claimUsers)
 	if err != nil {
 		return err
 	}
 	flow := models.InsightApprovalFlows{
-		Definition: s.Definition,
-		ClaimUsers: claimUsers,
+		Definition: definition,
+		ClaimUsers: claimUsersJSON,
 		Name:       s.Name,
 		ApprovalID: uuid.New(),
 	}

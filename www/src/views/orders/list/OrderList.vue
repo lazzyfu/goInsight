@@ -1,30 +1,67 @@
 <template>
-  <a-card title="历史工单">
-    <a-space size="middle" wrap>
-      <div class="checkbox-container">
-        <a-checkbox v-model:checked="uiState.checked" @change="fetchData">我的工单</a-checkbox>
+  <a-card class="order-list-card" title="历史工单">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="checkbox-container">
+          <a-checkbox v-model:checked="uiState.checked" @change="handleMyOrdersChange">我的工单</a-checkbox>
+        </div>
+        <a-select
+          v-model:value="uiData.progress"
+          :options="progressOptions"
+          allowClear
+          style="width: 140px"
+          placeholder="工单进度"
+          @change="handleProgressChange"
+        />
       </div>
-      <!-- 进度筛选 -->
-      <a-select v-model:value="uiData.progress" :options="progressOptions" allowClear style="width: 140px"
-        placeholder="工单进度" @change="fetchData" />
-      <a-input-search v-model:value="uiData.searchValue" placeholder="请输入工单标题、实例、库名等关键词搜索" allowClear
-        style="width: 350px" @search="handleSearch" />
-    </a-space>
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="请输入工单标题、实例、库名等关键词搜索"
+        allowClear
+        class="toolbar-search"
+        @search="handleSearch"
+      />
+    </div>
 
-    <div style="margin-top: 12px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1100 }">
+    <div v-if="uiState.checked" class="overview-row">
+      <div class="overview-item">
+        <span class="overview-label">我的工单</span>
+        <strong>{{ uiData.myOrderStats.total }}</strong>
+      </div>
+      <div class="overview-item pending">
+        <span class="overview-label">待审批</span>
+        <strong>{{ uiData.myOrderStats.pending }}</strong>
+      </div>
+      <div class="overview-item running">
+        <span class="overview-label">执行中</span>
+        <strong>{{ uiData.myOrderStats.executing }}</strong>
+      </div>
+      <div class="overview-item failed">
+        <span class="overview-label">失败</span>
+        <strong>{{ uiData.myOrderStats.failed }}</strong>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.order_id"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        :row-class-name="() => 'order-row'"
+        @change="handleTableChange"
+        :scroll="{ x: 1100 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'progress'">
-            <template v-if="progressInfo = getProgressAlias(record.progress)">
-              <a-tag :color="progressInfo.color">
-                {{ progressInfo.text }}
-              </a-tag>
-            </template>
+            <a-tag :color="getProgressAlias(record.progress).color" class="progress-tag">
+              {{ getProgressAlias(record.progress).text }}
+            </a-tag>
           </template>
           <template v-if="column.key === 'title'">
-            <router-link :to="{ name: 'orders.detail', params: { order_id: record.order_id } }">
+            <router-link class="title-link" :to="{ name: 'orders.detail', params: { order_id: record.order_id } }">
               {{ record.title }}
             </router-link>
           </template>
@@ -50,10 +87,10 @@ import { onMounted, reactive } from 'vue'
 // 定时器, 10秒刷新一次
 useIntervalFn(
   () => {
-    fetchData()
+    refreshPageData()
   },
   10000,
-  { immediate: true }, // 组件挂载时立刻执行一次
+  { immediate: false },
 )
 
 const progressOptions = [
@@ -78,6 +115,12 @@ const uiState = reactive({
 const uiData = reactive({
   searchValue: '',
   progress: null,
+  myOrderStats: {
+    total: 0,
+    pending: 0,
+    executing: 0,
+    failed: 0,
+  },
   tableData: [],
   tableColumns: [
     {
@@ -143,6 +186,16 @@ const handleSearch = (value) => {
   fetchData()
 }
 
+const handleMyOrdersChange = async () => {
+  pagination.current = 1
+  await refreshPageData()
+}
+
+const handleProgressChange = () => {
+  pagination.current = 1
+  fetchData()
+}
+
 // 分页
 const handleTableChange = (pager) => {
   pagination.current = pager.current
@@ -162,64 +215,194 @@ const pagination = reactive({
 // 获取列表数据
 const fetchData = async () => {
   uiState.loading = true
-  const params = {
-    page_size: pagination.pageSize,
-    page: pagination.current,
-    is_page: true,
-    only_my_orders: uiState.checked,
-    search: uiData.searchValue,
-    progress: uiData.progress,
+  try {
+    const params = {
+      page_size: pagination.pageSize,
+      page: pagination.current,
+      is_page: true,
+      only_my_orders: uiState.checked,
+      search: uiData.searchValue,
+      progress: uiData.progress,
+    }
+    const res = await getOrderListApi(params).catch(() => {})
+    if (res?.data) {
+      pagination.total = res.total
+      uiData.tableData = res.data
+    } else {
+      pagination.total = 0
+      uiData.tableData = []
+    }
+  } finally {
+    uiState.loading = false
   }
-  const res = await getOrderListApi(params).catch(() => { })
-  if (res) {
-    pagination.total = res.total
-    uiData.tableData = res.data
+}
+
+const resetMyOrderStats = () => {
+  uiData.myOrderStats.total = 0
+  uiData.myOrderStats.pending = 0
+  uiData.myOrderStats.executing = 0
+  uiData.myOrderStats.failed = 0
+}
+
+const fetchMyOrderStats = async () => {
+  if (!uiState.checked) {
+    resetMyOrderStats()
+    return
   }
-  uiState.loading = false
+
+  const res = await getOrderListApi({
+    is_page: false,
+    only_my_orders: true,
+  }).catch(() => {})
+
+  const rows = Array.isArray(res?.data) ? res.data : []
+  uiData.myOrderStats.total = rows.length
+  uiData.myOrderStats.pending = rows.filter((item) => item.progress === 'PENDING').length
+  uiData.myOrderStats.executing = rows.filter((item) => item.progress === 'EXECUTING').length
+  uiData.myOrderStats.failed = rows.filter((item) => item.progress === 'FAILED').length
+}
+
+const refreshPageData = async () => {
+  await fetchData()
+  await fetchMyOrderStats()
 }
 
 // 获取进度别名
 const getProgressAlias = (progress) => {
   const statusMap = {
-    PENDING: { text: '待审批', color: 'default' },
+    PENDING: { text: '待审批', color: 'gold' },
     APPROVED: { text: '已批准', color: 'blue' },
     REJECTED: { text: '已驳回', color: 'red' },
     CLAIMED: { text: '已认领', color: 'cyan' },
     EXECUTING: { text: '执行中', color: 'orange' },
-    FAILED: { text: '已失败', color: 'red' },
+    FAILED: { text: '已失败', color: 'volcano' },
     COMPLETED: { text: '已完成', color: 'green' },
-    REVIEWED: { text: '已复核', color: 'green' },
-    REVOKED: { text: '已撤销', color: 'gray' },
+    REVIEWED: { text: '已复核', color: 'lime' },
+    REVOKED: { text: '已撤销', color: 'default' },
   }
   return statusMap[progress] || { text: progress, color: 'default' }
 }
 
-onMounted(() => {
-  fetchData()
+onMounted(async () => {
+  await refreshPageData()
 })
 </script>
 
 <style scoped>
+.order-list-card :deep(.ant-card-body) {
+  padding-top: 14px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar-search {
+  width: 360px;
+  max-width: 100%;
+}
+
 .checkbox-container {
   height: 32px;
   padding: 0 14px;
   display: inline-flex;
   align-items: center;
-  background: #fff;
-  border: 1px solid #e8e8e8;
+  background: #fafbfd;
+  border: 1px solid #dbe5ec;
   border-radius: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .checkbox-container:hover {
-  border-color: #bae0ff;
-  background: #f0f7ff;
+  border-color: #b5cad7;
+  background: #f3f8fb;
 }
 
-/* 选中时的样式 */
 .checkbox-container:has(.ant-checkbox-checked) {
-  border-color: #91caff;
-  background: #e6f4ff;
+  border-color: #8bb0c7;
+  background: #eaf3f8;
+}
+
+.overview-row {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.overview-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5edf3;
+  background: #fafcfd;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.overview-item strong {
+  font-size: 18px;
+  color: #1f2d38;
+}
+
+.overview-label {
+  font-size: 12px;
+  color: #6d7f8b;
+}
+
+.overview-item.pending {
+  border-color: #f5deb1;
+  background: #fff9ed;
+}
+
+.overview-item.running {
+  border-color: #ffd7b5;
+  background: #fff4eb;
+}
+
+.overview-item.failed {
+  border-color: #ffc7c7;
+  background: #fff1f1;
+}
+
+.table-wrapper {
+  margin-top: 12px;
+}
+
+.title-link {
+  color: #0d5f8c;
+  font-weight: 500;
+}
+
+.progress-tag {
+  border-radius: 999px;
+  padding-inline: 10px;
+}
+
+:deep(.order-row:hover > td) {
+  background: #f7fafc !important;
+}
+
+@media (max-width: 860px) {
+  .overview-row {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .overview-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
