@@ -45,6 +45,10 @@
             layout="vertical"
             @finish="onSubmit"
           >
+            <div v-if="uiState.showOTP" class="otp-meta">
+              <span class="otp-account">当前账号：{{ formState.username }}</span>
+              <a class="otp-switch" @click="backToPasswordLogin">重新输入账号密码</a>
+            </div>
             <a-form-item v-if="!uiState.showOTP" name="username">
               <a-input v-model:value="formState.username" size="large" placeholder="请输入用户名">
                 <template #prefix>
@@ -71,12 +75,15 @@
                 size="large"
                 placeholder="请输入6位OTP验证码"
                 :maxlength="6"
+                inputmode="numeric"
+                @paste="handleOtpPaste"
               >
                 <template #prefix>
                   <SafetyOutlined class="input-icon" />
                 </template>
               </a-input>
             </a-form-item>
+            <div v-if="uiState.showOTP" class="otp-auto-tip">输入或粘贴6位验证码后将自动登录</div>
 
             <a-form-item class="submit-item">
               <a-button type="primary" html-type="submit" size="large" :loading="uiState.loading" block>
@@ -93,7 +100,11 @@
     </div>
   </div>
   <!-- 绑定 OTP 子组件 -->
-  <BindOTPModal v-model:open="uiState.bindOtpModalOpen" ref="otpModalRef" />
+  <BindOTPModal
+    v-model:open="uiState.bindOtpModalOpen"
+    ref="otpModalRef"
+    @bound="handleOtpBound"
+  />
 </template>
 
 <script setup>
@@ -154,6 +165,20 @@ watch(
   },
 )
 
+watch(
+  () => formState.otp_code,
+  (code) => {
+    const normalized = normalizeOtpCode(code)
+    if (normalized !== code) {
+      formState.otp_code = normalized
+      return
+    }
+    if (uiState.showOTP && normalized.length === 6 && !uiState.loading) {
+      submitOtpLogin()
+    }
+  },
+)
+
 const onSubmit = async () => {
   try {
     uiState.loading = true
@@ -172,11 +197,44 @@ const onSubmit = async () => {
       otpModalRef.value?.show(formState)
     } else if (res?.code === '4002') {
       // 需要输入 OTP
+      message.info(res.message || '请输入OTP验证码完成登录')
       uiState.showOTP = true
+      formState.otp_code = ''
     }
   } finally {
     uiState.loading = false
   }
+}
+
+const normalizeOtpCode = (value) => (value || '').replace(/\D/g, '').slice(0, 6)
+
+const submitOtpLogin = async () => {
+  if (uiState.loading) return
+  try {
+    await formRef.value?.validateFields(['otp_code'])
+    await onSubmit()
+  } catch {
+    // ignore
+  }
+}
+
+const handleOtpPaste = (e) => {
+  const pasted = e.clipboardData?.getData('text') || ''
+  const normalized = normalizeOtpCode(pasted)
+  if (!normalized) return
+  e.preventDefault()
+  formState.otp_code = normalized
+}
+
+const handleOtpBound = () => {
+  message.success('OTP绑定成功，请输入动态验证码登录')
+  uiState.showOTP = true
+  formState.otp_code = ''
+}
+
+const backToPasswordLogin = () => {
+  uiState.showOTP = false
+  formState.otp_code = ''
 }
 </script>
 
@@ -429,6 +487,31 @@ const onSubmit = async () => {
   text-align: center;
   font-size: 12px;
   color: #9caab5;
+}
+
+.otp-meta {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.otp-account {
+  font-size: 13px;
+  color: var(--ink-700);
+}
+
+.otp-switch {
+  font-size: 12px;
+  color: var(--primary-600);
+}
+
+.otp-auto-tip {
+  margin-top: -4px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--ink-500);
 }
 
 @media (max-width: 1080px) {

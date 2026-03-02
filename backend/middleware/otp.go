@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/lazzyfu/goinsight/internal/global"
 
@@ -28,13 +29,13 @@ type login struct {
 type userInfo struct {
 	username string
 	password string
-	user     *userModels.InsightUsers
+	user     userModels.InsightUsers
 }
 
 func (u *userInfo) checkIfUserExist() (err error) {
 	result := global.App.DB.Table("insight_users u").
 		Where("u.username=?", u.username).
-		Scan(&u.user)
+		Take(&u.user)
 	if result.RowsAffected == 0 {
 		return errors.New("用户名或密码错误")
 	}
@@ -61,7 +62,7 @@ func (u *userInfo) checkIfUserNeedsOTP() bool {
 
 func (u *userInfo) checkIfOtpSecretNullString() bool {
 	// 检查用户的otp秘钥是否为空
-	return len(u.user.OtpSecret) == 0
+	return len(strings.TrimSpace(u.user.OtpSecret)) == 0
 }
 
 func OTPMiddleware() gin.HandlerFunc {
@@ -76,6 +77,7 @@ func OTPMiddleware() gin.HandlerFunc {
 		}
 		username := loginVals.Username
 		password := loginVals.Password
+		otpCode := strings.TrimSpace(loginVals.OtpCode)
 
 		check := userInfo{username: username, password: password}
 		// 检查用户是否存在
@@ -91,8 +93,18 @@ func OTPMiddleware() gin.HandlerFunc {
 			return
 		}
 		// 用户是否开启2FA认证
-		otpCode := loginVals.OtpCode
 		needsOTP := check.checkIfUserNeedsOTP()
+
+		if needsOTP && check.checkIfOtpSecretNullString() {
+			c.JSON(http.StatusOK, response.Response{
+				RequestID: requestid.Get(c),
+				Code:      "4001",
+				Message:   "需要重新绑定 OTP",
+				Data:      gin.H{"action": "bind_otp"},
+			})
+			c.Abort()
+			return
+		}
 
 		if needsOTP && otpCode == "" {
 			var (
@@ -101,15 +113,9 @@ func OTPMiddleware() gin.HandlerFunc {
 				data    any
 			)
 
-			if check.checkIfOtpSecretNullString() {
-				code = "4001"
-				message = "需要重新绑定 OTP"
-				data = gin.H{"action": "bind_otp"}
-			} else {
-				code = "4002"
-				message = "需要输入 OTP"
-				data = gin.H{"action": "input_otp"}
-			}
+			code = "4002"
+			message = "需要输入 OTP"
+			data = gin.H{"action": "input_otp"}
 
 			c.JSON(http.StatusOK, response.Response{
 				RequestID: requestid.Get(c),
@@ -123,7 +129,7 @@ func OTPMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set("loginUserName", username)
-		c.Set("loginOtpCode", loginVals.OtpCode)
+		c.Set("loginOtpCode", otpCode)
 		if needsOTP {
 			c.Set("loginNeedsOTP", "YES")
 		} else {
