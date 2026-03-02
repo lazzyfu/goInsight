@@ -7,8 +7,7 @@
       </div>
     </template>
 
-    <div class="create-layout">
-      <a-row class="create-row" :gutter="{ xs: 12, sm: 16, md: 20, lg: 24 }">
+    <a-row class="create-row" :gutter="{ xs: 12, sm: 16, md: 20, lg: 24 }">
         <a-col class="pane-col" :xs="24" :sm="24" :md="24" :lg="10" :xl="8">
           <div class="panel form-panel">
             <a-alert
@@ -139,8 +138,7 @@
             </div>
           </div>
         </a-col>
-      </a-row>
-    </div>
+    </a-row>
 
     <div class="inspect-wrapper">
       <order-inspect ref="inspectResultTableRef" v-model:modelValue="formState" />
@@ -384,13 +382,6 @@ onMounted(async () => {
   color: #71818c;
 }
 
-.create-layout {
-  padding: 14px;
-  border-radius: 14px;
-  border: 1px solid #e6edf3;
-  background: linear-gradient(180deg, #fcfdff 0%, #f7fafc 100%);
-}
-
 .create-row {
   align-items: stretch;
 }
@@ -480,10 +471,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .create-layout {
-    padding: 10px;
-  }
-
   .panel {
     padding: 12px;
   }
