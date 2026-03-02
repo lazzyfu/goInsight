@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -12,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/pquerna/otp/totp"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,11 +25,46 @@ type GetUserInfoServices struct {
 func (s *GetUserInfoServices) Run() (responseData interface{}, err error) {
 	var user map[string]interface{}
 	tx := global.App.DB.Table("insight_users a").
-		Select("a.*, ifnull(c.name, '-/-') as organization, ifnull(d.name, '-/-') as role").
+		Select(`a.*, 
+			ifnull(
+				GROUP_CONCAT(
+					ifnull(
+						concat(
+							(
+								SELECT
+									GROUP_CONCAT(
+										ia.name
+										ORDER BY
+											ia.name ASC SEPARATOR '/'
+									) AS concatenated_names
+								FROM
+									insight_orgs ia
+								WHERE
+									EXISTS (
+										SELECT
+											1
+										FROM
+											insight_orgs
+										WHERE
+											JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
+									)
+							),
+							'/',
+							c.name
+							),
+							c.name
+						) ORDER BY b.organization_key ASC SEPARATOR '; '), 
+				'-/-'
+			) as organization, 
+			ifnull(
+				GROUP_CONCAT(ifnull(d.name, '-/-') ORDER BY b.organization_key ASC SEPARATOR '; '), 
+				'-/-'
+			) as role`).
 		Joins("left join insight_org_users b on a.uid=b.uid").
 		Joins("left join insight_orgs c on b.organization_key=c.key").
-		Joins("left join insight_roles d on d.id=a.role_id").
+		Joins("left join insight_roles d on d.id=b.role_id").
 		Where("a.username=?", s.Username).
+		Group("a.uid").
 		Scan(&user)
 	if tx.RowsAffected == 0 {
 		return user, fmt.Errorf("用户`%s`不存在", s.Username)
@@ -97,12 +134,27 @@ func validatePasswordConfirmation(newPassword, confirmPassword string) error {
 	return nil
 }
 
+func validateOTPBindingCode(secret, otpCode string) error {
+	otpCode = strings.TrimSpace(otpCode)
+	if len(otpCode) != 6 {
+		return fmt.Errorf("请输入6位OTP验证码")
+	}
+	if ok := totp.Validate(otpCode, secret); !ok {
+		return fmt.Errorf("OTP验证码错误，请检查后重试")
+	}
+	return nil
+}
+
 type GetOTPAuthURLService struct {
 	*forms.GetOTPAuthURLForm
 	C *gin.Context
 }
 
 func (s *GetOTPAuthURLService) Run() (data interface{}, err error) {
+	if global.App.Redis == nil {
+		return data, fmt.Errorf("OTP服务不可用，请联系系统管理员")
+	}
+
 	var user models.InsightUsers
 	result := global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Scan(&user)
 	if result.RowsAffected == 0 {
@@ -123,7 +175,9 @@ func (s *GetOTPAuthURLService) Run() (data interface{}, err error) {
 		return data, fmt.Errorf("failed to generate OTP secret")
 	}
 	uuid := uuid.New().String()
-	global.App.Redis.Set(s.C.Request.Context(), uuid, secret.Secret(), 10*time.Minute)
+	if err := global.App.Redis.Set(s.C.Request.Context(), uuid, secret.Secret(), 10*time.Minute).Err(); err != nil {
+		return data, fmt.Errorf("OTP服务异常，请稍后重试")
+	}
 	data = map[string]string{"otpAuthUrl": secret.URL(), "callback": uuid}
 	return data, nil
 }
@@ -134,6 +188,10 @@ type GetOTPAuthCallbackService struct {
 }
 
 func (s *GetOTPAuthCallbackService) Run() error {
+	if global.App.Redis == nil {
+		return fmt.Errorf("OTP服务不可用，请联系系统管理员")
+	}
+
 	var user models.InsightUsers
 	result := global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Scan(&user)
 	if result.RowsAffected == 0 {
@@ -145,8 +203,22 @@ func (s *GetOTPAuthCallbackService) Run() error {
 	}
 	secret, err := global.App.Redis.Get(s.C.Request.Context(), s.Callback).Result()
 	if err != nil {
+		if err == redis.Nil {
+			return fmt.Errorf("OTP绑定信息已过期，请重新登录")
+		}
+		return fmt.Errorf("OTP服务异常，请稍后重试")
+	}
+
+	if err := validateOTPBindingCode(secret, s.OtpCode); err != nil {
 		return err
 	}
-	global.App.DB.Model(&models.InsightUsers{}).Where("username=?", s.Username).Update("otp_secret", secret)
+
+	if err := global.App.DB.Model(&models.InsightUsers{}).
+		Where("username=?", s.Username).
+		Update("otp_secret", secret).Error; err != nil {
+		return fmt.Errorf("保存OTP绑定信息失败")
+	}
+
+	_ = global.App.Redis.Del(s.C.Request.Context(), s.Callback).Err()
 	return nil
 }

@@ -125,3 +125,19 @@ func ChangeUserAvatarView(c *gin.Context) {
 	}
 	response.Success(c, nil, "success")
 }
+
+func GetUserOrganizationsView(c *gin.Context) {
+	uid, ok := parseUint64Param(c, "uid")
+	if !ok {
+		return
+	}
+	service := services.GetUserOrganizationsService{
+		UID: uid,
+	}
+	returnData, err := service.Run()
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, returnData, "success")
+}

@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,10 @@ type ApprovalOrderService struct {
 }
 
 func (s *ApprovalOrderService) Run() (err error) {
+	if s.Status == "REJECTED" && strings.TrimSpace(s.Msg) == "" {
+		return fmt.Errorf("驳回必须填写原因")
+	}
+
 	// 判断工单是否存在
 	var record models.InsightOrderRecords
 	tx := global.App.DB.Table("`insight_order_records`").Where("order_id=?", s.OrderID).Take(&record)
@@ -65,14 +70,6 @@ func (s *ApprovalOrderService) Run() (err error) {
 			}).Error; err != nil {
 			return err
 		}
-		// 如果当前审核人驳回，直接驳回整个工单
-		if s.Status == "REJECTED" {
-			return tx.Model(&models.InsightOrderRecords{}).
-				Where("order_id=?", s.OrderID).
-				Updates(map[string]any{
-					"progress": "REJECTED",
-				}).Error
-		}
 		// 记录操作日志
 		action := map[string]string{
 			"APPROVED": "通过",
@@ -81,6 +78,14 @@ func (s *ApprovalOrderService) Run() (err error) {
 		if err := WriteOrderLog(tx, s.OrderID, s.Username, fmt.Sprintf("用户%s%s了工单, 附加消息：%s", s.Username, action, s.Msg)); err != nil {
 			global.App.Log.Error("ApprovalOrderService.Run error:", err.Error())
 			return err
+		}
+		// 如果当前审核人驳回，直接驳回整个工单
+		if s.Status == "REJECTED" {
+			return tx.Model(&models.InsightOrderRecords{}).
+				Where("order_id=?", s.OrderID).
+				Updates(map[string]any{
+					"progress": "REJECTED",
+				}).Error
 		}
 		// 重新加载当前阶段记录，计算是否通过
 		var stageRecords []models.InsightApprovalRecords
@@ -142,30 +147,39 @@ func (s *ApprovalOrderService) Run() (err error) {
 		return err
 	}
 
-	// 如果阶段通过且有下一阶段，通知下一阶段审批人
-	var nextStageRecords []models.InsightApprovalRecords
-	if err := global.App.DB.Where("order_id=? AND stage=? AND approval_status='PENDING'", s.OrderID, latestRecord.Stage).Find(&nextStageRecords).Error; err == nil && len(nextStageRecords) > 0 {
-		receivers := make([]string, 0, len(nextStageRecords))
-		for _, r := range nextStageRecords {
-			receivers = append(receivers, r.Approver)
+	// 仅当流转到下一审批阶段时，通知下一阶段审批人
+	if latestRecord.Progress == "PENDING" && latestRecord.Stage > record.Stage {
+		var nextStageRecords []models.InsightApprovalRecords
+		if err := global.App.DB.Where("order_id=? AND stage=? AND approval_status='PENDING'", s.OrderID, latestRecord.Stage).Find(&nextStageRecords).Error; err == nil && len(nextStageRecords) > 0 {
+			receivers := make([]string, 0, len(nextStageRecords))
+			for _, r := range nextStageRecords {
+				receivers = append(receivers, r.Approver)
+			}
+			notifier.SendOrderMessage(receivers, notifier.MsgTypeOrderPendingApproval, notifier.MessageParams{
+				Order:     &latestRecord,
+				Approvers: receivers,
+			})
 		}
-		notifier.SendOrderMessage(receivers, notifier.MsgTypeOrderPendingApproval, notifier.MessageParams{
-			Order:     &latestRecord,
-			Approvers: receivers,
-		})
 	}
 
-	// 发送消息给申请人
-	receiver := []string{latestRecord.Applicant}
-	msgType := notifier.MsgTypeOrderApproved
-	if s.Status == "REJECTED" {
+	// 仅在进入终态时通知申请人
+	var msgType notifier.MessageType
+	switch latestRecord.Progress {
+	case "APPROVED":
+		msgType = notifier.MsgTypeOrderApproved
+	case "REJECTED":
 		msgType = notifier.MsgTypeOrderRejected
+	default:
+		msgType = ""
 	}
-	notifier.SendOrderMessage(receiver, msgType, notifier.MessageParams{
-		Order:         &latestRecord,
-		Username:      s.Username,
-		AdditionalMsg: s.Msg,
-	})
+	if msgType != "" {
+		receiver := []string{latestRecord.Applicant}
+		notifier.SendOrderMessage(receiver, msgType, notifier.MessageParams{
+			Order:         &latestRecord,
+			Username:      s.Username,
+			AdditionalMsg: s.Msg,
+		})
+	}
 
 	return nil
 }

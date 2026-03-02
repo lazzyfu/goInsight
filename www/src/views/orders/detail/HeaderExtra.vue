@@ -42,10 +42,11 @@
   <!-- 操作弹窗 -->
   <a-modal :open="uiData.modalOpen" :title="uiData.modalTitle" @cancel="handleCancel">
     <template #footer>
-      <!-- 取消按钮 -->
-      <a-button @click="handleCancel">{{ uiData.modalCancelText }}</a-button>
-      <!-- 确定按钮 -->
-      <a-button type="primary" :loading="uiData.modalLoading" @click="handleSubmit">
+      <template v-if="uiData.modalAction === 'approval'">
+        <a-button danger :loading="uiData.modalLoading" @click="handleSubmit('REJECTED')">驳回</a-button>
+        <a-button type="primary" :loading="uiData.modalLoading" @click="handleSubmit('APPROVED')">通过</a-button>
+      </template>
+      <a-button v-else type="primary" :loading="uiData.modalLoading" @click="handleSubmit()">
         {{ uiData.modalOkText }}
       </a-button>
     </template>
@@ -60,8 +61,18 @@
       </a-form-item>
 
       <!-- 附加信息 -->
-      <a-form-item label="附加信息" name="confirmMsg">
-        <a-textarea v-model:value="uiData.formData.confirmMsg" :placeholder="uiData.modalPlaceholder" :rows="3"
+      <a-form-item
+        :label="uiData.modalAction === 'approval' ? '审批意见' : '附加信息'"
+        name="confirmMsg"
+        :rules="[
+          { max: 256, message: '附加信息不能超过256个字符' },
+          { validator: validateConfirmMsg, trigger: 'blur' },
+        ]"
+      >
+        <a-textarea
+          v-model:value="uiData.formData.confirmMsg"
+          :placeholder="confirmMsgPlaceholder"
+          :rows="3"
           allow-clear style="width: 100%" />
       </a-form-item>
     </a-form>
@@ -134,7 +145,7 @@ const uiData = reactive({
   modalOkText: '确定',
   modalCancelText: '取消',
   modalPlaceholder: '',
-  formData: { newClaimer: '', confirmMsg: '' },
+  formData: { newClaimer: '', confirmMsg: '', approvalStatus: 'APPROVED' },
   userList: [],
 })
 
@@ -186,7 +197,12 @@ const openModal = (action, title, okText = '确定', placeholder = '') => {
 }
 
 // 打开各操作弹窗
-const openMainModal = () => openModal(currentStatusConfig.value.action, uiData.btnTitle)
+const openMainModal = () => {
+  if (currentStatusConfig.value.action === 'approval') {
+    uiData.formData.approvalStatus = 'APPROVED'
+  }
+  openModal(currentStatusConfig.value.action, uiData.btnTitle)
+}
 const openCompleteModal = () => openModal('complete', '确认执行完成？', '提交')
 const openFailModal = () => openModal('fail', '确认执行失败？', '提交', '请输入失败原因…')
 const openRevokeModal = () => openModal('revoke', '确定撤销工单？', '确定', '请输入撤销原因…')
@@ -197,7 +213,7 @@ const openTransferModal = async () => {
 
 // API 映射表
 const API_ACTION_MAP = {
-  approval: (payload) => approvalOrderApi({ ...payload, status: 'APPROVED' }),
+  approval: (payload) => approvalOrderApi({ ...payload, status: uiData.formData.approvalStatus }),
   claim: claimOrderApi,
   transfer: (payload) => transferOrderApi({ ...payload, new_claimer: uiData.formData.newClaimer }),
   revoke: revokeOrderApi,
@@ -210,10 +226,36 @@ const API_ACTION_MAP = {
 const closeModal = () => {
   uiData.modalOpen = false
   formRef.value?.resetFields()
+  uiData.formData.approvalStatus = 'APPROVED'
+  uiData.formData.newClaimer = ''
+  uiData.formData.confirmMsg = ''
+}
+
+const confirmMsgPlaceholder = computed(() => {
+  if (uiData.modalAction === 'approval') {
+    return uiData.formData.approvalStatus === 'REJECTED'
+      ? '请填写驳回原因（必填）'
+      : '可选：填写审批说明'
+  }
+  return uiData.modalPlaceholder
+})
+
+const validateConfirmMsg = async (_rule, value) => {
+  if (
+    uiData.modalAction === 'approval' &&
+    uiData.formData.approvalStatus === 'REJECTED' &&
+    !String(value || '').trim()
+  ) {
+    throw new Error('驳回时必须填写原因')
+  }
 }
 
 // 提交操作
-const handleSubmit = useThrottleFn(async () => {
+const handleSubmit = useThrottleFn(async (approvalStatus) => {
+  if (uiData.modalAction === 'approval' && approvalStatus) {
+    uiData.formData.approvalStatus = approvalStatus
+  }
+
   uiData.modalLoading = true
 
   const payload = {
@@ -222,6 +264,7 @@ const handleSubmit = useThrottleFn(async () => {
   }
 
   try {
+    await formRef.value?.validate?.()
     const apiAction = API_ACTION_MAP[uiData.modalAction]
     const res = await apiAction(payload).catch(() => null)
 

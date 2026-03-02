@@ -2,8 +2,9 @@
   <a-modal
     :open="props.open"
     title="扫描二维码进行绑定"
-    width="35%"
+    :width="560"
     centered
+    :mask-closable="false"
     @cancel="handleCancel"
   >
     <template #footer>
@@ -26,9 +27,19 @@
       </a-spin>
       <div class="qr-code-tips">
         <a-typography-text type="secondary">
-          请使用身份验证器 App 扫描上方二维码以完成绑定
+          请使用身份验证器 App 扫描上方二维码，然后输入当前 6 位动态验证码完成绑定。
         </a-typography-text>
       </div>
+      <a-form layout="vertical" class="verify-form">
+        <a-form-item label="动态验证码" required>
+          <a-input
+            v-model:value="formState.otpCode"
+            placeholder="请输入6位验证码"
+            :maxlength="6"
+            allow-clear
+          />
+        </a-form-item>
+      </a-form>
     </div>
   </a-modal>
 </template>
@@ -43,7 +54,7 @@ const props = defineProps({
   open: Boolean,
 })
 
-const emit = defineEmits(['update:open'])
+const emit = defineEmits(['update:open', 'bound'])
 
 const uiState = reactive({
   loading: false,
@@ -54,18 +65,27 @@ const formState = reactive({
   callback: '',
   otpAuthUrl: '',
   qrDataUrl: '',
+  otpCode: '',
 })
 
 const handleCancel = () => {
+  formState.otpCode = ''
   emit('update:open', false)
 }
 
 const onSubmit = async () => {
+  const code = formState.otpCode.trim()
+  if (!/^\d{6}$/.test(code)) {
+    message.warning('请输入6位数字动态验证码')
+    return
+  }
+
   uiState.loading = true
   try {
     const res = await GetOTPCallbackApi({
       ...formState.params,
       callback: formState.callback,
+      otp_code: code,
     })
 
     if (res.code === '0000') {
@@ -73,6 +93,7 @@ const onSubmit = async () => {
         message: '成功',
         description: res.message,
       })
+      emit('bound')
     } else {
       notification.error({
         message: '错误',
@@ -80,9 +101,10 @@ const onSubmit = async () => {
       })
     }
   } catch {
-    message.error('请求失败')
+    // error handled by global interceptor
   } finally {
     uiState.loading = false
+    formState.otpCode = ''
     emit('update:open', false)
   }
 }
@@ -102,16 +124,17 @@ const generateQRCode = async (url) => {
 const show = async (params) => {
   formState.params = params || {}
   formState.qrDataUrl = '' // 重置二维码
+  formState.otpCode = ''
 
   try {
     const res = await GetOTPAuthURLApi(params)
-    formState.otpAuthUrl = res.otpAuthUrl
-    formState.callback = res.callback
+    formState.otpAuthUrl = res.data.otpAuthUrl
+    formState.callback = res.data.callback
 
     emit('update:open', true)
-    await generateQRCode(res.otpAuthUrl)
-  } catch (e) {
-    message.error(e?.response?.data?.message || '获取失败')
+    await generateQRCode(formState.otpAuthUrl)
+  } catch {
+    // error handled by global interceptor
   }
 }
 
@@ -145,5 +168,11 @@ defineExpose({
 
 .qr-code-tips {
   margin-top: 8px;
+}
+
+.verify-form {
+  max-width: 260px;
+  margin: 14px auto 0;
+  text-align: left;
 }
 </style>

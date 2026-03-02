@@ -29,8 +29,9 @@ type GetOrganizationsUsersForm struct {
 }
 
 type BindOrganizationsUsersForm struct {
-	Key   string   `form:"key"  json:"key" binding:"required,min=3,max=256"`
-	Users []uint64 `form:"users"  json:"users" binding:"required"`
+	Key    string   `form:"key"  json:"key" binding:"required,min=3,max=256"`
+	Users  []uint64 `form:"users"  json:"users" binding:"required"`
+	Roles  uint64   `form:"roles"  json:"roles" binding:"required"`
 }
 
 type DeleteOrganizationsUsersForm struct {

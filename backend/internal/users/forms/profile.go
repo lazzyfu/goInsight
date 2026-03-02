@@ -21,4 +21,5 @@ type GetOTPAuthCallbackForm struct {
 	Username string `form:"username"  json:"username" binding:"required,min=3,max=32"`
 	Password string `form:"password" json:"password" binding:"required,min=3,max=128"`
 	Callback string `form:"callback" json:"callback" binding:"required"`
+	OtpCode  string `form:"otp_code" json:"otp_code" binding:"required,len=6,numeric"`
 }

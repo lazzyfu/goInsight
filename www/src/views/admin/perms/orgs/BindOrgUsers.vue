@@ -24,6 +24,12 @@
           >
           </a-select>
         </a-form-item>
+        <a-form-item label="选择角色" name="roles">
+          <a-select v-model:value="formData.roles" placeholder="请选择角色" :options="props.roles"
+            :field-names="{ label: 'name', value: 'id', children: 'children' }" show-search allow-clear
+            style="width: 100%">
+          </a-select>
+        </a-form-item>
       </a-form>
       <div class="selected-info" v-if="formData.users.length > 0">
         <InfoCircleOutlined />
@@ -43,6 +49,10 @@ const props = defineProps({
   open: Boolean,
   nodeKey: String,
   users: {
+    type: Array,
+    default: () => [],
+  },
+  roles: {
     type: Array,
     default: () => [],
   },

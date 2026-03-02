@@ -1,8 +1,6 @@
 package views
 
 import (
-	"net/http"
-
 	"github.com/lazzyfu/goinsight/pkg/response"
 
 	"github.com/lazzyfu/goinsight/internal/users/forms"
@@ -74,9 +72,9 @@ func GetOTPAuthURLView(c *gin.Context) {
 		service := services.GetOTPAuthURLService{GetOTPAuthURLForm: form, C: c}
 		data, err := service.Run()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			response.Fail(c, err.Error())
 		} else {
-			c.JSON(http.StatusOK, data)
+			response.Success(c, data, "success")
 		}
 	} else {
 		response.ValidateFail(c, err.Error())
@@ -89,9 +87,9 @@ func GetOTPAuthCallbackView(c *gin.Context) {
 		service := services.GetOTPAuthCallbackService{GetOTPAuthCallbackForm: form, C: c}
 		err := service.Run()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"code": "0001", "message": err.Error()})
+			response.Fail(c, err.Error())
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": "0000", "message": "OTP绑定成功"})
+			response.Success(c, nil, "OTP绑定成功")
 		}
 	} else {
 		response.ValidateFail(c, err.Error())
