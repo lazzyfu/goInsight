@@ -1,29 +1,32 @@
 <template>
-  <a-modal :open="open" title="新增根组织" :width="480" centered @cancel="handleCancel">
-    <template #footer>
-      <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="uiState.loading" @click="onSubmit">确定</a-button>
-    </template>
-
-    <div class="modal-content">
-      <div class="modal-icon">
-        <ApartmentOutlined />
+  <a-modal :open="open" :footer="null" :width="560" centered class="org-modal" @cancel="handleCancel">
+    <div class="modal-shell">
+      <div class="modal-head">
+        <span class="head-badge">根节点</span>
+        <h3>新增根组织</h3>
+        <p>创建组织树的顶层入口，后续所有部门节点都将从这里扩展。</p>
       </div>
-      <p class="modal-desc">创建一个新的根级组织，作为组织架构的顶层节点</p>
-      <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical" class="org-form">
-        <a-form-item label="组织名称" name="name">
-          <a-input
-            v-model:value="formState.name"
-            placeholder="请输入组织名称"
-            :maxlength="32"
-            show-count
-          >
-            <template #prefix>
-              <FolderOutlined style="color: #bfbfbf" />
-            </template>
-          </a-input>
-        </a-form-item>
-      </a-form>
+
+      <div class="modal-body">
+        <div class="modal-icon">
+          <ApartmentOutlined />
+        </div>
+
+        <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical" class="org-form">
+          <a-form-item label="组织名称" name="name">
+            <a-input v-model:value="formState.name" placeholder="请输入组织名称" :maxlength="32" show-count>
+              <template #prefix>
+                <FolderOutlined class="input-icon" />
+              </template>
+            </a-input>
+          </a-form-item>
+        </a-form>
+      </div>
+
+      <div class="modal-footer">
+        <a-button @click="handleCancel">取消</a-button>
+        <a-button type="primary" :loading="uiState.loading" @click="onSubmit">创建组织</a-button>
+      </div>
     </div>
   </a-modal>
 </template>
@@ -35,26 +38,21 @@ import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
 
-// 定义props和emits
 const emit = defineEmits(['update:open', 'submit', 'refresh'])
 defineProps({
   open: Boolean,
 })
 
-// 表单引用
 const formRef = ref()
 
-// 状态
 const uiState = reactive({
   loading: false,
 })
 
-// 表单数据
 const formState = reactive({
   name: '',
 })
 
-// 表单校验规则
 const rules = {
   name: [
     { required: true, message: '请输入组织名', trigger: 'blur' },
@@ -67,13 +65,11 @@ const rules = {
   ],
 }
 
-// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
   formRef.value?.resetFields()
 }
 
-// 提交表单
 const onSubmit = useThrottleFn(async () => {
   try {
     await formRef.value.validateFields()
@@ -83,9 +79,10 @@ const onSubmit = useThrottleFn(async () => {
       message.success('创建成功')
       emit('update:open', false)
       emit('refresh')
+      formRef.value?.resetFields()
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
+    // ignore
   } finally {
     uiState.loading = false
   }
@@ -93,35 +90,93 @@ const onSubmit = useThrottleFn(async () => {
 </script>
 
 <style scoped>
-.modal-content {
-  text-align: center;
-  padding: 16px 0;
+.modal-shell {
+  padding: 8px 4px 2px;
+}
+
+.modal-head h3 {
+  margin: 10px 0 6px;
+  font-size: 24px;
+  color: #16213c;
+}
+
+.modal-head p {
+  margin: 0;
+  color: #5f6b8a;
+  line-height: 1.7;
+}
+
+.head-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f6feb;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 111, 235, 0.24);
+  background: rgba(31, 111, 235, 0.1);
+  padding: 3px 10px;
+}
+
+.modal-body {
+  margin-top: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .modal-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 28px;
-  color: #1890ff;
-}
-
-.modal-desc {
-  color: #8c8c8c;
-  font-size: 14px;
-  margin-bottom: 24px;
+  flex-shrink: 0;
+  color: #1f6feb;
+  font-size: 26px;
+  background: linear-gradient(140deg, rgba(31, 111, 235, 0.24), rgba(31, 111, 235, 0.06));
 }
 
 .org-form {
-  text-align: left;
+  flex: 1;
 }
 
-:deep(.ant-form-item-label > label) {
-  font-weight: 500;
+.input-icon {
+  color: #8a96b0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+:deep(.org-modal .ant-modal-content) {
+  border-radius: 18px;
+  padding: 20px 22px;
+  background:
+    radial-gradient(circle at right top, rgba(31, 111, 235, 0.1), rgba(31, 111, 235, 0) 50%),
+    #ffffff;
+}
+
+:deep(.org-modal .ant-modal-close-x) {
+  color: #7182aa;
+}
+
+:deep(.org-modal .ant-form-item-label > label) {
+  color: #23335c;
+  font-weight: 600;
+}
+
+:deep(.org-modal .ant-input-affix-wrapper) {
+  border-radius: 10px;
+  border-color: #d7e2f3;
+}
+
+:deep(.org-modal .ant-input-affix-wrapper-focused) {
+  border-color: #1f6feb;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.14);
 }
 </style>
