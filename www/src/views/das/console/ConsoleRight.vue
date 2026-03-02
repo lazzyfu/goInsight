@@ -1,57 +1,58 @@
 <template>
-  <a-tabs
-    class="console-tabs"
-    v-model="uiData.activeKey"
-    type="editable-card"
-    size="small"
-    @edit="handleTabEdit"
-    @change="handleTabChange"
-  >
-    <a-tab-pane
-      v-for="pane in uiData.panes"
-      :key="pane.key"
-      :tab="pane.title"
-      :closable="pane.closable"
+  <div class="console-topbar">
+    <a-tabs
+      class="console-tabs"
+      v-model="uiData.activeKey"
+      type="editable-card"
+      size="small"
+      @edit="handleTabEdit"
+      @change="handleTabChange"
     >
-    </a-tab-pane>
-  </a-tabs>
-  <a-space class="console-toolbar" size="small">
-    <a-button type="primary" @click="executeSqlQuery()">
-      <template #icon>
-        <PlayCircleOutlined />
-      </template>
-      执行SQL
-    </a-button>
-    <a-button @click="formatSqlContent()">
-      <template #icon>
-        <CodeOutlined />
-      </template>
-      格式化
-    </a-button>
-    <a-button @click="addToFavorites()">
-      <template #icon>
-        <StarOutlined />
-      </template>
-      <a-tooltip>
-        <template #title>先鼠标选中SQL，然后点击“收藏SQL”按钮</template>
-        收藏SQL
+      <a-tab-pane
+        v-for="pane in uiData.panes"
+        :key="pane.key"
+        :tab="pane.title"
+        :closable="pane.closable"
+      >
+      </a-tab-pane>
+    </a-tabs>
+
+    <a-space class="console-toolbar" size="small" wrap>
+      <a-button type="primary" @click="executeSqlQuery()">
+        <template #icon>
+          <PlayCircleOutlined />
+        </template>
+        执行SQL
+      </a-button>
+      <a-button @click="formatSqlContent()">
+        <template #icon>
+          <CodeOutlined />
+        </template>
+        格式化
+      </a-button>
+      <a-tooltip title="先鼠标选中SQL，然后点击“收藏SQL”按钮">
+        <a-button @click="addToFavorites()">
+          <template #icon>
+            <StarOutlined />
+          </template>
+          收藏SQL
+        </a-button>
       </a-tooltip>
-    </a-button>
-    <a-button @click="generatorDataDictionary()">
-      <template #icon>
-        <BookOutlined />
-      </template>
-      数据字典
-    </a-button>
-    <span>
-      字符集
+      <a-button @click="generatorDataDictionary()">
+        <template #icon>
+          <BookOutlined />
+        </template>
+        数据字典
+      </a-button>
+      <a-divider type="vertical" class="toolbar-divider" />
       <a-select style="width: 120px" v-model:value="uiData.characterSet" @change="saveTabToCache">
         <a-select-option v-for="item in characterSets" :key="item.key" :value="item.value">
           {{ item.key }}
         </a-select-option>
       </a-select>
-    </span>
-  </a-space>
+    </a-space>
+  </div>
+
   <div class="console-editor-wrap">
     <a-spin :spinning="currentTabLoading" tip="Loading...">
       <div class="console-editor-surface">
@@ -386,15 +387,18 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.console-topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 :deep(.ant-tabs-nav::before) {
   border-bottom-color: var(--ant-colorSplit, #f0f0f0);
 }
 
 .console-tabs :deep(.ant-tabs-nav) {
-  padding: 4px 8px;
-  background: var(--ant-colorFillAlter, #fafafa);
-  border: 1px solid var(--ant-colorSplit, #f0f0f0);
-  border-radius: var(--ant-borderRadiusLG, 8px);
+  margin: 0;
 }
 
 .console-tabs :deep(.ant-tabs-nav-wrap) {
@@ -402,14 +406,16 @@ onBeforeUnmount(() => {
 }
 
 .console-toolbar {
-  padding: 8px;
-  background: var(--ant-colorFillAlter, #fafafa);
-  border: 1px solid var(--ant-colorSplit, #f0f0f0);
-  border-radius: var(--ant-borderRadiusLG, 8px);
+  padding: 0 2px;
+  gap: 8px 6px;
+}
+
+.toolbar-divider {
+  margin-inline: 2px;
 }
 
 .console-editor-wrap {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .console-editor-surface {
@@ -433,5 +439,11 @@ onBeforeUnmount(() => {
   zoom: 1;
   white-space: normal;
   word-break: break-all;
+}
+
+@media (max-width: 1080px) {
+  .toolbar-divider {
+    display: none;
+  }
 }
 </style>

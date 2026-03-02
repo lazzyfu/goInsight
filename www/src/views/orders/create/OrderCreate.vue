@@ -1,81 +1,150 @@
 <template>
-  <a-card title="提交工单">
-    <a-row :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-      <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="8">
-        <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" autocomplete="off"
-          :rules="rules" @finish="onSubmit">
-          <a-form-item label="标题" name="title" has-feedback>
-            <a-input v-model:value="formState.title" placeholder="请输入标题" />
-          </a-form-item>
+  <a-card class="order-create-card">
+    <template #title>
+      <div class="title-wrap">
+        <span class="title-main">提交工单</span>
+        <span class="title-sub">完善工单信息，编写 SQL 并通过语法检查后再提交审批</span>
+      </div>
+    </template>
 
-          <a-form-item label="备注" name="remark">
-            <a-textarea v-model:value="formState.remark" placeholder="请输入工单需求或备注" />
-          </a-form-item>
+    <div class="create-layout">
+      <a-row class="create-row" :gutter="{ xs: 12, sm: 16, md: 20, lg: 24 }">
+        <a-col class="pane-col" :xs="24" :sm="24" :md="24" :lg="10" :xl="8">
+          <div class="panel form-panel">
+            <a-alert
+              message="请完整填写环境、实例与库名信息，避免提交到错误数据源"
+              type="info"
+              show-icon
+              banner
+              class="form-tip"
+            />
 
-          <a-form-item label="类型" name="sql_type" has-feedback>
-            <a-select v-model:value="formState.sql_type" :options="uiData.sqlTypes" allowClear />
-          </a-form-item>
+            <a-form ref="formRef" :model="formState" layout="vertical" autocomplete="off" :rules="rules" @finish="onSubmit">
+              <a-form-item label="标题" name="title" has-feedback>
+                <a-input v-model:value="formState.title" placeholder="请输入标题" />
+              </a-form-item>
 
-          <a-form-item label="环境" name="environment" has-feedback>
-            <a-select v-model:value="formState.environment" show-search :filter-option="filterEnvOption"
-              :options="uiData.environments" :field-names="{ label: 'name', value: 'id' }" @change="onEnvChange"
-              allowClear />
-          </a-form-item>
+              <a-form-item label="备注" name="remark">
+                <a-textarea
+                  v-model:value="formState.remark"
+                  placeholder="请输入工单需求或备注"
+                  :auto-size="{ minRows: 3, maxRows: 6 }"
+                />
+              </a-form-item>
 
-          <a-form-item label="数据库" name="db_type" has-feedback>
-            <a-select v-model:value="formState.db_type" :options="uiData.dbTypes" @change="onDbTypeChange"
-              :disabled="!formState.environment" allowClear />
-          </a-form-item>
+              <a-form-item label="类型" name="sql_type" has-feedback>
+                <a-select v-model:value="formState.sql_type" :options="uiData.sqlTypes" placeholder="请选择工单类型" allowClear />
+              </a-form-item>
 
-          <a-form-item label="实例" name="instance_id" has-feedback>
-            <a-select v-model:value="formState.instance_id" show-search :filter-option="filterInstanceOption"
-              :options="uiData.instances" :field-names="{ label: 'remark', value: 'instance_id' }"
-              @change="onInstanceChange" :disabled="!formState.db_type" allowClear />
-          </a-form-item>
+              <a-form-item label="环境" name="environment" has-feedback>
+                <a-select
+                  v-model:value="formState.environment"
+                  show-search
+                  :filter-option="filterEnvOption"
+                  :options="uiData.environments"
+                  :field-names="{ label: 'name', value: 'id' }"
+                  @change="onEnvChange"
+                  placeholder="请选择环境"
+                  allowClear
+                />
+              </a-form-item>
 
-          <a-form-item label="库名" name="schema" has-feedback>
-            <a-select v-model:value="formState.schema" show-search :filter-option="filterSchemaOption"
-              :options="uiData.schemas"
-              :field-names="{ label: 'schema', value: 'schema' }" :disabled="!formState.instance_id" allowClear />
-          </a-form-item>
+              <a-form-item label="数据库" name="db_type" has-feedback>
+                <a-select
+                  v-model:value="formState.db_type"
+                  :options="uiData.dbTypes"
+                  @change="onDbTypeChange"
+                  :disabled="!formState.environment"
+                  placeholder="请选择数据库类型"
+                  allowClear
+                />
+              </a-form-item>
 
-          <a-form-item label="抄送" name="cc">
-            <a-select v-model:value="formState.cc" mode="multiple" show-search :filter-option="filterCcOption"
-              :options="uiData.users"
-              :field-names="{ label: 'nick_name', value: 'username' }" allowClear />
-          </a-form-item>
+              <a-form-item label="实例" name="instance_id" has-feedback>
+                <a-select
+                  v-model:value="formState.instance_id"
+                  show-search
+                  :filter-option="filterInstanceOption"
+                  :options="uiData.instances"
+                  :field-names="{ label: 'remark', value: 'instance_id' }"
+                  @change="onInstanceChange"
+                  :disabled="!formState.db_type"
+                  placeholder="请选择实例"
+                  allowClear
+                />
+              </a-form-item>
 
-          <a-form-item :wrapper-col="{ offset: 4 }">
-            <a-button type="primary" html-type="submit" :loading="uiState.loading">提交</a-button>
-            <a-button style="margin-left: 10px" @click="resetForm">重置</a-button>
-          </a-form-item>
-        </a-form>
-      </a-col>
+              <a-form-item label="库名" name="schema" has-feedback>
+                <a-select
+                  v-model:value="formState.schema"
+                  show-search
+                  :filter-option="filterSchemaOption"
+                  :options="uiData.schemas"
+                  :field-names="{ label: 'schema', value: 'schema' }"
+                  :disabled="!formState.instance_id"
+                  placeholder="请选择库名"
+                  allowClear
+                />
+              </a-form-item>
 
-      <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="16">
-        <a-space size="small">
-          <a-button @click="formatSql">
-            <template #icon>
-              <CodeOutlined />
-            </template>
-            格式化
-          </a-button>
+              <a-form-item label="抄送" name="cc">
+                <a-select
+                  v-model:value="formState.cc"
+                  mode="multiple"
+                  show-search
+                  :filter-option="filterCcOption"
+                  :options="uiData.users"
+                  :field-names="{ label: 'nick_name', value: 'username' }"
+                  placeholder="可选，通知相关同学"
+                  allowClear
+                />
+              </a-form-item>
 
-          <a-button @click="checkSyntax">
-            <template #icon>
-              <CodeOutlined />
-            </template>
-            语法检查
-          </a-button>
-        </a-space>
+              <a-form-item class="form-actions">
+                <a-space>
+                  <a-button type="primary" html-type="submit" :loading="uiState.loading">提交</a-button>
+                  <a-button @click="resetForm">重置</a-button>
+                </a-space>
+              </a-form-item>
+            </a-form>
+          </div>
+        </a-col>
 
-        <div style="margin-top: 6px">
-          <CodeMirror ref="codemirrorRef" :height="'470px'" />
-        </div>
-      </a-col>
-    </a-row>
+        <a-col class="pane-col" :xs="24" :sm="24" :md="24" :lg="14" :xl="16">
+          <div class="panel editor-panel">
+            <div class="editor-header">
+              <div class="editor-title">
+                <span class="editor-title-main">SQL 编辑区</span>
+                <span class="editor-title-sub">建议先格式化，再做语法检查</span>
+              </div>
+              <a-space size="small" wrap>
+                <a-button @click="formatSql">
+                  <template #icon>
+                    <CodeOutlined />
+                  </template>
+                  格式化
+                </a-button>
 
-    <order-inspect ref="inspectResultTableRef" v-model:modelValue="formState" />
+                <a-button type="primary" ghost @click="checkSyntax">
+                  <template #icon>
+                    <CodeOutlined />
+                  </template>
+                  语法检查
+                </a-button>
+              </a-space>
+            </div>
+
+            <div class="editor-shell">
+              <CodeMirror ref="codemirrorRef" :height="'100%'" />
+            </div>
+          </div>
+        </a-col>
+      </a-row>
+    </div>
+
+    <div class="inspect-wrapper">
+      <order-inspect ref="inspectResultTableRef" v-model:modelValue="formState" />
+    </div>
   </a-card>
 </template>
 
@@ -292,3 +361,131 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.order-create-card :deep(.ant-card-body) {
+  padding-top: 14px;
+}
+
+.title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title-main {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1f2d38;
+}
+
+.title-sub {
+  font-size: 12px;
+  color: #71818c;
+}
+
+.create-layout {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #e6edf3;
+  background: linear-gradient(180deg, #fcfdff 0%, #f7fafc 100%);
+}
+
+.create-row {
+  align-items: stretch;
+}
+
+.pane-col {
+  display: flex;
+}
+
+.pane-col > .panel {
+  width: 100%;
+}
+
+.panel {
+  height: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5edf4;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.03);
+}
+
+.form-tip {
+  margin-bottom: 14px;
+}
+
+.form-panel :deep(.ant-form-item) {
+  margin-bottom: 14px;
+}
+
+.form-panel :deep(.ant-form-item-label > label) {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.form-panel :deep(.ant-input),
+.form-panel :deep(.ant-input-affix-wrapper),
+.form-panel :deep(.ant-select-selector) {
+  border-radius: 8px;
+}
+
+.form-actions {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.editor-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.editor-title-main {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2d38;
+}
+
+.editor-title-sub {
+  font-size: 12px;
+  color: #71818c;
+}
+
+.editor-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 10px;
+  border: 1px solid #e5edf4;
+  overflow: hidden;
+}
+
+.inspect-wrapper {
+  margin-top: 14px;
+}
+
+@media (max-width: 768px) {
+  .create-layout {
+    padding: 10px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+}
+</style>

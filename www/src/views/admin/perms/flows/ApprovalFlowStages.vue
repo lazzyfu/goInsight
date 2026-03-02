@@ -1,22 +1,20 @@
 <template>
   <div class="flow-stages-detail">
-    <a-list :data-source="definition" size="small" :split="true" :header="false">
+    <a-list :data-source="definition" size="small" :split="false" :header="false">
       <template #renderItem="{ item, index }">
         <a-list-item class="stage-list-item">
-          <div class="stage-info">
-            <a-tag color="processing">阶段 {{ index + 1 }}</a-tag>
+          <div class="stage-main">
+            <span class="stage-order">阶段 {{ index + 1 }}</span>
             <span class="stage-name">{{ item.stage_name }}</span>
-          </div>
-
-          <div class="stage-type">
-            <a-tag :color="item.type === 'AND' ? 'blue' : 'green'">
+            <a-tag :color="item.type === 'AND' ? 'blue' : 'green'" class="type-tag">
               {{ item.type === 'AND' ? '会签 (AND)' : '或签 (OR)' }}
             </a-tag>
           </div>
 
           <div class="stage-approvers">
             <span class="approvers-count">
-              <UserOutlined /> 共 {{ item.approvers.length }} 人
+              <UserOutlined />
+              共 {{ item.approvers.length }} 人
             </span>
             <a-tooltip placement="topLeft" :title="item.approvers.join('; ')">
               <span class="approvers-list">
@@ -33,7 +31,6 @@
 <script setup>
 import { UserOutlined } from '@ant-design/icons-vue'
 
-// props
 defineProps({
   definition: {
     type: Array,
@@ -42,7 +39,6 @@ defineProps({
   },
 })
 
-// 格式化审批人列表，只显示前三个，其余用...表示
 const displayApprovers = (approvers) => {
   if (!approvers || approvers.length === 0) {
     return '暂无审批人'
@@ -57,50 +53,88 @@ const displayApprovers = (approvers) => {
 
 <style scoped>
 .flow-stages-detail {
-  background: #fcfcfc;
-  border: 1px solid #f0f0f0;
-  border-radius: 4px;
+  background: #ffffff;
+  border: 1px solid #dfe8f9;
+  border-radius: 10px;
 }
+
 .stage-list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  gap: 10px;
+  padding: 10px 12px;
 }
-.stage-list-item:not(:last-child) {
-  border-bottom: 1px solid #f0f0f0;
+
+.stage-list-item + .stage-list-item {
+  border-top: 1px dashed #e6ecf8;
 }
-.stage-info {
-  flex: 3;
-  min-width: 200px;
+
+.stage-main {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 220px;
 }
+
+.stage-order {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #eaf3ff;
+  color: #1f6feb;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .stage-name {
-  font-weight: 500;
-  margin-left: 12px;
-  color: #333;
+  color: #22304f;
+  font-weight: 600;
 }
-.stage-type {
-  flex: 2;
-  min-width: 150px;
+
+.type-tag {
+  margin-inline-end: 0;
 }
+
 .stage-approvers {
-  flex: 5;
-  min-width: 300px;
+  min-width: 220px;
+  flex: 1;
   display: flex;
   align-items: center;
-  color: rgba(0, 0, 0, 0.65);
+  justify-content: flex-end;
+  gap: 10px;
+  color: #5f6b8a;
 }
+
 .approvers-count {
-  margin-right: 15px;
-  color: #1890ff;
+  color: #1f6feb;
   font-weight: 500;
+  white-space: nowrap;
 }
+
 .approvers-list {
+  max-width: 360px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 70%;
+}
+
+@media (max-width: 900px) {
+  .stage-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stage-approvers {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .approvers-list {
+    max-width: 100%;
+  }
 }
 </style>

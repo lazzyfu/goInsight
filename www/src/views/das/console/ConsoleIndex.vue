@@ -1,49 +1,73 @@
 <template>
-  <a-card>
-    <SplitPanel leftWidth="380px">
-      <template #left-content>
-        <ConsoleLeft />
-      </template>
-      <template #right-content>
-        <div class="console-right">
-          <ConsoleRight
-            @renderResultTable="renderResultTable"
-            @renderExecutionMessage="renderExecutionMessage"
-          />
+  <div class="console-page">
+    <div class="console-page-head">
+      <div class="head-title">SQL 编辑与执行</div>
+      <div class="head-subtitle">左侧选择数据库和数据表，右侧编写 SQL 并查看执行结果。</div>
+    </div>
 
-          <div class="console-result">
-            <a-tabs default-active-key="result">
-              <a-tab-pane key="result" tab="结果集">
-                <div class="result-pane">
-                  <div ref="resultTableRegionRef" class="result-table-region">
-                    <a-table
-                      size="small"
-                      bordered
-                      :data-source="uiData.tableData"
-                      :scroll="tableScroll"
-                      style="min-width: 100%"
-                    >
-                      <a-table-column
-                        v-for="item in uiData.tableColumns"
-                        :key="item"
-                        :title="item"
-                        :data-index="item"
+    <div class="console-main">
+      <SplitPanel leftWidth="360px">
+        <template #left-content>
+          <ConsoleLeft />
+        </template>
+
+        <template #right-content>
+          <div class="console-workspace">
+            <ConsoleRight
+              @renderResultTable="renderResultTable"
+              @renderExecutionMessage="renderExecutionMessage"
+            />
+
+            <a-card class="result-card" size="small">
+              <template #title>查询结果</template>
+              <template #extra>
+                <a-space :size="16" class="result-meta">
+                  <span>列 {{ uiData.tableColumns.length }}</span>
+                  <span>行 {{ uiData.tableData.length }}</span>
+                </a-space>
+              </template>
+
+              <a-tabs v-model:activeKey="uiData.resultTab" size="small" class="result-tabs">
+                <a-tab-pane key="result" tab="结果集">
+                  <div class="result-pane">
+                    <div ref="resultTableRegionRef" class="result-table-region">
+                      <a-empty
+                        v-if="uiData.tableColumns.length === 0"
+                        description="执行 SQL 后可在这里查看结果集"
                       />
-                    </a-table>
+                      <a-table
+                        v-else
+                        size="small"
+                        bordered
+                        :row-key="(_, index) => index"
+                        :data-source="uiData.tableData"
+                        :scroll="tableScroll"
+                        style="min-width: 100%"
+                      >
+                        <a-table-column
+                          v-for="item in uiData.tableColumns"
+                          :key="item"
+                          :title="item"
+                          :data-index="item"
+                        />
+                      </a-table>
+                    </div>
                   </div>
-                </div>
-              </a-tab-pane>
-              <a-tab-pane key="message" tab="执行消息">
-                <div class="message-pane">
-                  <pre class="exec-message">{{ uiData.executionMessage }}</pre>
-                </div>
-              </a-tab-pane>
-            </a-tabs>
+                </a-tab-pane>
+
+                <a-tab-pane key="message" tab="执行消息">
+                  <div class="message-pane">
+                    <a-empty v-if="!uiData.executionMessage" description="暂无执行消息" />
+                    <pre v-else class="exec-message">{{ uiData.executionMessage }}</pre>
+                  </div>
+                </a-tab-pane>
+              </a-tabs>
+            </a-card>
           </div>
-        </div>
-      </template>
-    </SplitPanel>
-  </a-card>
+        </template>
+      </SplitPanel>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -52,15 +76,14 @@ import { computed, nextTick, onBeforeUnmount, onMounted, provide, reactive, ref,
 import ConsoleLeft from './ConsoleLeft.vue'
 import ConsoleRight from './ConsoleRight.vue'
 
-// 父子组件或深层嵌套组件间的数据共享
 const dasInstanceData = reactive({})
 provide('dasInstanceData', dasInstanceData)
 
-// 数据
 const uiData = reactive({
   tableColumns: [],
   tableData: [],
   executionMessage: '',
+  resultTab: 'result',
 })
 
 const resultTableRegionRef = ref(null)
@@ -85,7 +108,7 @@ const recomputeTableBodyHeight = () => {
   const paginationHeight = paginationEl ? paginationEl.getBoundingClientRect().height : 0
 
   const reserved = 8
-  const bodyHeight = Math.max(240, Math.floor(regionHeight - theadHeight - paginationHeight - reserved))
+  const bodyHeight = Math.max(220, Math.floor(regionHeight - theadHeight - paginationHeight - reserved))
   tableBodyScrollY.value = bodyHeight
 }
 
@@ -135,11 +158,11 @@ watch(
   { immediate: true },
 )
 
-// 渲染结果表格
 const renderResultTable = (value) => {
   if (value) {
-    uiData.tableColumns = value.columns
-    uiData.tableData = value.data
+    uiData.tableColumns = value.columns || []
+    uiData.tableData = value.data || []
+    uiData.resultTab = 'result'
     nextTick(recomputeTableBodyHeight)
   } else {
     uiData.tableColumns = []
@@ -150,154 +173,142 @@ const renderResultTable = (value) => {
 
 const renderExecutionMessage = (value) => {
   uiData.executionMessage = value || ''
+  if (uiData.executionMessage) {
+    uiData.resultTab = 'message'
+  }
 }
 </script>
 
 <style scoped>
-:deep(.ant-card-body) {
-  padding: 10px;
+.console-page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* 仅影响 Console 页内 Tabs */
-.console-result :deep(.ant-tabs-nav) {
-  margin: 0 0 8px 0;
+.console-page-head {
+  padding: 0 2px;
 }
 
-/* 不分页：限制左右面板最大高度，超出滚动 */
-:deep(.split-wrapper) {
-  height: 82vh;
-  max-height: 82vh;
+.head-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ant-colorText, #1f1f1f);
 }
 
-/* SplitPanel 皮肤：更像业界查询控制台的柔和分区 */
-:deep(.split-wrapper) {
+.head-subtitle {
+  margin-top: 2px;
+  color: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.45));
+  font-size: 12px;
+}
+
+.console-main :deep(.split-wrapper) {
+  height: 78vh;
+  max-height: 78vh;
   background: var(--ant-colorBgLayout, #f5f5f5);
 }
 
-:deep(.split-wrapper .left-content) {
+.console-main :deep(.split-wrapper .left-content),
+.console-main :deep(.split-wrapper .right-content) {
   background: var(--ant-colorBgLayout, #f5f5f5);
 }
 
-:deep(.split-wrapper .right-content) {
-  background: var(--ant-colorBgLayout, #f5f5f5);
+.console-main :deep(.split-wrapper .right-content) {
+  padding-top: 5px;
+  overflow: hidden;
 }
 
-:deep(.split-wrapper .separator) {
+.console-main :deep(.split-wrapper .separator),
+.console-main :deep(.split-wrapper .collapsed-handle) {
   background-color: var(--ant-colorFillAlter, #fafafa);
   box-shadow: none;
 }
 
-:deep(.split-wrapper .collapsed-handle) {
-  background-color: var(--ant-colorFillAlter, #fafafa);
-  border-right-color: var(--ant-colorSplit, #f0f0f0);
-}
-
-/* 右侧不整体滚动：让结果集区域单独滚动 */
-:deep(.split-wrapper .right-content) {
-  overflow: hidden;
-}
-
-.console-right {
+.console-workspace {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  gap: 8px;
 }
 
-.console-result {
-  margin-top: 8px;
+.result-card {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+}
+
+.result-card :deep(.ant-card-head) {
+  min-height: 40px;
+}
+
+.result-card :deep(.ant-card-body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid var(--ant-colorSplit, #f0f0f0);
-  border-radius: var(--ant-borderRadiusLG, 8px);
-  background: var(--ant-colorBgContainer, #ffffff);
+  min-height: 0;
 }
 
-.console-result :deep(.ant-tabs-nav::before) {
-  border-bottom-color: var(--ant-colorSplit, #f0f0f0);
+.result-meta {
+  font-size: 12px;
+  color: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.45));
 }
 
-/* 只滚动内容区：Tab 标题栏固定 */
-.console-result :deep(.ant-tabs) {
+.result-tabs {
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
-.console-result :deep(.ant-tabs-content-holder) {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+.result-tabs :deep(.ant-tabs-nav) {
+  margin-bottom: 8px;
 }
 
-.console-result :deep(.ant-tabs-content) {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+.result-tabs :deep(.ant-tabs-content-holder),
+.result-tabs :deep(.ant-tabs-content),
+.result-tabs :deep(.ant-tabs-tabpane) {
+  height: 100%;
 }
 
-.console-result :deep(.ant-tabs-tabpane) {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.result-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.result-pane,
+.message-pane {
+  height: 100%;
   min-height: 0;
 }
 
 .result-table-region {
-  flex: 1;
+  height: 100%;
   min-height: 0;
   overflow: hidden;
+}
+
+.message-pane {
+  overflow: auto;
+  border: 1px solid var(--ant-colorSplit, #f0f0f0);
+  border-radius: 6px;
+  padding: 8px;
+  background: #fff;
 }
 
 .exec-message {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-.message-pane {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
-
-/* 预留底部空间：避免分页默认 margin 导致被裁切 */
-.console-result :deep(.ant-table-wrapper .ant-table-pagination) {
+.result-card :deep(.ant-table-wrapper .ant-table-pagination) {
   margin: 0;
   padding: 8px 0 0;
 }
 
-/* 结果集表格字体更小（仅影响 Console 结果区） */
-.console-result :deep(.ant-table) {
+.result-card :deep(.ant-table) {
   font-size: 12px;
 }
 
-.console-result :deep(.ant-table-thead > tr > th),
-.console-result :deep(.ant-table-tbody > tr > td) {
-  font-size: 12px;
-}
-
-/* 表头：加粗 + 浅色背景 */
-.console-result :deep(.ant-table-thead > tr > th) {
+.result-card :deep(.ant-table-thead > tr > th) {
   font-weight: 600;
   background: var(--ant-colorFillAlter, #fafafa);
-}
-
-.exec-message {
-  white-space: pre-wrap;
-  font-size: 12px;
 }
 </style>

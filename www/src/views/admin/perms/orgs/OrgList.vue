@@ -1,28 +1,76 @@
 <template>
-  <a-card title="组织管理">
-    <!-- 卡片右上角的新增按钮 -->
-    <template #extra>
-      <a-button type="primary" @click="addRootNode">
-        <PlusOutlined />新增根组织
-      </a-button>
-    </template>
+  <div class="org-page compact-mode">
+    <div class="page-hero">
+      <div class="hero-content">
+        <span class="hero-badge">
+          <ApartmentOutlined />
+          组织与权限治理
+        </span>
+        <h2>组织管理中心</h2>
+        <p>统一维护组织架构，快速查看成员归属关系，并在一个界面完成增删改查操作。</p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span>组织总数</span>
+            <strong>{{ orgStats.total }}</strong>
+          </div>
+          <div class="stat-item">
+            <span>叶子组织</span>
+            <strong>{{ orgStats.leaf }}</strong>
+          </div>
+          <div class="stat-item">
+            <span>最大层级</span>
+            <strong>{{ orgStats.depth }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a-button type="primary" class="hero-action-btn" @click="addRootNode">
+          <PlusOutlined />
+          新增根组织
+        </a-button>
+        <a-button class="hero-action-btn" :disabled="!uiData.selectedNodeKey" @click="editSelectedNode">
+          <EditOutlined />
+          编辑当前组织
+        </a-button>
+      </div>
+    </div>
 
     <div class="main-content">
-      <div class="tree-panel">
+      <section class="tree-panel">
         <div class="panel-header">
-          <span class="panel-title">
-            <ApartmentOutlined class="panel-icon" />
-            组织架构
-          </span>
-          <a-input-search v-model:value="uiData.searchValue" placeholder="搜索组织" style="width: 180px" allow-clear />
+          <div>
+            <div class="panel-title">
+              <ApartmentOutlined class="panel-icon" />
+              组织架构
+            </div>
+            <p class="panel-desc">点击节点后可在右侧管理成员绑定与角色关系。</p>
+          </div>
+          <a-input-search
+            v-model:value="uiData.searchValue"
+            placeholder="搜索组织名称"
+            style="width: 100%; margin-top: 14px"
+          />
         </div>
+
+        <div class="panel-meta">
+          <span>可见节点 {{ filteredNodeCount }}</span>
+          <span v-if="uiData.selectedNodeKey">当前选中：{{ uiData.selectedNode }}</span>
+        </div>
+
         <div class="tree-container">
           <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
-            <a-button type="primary" size="small" @click="addRootNode"> 创建第一个组织 </a-button>
+            <a-button type="primary" size="small" @click="addRootNode">创建第一个组织</a-button>
           </a-empty>
-          <a-tree v-else :tree-data="filteredTreeData" :selected-keys="uiData.selectedKeys"
-            :expanded-keys="uiData.expandedKeys" :auto-expand-parent="uiData.autoExpandParent" block-node
-            @select="handleTreeSelect" @expand="handleExpand">
+          <a-tree
+            v-else
+            :tree-data="filteredTreeData"
+            :selected-keys="uiData.selectedKeys"
+            :expanded-keys="uiData.expandedKeys"
+            :auto-expand-parent="uiData.autoExpandParent"
+            block-node
+            @select="handleTreeSelect"
+            @expand="handleExpand"
+          >
             <template #title="{ key: nodeKey, title, dataRef }">
               <div class="tree-node" :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }">
                 <span class="tree-node-title" :title="title">
@@ -40,8 +88,13 @@
                       <EditOutlined />
                     </a-button>
                   </a-tooltip>
-                  <a-popconfirm title="确定要删除该组织吗？" description="删除后将无法恢复" @confirm="handleDelete(dataRef)" ok-text="确定"
-                    cancel-text="取消">
+                  <a-popconfirm
+                    title="确定要删除该组织吗？"
+                    description="删除后将无法恢复"
+                    @confirm="handleDelete(dataRef)"
+                    ok-text="确定"
+                    cancel-text="取消"
+                  >
                     <a-tooltip title="删除">
                       <a-button type="text" size="small" class="action-btn danger" @click.stop>
                         <DeleteOutlined />
@@ -53,31 +106,41 @@
             </template>
           </a-tree>
         </div>
-      </div>
+      </section>
 
-      <div class="users-panel">
+      <section class="users-panel">
         <template v-if="uiData.selectedNodeKey">
-          <OrgUsers :node-key="uiData.selectedNodeKey" />
+          <OrgUsers :node-key="uiData.selectedNodeKey" :node-name="uiData.selectedNode" compact-mode />
         </template>
         <template v-else>
           <div class="empty-state">
             <div class="empty-icon">
               <TeamOutlined />
             </div>
-            <h3>请选择组织</h3>
-            <p>从左侧选择一个组织以查看和管理其成员</p>
+            <h3>先选择一个组织</h3>
+            <p>从左侧组织树选择节点后，即可管理该组织的成员和角色。</p>
+            <a-button type="primary" ghost @click="addRootNode">创建根组织</a-button>
           </div>
         </template>
-      </div>
+      </section>
     </div>
 
     <AddRootOrg v-model:open="uiState.isAddRootNodeOpen" @refresh="fetchData" />
 
-    <AddChildOrg v-model:open="uiState.isAddChildNodeOpen" :parent_node_key="uiData.selectedNodeKey"
-      :parent_node_name="uiData.selectedNode" @refresh="fetchData" />
+    <AddChildOrg
+      v-model:open="uiState.isAddChildNodeOpen"
+      :parent_node_key="uiData.selectedNodeKey"
+      :parent_node_name="uiData.selectedNode"
+      @refresh="fetchData"
+    />
 
-    <EditOrgName v-model:open="uiState.isEditNodeNameOpen" :node-key="uiData.selectedNodeKey" @refresh="fetchData" />
-  </a-card>
+    <EditOrgName
+      v-model:open="uiState.isEditNodeNameOpen"
+      :node-key="uiData.selectedNodeKey"
+      :node-name="uiData.selectedNode"
+      @refresh="fetchData"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -92,7 +155,7 @@ import {
 } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive, watch } from 'vue'
 import AddChildOrg from './AddChildOrg.vue'
 import AddRootOrg from './AddRootOrg.vue'
 import EditOrgName from './EditOrgName.vue'
@@ -116,16 +179,6 @@ const uiData = reactive({
   searchValue: '',
 })
 
-// 获取列表数据
-const fetchData = async () => {
-  const res = await getOrganizationsApi().catch(() => { })
-  uiData.treeData = res?.data || []
-  if (uiData.treeData.length > 0) {
-    const allKeys = getAllKeys(uiData.treeData)
-    uiData.expandedKeys = allKeys
-  }
-}
-
 const getAllKeys = (data) => {
   let keys = []
   data.forEach((item) => {
@@ -135,6 +188,41 @@ const getAllKeys = (data) => {
     }
   })
   return keys
+}
+
+const findNodeByKey = (data, key) => {
+  for (const item of data) {
+    if (item.key === key) {
+      return item
+    }
+    if (item.children?.length) {
+      const childNode = findNodeByKey(item.children, key)
+      if (childNode) {
+        return childNode
+      }
+    }
+  }
+  return null
+}
+
+// 获取列表数据
+const fetchData = async () => {
+  const res = await getOrganizationsApi().catch(() => {})
+  uiData.treeData = res?.data || []
+  const allKeys = getAllKeys(uiData.treeData)
+  uiData.expandedKeys = allKeys
+
+  if (!uiData.selectedNodeKey) return
+
+  if (!allKeys.includes(uiData.selectedNodeKey)) {
+    uiData.selectedNodeKey = ''
+    uiData.selectedNode = ''
+    uiData.selectedKeys = []
+    return
+  }
+
+  const selectedNode = findNodeByKey(uiData.treeData, uiData.selectedNodeKey)
+  uiData.selectedNode = selectedNode?.title || ''
 }
 
 // 搜索过滤树数据
@@ -155,6 +243,33 @@ const filterTree = (data, keyword) => {
     .filter(Boolean)
 }
 
+const filteredNodeCount = computed(() => getAllKeys(filteredTreeData.value).length)
+
+const orgStats = computed(() => {
+  const metrics = {
+    total: 0,
+    leaf: 0,
+    depth: 0,
+  }
+
+  const walk = (nodes = [], level = 1) => {
+    if (!nodes.length) return
+
+    metrics.depth = Math.max(metrics.depth, level)
+
+    nodes.forEach((node) => {
+      metrics.total += 1
+      if (!node.children?.length) {
+        metrics.leaf += 1
+      }
+      walk(node.children || [], level + 1)
+    })
+  }
+
+  walk(uiData.treeData)
+  return metrics
+})
+
 // 组织树操作
 const handleExpand = (keys) => {
   uiData.expandedKeys = keys
@@ -171,6 +286,11 @@ const handleTreeSelect = (keys, { node }) => {
 
 const addRootNode = () => {
   uiState.isAddRootNodeOpen = true
+}
+
+const editSelectedNode = () => {
+  if (!uiData.selectedNodeKey) return
+  uiState.isEditNodeNameOpen = true
 }
 
 const addChildNode = (item) => {
@@ -192,7 +312,7 @@ const handleDelete = useThrottleFn(async (item) => {
     key: item.key,
     name: item.title,
   }
-  const res = await deleteOrganizationsApi(payload).catch(() => { })
+  const res = await deleteOrganizationsApi(payload).catch(() => {})
   if (res) {
     message.success('删除成功')
     uiData.selectedNodeKey = ''
@@ -202,6 +322,19 @@ const handleDelete = useThrottleFn(async (item) => {
   }
 })
 
+watch(
+  () => uiData.searchValue,
+  (value) => {
+    if (!value) {
+      uiData.expandedKeys = getAllKeys(uiData.treeData)
+      uiData.autoExpandParent = false
+      return
+    }
+    uiData.expandedKeys = getAllKeys(filteredTreeData.value)
+    uiData.autoExpandParent = true
+  },
+)
+
 // 初始化
 onMounted(async () => {
   await fetchData()
@@ -209,18 +342,123 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.org-page {
+  --org-bg-soft: #f3f7ff;
+  --org-bg-card: #ffffff;
+  --org-border: #dce5f5;
+  --org-text-main: #16213c;
+  --org-text-sub: #5f6b8a;
+  --org-accent: #1f6feb;
+  --org-accent-deep: #154ea4;
+  --org-shadow-lg: 0 18px 45px -28px rgba(25, 55, 115, 0.45);
+  --org-shadow-sm: 0 10px 24px -22px rgba(17, 35, 78, 0.5);
+  font-family: 'Avenir Next', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  background: #ffffff;
+  border: 1px solid #eceff5;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.page-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--org-border);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(22, 84, 194, 0.1), rgba(22, 84, 194, 0) 50%),
+    var(--org-bg-card);
+  box-shadow: var(--org-shadow-sm);
+  padding: 22px 24px;
+}
+
+.hero-content h2 {
+  margin: 10px 0 8px;
+  color: var(--org-text-main);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.hero-content p {
+  margin: 0;
+  color: var(--org-text-sub);
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 680px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--org-accent-deep);
+  border: 1px solid rgba(31, 111, 235, 0.28);
+  background: rgba(31, 111, 235, 0.08);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.stat-item {
+  min-width: 124px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--org-bg-soft);
+  border: 1px solid rgba(31, 111, 235, 0.15);
+}
+
+.stat-item span {
+  display: block;
+  color: var(--org-text-sub);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.stat-item strong {
+  color: var(--org-text-main);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-action-btn {
+  min-width: 126px;
+  height: 34px;
+  padding-inline: 14px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
 .main-content {
   display: flex;
-  gap: 12px;
-  min-height: calc(100vh - 180px);
+  gap: 14px;
+  margin-top: 14px;
+  min-height: calc(100vh - 220px);
 }
 
 .tree-panel {
   width: 360px;
   flex-shrink: 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: var(--org-bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--org-border);
+  box-shadow: var(--org-shadow-sm);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -228,57 +466,76 @@ onMounted(async () => {
 
 .users-panel {
   flex: 1;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: var(--org-bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--org-border);
+  box-shadow: var(--org-shadow-lg);
   overflow: hidden;
 }
 
 .panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid #ecf1fb;
+  background: linear-gradient(180deg, rgba(245, 249, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 
 .panel-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a1a2e;
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--org-text-main);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.panel-desc {
+  margin: 6px 0 0;
+  color: var(--org-text-sub);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .panel-icon {
-  font-size: 18px;
-  color: #1890ff;
+  font-size: 16px;
+  color: var(--org-accent);
+}
+
+.panel-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 20px;
+  font-size: 12px;
+  color: var(--org-text-sub);
+  border-bottom: 1px dashed #ebf1fc;
 }
 
 .tree-container {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 12px 14px 16px;
 }
 
 .tree-node {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
   transition: all 0.2s ease;
-  margin: 2px 0;
+  margin: 3px 0;
+  border: 1px solid transparent;
 }
 
 .tree-node:hover {
-  background: #f5f5f5;
+  background: #f5f9ff;
+  border-color: #dde8fc;
 }
 
 .tree-node.is-selected {
-  background: #e6f7ff;
+  background: linear-gradient(90deg, rgba(31, 111, 235, 0.11), rgba(31, 111, 235, 0.03));
+  border-color: rgba(31, 111, 235, 0.35);
 }
 
 .tree-node-title {
@@ -290,11 +547,11 @@ onMounted(async () => {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 14px;
-  color: #333;
+  color: #22304f;
 }
 
 .folder-icon {
-  color: #faad14;
+  color: #f5a623;
   font-size: 16px;
 }
 
@@ -317,18 +574,18 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: #5f6b86;
   border-radius: 6px;
 }
 
 .action-btn:hover {
-  color: #1890ff;
-  background: #e6f7ff;
+  color: var(--org-accent);
+  background: rgba(31, 111, 235, 0.14);
 }
 
 .action-btn.danger:hover {
-  color: #ff4d4f;
-  background: #fff1f0;
+  color: #e63c4f;
+  background: #fff2f2;
 }
 
 .empty-state {
@@ -338,32 +595,35 @@ onMounted(async () => {
   justify-content: center;
   height: 100%;
   min-height: 400px;
-  color: #8c8c8c;
+  color: var(--org-text-sub);
+  text-align: center;
+  padding: 0 16px;
 }
 
 .empty-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(135deg, rgba(31, 111, 235, 0.18), rgba(33, 184, 132, 0.18));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
-  font-size: 36px;
-  color: #1890ff;
+  margin-bottom: 20px;
+  font-size: 40px;
+  color: var(--org-accent);
 }
 
 .empty-state h3 {
   margin: 0 0 8px;
-  font-size: 18px;
-  font-weight: 500;
-  color: #333;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--org-text-main);
 }
 
 .empty-state p {
-  margin: 0;
+  margin: 0 0 18px;
   font-size: 14px;
+  line-height: 1.6;
 }
 
 /* 覆盖 ant-design 树组件样式 */
@@ -393,11 +653,126 @@ onMounted(async () => {
 
 :deep(.ant-tree-switcher) {
   width: 24px;
-  height: 40px;
-  line-height: 40px;
+  height: 39px;
+  line-height: 39px;
 }
 
 :deep(.ant-empty) {
   margin: 40px 0;
+}
+
+.compact-mode {
+  padding: 14px;
+}
+
+.compact-mode .page-hero {
+  padding: 16px 18px;
+}
+
+.compact-mode .hero-content h2 {
+  font-size: 22px;
+  margin: 6px 0;
+}
+
+.compact-mode .hero-content p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.compact-mode .hero-stats {
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.compact-mode .stat-item {
+  padding: 8px 10px;
+  min-width: 104px;
+}
+
+.compact-mode .stat-item strong {
+  font-size: 18px;
+}
+
+.compact-mode .main-content {
+  margin-top: 12px;
+  min-height: calc(100vh - 190px);
+}
+
+.compact-mode .hero-action-btn {
+  min-width: 120px;
+  height: 32px;
+  padding-inline: 12px;
+  font-size: 13px;
+}
+
+.compact-mode .tree-panel {
+  width: 320px;
+}
+
+.compact-mode .panel-header {
+  padding: 14px 14px 10px;
+}
+
+.compact-mode .panel-meta {
+  padding: 8px 14px;
+}
+
+.compact-mode .tree-container {
+  padding: 8px 10px 12px;
+}
+
+.compact-mode .tree-node {
+  padding: 6px 8px;
+}
+
+.compact-mode .empty-state {
+  min-height: 320px;
+}
+
+.compact-mode .empty-icon {
+  width: 74px;
+  height: 74px;
+  margin-bottom: 14px;
+  font-size: 30px;
+}
+
+.compact-mode .empty-state h3 {
+  font-size: 17px;
+}
+
+@media (max-width: 1280px) {
+  .page-hero {
+    flex-direction: column;
+  }
+
+  .hero-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 1080px) {
+  .org-page {
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .main-content {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .tree-panel {
+    width: 100%;
+  }
+
+  .users-panel {
+    min-height: 520px;
+  }
+
+  .tree-actions {
+    opacity: 1;
+  }
 }
 </style>

@@ -1,48 +1,60 @@
 <template>
-  <a-card title="用户管理">
-    <template #extra>
-      <a-button type="primary" @click="handleAdd"> <PlusOutlined />绑定用户 </a-button>
-    </template>
+  <div class="org-users" :class="{ 'compact-mode': props.compactMode }">
+    <div class="users-header">
+      <div>
+        <span class="users-caption">成员管理</span>
+        <h3>{{ props.nodeName || '当前组织' }}</h3>
+        <p>管理组织内用户绑定关系，并分配角色权限。</p>
+      </div>
+      <a-button type="primary" @click="handleAdd">
+        <PlusOutlined />
+        绑定用户
+      </a-button>
+    </div>
 
-    <div class="search-wrapper">
+    <div class="toolbar">
       <a-input-search
         v-model:value="uiData.searchValue"
-        placeholder="搜索用户..."
-        style="width: 350px"
+        placeholder="搜索用户名、昵称、手机号、邮箱..."
+        style="width: 350px; max-width: 100%"
         @search="handleSearch"
       />
+      <div class="toolbar-tags">
+        <a-tag color="processing">共 {{ pagination.total }} 人</a-tag>
+        <a-tag v-if="uiData.searchValue" color="default">检索词：{{ uiData.searchValue }}</a-tag>
+      </div>
     </div>
 
-    <div style="margin-top: 12px">
-      <a-table
-        size="small"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => `${record.uid}-${record.organization_key}`"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        @change="handleTableChange"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'action'">
-            <a-tooltip title="移除当前用户">
-              <a-popconfirm
-                title="确认移除吗？"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="handleDelete(record)"
-              >
-                <a> <DeleteOutlined /> 移除 </a>
-              </a-popconfirm>
-            </a-tooltip>
-          </template>
+    <a-table
+      class="users-table"
+      size="middle"
+      :columns="uiData.tableColumns"
+      :row-key="(record) => `${record.uid}-${record.organization_key}`"
+      :data-source="uiData.tableData"
+      :pagination="pagination"
+      :loading="uiState.loading"
+      :scroll="{ x: 760 }"
+      @change="handleTableChange"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'action'">
+          <a-tooltip title="移除当前用户">
+            <a-popconfirm title="确认移除吗？" ok-text="是" cancel-text="否" @confirm="handleDelete(record)">
+              <a>
+                <DeleteOutlined />
+                移除
+              </a>
+            </a-popconfirm>
+          </a-tooltip>
         </template>
-      </a-table>
-    </div>
-  </a-card>
+      </template>
+    </a-table>
+  </div>
+
   <BindOrgUsers
     :open="uiState.isModalOpen"
     :nodeKey="props.nodeKey"
+    :nodeName="props.nodeName"
     :users="uiData.users"
     :roles="uiData.roles"
     v-model:modelValue="formState"
@@ -71,6 +83,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  nodeName: {
+    type: String,
+    default: '',
+  },
+  compactMode: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 // form表单
@@ -79,7 +99,6 @@ const defaultForm = {
   roles: null,
 }
 const formState = ref({ ...defaultForm })
-
 
 // 状态
 const uiState = reactive({
@@ -92,6 +111,7 @@ const uiData = reactive({
   searchValue: '',
   tableData: [],
   users: [],
+  roles: [],
   tableColumns: [
     {
       title: '用户名',
@@ -117,6 +137,8 @@ const uiData = reactive({
       title: '操作',
       dataIndex: 'action',
       key: 'action',
+      width: 110,
+      fixed: 'right',
     },
   ],
 })
@@ -166,7 +188,7 @@ watch(
   { immediate: true },
 )
 
-// 分页
+// 搜索
 const handleSearch = (value) => {
   uiData.searchValue = value
   pagination.current = 1
@@ -215,7 +237,131 @@ const getUsers = async () => {
   const res = await getUsersApi().catch(() => {})
   uiData.users = res.data || []
 
-  const rolesRes = await getRolesApi().catch(() => { })
+  const rolesRes = await getRolesApi().catch(() => {})
   uiData.roles = rolesRes.data || []
 }
 </script>
+
+<style scoped>
+.org-users {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 14px;
+  background:
+    radial-gradient(circle at right top, rgba(22, 84, 194, 0.08), rgba(22, 84, 194, 0) 40%),
+    linear-gradient(180deg, rgba(249, 251, 255, 1) 0%, rgba(255, 255, 255, 1) 35%);
+}
+
+.users-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 14px;
+}
+
+.users-caption {
+  display: inline-block;
+  color: #1f6feb;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(31, 111, 235, 0.12);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.users-header h3 {
+  margin: 8px 0 6px;
+  font-size: 22px;
+  color: #16213c;
+}
+
+.users-header p {
+  margin: 0;
+  color: #5f6b8a;
+  font-size: 13px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 2px 12px;
+}
+
+.toolbar-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.users-table {
+  flex: 1;
+  min-height: 0;
+}
+
+.compact-mode {
+  padding: 14px 14px 10px;
+}
+
+.compact-mode .users-header {
+  padding-bottom: 10px;
+}
+
+.compact-mode .users-header h3 {
+  font-size: 19px;
+  margin: 6px 0 4px;
+}
+
+.compact-mode .users-header p {
+  font-size: 12px;
+}
+
+.compact-mode .users-caption {
+  font-size: 11px;
+  padding: 2px 8px;
+}
+
+.compact-mode .toolbar {
+  margin-bottom: 8px;
+}
+
+:deep(.users-table .ant-table) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e3eaf8;
+}
+
+:deep(.users-table .ant-table-thead > tr > th) {
+  background: #f3f7ff;
+  color: #23335c;
+  font-weight: 600;
+}
+
+:deep(.users-table .ant-table-tbody > tr > td) {
+  border-bottom-color: #edf2fb;
+}
+
+:deep(.users-table .ant-table-pagination.ant-pagination) {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1080px) {
+  .org-users {
+    padding: 14px;
+  }
+
+  .users-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .users-header h3 {
+    font-size: 18px;
+  }
+}
+</style>

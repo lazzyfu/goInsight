@@ -1,126 +1,105 @@
 <template>
-  <a-modal :open="props.open" :title="props.title" width="35%" @cancel="handleCancel">
-    <template #footer>
-      <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" :loading="uiState.loading" @click="onSubmit"> 确定 </a-button>
-    </template>
-    <a-form ref="formRef" layout="vertical" :model="formData" style="margin-top: 24px">
-      <a-form-item
-        label="审批流名称"
-        name="name"
-        :rules="[
-          {
-            required: true,
-            message: '请输入审批流名称',
-          }
-        ]"
-        has-feedback
-      >
-        <a-input v-model:value="formData.name" placeholder="请输入审批流名称" allow-clear />
-      </a-form-item>
-
-      <a-form-item
-        label="可领取人"
-        name="claim_users"
-        :rules="[
-          {
-            required: true,
-            message: '请选择可领取人',
-          }
-        ]"
-        has-feedback
-      >
-        <a-select
-          v-model:value="formData.claim_users"
-          mode="multiple"
-          show-search
-          :filter-option="filterUserOption"
-          style="width: 100%"
-          placeholder="请选择可领取人（谁领取谁执行）"
-          :options="props.userOptions"
-          option-label-prop="label"
-          :max-tag-count="4"
-        />
-      </a-form-item>
-
-      <div class="divider-section">
-        <div class="divider-title">
-          <span class="divider-icon">📋</span>
-          <span>审批阶段定义</span>
-          <a-badge
-            :count="formData.definition ? formData.definition.length : 0"
-            :number-style="{ backgroundColor: '#1890ff' }"
-            style="margin-left: 12px"
-          />
-        </div>
+  <a-modal
+    :open="props.open"
+    :footer="null"
+    :width="920"
+    centered
+    class="flow-form-modal"
+    @cancel="handleCancel"
+  >
+    <div class="modal-shell">
+      <div class="modal-head">
+        <span class="head-badge">流程配置</span>
+        <h3>{{ props.title }}</h3>
+        <p>设置审批流名称、可领取人和每个阶段的审批规则，支持会签与或签组合。</p>
       </div>
 
-      <a-form-item
-        label=""
-        :label-col="{ span: 0 }"
-        :wrapper-col="{ span: 24 }"
-        class="dynamic-definition-item"
-      >
+      <a-form ref="formRef" layout="vertical" :model="formData" class="flow-form">
+        <a-row :gutter="12">
+          <a-col :span="24">
+            <a-form-item
+              label="审批流名称"
+              name="name"
+              required
+              :rules="[
+                {
+                  required: true,
+                  message: '请输入审批流名称',
+                },
+              ]"
+            >
+              <a-input v-model:value="formData.name" placeholder="请输入审批流名称" allow-clear />
+            </a-form-item>
+          </a-col>
+
+          <a-col :span="24">
+            <a-form-item
+              label="可领取人"
+              name="claim_users"
+              required
+              :rules="[
+                {
+                  required: true,
+                  message: '请选择可领取人',
+                },
+              ]"
+            >
+              <a-select
+                v-model:value="formData.claim_users"
+                mode="multiple"
+                show-search
+                :filter-option="filterUserOption"
+                placeholder="请选择可领取人（谁领取谁执行）"
+                :options="props.userOptions"
+                option-label-prop="label"
+                :max-tag-count="4"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <div class="stage-header-bar">
+          <div class="stage-title">审批阶段定义</div>
+          <a-tag color="processing">共 {{ stageCount }} 个阶段</a-tag>
+        </div>
+
         <div class="stage-list">
           <div v-for="(stage, index) in formData.definition" :key="index" class="stage-item">
-            <div class="stage-header">
-              <div class="stage-number">{{ index + 1 }}</div>
+            <div class="stage-item-head">
+              <div class="stage-index">{{ index + 1 }}</div>
               <a-input
                 v-model:value="stage.stage_name"
-                placeholder="阶段名称 (如：部门经理审批)"
+                placeholder="阶段名称（如：部门经理审批）"
                 class="stage-name-input"
               />
               <a-button
                 v-if="formData.definition.length > 1"
                 type="text"
                 danger
+                class="delete-stage-btn"
                 @click="removeStage(index)"
-                class="delete-btn"
               >
                 <DeleteOutlined />
               </a-button>
             </div>
 
-            <div class="stage-content">
-              <a-row :gutter="16">
-                <a-col :span="8">
-                  <a-form-item
-                    label="审批类型"
-                    :rules="[
-                      {
-                        required: true,
-                        message: '请选择审批类型',
-                      }
-                    ]"
-                    class="form-field"
-                  >
-                    <a-select v-model:value="stage.type" style="width: 100%">
-                      <a-select-option value="AND">
-                        <span class="option-text">🤝 AND (会签)</span>
-                      </a-select-option>
-                      <a-select-option value="OR">
-                        <span class="option-text">✅ OR (或签)</span>
-                      </a-select-option>
+            <div class="stage-item-body">
+              <a-row :gutter="12">
+                <a-col :xs="24" :md="8">
+                  <a-form-item label="审批类型" required class="form-field">
+                    <a-select v-model:value="stage.type">
+                      <a-select-option value="AND">会签 (AND)</a-select-option>
+                      <a-select-option value="OR">或签 (OR)</a-select-option>
                     </a-select>
                   </a-form-item>
                 </a-col>
-                <a-col :span="16">
-                  <a-form-item
-                    label="审批人"
-                    :rules="[
-                      {
-                        required: true,
-                        message: '请选择审批人',
-                      }
-                    ]"
-                    class="form-field"
-                  >
+                <a-col :xs="24" :md="16">
+                  <a-form-item label="审批人" required class="form-field">
                     <a-select
                       v-model:value="stage.approvers"
                       mode="multiple"
                       show-search
                       :filter-option="filterUserOption"
-                      style="width: 100%"
                       placeholder="请选择审批人"
                       :options="props.userOptions"
                       option-label-prop="label"
@@ -134,19 +113,24 @@
         </div>
 
         <a-button type="dashed" block class="add-stage-btn" @click="addStage">
-          <PlusOutlined /> 增加审批阶段
+          <PlusOutlined />
+          增加审批阶段
         </a-button>
-      </a-form-item>
-    </a-form>
+      </a-form>
+
+      <div class="modal-footer">
+        <a-button @click="handleCancel">取消</a-button>
+        <a-button type="primary" :loading="uiState.loading" @click="onSubmit">保存审批流</a-button>
+      </div>
+    </div>
   </a-modal>
 </template>
 
 <script setup>
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { ref, reactive } from 'vue'
 import { message } from 'ant-design-vue'
+import { computed, reactive, ref } from 'vue'
 
-// props
 const props = defineProps({
   open: Boolean,
   title: String,
@@ -158,83 +142,78 @@ const props = defineProps({
 
 const emit = defineEmits(['update:open', 'submit'])
 
-// 表单数据 (保持你现有的 defineModel 用法)
 const formData = defineModel('formData', {
   type: Object,
   required: true,
 })
 
-// 表单引用
 const formRef = ref()
 
-// 状态
 const uiState = reactive({
   loading: false,
 })
 
-// 过滤器：增加健壮性，防止 option 或 label 未定义时报错
+const stageCount = computed(() => formData.value.definition?.length || 0)
+
 const filterUserOption = (input, option) => {
   if (!option) return false
-  const label = (option.label || '').toString()
-  const value = (option.value || '').toString()
-  return label.toLowerCase().includes(input.toLowerCase()) || value.toLowerCase().includes(input.toLowerCase())
+  const label = (option.label || '').toString().toLowerCase()
+  const value = (option.value || '').toString().toLowerCase()
+  return label.includes(input.toLowerCase()) || value.includes(input.toLowerCase())
 }
 
 const addStage = () => {
-  const definition = formData.value.definition || []
-  const newStage = {
+  const definition = formData.value.definition || (formData.value.definition = [])
+  definition.push({
     stage: definition.length + 1,
     stage_name: `新阶段 ${definition.length + 1}`,
     approvers: [],
     type: 'AND',
-  }
-  definition.push(newStage)
+  })
 }
 
 const removeStage = (index) => {
-  const definition = formData.value.definition
+  const definition = formData.value.definition || []
   definition.splice(index, 1)
   definition.forEach((stage, i) => {
     stage.stage = i + 1
   })
 }
 
-// 取消按钮
 const handleCancel = () => {
   emit('update:open', false)
-  // 如果表单实例存在则重置（保持兼容）
   formRef.value?.resetFields?.()
 }
 
-// 自定义校验（对动态数组字段使用自定义校验更可控）
 const validateDefinition = async () => {
   const claimUsers = formData.value.claim_users || []
   if (claimUsers.length === 0) {
-    return Promise.reject('请至少选择一个可领取人。')
+    throw new Error('请至少选择一个可领取人。')
   }
+
   const definition = formData.value.definition
   if (!definition || definition.length === 0) {
-    return Promise.reject('请至少配置一个审批阶段。')
+    throw new Error('请至少配置一个审批阶段。')
   }
+
   for (const [index, stage] of definition.entries()) {
     if (!stage.stage_name || stage.stage_name.trim() === '') {
-      return Promise.reject(`阶段 ${index + 1}：阶段名称不能为空。`)
+      throw new Error(`阶段 ${index + 1}：阶段名称不能为空。`)
     }
     if (!stage.approvers || stage.approvers.length === 0) {
-      return Promise.reject(`阶段 ${index + 1}：至少需要指定一个审批人。`)
+      throw new Error(`阶段 ${index + 1}：至少需要指定一个审批人。`)
     }
   }
-  return true
 }
 
-// 提交表单
 const onSubmit = async () => {
   try {
     await validateDefinition()
     uiState.loading = true
     emit('submit', formData.value)
   } catch (err) {
-    message.error(err)
+    const errorText = err instanceof Error ? err.message : String(err)
+    message.error(errorText)
   } finally {
     uiState.loading = false
   }
@@ -242,178 +221,159 @@ const onSubmit = async () => {
 </script>
 
 <style scoped>
-.dynamic-definition-item :deep(.ant-form-item-control-input-content) {
-  padding: 0;
+.modal-shell {
+  padding: 8px 4px 2px;
 }
 
-.divider-section {
-  margin: 32px 0 24px;
-  padding: 0 0 16px;
-  border-bottom: 2px solid #f0f0f0;
+.modal-head h3 {
+  margin: 10px 0 6px;
+  font-size: 24px;
+  color: #16213c;
 }
 
-.divider-title {
+.modal-head p {
+  margin: 0;
+  color: #5f6b8a;
+  line-height: 1.7;
+}
+
+.head-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1554c2;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 111, 235, 0.28);
+  background: rgba(31, 111, 235, 0.1);
+  padding: 3px 10px;
+}
+
+.flow-form {
+  margin-top: 16px;
+}
+
+.stage-header-bar {
+  margin: 2px 0 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #dbe6f8;
+  background: linear-gradient(90deg, #f5f8ff 0%, #ffffff 100%);
   display: flex;
   align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  color: #262626;
+  justify-content: space-between;
 }
 
-.divider-icon {
-  font-size: 20px;
-  margin-right: 8px;
+.stage-title {
+  color: #22335d;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .stage-list {
-  max-height: 500px;
+  max-height: 420px;
   overflow-y: auto;
-  padding: 4px;
-}
-
-.stage-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.stage-list::-webkit-scrollbar-track {
-  background: #f5f5f5;
-  border-radius: 3px;
-}
-
-.stage-list::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
-  border-radius: 3px;
-}
-
-.stage-list::-webkit-scrollbar-thumb:hover {
-  background: #bfbfbf;
+  padding-right: 2px;
 }
 
 .stage-item {
-  border: 2px solid #f0f0f0;
+  border: 1px solid #dfe7f8;
   border-radius: 12px;
-  padding: 0;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-  transition: all 0.3s ease;
+  background: #ffffff;
+  margin-bottom: 10px;
   overflow: hidden;
 }
 
-.stage-item:hover {
-  border-color: #1890ff;
-  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.15);
-  transform: translateY(-2px);
-}
-
-.stage-header {
+.stage-item-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  background: linear-gradient(90deg, #f5f7fa 0%, #ffffff 100%);
-  border-bottom: 2px solid #f0f0f0;
+  gap: 10px;
+  padding: 12px 12px;
+  border-bottom: 1px solid #ecf1fb;
+  background: linear-gradient(90deg, #f8fbff 0%, #ffffff 100%);
 }
 
-.stage-number {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  display: flex;
+.stage-index {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  color: white;
+  flex-shrink: 0;
+  background: #1f6feb;
+  color: #fff;
+  font-size: 14px;
   font-weight: 700;
-  font-size: 16px;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
 }
 
 .stage-name-input {
   flex: 1;
+}
+
+.delete-stage-btn {
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
 }
 
-.delete-btn {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.delete-btn:hover {
-  background: #fff1f0;
-  transform: scale(1.1);
-}
-
-.stage-content {
-  padding: 20px;
+.stage-item-body {
+  padding: 12px;
 }
 
 .form-field {
   margin-bottom: 0;
 }
 
-.field-label {
-  display: block;
-  margin-bottom: 8px;
-  color: #595959;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.option-text {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
 .add-stage-btn {
-  margin-top: 16px;
-  height: 48px;
-  border: 2px dashed #d9d9d9;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 500;
-  color: #595959;
-  transition: all 0.3s ease;
+  margin-top: 6px;
+  height: 40px;
+  border: 1px dashed #bfd5fb;
+  color: #1f6feb;
+  border-radius: 10px;
 }
 
-.add-stage-btn:hover {
-  border-color: #1890ff;
-  color: #1890ff;
-  background: #f0f7ff;
-  transform: translateY(-1px);
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
 }
 
-/* Ant Design 组件样式覆盖 */
-:deep(.ant-input),
-:deep(.ant-select-selector) {
-  border-radius: 8px;
+:deep(.flow-form-modal .ant-modal-content) {
+  border-radius: 18px;
+  padding: 20px 22px;
+  background:
+    radial-gradient(circle at right top, rgba(31, 111, 235, 0.08), rgba(31, 111, 235, 0) 55%),
+    #ffffff;
 }
 
-:deep(.ant-badge-count) {
-  box-shadow: none;
+:deep(.flow-form-modal .ant-form-item-label > label) {
+  color: #23335c;
   font-weight: 600;
 }
 
-:deep(.ant-modal-header) {
-  border-bottom: 2px solid #f0f0f0;
-  padding: 20px 24px;
+:deep(.flow-form-modal .ant-input-affix-wrapper),
+:deep(.flow-form-modal .ant-input),
+:deep(.flow-form-modal .ant-select-selector) {
+  border-radius: 10px !important;
+  border-color: #d7e2f3 !important;
 }
 
-:deep(.ant-modal-title) {
-  font-size: 18px;
-  font-weight: 600;
-  color: #262626;
+:deep(.flow-form-modal .ant-select-focused .ant-select-selector),
+:deep(.flow-form-modal .ant-input-affix-wrapper-focused),
+:deep(.flow-form-modal .ant-input:focus) {
+  border-color: #1f6feb !important;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.14);
 }
 
-:deep(.ant-modal-footer) {
-  border-top: 2px solid #f0f0f0;
-  padding: 16px 24px;
+@media (max-width: 900px) {
+  .stage-list {
+    max-height: 360px;
+  }
+
+  .modal-head h3 {
+    font-size: 20px;
+  }
 }
 </style>
