@@ -150,7 +150,10 @@ require (
 	gorm.io/gorm v1.26.0
 )
 
-require gorm.io/plugin/dbresolver v1.6.2
+require (
+	gorm.io/driver/sqlite v1.4.3
+	gorm.io/plugin/dbresolver v1.6.2
+)
 
 require (
 	github.com/docker/go-units v0.5.0 // indirect

@@ -34,7 +34,7 @@ func (s *GetUsersServices) Run() (responseData interface{}, total int64, err err
 		Select(`a.*, 
 			ifnull(
 				GROUP_CONCAT(
-					DISTINCT ifnull(
+					ifnull(
 						concat(
 							(
 								SELECT
@@ -57,13 +57,13 @@ func (s *GetUsersServices) Run() (responseData interface{}, total int64, err err
 							),
 							'/',
 							c.name
-						),
-						c.name
-					) ORDER BY c.name ASC SEPARATOR '; '), 
+							),
+							c.name
+						) ORDER BY b.organization_key ASC SEPARATOR '; '), 
 				'-/-'
 			) as organization, 
 			ifnull(
-				GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR '; '), 
+				GROUP_CONCAT(ifnull(d.name, '-/-') ORDER BY b.organization_key ASC SEPARATOR '; '), 
 				'-/-'
 			) as role`).
 		Joins("left join insight_org_users b on a.uid=b.uid").
@@ -75,7 +75,7 @@ func (s *GetUsersServices) Run() (responseData interface{}, total int64, err err
 		tx = tx.Where("`username` like ? or `nick_name` like ? or `email` like ? or `mobile` like ?", "%"+s.Search+"%", "%"+s.Search+"%", "%"+s.Search+"%", "%"+s.Search+"%")
 	}
 	if s.OrganizationKey != "" {
-		tx = tx.Where("c.key like ?", s.OrganizationKey+"%")
+		tx = applyOrgDescendantScope(tx, "c.key", s.OrganizationKey)
 	}
 	if s.RoleID > 0 {
 		tx = tx.Where("b.role_id=?", s.RoleID)

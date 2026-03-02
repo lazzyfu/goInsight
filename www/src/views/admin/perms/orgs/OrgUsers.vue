@@ -17,7 +17,7 @@
       <a-table
         size="small"
         :columns="uiData.tableColumns"
-        :row-key="(record) => `${record.uid}-${record.role_name || 'default'}`"
+        :row-key="(record) => `${record.uid}-${record.organization_key}`"
         :data-source="uiData.tableData"
         :pagination="pagination"
         :loading="uiState.loading"
@@ -200,7 +200,7 @@ const onSubmit = useThrottleFn(async (data) => {
 // 删除
 const handleDelete = useThrottleFn(async (record) => {
   const payload = {
-    key: props.nodeKey,
+    key: record.organization_key,
     uid: record.uid,
   }
   const res = await deleteOrganizationsUsersApi(payload).catch(() => {})

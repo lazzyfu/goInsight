@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -46,24 +47,68 @@ type GetOrderInstancesService struct {
 	Username string
 }
 
-func (s *GetOrderInstancesService) Run() (responseData interface{}, total int64, err error) {
-	// 获取当前用户当前绑定组织和所有上级组织
-	var organization usersModels.InsightOrgs
-	global.App.DB.Table("`insight_orgs` a").
-		Joins("join insight_org_users b on a.key = b.organization_key").
-		Joins("join insight_users c on c.uid = b.uid").Where("c.username=?", s.Username).Scan(&organization)
+type userOrganizationBinding struct {
+	Key  string         `gorm:"column:key"`
+	Path datatypes.JSON `gorm:"column:path"`
+}
 
-	// 将path json数据转换为数组
-	var pathJsonArray []string
-	if len(organization.Path) != 0 {
-		_ = json.Unmarshal([]byte(organization.Path), &pathJsonArray)
+func collectAccessibleOrganizationKeys(bindings []userOrganizationBinding) ([]string, error) {
+	if len(bindings) == 0 {
+		return nil, nil
 	}
-	pathJsonArray = append(pathJsonArray, organization.Key)
 
-	// 获取当前用户当前绑定组织和所有上级组织绑定的实例
+	keySet := make(map[string]struct{}, len(bindings)*2)
+	for _, binding := range bindings {
+		if binding.Key == "" {
+			continue
+		}
+
+		var pathKeys []string
+		if len(binding.Path) > 0 {
+			if err := json.Unmarshal(binding.Path, &pathKeys); err != nil {
+				return nil, fmt.Errorf("解析组织路径失败: %w", err)
+			}
+		}
+
+		for _, key := range pathKeys {
+			if key != "" {
+				keySet[key] = struct{}{}
+			}
+		}
+		keySet[binding.Key] = struct{}{}
+	}
+
+	keys := make([]string, 0, len(keySet))
+	for key := range keySet {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys, nil
+}
+
+func (s *GetOrderInstancesService) Run() (responseData interface{}, total int64, err error) {
+	var bindings []userOrganizationBinding
+	if err := global.App.DB.Table("`insight_orgs` a").
+		Select("a.key, a.path").
+		Joins("join insight_org_users b on a.key = b.organization_key").
+		Joins("join insight_users c on c.uid = b.uid").
+		Where("c.username=?", s.Username).
+		Scan(&bindings).Error; err != nil {
+		return nil, 0, err
+	}
+
+	organizationKeys, err := collectAccessibleOrganizationKeys(bindings)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	var instances []commonModels.InsightInstances
+	if len(organizationKeys) == 0 {
+		return &instances, 0, nil
+	}
+
 	tx := global.App.DB.Table("insight_instances").
-		Where("environment=? and db_type=? and use_type='工单' and organization_key in ?", s.ID, s.DbType, pathJsonArray)
+		Where("environment=? and db_type=? and use_type='工单' and organization_key in ?", s.ID, s.DbType, organizationKeys)
 	total = pagination.Pager(&s.PaginationQ, tx, &instances)
 	return &instances, total, nil
 }
@@ -177,36 +222,42 @@ func (s *CreateOrderService) getUserOrg() (organization string) {
 	}
 	var record org
 	tx := global.App.DB.Table("insight_users a").Select(`
-			a.username,
 			ifnull(
-				concat(
-					(
-						SELECT
-							GROUP_CONCAT(
-								ia.name
-								ORDER BY
-									ia.name ASC SEPARATOR '/'
-							) AS concatenated_names
-						FROM
-							insight_orgs ia
-						WHERE
-							EXISTS (
+				GROUP_CONCAT(
+					ifnull(
+						concat(
+							(
 								SELECT
-									1
+									GROUP_CONCAT(
+										ia.name
+										ORDER BY
+											ia.name ASC SEPARATOR '/'
+									) AS concatenated_names
 								FROM
-									insight_orgs
+									insight_orgs ia
 								WHERE
-									JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
-							)
-					),
-					'/',
-					c.name
+									EXISTS (
+										SELECT
+											1
+										FROM
+											insight_orgs
+										WHERE
+											JSON_CONTAINS(c.path, CONCAT('\"', ia.key, '\"'))
+									)
+							),
+							'/',
+							c.name
+						),
+						c.name
+					) ORDER BY b.organization_key ASC SEPARATOR '; '
 				),
-				c.name
+				''
 			) as organization`).
 		Joins("left join insight_org_users b on a.uid = b.uid").
 		Joins("left join insight_orgs c on b.organization_key = c.key").
-		Where("a.username = ?", s.Username).Take(&record)
+		Where("a.username = ?", s.Username).
+		Group("a.username").
+		Take(&record)
 	if tx.Error != nil || tx.RowsAffected == 0 {
 		return
 	}

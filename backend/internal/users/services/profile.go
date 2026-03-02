@@ -26,7 +26,7 @@ func (s *GetUserInfoServices) Run() (responseData interface{}, err error) {
 		Select(`a.*, 
 			ifnull(
 				GROUP_CONCAT(
-					DISTINCT ifnull(
+					ifnull(
 						concat(
 							(
 								SELECT
@@ -49,13 +49,13 @@ func (s *GetUserInfoServices) Run() (responseData interface{}, err error) {
 							),
 							'/',
 							c.name
-						),
-						c.name
-					) ORDER BY c.name ASC SEPARATOR '; '), 
+							),
+							c.name
+						) ORDER BY b.organization_key ASC SEPARATOR '; '), 
 				'-/-'
 			) as organization, 
 			ifnull(
-				GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR '; '), 
+				GROUP_CONCAT(ifnull(d.name, '-/-') ORDER BY b.organization_key ASC SEPARATOR '; '), 
 				'-/-'
 			) as role`).
 		Joins("left join insight_org_users b on a.uid=b.uid").

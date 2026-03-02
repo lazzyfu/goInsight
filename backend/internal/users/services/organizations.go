@@ -191,14 +191,13 @@ func (s *DeleteOrganizationsService) Run() error {
 	}
 
 	return global.App.DB.Transaction(func(tx *gorm.DB) error {
-		// 删除当前节点
-		if err := tx.Where("`key`=? and `name`=?", s.Key, s.Name).
-			Delete(&models.InsightOrgs{}).Error; err != nil {
+		if err := applyOrgDescendantScope(tx, "organization_key", s.Key).
+			Delete(&models.InsightOrgUsers{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
 		}
-		// 删除所有的子节点
-		if err := tx.Where("`key` like ? and `parent_id`=?", s.Key+"-%", organization.ID).
+
+		if err := applyOrgDescendantScope(tx, "`key`", s.Key).
 			Delete(&models.InsightOrgs{}).Error; err != nil {
 			global.App.Log.Error(err)
 			return err
@@ -246,8 +245,9 @@ func (s *GetOrganizationsUsersServices) Run() (responseData any, total int64, er
         `).
 		Joins("JOIN insight_org_users b ON u.uid = b.uid").
 		Joins("JOIN insight_orgs c ON c.key = b.organization_key").
-		Joins("LEFT JOIN insight_roles r ON b.role_id = r.id").
-		Where("b.organization_key LIKE ?", s.Key+"%")
+		Joins("LEFT JOIN insight_roles r ON b.role_id = r.id")
+
+	tx = applyOrgDescendantScope(tx, "b.organization_key", s.Key)
 
 	// 搜索
 	if s.Search != "" {
