@@ -1,0 +1,34 @@
+.gi-pattern-toolbar {
+  min-height: 40px;
+}
+
+.gi-page-toolbar-left,
+.gi-page-toolbar-right {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gi-spacing-sm);
+}
+
+.gi-page-toolbar-right {
+  margin-left: auto;
+}
+
+.gi-table-section {
+  margin-top: var(--gi-spacing-ssm);
+}
+
+.gi-page-card-shell :where(.ant-card-body) {
+  padding-top: var(--gi-spacing-ssm);
+}
+
+@media (max-width: 767px) {
+  .gi-pattern-toolbar {
+    align-items: stretch;
+  }
+
+  .gi-page-toolbar-left,
+  .gi-page-toolbar-right {
+    width: 100%;
+  }
+}
