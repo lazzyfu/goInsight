@@ -1,81 +1,83 @@
 <template>
-  <a-card class="order-list-card" title="历史工单">
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <div class="checkbox-container">
-          <a-checkbox v-model:checked="uiState.checked" @change="handleMyOrdersChange">我的工单</a-checkbox>
+  <div class="gi-page-shell order-list-page">
+    <a-card class="order-list-card" title="历史工单">
+      <div class="gi-page-toolbar toolbar">
+        <div class="toolbar-left">
+          <div class="checkbox-container">
+            <a-checkbox v-model:checked="uiState.checked" @change="handleMyOrdersChange">我的工单</a-checkbox>
+          </div>
+          <a-select
+            v-model:value="uiData.progress"
+            :options="progressOptions"
+            allowClear
+            class="toolbar-progress-select"
+            placeholder="工单进度"
+            @change="handleProgressChange"
+          />
         </div>
-        <a-select
-          v-model:value="uiData.progress"
-          :options="progressOptions"
+        <a-input-search
+          v-model:value="uiData.searchValue"
+          placeholder="请输入工单标题、实例、库名等关键词搜索"
           allowClear
-          class="toolbar-progress-select"
-          placeholder="工单进度"
-          @change="handleProgressChange"
+          class="toolbar-search"
+          @search="handleSearch"
         />
       </div>
-      <a-input-search
-        v-model:value="uiData.searchValue"
-        placeholder="请输入工单标题、实例、库名等关键词搜索"
-        allowClear
-        class="toolbar-search"
-        @search="handleSearch"
-      />
-    </div>
 
-    <div v-if="uiState.checked" class="overview-row">
-      <div class="overview-item">
-        <span class="overview-label">我的工单</span>
-        <strong>{{ uiData.myOrderStats.total }}</strong>
+      <div v-if="uiState.checked" class="overview-row">
+        <div class="overview-item">
+          <span class="overview-label">我的工单</span>
+          <strong>{{ uiData.myOrderStats.total }}</strong>
+        </div>
+        <div class="overview-item pending">
+          <span class="overview-label">待审批</span>
+          <strong>{{ uiData.myOrderStats.pending }}</strong>
+        </div>
+        <div class="overview-item running">
+          <span class="overview-label">执行中</span>
+          <strong>{{ uiData.myOrderStats.executing }}</strong>
+        </div>
+        <div class="overview-item failed">
+          <span class="overview-label">失败</span>
+          <strong>{{ uiData.myOrderStats.failed }}</strong>
+        </div>
       </div>
-      <div class="overview-item pending">
-        <span class="overview-label">待审批</span>
-        <strong>{{ uiData.myOrderStats.pending }}</strong>
-      </div>
-      <div class="overview-item running">
-        <span class="overview-label">执行中</span>
-        <strong>{{ uiData.myOrderStats.executing }}</strong>
-      </div>
-      <div class="overview-item failed">
-        <span class="overview-label">失败</span>
-        <strong>{{ uiData.myOrderStats.failed }}</strong>
-      </div>
-    </div>
 
-    <div class="table-wrapper">
-      <a-table
-        size="middle"
-        :columns="uiData.tableColumns"
-        :row-key="(record) => record.order_id"
-        :data-source="uiData.tableData"
-        :pagination="pagination"
-        :loading="uiState.loading"
-        :row-class-name="() => 'order-row'"
-        @change="handleTableChange"
-        :scroll="{ x: 1100 }"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'progress'">
-            <a-tag :color="getOrderStatusMeta(record.progress).color" class="progress-tag">
-              {{ getOrderStatusMeta(record.progress).text }}
-            </a-tag>
+      <div class="table-wrapper">
+        <a-table
+          size="middle"
+          :columns="uiData.tableColumns"
+          :row-key="(record) => record.order_id"
+          :data-source="uiData.tableData"
+          :pagination="pagination"
+          :loading="uiState.loading"
+          :row-class-name="() => 'order-row'"
+          @change="handleTableChange"
+          :scroll="{ x: 1100 }"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'progress'">
+              <a-tag :color="getOrderStatusMeta(record.progress).color" class="progress-tag">
+                {{ getOrderStatusMeta(record.progress).text }}
+              </a-tag>
+            </template>
+            <template v-if="column.key === 'title'">
+              <router-link class="title-link" :to="{ name: 'orders.detail', params: { order_id: record.order_id } }">
+                {{ record.title }}
+              </router-link>
+            </template>
+            <template v-if="column.key === 'instance'">
+              {{ record.instance }}
+            </template>
+            <template v-if="column.key === 'schema'">
+              <DatabaseOutlined />
+              {{ record.schema }}
+            </template>
           </template>
-          <template v-if="column.key === 'title'">
-            <router-link class="title-link" :to="{ name: 'orders.detail', params: { order_id: record.order_id } }">
-              {{ record.title }}
-            </router-link>
-          </template>
-          <template v-if="column.key === 'instance'">
-            {{ record.instance }}
-          </template>
-          <template v-if="column.key === 'schema'">
-            <DatabaseOutlined />
-            {{ record.schema }}
-          </template>
-        </template>
-      </a-table>
-    </div>
-  </a-card>
+        </a-table>
+      </div>
+    </a-card>
+  </div>
 </template>
 
 <script setup>
@@ -84,6 +86,7 @@ import { ORDER_PROGRESS_OPTIONS, getOrderStatusMeta } from '@/views/orders/share
 import { DatabaseOutlined } from '@ant-design/icons-vue'
 import { useIntervalFn } from '@vueuse/core'
 import { onMounted, reactive } from 'vue'
+import { buildOrderQuery, summarizeMyOrders } from './orderListModel'
 
 // 定时器, 10秒刷新一次
 useIntervalFn(
@@ -207,14 +210,13 @@ const pagination = reactive({
 const fetchData = async () => {
   uiState.loading = true
   try {
-    const params = {
-      page_size: pagination.pageSize,
+    const params = buildOrderQuery({
       page: pagination.current,
-      is_page: true,
-      only_my_orders: uiState.checked,
+      pageSize: pagination.pageSize,
+      onlyMine: uiState.checked,
       search: uiData.searchValue,
       progress: uiData.progress,
-    }
+    })
     const res = await getOrderListApi(params).catch(() => {})
     if (res?.data) {
       pagination.total = res.total
@@ -247,10 +249,7 @@ const fetchMyOrderStats = async () => {
   }).catch(() => {})
 
   const rows = Array.isArray(res?.data) ? res.data : []
-  uiData.myOrderStats.total = rows.length
-  uiData.myOrderStats.pending = rows.filter((item) => item.progress === 'PENDING').length
-  uiData.myOrderStats.executing = rows.filter((item) => item.progress === 'EXECUTING').length
-  uiData.myOrderStats.failed = rows.filter((item) => item.progress === 'FAILED').length
+  Object.assign(uiData.myOrderStats, summarizeMyOrders(rows))
 }
 
 const refreshPageData = async () => {
@@ -264,22 +263,27 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.order-list-page {
+  gap: var(--gi-spacing-sm);
+}
+
 .order-list-card :deep(.ant-card-body) {
-  padding-top: 14px;
+  padding-top: var(--gi-spacing-ssm);
 }
 
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gi-spacing-ssm);
   flex-wrap: wrap;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gi-spacing-sm);
+  flex-wrap: wrap;
 }
 
 .toolbar-search {
@@ -298,7 +302,7 @@ onMounted(async () => {
   align-items: center;
   background: #fafbfd;
   border: 1px solid #dbe5ec;
-  border-radius: 8px;
+  border-radius: var(--gi-radius-md);
   transition: all 0.2s ease;
   cursor: pointer;
 }
@@ -314,15 +318,15 @@ onMounted(async () => {
 }
 
 .overview-row {
-  margin-top: 12px;
+  margin-top: var(--gi-spacing-ssm);
   display: grid;
   grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 10px;
+  gap: var(--gi-spacing-sm);
 }
 
 .overview-item {
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 10px var(--gi-spacing-ssm);
+  border-radius: var(--gi-radius-lg);
   border: 1px solid #e5edf3;
   background: #fafcfd;
   display: flex;
@@ -356,7 +360,7 @@ onMounted(async () => {
 }
 
 .table-wrapper {
-  margin-top: 12px;
+  margin-top: var(--gi-spacing-ssm);
 }
 
 .title-link {
@@ -380,6 +384,12 @@ onMounted(async () => {
 }
 
 @media (max-width: 600px) {
+  .toolbar-left,
+  .toolbar-progress-select,
+  .toolbar-search {
+    width: 100%;
+  }
+
   .overview-row {
     grid-template-columns: 1fr;
   }
