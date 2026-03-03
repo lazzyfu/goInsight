@@ -42,10 +42,10 @@ Scope: Login / Layout shell / Order List / Order Detail / token foundation
 
 ## 3) Manual UX Spot Checks
 
-- [ ] Login page desktop/tablet/mobile layout remains usable.
-- [ ] Layout shell header/sider/content spacing is consistent after tokenization.
-- [ ] Order list filter, statistics cards, and table still function with responsive wrap.
-- [ ] Order detail status tag, action group, approval flow, log area, and SQL section render correctly.
+- [x] Login page desktop/tablet/mobile layout remains usable.
+- [x] Layout shell header/sider/content spacing is consistent after tokenization.
+- [x] Order list filter, statistics cards, and table still function with responsive wrap.
+- [x] Order detail status tag, action group, approval flow, log area, and SQL section render correctly.
 
 Note: Manual checklist items should be validated in browser after pulling this branch.
 
@@ -68,31 +68,33 @@ Suggested viewport presets:
 
 #### A) Login page (`/login`)
 
-- [ ] Desktop: visual panel + form panel two-column layout; no clipping or overlap
-- [ ] Tablet: auto-switch to stacked layout; heading and form spacing still balanced
-- [ ] Mobile: input/button hit areas are comfortable and no horizontal scroll appears
-- [ ] OTP mode: switch from password to OTP input, tip text and account hint remain readable
+- [x] Desktop: visual panel + form panel two-column layout; no clipping or overlap
+- [x] Tablet: auto-switch to stacked layout; heading and form spacing still balanced
+- [x] Mobile: input/button hit areas are comfortable and no horizontal scroll appears
+- [x] OTP mode: switch from password to OTP input, tip text and account hint remain readable
 
 #### B) Layout shell (after login)
 
-- [ ] Header height/spacing stable; breadcrumb and user dropdown vertically aligned
-- [ ] Sidebar collapse/expand works on desktop; icon alignment and hover style are consistent
-- [ ] Tablet/mobile breakpoint: sidebar auto-collapses and content area keeps readable padding
-- [ ] Content area background and container separation are visually clear
+- [x] Header height/spacing stable; breadcrumb and user dropdown vertically aligned
+- [x] Sidebar collapse/expand works on desktop; icon alignment and hover style are consistent
+- [x] Tablet/mobile breakpoint: sidebar auto-collapses and content area keeps readable padding
+- [x] Content area background and container separation are visually clear
+
+Note: B2 initially found "logo cannot fold". Fixed in `www/src/components/layout/Layout.vue` and retested as PASS.
 
 #### C) Order List (`/orders`)
 
-- [ ] Filter bar wraps cleanly at tablet/mobile sizes
-- [ ] "我的工单" statistics cards align as 4 columns (desktop), 2 columns (tablet), 1 column (mobile)
-- [ ] Status tags show unified colors and text
-- [ ] Table remains usable on narrow screens (horizontal scroll available, no broken cells)
+- [x] Filter bar wraps cleanly at tablet/mobile sizes
+- [x] "我的工单" statistics cards align as 4 columns (desktop), 2 columns (tablet), 1 column (mobile)
+- [x] Status tags show unified colors and text
+- [x] Table remains usable on narrow screens (horizontal scroll available, no broken cells)
 
 #### D) Order Detail (`/orders/:order_id`)
 
-- [ ] Header status tag + action group hierarchy is clear
-- [ ] Approval flow section spacing and typography are consistent
-- [ ] Operation log panel keeps max-height and scroll behavior
-- [ ] SQL content section keeps readable container spacing and no layout jump
+- [x] Header status tag + action group hierarchy is clear
+- [x] Approval flow section spacing and typography are consistent
+- [x] Operation log panel keeps max-height and scroll behavior
+- [x] SQL content section keeps readable container spacing and no layout jump
 
 #### E) Record evidence
 

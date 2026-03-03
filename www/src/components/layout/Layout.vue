@@ -2,6 +2,7 @@
   <a-layout class="layout" :style="layoutVars">
     <a-layout-sider
       class="layout-sider"
+      :class="{ 'is-collapsed': uiState.collapsed }"
       :width="layoutConfig.sidebarExpandedWidth"
       :collapsed-width="uiState.isMobile ? 0 : layoutConfig.sidebarCollapsedWidth"
       breakpoint="lg"
@@ -234,10 +235,20 @@ onBeforeUnmount(() => {
 }
 
 .logo {
-  width: auto;
+  width: 100%;
   height: 38px;
   max-width: 170px;
   object-fit: contain;
+  transition: max-width var(--gi-duration-base) ease, height var(--gi-duration-base) ease;
+}
+
+.layout-sider.is-collapsed .logo-wrap {
+  padding-inline: var(--gi-spacing-xs);
+}
+
+.layout-sider.is-collapsed .logo {
+  max-width: 32px;
+  height: 32px;
 }
 
 .layout-menu {
