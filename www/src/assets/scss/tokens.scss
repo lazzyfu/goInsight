@@ -1,0 +1,52 @@
+:root {
+  /* Color */
+  --gi-color-primary: #0f766e;
+  --gi-color-primary-hover: #0d6b63;
+  --gi-color-primary-active: #0b5f58;
+  --gi-color-info: #1677ff;
+  --gi-color-success: #52c41a;
+  --gi-color-warning: #faad14;
+  --gi-color-error: #ff4d4f;
+  --gi-color-page-bg: #f4f7f8;
+  --gi-color-container-bg: #ffffff;
+  --gi-color-border: #d9e1e6;
+  --gi-color-text-primary: rgba(15, 23, 32, 0.9);
+  --gi-color-text-secondary: rgba(36, 57, 71, 0.72);
+  --gi-color-text-tertiary: rgba(79, 100, 112, 0.8);
+
+  /* Spacing */
+  --gi-spacing-xs: 4px;
+  --gi-spacing-sm: 8px;
+  --gi-spacing-ssm: 12px;
+  --gi-spacing-md: 16px;
+  --gi-spacing-lg: 24px;
+  --gi-spacing-xl: 32px;
+
+  /* Radius */
+  --gi-radius-sm: 6px;
+  --gi-radius-md: 8px;
+  --gi-radius-lg: 10px;
+  --gi-radius-card: 12px;
+
+  /* Shadow */
+  --gi-shadow-sm: 0 1px 2px rgba(15, 23, 32, 0.06);
+  --gi-shadow-md: 0 8px 20px rgba(15, 23, 32, 0.08);
+  --gi-shadow-lg: 0 14px 28px rgba(15, 23, 32, 0.1);
+
+  /* Typography */
+  --gi-font-size-caption: 12px;
+  --gi-font-size-body: 14px;
+  --gi-font-size-body-lg: 16px;
+  --gi-font-size-title: 20px;
+  --gi-font-size-hero: 24px;
+
+  /* Motion */
+  --gi-duration-fast: 120ms;
+  --gi-duration-base: 200ms;
+  --gi-duration-slow: 280ms;
+
+  /* Layout */
+  --gi-layout-header-height: 52px;
+  --gi-layout-sider-width: 224px;
+  --gi-layout-sider-width-collapsed: 72px;
+}
