@@ -49,6 +49,57 @@ Scope: Login / Layout shell / Order List / Order Detail / token foundation
 
 Note: Manual checklist items should be validated in browser after pulling this branch.
 
+### 3.1 Manual Walkthrough Steps
+
+Run frontend:
+
+```bash
+cd www
+npm run dev -- --host 0.0.0.0 --port 5175
+```
+
+Open: `http://localhost:5175`
+
+Suggested viewport presets:
+
+- Desktop: 1440 x 900
+- Tablet: 1024 x 768
+- Mobile: 390 x 844
+
+#### A) Login page (`/login`)
+
+- [ ] Desktop: visual panel + form panel two-column layout; no clipping or overlap
+- [ ] Tablet: auto-switch to stacked layout; heading and form spacing still balanced
+- [ ] Mobile: input/button hit areas are comfortable and no horizontal scroll appears
+- [ ] OTP mode: switch from password to OTP input, tip text and account hint remain readable
+
+#### B) Layout shell (after login)
+
+- [ ] Header height/spacing stable; breadcrumb and user dropdown vertically aligned
+- [ ] Sidebar collapse/expand works on desktop; icon alignment and hover style are consistent
+- [ ] Tablet/mobile breakpoint: sidebar auto-collapses and content area keeps readable padding
+- [ ] Content area background and container separation are visually clear
+
+#### C) Order List (`/orders`)
+
+- [ ] Filter bar wraps cleanly at tablet/mobile sizes
+- [ ] "我的工单" statistics cards align as 4 columns (desktop), 2 columns (tablet), 1 column (mobile)
+- [ ] Status tags show unified colors and text
+- [ ] Table remains usable on narrow screens (horizontal scroll available, no broken cells)
+
+#### D) Order Detail (`/orders/:order_id`)
+
+- [ ] Header status tag + action group hierarchy is clear
+- [ ] Approval flow section spacing and typography are consistent
+- [ ] Operation log panel keeps max-height and scroll behavior
+- [ ] SQL content section keeps readable container spacing and no layout jump
+
+#### E) Record evidence
+
+- [ ] Save 4 screenshots: login, layout shell, order list, order detail (desktop)
+- [ ] Save 3 screenshots: login/order list/order detail (mobile)
+- [ ] If any issue found, record route + viewport + reproduction steps
+
 ## 4) Follow-up Items (Non-blocking)
 
 1. Migrate SCSS `@import` syntax to `@use`/`@forward`.
