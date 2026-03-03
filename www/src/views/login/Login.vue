@@ -113,6 +113,7 @@ defineOptions({ name: 'UserLogin' })
 import { Login } from '@/api/login'
 import { useUserStore } from '@/store/user'
 import loginVisual from '@/assets/original2.png'
+import { normalizeOtpCode } from '@/views/login/loginModel'
 import {
   AuditOutlined,
   DeploymentUnitOutlined,
@@ -206,8 +207,6 @@ const onSubmit = async () => {
   }
 }
 
-const normalizeOtpCode = (value) => (value || '').replace(/\D/g, '').slice(0, 6)
-
 const submitOtpLogin = async () => {
   if (uiState.loading) return
   try {
@@ -240,13 +239,13 @@ const backToPasswordLogin = () => {
 
 <style scoped>
 .login-page {
-  --ink-950: #0f1720;
-  --ink-700: #243947;
-  --ink-500: #4f6470;
-  --line-200: #d8e1e8;
-  --surface-100: #f5f8fa;
-  --primary-600: #0f766e;
-  --primary-700: #0b5f58;
+  --ink-950: var(--gi-color-text-primary);
+  --ink-700: var(--gi-color-text-secondary);
+  --ink-500: var(--gi-color-text-tertiary);
+  --line-200: var(--gi-color-border);
+  --surface-100: var(--gi-color-page-bg);
+  --primary-600: var(--gi-color-primary);
+  --primary-700: var(--gi-color-primary-active);
   --primary-050: rgba(15, 118, 110, 0.12);
 
   min-height: 100vh;
@@ -268,7 +267,7 @@ const backToPasswordLogin = () => {
   grid-template-columns: 6fr 4fr;
   border-radius: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--gi-color-container-bg);
   box-shadow: none;
 }
 
@@ -351,7 +350,7 @@ const backToPasswordLogin = () => {
 
 .login-card {
   width: min(440px, 100%);
-  padding: 12px 10px;
+  padding: var(--gi-spacing-ssm) 10px;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -361,14 +360,14 @@ const backToPasswordLogin = () => {
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--gi-spacing-xl);
 }
 
 .logo-icon {
   width: 48px;
   height: 48px;
-  margin: 0 auto 16px;
-  padding: 12px;
+  margin: 0 auto var(--gi-spacing-md);
+  padding: var(--gi-spacing-ssm);
   background: linear-gradient(135deg, #e4f4f1 0%, #c9ebe4 100%);
   border-radius: 12px;
   color: var(--primary-600);
@@ -458,7 +457,7 @@ const backToPasswordLogin = () => {
 }
 
 .submit-item {
-  margin-top: 24px;
+  margin-top: var(--gi-spacing-lg);
   margin-bottom: 0;
 }
 
@@ -485,12 +484,12 @@ const backToPasswordLogin = () => {
 .login-footer {
   margin-top: 28px;
   text-align: center;
-  font-size: 12px;
-  color: #9caab5;
+  font-size: var(--gi-font-size-caption);
+  color: color-mix(in srgb, var(--gi-color-text-tertiary), #fff 12%);
 }
 
 .otp-meta {
-  margin-bottom: 12px;
+  margin-bottom: var(--gi-spacing-ssm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -510,7 +509,7 @@ const backToPasswordLogin = () => {
 .otp-auto-tip {
   margin-top: -4px;
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: var(--gi-font-size-caption);
   color: var(--ink-500);
 }
 
