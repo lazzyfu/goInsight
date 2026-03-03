@@ -51,7 +51,7 @@ const currentProgress = ref(0)
 const approvalStages = ref([])
 
 // 格式化审批数据，计算 current 进度
-const formatApprovalStatus = (data) => {
+const formatApprovalStatus = (data = []) => {
   const grouped = {}
   data.forEach((item) => {
     if (!grouped[item.stage]) {
@@ -93,17 +93,17 @@ const getStatusText = (status) => {
 
 const getStatusColor = (status) => {
   const colorMap = {
-    APPROVED: '#52c41a',
-    REJECTED: '#f5222d',
-    PENDING: '',
+    APPROVED: 'green',
+    REJECTED: 'red',
+    PENDING: 'default',
   }
-  return colorMap[status] || ''
+  return colorMap[status] || 'default'
 }
 
 watch(
   () => props.approvalStatus,
   (newVal) => {
-    approvalStages.value = formatApprovalStatus(newVal)
+    approvalStages.value = formatApprovalStatus(Array.isArray(newVal) ? newVal : [])
   },
   { immediate: true },
 )
@@ -119,16 +119,16 @@ const getStepStatus = (index, step) => {
 
 <style scoped>
 .approval-steps-container {
-  padding: 4px;
-  background: #fff;
+  padding: var(--gi-spacing-xs);
+  background: var(--gi-color-container-bg);
 }
 
 .approvals-list {
-  padding-top: 8px;
+  padding-top: var(--gi-spacing-sm);
 }
 
 .approval-item {
-  margin-bottom: 12px;
+  margin-bottom: var(--gi-spacing-ssm);
 }
 
 .approval-item:last-child {
@@ -137,14 +137,14 @@ const getStepStatus = (index, step) => {
 
 .approval-divider {
   height: 1px;
-  background-color: #f0f0f0;
-  margin: 12px 0;
+  background-color: color-mix(in srgb, var(--gi-color-border), #ffffff 22%);
+  margin: var(--gi-spacing-ssm) 0;
 }
 
 .approval-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 8px 24px;
+  gap: var(--gi-spacing-sm) var(--gi-spacing-lg);
   align-items: center;
 }
 
@@ -155,19 +155,21 @@ const getStepStatus = (index, step) => {
 }
 
 .info-label {
-  font-size: 14px;
+  font-size: var(--gi-font-size-body);
+  color: var(--gi-color-text-secondary);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .info-value {
-  font-size: 14px;
+  font-size: var(--gi-font-size-body);
+  color: var(--gi-color-text-primary);
   word-break: break-word;
 }
 
 .approval-msg {
   display: flex;
-  gap: 4px;
+  gap: var(--gi-spacing-xs);
   margin-top: 2px;
   padding-top: 2px;
 }
@@ -183,9 +185,9 @@ const getStepStatus = (index, step) => {
 }
 
 .approval-type-hint {
-  margin-top: 8px;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 12px;
+  margin-top: var(--gi-spacing-sm);
+  color: var(--gi-color-text-tertiary);
+  font-size: var(--gi-font-size-caption);
   font-style: italic;
 }
 

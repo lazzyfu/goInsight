@@ -1,8 +1,8 @@
 <template>
   <!-- 工单操作按钮 -->
-  <a-space wrap>
+  <a-space wrap class="header-action-group">
     <!-- 主操作按钮 -->
-    <a-button v-if="showMainButton" @click="openMainModal">
+    <a-button v-if="showMainButton" type="primary" @click="openMainModal">
       {{ uiData.btnTitle }}
     </a-button>
 
@@ -357,7 +357,21 @@ const handleCopyAsNewOrder = () => {
 </script>
 
 <style scoped>
+.header-action-group {
+  gap: var(--gi-spacing-xs) var(--gi-spacing-sm);
+}
+
+.header-action-group :deep(.ant-btn) {
+  border-radius: var(--gi-radius-md);
+}
+
 .modal-field-full-width {
   width: 100%;
+}
+
+@media (max-width: 767px) {
+  .header-action-group {
+    width: 100%;
+  }
 }
 </style>

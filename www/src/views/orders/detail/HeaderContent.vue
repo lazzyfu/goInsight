@@ -20,23 +20,11 @@
 
 <script setup>
 import { computed } from 'vue'
+import { normalizeClaimUsers } from './orderDetailModel'
 
 const props = defineProps({
   orderDetail: Object,
 })
 
-const claimUsersText = computed(() => {
-  const raw = props.orderDetail?.claim_users
-  if (!raw) return '无'
-  if (Array.isArray(raw)) return raw.join(', ')
-  if (typeof raw === 'string') {
-    try {
-      const users = JSON.parse(raw)
-      return Array.isArray(users) && users.length > 0 ? users.join(', ') : '无'
-    } catch {
-      return raw
-    }
-  }
-  return '无'
-})
+const claimUsersText = computed(() => normalizeClaimUsers(props.orderDetail?.claim_users))
 </script>

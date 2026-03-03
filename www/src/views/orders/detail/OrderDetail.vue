@@ -1,42 +1,44 @@
 <template>
-  <div class="components-page-header-responsive">
-    <a-page-header
-      :title="orderDetail.title"
-      class="site-page-header"
-      :avatar="{ src: userStore.avatar || '/avatar.png' }"
-      @back="() => $router.go(-1)"
-    >
-      <template #tags>
-        <template v-if="orderDetail.progress">
-          <a-tag :color="getOrderStatusMeta(orderDetail.progress).color">
-            {{ getOrderStatusMeta(orderDetail.progress).text }}
-          </a-tag>
+  <div class="order-detail-page gi-page-shell">
+    <div class="components-page-header-responsive">
+      <a-page-header
+        :title="orderDetail.title"
+        class="site-page-header"
+        :avatar="{ src: userStore.avatar || '/avatar.png' }"
+        @back="() => $router.go(-1)"
+      >
+        <template #tags>
+          <template v-if="orderDetail.progress">
+            <a-tag :color="getOrderStatusMeta(orderDetail.progress).color">
+              {{ getOrderStatusMeta(orderDetail.progress).text }}
+            </a-tag>
+          </template>
         </template>
-      </template>
-      <template #extra>
-        <header-extra :order-detail="orderDetail" @refresh="refresh" />
-      </template>
-      <header-content :order-detail="orderDetail" />
-    </a-page-header>
-  </div>
-
-  <a-card size="small" title="审批流" class="detail-section-card">
-    <approval-steps :approval-status="approvalStatus" />
-  </a-card>
-
-  <a-card size="small" title="操作日志" class="detail-section-card">
-    <div class="order-logs-container">
-      <a-timeline>
-        <a-timeline-item v-for="(item, index) in orderLogs" :key="index">
-          {{ item.created_at }} {{ item.msg }}
-        </a-timeline-item>
-      </a-timeline>
+        <template #extra>
+          <header-extra :order-detail="orderDetail" @refresh="refresh" />
+        </template>
+        <header-content :order-detail="orderDetail" />
+      </a-page-header>
     </div>
-  </a-card>
 
-  <a-card size="small" title="工单内容" class="detail-section-card">
-    <CodeMirror ref="codemirrorRef" :height="'500px'" />
-  </a-card>
+    <a-card size="small" title="审批流" class="detail-section-card">
+      <approval-steps :approval-status="approvalStatus" />
+    </a-card>
+
+    <a-card size="small" title="操作日志" class="detail-section-card">
+      <div class="order-logs-container">
+        <a-timeline>
+          <a-timeline-item v-for="(item, index) in orderLogs" :key="index">
+            {{ item.created_at }} {{ item.msg }}
+          </a-timeline-item>
+        </a-timeline>
+      </div>
+    </a-card>
+
+    <a-card size="small" title="工单内容" class="detail-section-card">
+      <CodeMirror ref="codemirrorRef" :height="'500px'" />
+    </a-card>
+  </div>
 </template>
 
 <script setup>
@@ -111,13 +113,20 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.order-detail-page {
+  gap: 0;
+}
+
 .components-page-header-responsive {
   border: 1px solid rgb(235, 237, 240);
   border-radius: 8px 8px 0 0;
+  background: var(--gi-color-container-bg);
+  box-shadow: var(--gi-shadow-sm);
 }
 
 .detail-section-card {
   margin-top: var(--gi-spacing-ssm);
+  border-radius: var(--gi-radius-card);
 }
 
 .order-logs-container {
@@ -126,5 +135,9 @@ onMounted(async () => {
   overflow-y: auto;
   overflow-x: hidden;
   word-wrap: break-word;
+}
+
+.order-logs-container :deep(.ant-timeline-item-content) {
+  color: var(--gi-color-text-secondary);
 }
 </style>
