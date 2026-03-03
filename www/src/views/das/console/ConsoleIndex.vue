@@ -52,12 +52,12 @@
                       />
                       <a-table
                         v-else
+                        class="result-table"
                         size="small"
                         bordered
                         row-key="__goinsightRowKey"
                         :data-source="uiData.tableData"
                         :scroll="tableScroll"
-                        style="min-width: 100%"
                       >
                         <a-table-column
                           v-for="item in uiData.tableColumns"
@@ -577,6 +577,10 @@ const renderExecutionMessage = (value) => {
 .result-card :deep(.ant-table-wrapper .ant-table-pagination) {
   margin: 0;
   padding: 8px 0 0;
+}
+
+.result-table {
+  min-width: 100%;
 }
 
 .result-card :deep(.ant-table) {

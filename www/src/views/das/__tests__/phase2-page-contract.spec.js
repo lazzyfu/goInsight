@@ -22,7 +22,7 @@ const DAS_CONSOLE_BATCH_FILES = [
 
 const BASELINE_COUNTS = {
   shell: 0,
-  console: 7,
+  console: 0,
 }
 
 const readFile = (file) => fs.readFileSync(path.resolve(file), 'utf-8')
@@ -43,7 +43,7 @@ describe('phase2 das page contract', () => {
     expect(countByFiles(DAS_SHELL_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.shell)
   })
 
-  it('does not increase console batch inline style baseline before migration', () => {
+  it('removes static inline styles from console batch pages', () => {
     expect(countByFiles(DAS_CONSOLE_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.console)
   })
 })
