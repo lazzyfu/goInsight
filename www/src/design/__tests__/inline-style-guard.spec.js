@@ -9,7 +9,7 @@ const PHASE1_ZERO_INLINE_STYLE_FILES = [
   'src/views/orders/detail/HeaderExtra.vue',
 ]
 
-const PHASE2_ADMIN_DAS_INLINE_STYLE_BASELINE = 50
+const PHASE2_ADMIN_DAS_INLINE_STYLE_BASELINE = 0
 
 const readFile = (file) => fs.readFileSync(path.resolve(file), 'utf-8')
 
@@ -42,7 +42,7 @@ describe('ui inline style guardrails', () => {
     }
   })
 
-  it('does not increase static inline styles in admin and das during phase2 migration', () => {
+  it('has no static inline styles in admin and das views', () => {
     const adminFiles = collectVueFiles('src/views/admin')
     const dasFiles = collectVueFiles('src/views/das')
     const allFiles = [...adminFiles, ...dasFiles]
