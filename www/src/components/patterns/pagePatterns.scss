@@ -18,6 +18,14 @@
   margin-top: var(--gi-spacing-ssm);
 }
 
+.gi-toolbar-search {
+  width: min(100%, 350px);
+}
+
+.gi-expanded-row {
+  padding: var(--gi-spacing-md);
+}
+
 .gi-page-card-shell :where(.ant-card-body) {
   padding-top: var(--gi-spacing-ssm);
 }
@@ -29,6 +37,10 @@
 
   .gi-page-toolbar-left,
   .gi-page-toolbar-right {
+    width: 100%;
+  }
+
+  .gi-toolbar-search {
     width: 100%;
   }
 }

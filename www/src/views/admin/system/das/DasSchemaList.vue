@@ -8,17 +8,27 @@
     </template>
 
     <!-- 搜索区域 -->
-    <div class="search-wrapper">
-      <!-- 搜索 -->
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索..." style="width: 350px"
-        @search="handleSearch" />
-    </div>
+    <PageToolbar>
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索..."
+        class="gi-toolbar-search"
+        @search="handleSearch"
+      />
+    </PageToolbar>
 
     <!-- 表格 -->
-    <div style="margin-top: 12px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1100 }">
+    <PageTableSection>
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.key"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1100 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'schema'">
             <router-link :to="{
@@ -41,22 +51,30 @@
           </template>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </a-card>
 
   <!-- 新增弹窗 -->
-  <DasSchemaFormModal :users="uiData.users" :environments="uiData.environments" :open="uiState.isModalOpen"
-    title="新增库权限" @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <DasSchemaFormModal
+    :users="uiData.users"
+    :environments="uiData.environments"
+    :open="uiState.isModalOpen"
+    title="新增库权限"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
 import {
-    createDasSchemasGrantApi,
-    deleteDasSchemasGrantApi,
-    getDasSchemasListGrantApi,
-    getEnvironmentsApi,
-    getUsersApi,
+  createDasSchemasGrantApi,
+  deleteDasSchemasGrantApi,
+  getDasSchemasListGrantApi,
+  getEnvironmentsApi,
+  getUsersApi,
 } from '@/api/admin'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'

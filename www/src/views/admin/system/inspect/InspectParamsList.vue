@@ -1,16 +1,27 @@
 <template>
   <a-card title="全局审核参数配置">
     <!-- 搜索区域 -->
-    <div class="search-wrapper">
-      <!-- 搜索 -->
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索参数名..." style="width: 350px"
-        @search="handleSearch" />
-    </div>
+    <PageToolbar>
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索参数名..."
+        class="gi-toolbar-search"
+        @search="handleSearch"
+      />
+    </PageToolbar>
 
     <!-- 表格 -->
-    <div style="margin-top: 12px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.id" :scroll="{ x: 1100 }"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange">
+    <PageTableSection>
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.id"
+        :scroll="{ x: 1100 }"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+      >
         <template #bodyCell="{ column, record }">
           <!-- 类型转换为中文显示 -->
           <template v-if="column.key === 'type'">
@@ -26,16 +37,23 @@
           </template>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <InspectParamsFormModal :open="uiState.isModalOpen" title="配置审核参数" v-model:modelValue="formState"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <InspectParamsFormModal
+    :open="uiState.isModalOpen"
+    title="配置审核参数"
+    v-model:modelValue="formState"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
 import { getInspectParamsApi, updateInspectParamsApi } from '@/api/admin'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import { EditOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'

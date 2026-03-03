@@ -6,18 +6,17 @@
     </template>
 
     <!-- 搜索区域 -->
-    <div class="search-wrapper">
-      <!-- 搜索 -->
+    <PageToolbar>
       <a-input-search
         v-model:value="uiData.searchValue"
         placeholder="搜索角色名..."
-        style="width: 350px"
+        class="gi-toolbar-search"
         @search="handleSearch"
       />
-    </div>
+    </PageToolbar>
 
     <!-- 表格 -->
-    <div style="margin-top: 12px">
+    <PageTableSection>
       <a-table
         size="small"
         :columns="uiData.tableColumns"
@@ -43,7 +42,7 @@
           </template>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
@@ -62,6 +61,8 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vu
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import RoleFormModal from './RoleFormModal.vue'
 
 // 状态

@@ -1,5 +1,5 @@
 <template>
-  <div class="flow-page">
+  <div class="flow-page gi-page-shell">
     <div class="page-hero">
       <div class="hero-content">
         <span class="hero-badge">
@@ -28,19 +28,19 @@
       </div>
     </div>
 
-    <div class="table-shell">
-      <div class="toolbar">
+    <PageTableSection class="table-shell">
+      <PageToolbar class="toolbar">
         <a-input-search
           v-model:value="uiData.searchValue"
           placeholder="搜索审批流名称、用户名"
-          style="width: 350px"
+          class="gi-toolbar-search"
           @search="handleSearch"
         />
         <div class="toolbar-tags">
           <a-tag color="processing">共 {{ pagination.total }} 条</a-tag>
           <a-tag v-if="uiData.searchValue">检索词：{{ uiData.searchValue }}</a-tag>
         </div>
-      </div>
+      </PageToolbar>
 
       <a-table
         class="flow-table"
@@ -89,7 +89,7 @@
           </div>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </div>
 
   <ApprovalFlowFormModal
@@ -137,6 +137,8 @@ import {
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import ApprovalFlowFormModal from './ApprovalFlowFormModal.vue'
 import ApprovalFlowStages from './ApprovalFlowStages.vue'
 import BindToUserFormModal from './BindToUserFormModal.vue'
@@ -432,7 +434,6 @@ onMounted(() => {
 }
 
 .table-shell {
-  margin-top: 12px;
   border: 1px solid var(--flow-border);
   border-radius: 14px;
   background: var(--flow-bg-card);
