@@ -42,10 +42,12 @@ Scope: Login / Layout shell / Order List / Order Detail / token foundation
 
 ## 3) Manual UX Spot Checks
 
-- [x] Login page desktop/tablet/mobile layout remains usable.
-- [x] Layout shell header/sider/content spacing is consistent after tokenization.
-- [x] Order list filter, statistics cards, and table still function with responsive wrap.
-- [x] Order detail status tag, action group, approval flow, log area, and SQL section render correctly.
+- [ ] Login page desktop/tablet/mobile layout remains usable.
+- [ ] Layout shell header/sider/content spacing is consistent after tokenization.
+- [ ] Order list filter, statistics cards, and table still function with responsive wrap.
+- [ ] Order detail status tag, action group, approval flow, log area, and SQL section render correctly.
+
+Note: Manual checklist items should be validated in browser after pulling this branch.
 
 ## 4) Follow-up Items (Non-blocking)
 
