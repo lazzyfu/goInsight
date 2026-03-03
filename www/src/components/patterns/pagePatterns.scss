@@ -26,6 +26,14 @@
   padding: var(--gi-spacing-md);
 }
 
+.modal-form {
+  margin-top: var(--gi-spacing-lg);
+}
+
+.modal-field-full-width {
+  width: 100%;
+}
+
 .gi-page-card-shell :where(.ant-card-body) {
   padding-top: var(--gi-spacing-ssm);
 }

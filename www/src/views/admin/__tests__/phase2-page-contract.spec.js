@@ -37,7 +37,7 @@ const ADMIN_ORG_BATCH_FILES = [
 
 const BASELINE_COUNTS = {
   list: 0,
-  form: 17,
+  form: 0,
   org: 1,
 }
 
@@ -59,7 +59,7 @@ describe('phase2 admin page contract', () => {
     expect(countByFiles(ADMIN_LIST_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.list)
   })
 
-  it('does not increase form batch inline style baseline before migration', () => {
+  it('removes static inline styles from form and modal batch pages', () => {
     expect(countByFiles(ADMIN_FORM_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.form)
   })
 

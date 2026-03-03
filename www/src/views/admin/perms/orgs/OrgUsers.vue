@@ -16,7 +16,7 @@
       <a-input-search
         v-model:value="uiData.searchValue"
         placeholder="搜索用户名、昵称、手机号、邮箱..."
-        style="width: 350px; max-width: 100%"
+        class="gi-toolbar-search"
         @search="handleSearch"
       />
       <div class="toolbar-tags">

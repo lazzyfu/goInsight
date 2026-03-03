@@ -11,7 +11,7 @@
         <a-input-search
           v-model:value="uiData.searchValue"
           placeholder="搜索用户名、昵称、手机号、邮箱..."
-          style="width: 350px"
+          class="gi-toolbar-search"
           @search="handleSearch"
         />
         <a-tag color="processing">共 {{ pagination.total }} 人</a-tag>

@@ -11,7 +11,7 @@
       :wrapper-col="{ span: 20 }"
       :model="formData"
       :rules="rules"
-      style="margin-top: 24px"
+      class="modal-form"
     >
       <a-form-item label="环境" name="environment" has-feedback>
         <a-select

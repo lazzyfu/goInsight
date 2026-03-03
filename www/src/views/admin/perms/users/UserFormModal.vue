@@ -11,7 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
-      style="margin-top: 24px"
+      class="modal-form"
     >
       <a-form-item label="用户名" name="username" has-feedback>
         <a-input v-model:value="formData.username" placeholder="请输入用户名" allow-clear />
