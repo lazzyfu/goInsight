@@ -243,3 +243,24 @@ Phase 1 通过标准：
 - 响应式适配（mobile/tablet/desktop/wide）
 - UI 验收清单执行记录
 
+## 14. 执行证据（2026-03-03）
+
+已完成的关键实现提交（`codex/ui-revamp-phase1`）：
+
+- `f40c0b47` test: add frontend token contracts with vitest
+- `54b65594` style: add global token and base stylesheet entry
+- `c2c811b5` style: bridge design tokens into antd theme
+- `34ab954d` refactor: centralize order status metadata
+- `8fcd084b` style: remove static inline styles from phase1 pages
+- `e2cb302e` feat: unify responsive layout shell pattern
+- `fc1ee6be` refactor: apply page pattern to order list
+- `706ca0e6` refactor: modernize order detail structure and sections
+- `aa4e5f8c` refactor: polish responsive login with tokenized styles
+
+验证命令（已执行）：
+
+- `cd www && npm run test:unit` -> PASS (9 files / 15 tests)
+- `cd www && npm run lint` -> PASS
+- `cd www && npm run build` -> PASS（含历史遗留告警：Sass @import deprecation、chunk size）
+
+详细检查记录见：`docs/plans/2026-03-03-ui-revamp-phase1-qa-checklist.md`
