@@ -354,6 +354,8 @@ const renderExecutionMessage = (value) => {
   --console-page-bg: #f5f7fa;
   --console-card-bg: #ffffff;
   --console-border-color: #d9d9d9;
+  --console-resizer-grip-size: 16px;
+  --console-resizer-grip-gap: 3px;
   --console-radius: 10px;
   --console-border: 1px solid var(--console-border-color);
   --console-muted: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.65));
@@ -386,7 +388,7 @@ const renderExecutionMessage = (value) => {
 }
 
 .console-main :deep(.split-wrapper .right-content) {
-  padding: 4px 0 4px var(--split-panel-gap);
+  padding: 0;
   overflow: hidden;
 }
 
@@ -398,13 +400,41 @@ const renderExecutionMessage = (value) => {
 }
 
 .console-main :deep(.split-wrapper .separator) {
+  top: 0;
+  bottom: 0;
+  border-radius: 0;
   width: 10px;
+}
+
+.console-main :deep(.split-wrapper .separator i),
+.console-main :deep(.split-wrapper .collapsed-handle i) {
+  display: none;
+}
+
+.console-main :deep(.split-wrapper .separator::before),
+.console-main :deep(.split-wrapper .collapsed-handle::before) {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: var(--console-resizer-grip-size);
+  border-radius: 1px;
+  transform: translate(-50%, -50%);
+  background: rgb(22 119 255 / 38%);
+  box-shadow: var(--console-resizer-grip-gap) 0 0 rgb(22 119 255 / 38%);
 }
 
 .console-main :deep(.split-wrapper .separator:hover),
 .console-main :deep(.split-wrapper .collapsed-handle:hover) {
   background-color: var(--ant-colorFillSecondary, #f5f5f5);
   border-color: var(--console-border-color);
+}
+
+.console-main :deep(.split-wrapper .separator:hover::before),
+.console-main :deep(.split-wrapper .collapsed-handle:hover::before) {
+  background: rgb(22 119 255 / 58%);
+  box-shadow: var(--console-resizer-grip-gap) 0 0 rgb(22 119 255 / 58%);
 }
 
 .console-workspace {
@@ -434,12 +464,12 @@ const renderExecutionMessage = (value) => {
   position: absolute;
   left: 50%;
   top: 2px;
-  width: 16px;
+  width: var(--console-resizer-grip-size);
   height: 1px;
   border-radius: 1px;
   transform: translateX(-50%);
   background: rgb(22 119 255 / 38%);
-  box-shadow: 0 3px 0 rgb(22 119 255 / 38%);
+  box-shadow: 0 var(--console-resizer-grip-gap) 0 rgb(22 119 255 / 38%);
 }
 
 .workspace-resizer:hover,
@@ -452,7 +482,7 @@ const renderExecutionMessage = (value) => {
 .workspace-resizer:hover::before,
 .workspace-resizer:focus-visible::before {
   background: rgb(22 119 255 / 58%);
-  box-shadow: 0 3px 0 rgb(22 119 255 / 58%);
+  box-shadow: 0 var(--console-resizer-grip-gap) 0 rgb(22 119 255 / 58%);
 }
 
 .result-card {
@@ -460,7 +490,7 @@ const renderExecutionMessage = (value) => {
   flex-direction: column;
   flex: 1;
   min-height: 280px;
-  border-radius: 0 0 var(--console-radius) var(--console-radius);
+  border-radius: 0;
   border: var(--console-border);
   border-top: 0;
   background: var(--console-card-bg);
@@ -590,7 +620,7 @@ const renderExecutionMessage = (value) => {
   }
 
   .result-card {
-    border-radius: var(--console-radius);
+    border-radius: 0;
     border-top: var(--console-border);
   }
 
@@ -613,8 +643,7 @@ const renderExecutionMessage = (value) => {
   }
 
   .console-main :deep(.split-wrapper .right-content) {
-    padding-top: 6px;
-    padding-left: 0;
+    padding: 0;
     min-height: 500px;
   }
 }

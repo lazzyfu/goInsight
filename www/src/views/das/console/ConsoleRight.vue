@@ -404,7 +404,7 @@ onBeforeUnmount(() => {
 .console-editor-card {
   border: 1px solid var(--console-border-color, #d9d9d9);
   border-bottom: 0;
-  border-radius: 10px 10px 0 0;
+  border-radius: 0;
   background: var(--ant-colorBgContainer, #ffffff);
   box-shadow: none;
   overflow: hidden;
@@ -448,6 +448,7 @@ onBeforeUnmount(() => {
   justify-content: flex-start;
   align-items: center;
   gap: 8px;
+  padding-bottom: 6px;
 }
 
 .console-toolbar {
@@ -495,7 +496,7 @@ onBeforeUnmount(() => {
 @media (max-width: 1200px) {
   .console-editor-card {
     border-bottom: 1px solid var(--console-border-color, #d9d9d9);
-    border-radius: 10px;
+    border-radius: 0;
   }
 
   .topbar-row {
