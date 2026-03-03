@@ -39,7 +39,7 @@
     "highlight.js": "^11.11.1",
     "less-loader": "^12.3.0",
     "lodash": "^4.17.21",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.23",
     "moment": "^2.30.1",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.3",
