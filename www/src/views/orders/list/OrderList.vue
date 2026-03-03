@@ -9,7 +9,7 @@
           v-model:value="uiData.progress"
           :options="progressOptions"
           allowClear
-          style="width: 140px"
+          class="toolbar-progress-select"
           placeholder="工单进度"
           @change="handleProgressChange"
         />
@@ -285,6 +285,10 @@ onMounted(async () => {
 .toolbar-search {
   width: 360px;
   max-width: 100%;
+}
+
+.toolbar-progress-select {
+  width: 140px;
 }
 
 .checkbox-container {

@@ -57,7 +57,7 @@
       <a-form-item v-if="uiData.modalAction === 'transfer'" label="新执行人" name="newClaimer"
         :rules="[{ required: true, message: '请选择新执行人' }]">
         <a-select v-model:value="uiData.formData.newClaimer" :options="uiData.userList"
-          :field-names="{ label: 'nick_name', value: 'username' }" allowClear style="width: 100%" />
+          :field-names="{ label: 'nick_name', value: 'username' }" allowClear class="modal-field-full-width" />
       </a-form-item>
 
       <!-- 附加信息 -->
@@ -73,7 +73,7 @@
           v-model:value="uiData.formData.confirmMsg"
           :placeholder="confirmMsgPlaceholder"
           :rows="3"
-          allow-clear style="width: 100%" />
+          allow-clear class="modal-field-full-width" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -355,3 +355,9 @@ const handleCopyAsNewOrder = () => {
   router.push({ name: 'orders.create' })
 }
 </script>
+
+<style scoped>
+.modal-field-full-width {
+  width: 100%;
+}
+</style>

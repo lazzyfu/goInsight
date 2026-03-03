@@ -20,20 +20,12 @@
     </a-page-header>
   </div>
 
-  <a-card size="small" title="审批流" style="margin-top: 12px">
+  <a-card size="small" title="审批流" class="detail-section-card">
     <approval-steps :approval-status="approvalStatus" />
   </a-card>
 
-  <a-card size="small" title="操作日志" style="margin-top: 12px">
-    <div
-      style="
-        max-height: 260px;
-        padding: 12px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        word-wrap: break-word;
-      "
-    >
+  <a-card size="small" title="操作日志" class="detail-section-card">
+    <div class="order-logs-container">
       <a-timeline>
         <a-timeline-item v-for="(item, index) in orderLogs" :key="index">
           {{ item.created_at }} {{ item.msg }}
@@ -42,8 +34,8 @@
     </div>
   </a-card>
 
-  <a-card size="small" title="工单内容" style="margin-top: 12px">
-    <CodeMirror ref="codemirrorRef" :height="'500px'"/>
+  <a-card size="small" title="工单内容" class="detail-section-card">
+    <CodeMirror ref="codemirrorRef" :height="'500px'" />
   </a-card>
 </template>
 
@@ -122,5 +114,17 @@ onMounted(async () => {
 .components-page-header-responsive {
   border: 1px solid rgb(235, 237, 240);
   border-radius: 8px 8px 0 0;
+}
+
+.detail-section-card {
+  margin-top: var(--gi-spacing-ssm);
+}
+
+.order-logs-container {
+  max-height: 260px;
+  padding: var(--gi-spacing-ssm);
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-wrap: break-word;
 }
 </style>
