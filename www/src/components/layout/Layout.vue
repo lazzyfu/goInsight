@@ -210,8 +210,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .layout {
-  min-height: 100vh;
+  height: 100vh;
   background: var(--gi-color-page-bg);
+  overflow: hidden;
 }
 
 .layout-sider {
@@ -258,7 +259,7 @@ onBeforeUnmount(() => {
 
 .layout-main {
   min-width: 0;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -328,6 +329,7 @@ onBeforeUnmount(() => {
 
 .layout-content {
   flex: 1;
+  min-height: 0;
   padding: var(--gi-spacing-md);
   background: var(--gi-color-page-bg);
   overflow: auto;
