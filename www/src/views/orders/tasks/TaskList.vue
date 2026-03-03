@@ -21,11 +21,9 @@
         :scroll="{ x: 1100 }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'progress'">
-            <template v-if="progressInfo = getProgressAlias(record.progress)">
-              <a-tag :color="progressInfo.color">
-                {{ progressInfo.text }}
-              </a-tag>
-            </template>
+            <a-tag :color="getTaskStatusMeta(record.progress).color">
+              {{ getTaskStatusMeta(record.progress).text }}
+            </a-tag>
           </template>
           <template v-else-if="column.key === 'sql'">
             <a @click="showSqlDetail(record)" title="查看完整SQL">
@@ -66,6 +64,7 @@
 
 <script setup>
 import { executeTaskApi, executebatchTasksApi, getOrderTasksApi } from '@/api/order'
+import { TASK_PROGRESS_OPTIONS, getTaskStatusMeta } from '@/views/orders/shared/orderStatusMeta'
 import {
   EyeOutlined,
   FileSearchOutlined,
@@ -81,12 +80,7 @@ import TaskStream from './TaskStream.vue'
 const route = useRoute()
 const orderID = route.params.order_id
 const taskResultData = ref({})
-const progressOptions = [
-  { value: 'PENDING', label: '待执行' },
-  { value: 'EXECUTING', label: '执行中' },
-  { value: 'COMPLETED', label: '已完成' },
-  { value: 'FAILED', label: '已失败' },
-]
+const progressOptions = TASK_PROGRESS_OPTIONS
 
 const taskStreamRef = ref(null)
 
@@ -187,19 +181,6 @@ const fetchData = async () => {
     uiData.tableData = res.data
   }
   uiState.loading = false
-}
-
-// 获取进度别名
-const getProgressAlias = (progress) => {
-  // 'PENDING', 'EXECUTING', 'COMPLETED', 'FAILED', 'PAUSED'
-  const statusMap = {
-    PENDING: { text: '待执行', color: 'default' },
-    EXECUTING: { text: '执行中', color: 'orange' },
-    PAUSED: { text: '已暂停', color: 'gray' },
-    FAILED: { text: '已失败', color: 'red' },
-    COMPLETED: { text: '已完成', color: 'green' },
-  }
-  return statusMap[progress] || { text: progress, color: 'default' }
 }
 
 // 查看SQL

@@ -56,8 +56,8 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'progress'">
-            <a-tag :color="getProgressAlias(record.progress).color" class="progress-tag">
-              {{ getProgressAlias(record.progress).text }}
+            <a-tag :color="getOrderStatusMeta(record.progress).color" class="progress-tag">
+              {{ getOrderStatusMeta(record.progress).text }}
             </a-tag>
           </template>
           <template v-if="column.key === 'title'">
@@ -80,6 +80,7 @@
 
 <script setup>
 import { getOrderListApi } from '@/api/order'
+import { ORDER_PROGRESS_OPTIONS, getOrderStatusMeta } from '@/views/orders/shared/orderStatusMeta'
 import { DatabaseOutlined } from '@ant-design/icons-vue'
 import { useIntervalFn } from '@vueuse/core'
 import { onMounted, reactive } from 'vue'
@@ -93,17 +94,7 @@ useIntervalFn(
   { immediate: false },
 )
 
-const progressOptions = [
-  { label: '待审批', value: 'PENDING' },
-  { label: '已批准', value: 'APPROVED' },
-  { label: '已驳回', value: 'REJECTED' },
-  { label: '已认领', value: 'CLAIMED' },
-  { label: '执行中', value: 'EXECUTING' },
-  { label: '已失败', value: 'FAILED' },
-  { label: '已完成', value: 'COMPLETED' },
-  { label: '已复核', value: 'REVIEWED' },
-  { label: '已撤销', value: 'REVOKED' },
-]
+const progressOptions = ORDER_PROGRESS_OPTIONS
 
 // 状态
 const uiState = reactive({
@@ -265,22 +256,6 @@ const fetchMyOrderStats = async () => {
 const refreshPageData = async () => {
   await fetchData()
   await fetchMyOrderStats()
-}
-
-// 获取进度别名
-const getProgressAlias = (progress) => {
-  const statusMap = {
-    PENDING: { text: '待审批', color: 'gold' },
-    APPROVED: { text: '已批准', color: 'blue' },
-    REJECTED: { text: '已驳回', color: 'red' },
-    CLAIMED: { text: '已认领', color: 'cyan' },
-    EXECUTING: { text: '执行中', color: 'orange' },
-    FAILED: { text: '已失败', color: 'volcano' },
-    COMPLETED: { text: '已完成', color: 'green' },
-    REVIEWED: { text: '已复核', color: 'lime' },
-    REVOKED: { text: '已撤销', color: 'default' },
-  }
-  return statusMap[progress] || { text: progress, color: 'default' }
 }
 
 onMounted(async () => {

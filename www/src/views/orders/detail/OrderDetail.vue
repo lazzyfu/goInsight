@@ -7,9 +7,9 @@
       @back="() => $router.go(-1)"
     >
       <template #tags>
-        <template v-if="progressInfo = getProgressAlias(orderDetail.progress)">
-          <a-tag :color="progressInfo.color">
-            {{ progressInfo.text }}
+        <template v-if="orderDetail.progress">
+          <a-tag :color="getOrderStatusMeta(orderDetail.progress).color">
+            {{ getOrderStatusMeta(orderDetail.progress).text }}
           </a-tag>
         </template>
       </template>
@@ -51,6 +51,7 @@
 import { getOrderApprovalStatusApi, getOrderDetailApi, getOrderLogsApi } from '@/api/order'
 import CodeMirror from '@/components/edit/Codemirror.vue'
 import { useUserStore } from '@/store/user'
+import { getOrderStatusMeta } from '@/views/orders/shared/orderStatusMeta'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ApprovalSteps from './ApprovalSteps.vue'
@@ -90,21 +91,6 @@ const getOrderLogs = async () => {
   if (res) {
     orderLogs.value = res.data
   }
-}
-
-const getProgressAlias = (progress) => {
-  const statusMap = {
-    PENDING: { text: '待审批', color: 'default' },
-    APPROVED: { text: '已批准', color: 'blue' },
-    REJECTED: { text: '已驳回', color: 'red' },
-    CLAIMED: { text: '已认领', color: 'cyan' },
-    EXECUTING: { text: '执行中', color: 'orange' },
-    COMPLETED: { text: '已完成', color: 'green' },
-    FAILED: { text: '已失败', color: 'red' },
-    REVIEWED: { text: '已复核', color: 'green' },
-    REVOKED: { text: '已撤销', color: 'gray' },
-  }
-  return statusMap[progress] || { text: progress, color: 'default' }
 }
 
 const refresh = () => {
