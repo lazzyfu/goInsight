@@ -26,6 +26,15 @@
           />
         </a-form-item>
       </a-form>
+
+      <div class="source-summary" :class="{ 'source-summary-empty': !uiData.instanceData.schema }">
+        <span class="summary-label">当前库</span>
+        <span class="summary-value">{{ uiData.instanceData.schema || '未选择数据源' }}</span>
+        <span class="summary-meta">
+          类型 {{ formatDbType(uiData.instanceData.db_type) }} ·
+          {{ uiData.searchTreeData.length }} 张表
+        </span>
+      </div>
     </div>
 
     <div class="tree-area">
@@ -272,9 +281,22 @@ const showTableMetadata = () => {
 const leftHeight = ref('auto')
 const resizeObserver = ref(null)
 
+const MOBILE_BREAKPOINT = 1200
+const isCompactViewport = () => typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT
+
+const formatDbType = (value) => {
+  return value ? String(value).toUpperCase() : '--'
+}
+
 const syncHeightWithRightPanel = () => {
+  if (isCompactViewport()) {
+    leftHeight.value = 'auto'
+    return
+  }
+
   const rightPanel = document.querySelector('.right-content')
   if (rightPanel) {
+    resizeObserver.value?.disconnect?.()
     resizeObserver.value = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const height = entry.contentRect.height
@@ -282,17 +304,41 @@ const syncHeightWithRightPanel = () => {
       }
     })
     resizeObserver.value.observe(rightPanel)
+    const initialHeight = rightPanel.getBoundingClientRect().height
+    if (initialHeight) {
+      leftHeight.value = `${Math.floor(initialHeight)}px`
+    }
+  }
+}
+
+const handleWindowResize = () => {
+  if (isCompactViewport()) {
+    leftHeight.value = 'auto'
+    return
+  }
+  const rightPanel = document.querySelector('.right-content')
+  if (rightPanel) {
+    const nextHeight = rightPanel.getBoundingClientRect().height
+    if (nextHeight) {
+      leftHeight.value = `${Math.floor(nextHeight)}px`
+    }
   }
 }
 
 onMounted(() => {
   fetchSchemas()
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleWindowResize)
+  }
   setTimeout(() => {
     syncHeightWithRightPanel()
   }, 100)
 })
 
 onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleWindowResize)
+  }
   if (resizeObserver.value) {
     resizeObserver.value.disconnect()
   }
@@ -306,19 +352,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
   box-sizing: border-box;
   background: var(--ant-colorBgContainer, #ffffff);
-  border: 1px solid var(--ant-colorSplit, #f0f0f0);
-  border-radius: var(--ant-borderRadiusLG, 8px);
+  border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
+  border-radius: var(--ant-borderRadiusLG, 10px);
+  box-shadow: 0 4px 12px rgb(15 23 42 / 4%);
 }
 
 .fixed-header {
   flex-shrink: 0;
-  padding: 10px 10px 8px;
-  border-bottom: 1px solid var(--ant-colorSplit, #f0f0f0);
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
   background: var(--ant-colorFillAlter, #fafafa);
 }
 
 .left-filter-form :deep(.ant-form-item) {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .left-filter-form :deep(.search-item) {
@@ -328,6 +375,39 @@ onBeforeUnmount(() => {
 .header-select,
 .header-search {
   width: 100%;
+}
+
+.source-summary {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
+  background: var(--ant-colorBgContainer, #ffffff);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.source-summary-empty {
+  background: var(--ant-colorFillTertiary, #fafafa);
+  border-color: var(--ant-colorBorderSecondary, #f0f0f0);
+}
+
+.summary-label {
+  font-size: 12px;
+  color: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.45));
+}
+
+.summary-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ant-colorText, #1f1f1f);
+  word-break: break-all;
+}
+
+.summary-meta {
+  font-size: 12px;
+  color: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.45));
 }
 
 .db-deleted {
@@ -340,7 +420,7 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 8px;
+  padding: 10px;
   box-sizing: border-box;
   background: var(--ant-colorBgContainer, #ffffff);
 }
@@ -357,7 +437,28 @@ onBeforeUnmount(() => {
   padding: 2px 0;
 }
 
+:deep(.ant-tree-node-content-wrapper) {
+  border-radius: 6px;
+}
+
 :deep(.ant-tree-node-content-wrapper:hover) {
   background: var(--ant-colorFillAlter, #fafafa);
+}
+
+@media (max-width: 1200px) {
+  .console-left-root {
+    min-height: 320px;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .fixed-header {
+    padding: 10px 10px 8px;
+  }
+
+  .tree-area {
+    padding: 8px;
+  }
 }
 </style>
