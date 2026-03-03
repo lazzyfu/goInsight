@@ -1,5 +1,5 @@
 <template>
-  <a-card class="sql-shell" :body-style="{ padding: '16px 16px 14px' }">
+  <a-card class="sql-shell">
     <a-tabs v-model:activeKey="activeKey" class="sql-tabs">
       <a-tab-pane key="1" tab="编辑器">
         <div class="tab-pane-content">
@@ -37,6 +37,10 @@ const activeKey = ref('1')
   border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
   box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
   background: var(--ant-colorBgContainer, #ffffff);
+}
+
+.sql-shell :deep(.ant-card-body) {
+  padding: 16px 16px 14px;
 }
 
 .sql-tabs :deep(.ant-tabs-nav) {

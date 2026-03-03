@@ -21,7 +21,7 @@ const DAS_CONSOLE_BATCH_FILES = [
 ]
 
 const BASELINE_COUNTS = {
-  shell: 7,
+  shell: 0,
   console: 7,
 }
 
@@ -39,7 +39,7 @@ describe('phase2 das page contract', () => {
     }
   })
 
-  it('does not increase shell batch inline style baseline before migration', () => {
+  it('removes static inline styles from shell batch pages', () => {
     expect(countByFiles(DAS_SHELL_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.shell)
   })
 
