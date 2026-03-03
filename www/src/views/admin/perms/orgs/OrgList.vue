@@ -48,7 +48,7 @@
           <a-input-search
             v-model:value="uiData.searchValue"
             placeholder="搜索组织名称"
-            style="width: 100%; margin-top: 14px"
+            class="tree-search-input"
           />
         </div>
 
@@ -493,6 +493,11 @@ onMounted(async () => {
   color: var(--org-text-sub);
   font-size: 12px;
   line-height: 1.6;
+}
+
+.tree-search-input {
+  width: 100%;
+  margin-top: 14px;
 }
 
 .panel-icon {

@@ -38,7 +38,7 @@ const ADMIN_ORG_BATCH_FILES = [
 const BASELINE_COUNTS = {
   list: 0,
   form: 0,
-  org: 1,
+  org: 0,
 }
 
 const readFile = (file) => fs.readFileSync(path.resolve(file), 'utf-8')
@@ -63,7 +63,7 @@ describe('phase2 admin page contract', () => {
     expect(countByFiles(ADMIN_FORM_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.form)
   })
 
-  it('does not increase org batch inline style baseline before migration', () => {
+  it('removes static inline styles from org management batch pages', () => {
     expect(countByFiles(ADMIN_ORG_BATCH_FILES)).toBeLessThanOrEqual(BASELINE_COUNTS.org)
   })
 })
