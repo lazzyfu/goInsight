@@ -37,7 +37,13 @@
               </template>
 
               <a-tabs v-model:activeKey="uiData.resultTab" size="small" class="result-tabs">
-                <a-tab-pane key="result" tab="结果集">
+                <a-tab-pane key="result">
+                  <template #tab>
+                    <span class="result-tab-label">
+                      <TableOutlined />
+                      结果集
+                    </span>
+                  </template>
                   <div class="result-pane">
                     <div ref="resultTableRegionRef" class="result-table-region">
                       <a-empty
@@ -64,7 +70,13 @@
                   </div>
                 </a-tab-pane>
 
-                <a-tab-pane key="message" tab="执行消息">
+                <a-tab-pane key="message">
+                  <template #tab>
+                    <span class="result-tab-label">
+                      <InfoCircleOutlined />
+                      执行消息
+                    </span>
+                  </template>
                   <div class="message-pane">
                     <a-empty v-if="!uiData.executionMessage" description="暂无执行消息" />
                     <pre v-else class="exec-message">{{ uiData.executionMessage }}</pre>
@@ -81,6 +93,7 @@
 
 <script setup>
 import SplitPanel from '@/components/panel/index.vue'
+import { InfoCircleOutlined, TableOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue'
 import ConsoleLeft from './ConsoleLeft.vue'
@@ -238,7 +251,7 @@ const toggleResultFullscreen = async () => {
       await exitBrowserFullscreen()
     }
     await requestElementFullscreen(resultCardEl)
-  } catch (error) {
+  } catch {
     message.warning('当前浏览器不支持结果集全屏显示')
   }
 }
@@ -332,30 +345,35 @@ const renderResultTable = (value) => {
 
 const renderExecutionMessage = (value) => {
   uiData.executionMessage = value || ''
-  if (uiData.executionMessage) {
-    uiData.resultTab = 'message'
-  }
 }
 </script>
 
 <style scoped>
 .console-page {
+  --console-primary: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.65));
+  --console-page-bg: #f5f7fa;
+  --console-card-bg: #ffffff;
+  --console-border-color: #d9d9d9;
   --console-radius: 10px;
-  --console-border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
-  --console-muted: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.45));
+  --console-border: 1px solid var(--console-border-color);
+  --console-muted: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.65));
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .console-main :deep(.split-wrapper) {
-  height: clamp(680px, 82vh, 900px);
-  max-height: clamp(680px, 82vh, 900px);
-  border-radius: 12px;
+  --split-panel-gap: 8px;
+  --split-handle-bg: var(--console-page-bg);
+  --split-handle-border: var(--console-border-color);
+  --split-handle-accent: var(--console-primary);
+  height: clamp(700px, 84vh, 940px);
+  max-height: clamp(700px, 84vh, 940px);
+  border-radius: 10px;
   border: var(--console-border);
-  background: var(--ant-colorBgLayout, #f5f5f5);
+  background: var(--console-page-bg);
   padding: 8px;
-  gap: 8px;
+  gap: 0;
 }
 
 .console-main :deep(.split-wrapper .left-content),
@@ -363,16 +381,30 @@ const renderExecutionMessage = (value) => {
   background: transparent;
 }
 
-.console-main :deep(.split-wrapper .right-content) {
+.console-main :deep(.split-wrapper .left-content) {
   padding: 0;
+}
+
+.console-main :deep(.split-wrapper .right-content) {
+  padding: 4px 0 4px var(--split-panel-gap);
   overflow: hidden;
 }
 
 .console-main :deep(.split-wrapper .separator),
 .console-main :deep(.split-wrapper .collapsed-handle) {
-  background-color: var(--ant-colorBgContainer, #ffffff);
-  border-left: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
+  background-color: var(--console-page-bg);
+  border: 1px solid var(--console-border-color);
   box-shadow: none;
+}
+
+.console-main :deep(.split-wrapper .separator) {
+  width: 10px;
+}
+
+.console-main :deep(.split-wrapper .separator:hover),
+.console-main :deep(.split-wrapper .collapsed-handle:hover) {
+  background-color: var(--ant-colorFillSecondary, #f5f5f5);
+  border-color: var(--console-border-color);
 }
 
 .console-workspace {
@@ -380,36 +412,47 @@ const renderExecutionMessage = (value) => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  gap: 8px;
+  gap: 0;
 }
 
 .workspace-resizer {
   height: 10px;
-  border-radius: 999px;
-  border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
-  background: var(--ant-colorBgContainer, #ffffff);
+  margin: -1px 0;
+  border-radius: 0;
+  border: 1px solid var(--console-border-color);
+  background: var(--ant-colorFillTertiary, #f5f5f5);
   cursor: row-resize;
   flex-shrink: 0;
   position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .workspace-resizer::before {
   content: '';
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: 48px;
-  height: 2px;
-  transform: translate(-50%, -50%);
-  background: var(--ant-colorTextQuaternary, rgba(0, 0, 0, 0.25));
-  box-shadow: 0 -4px 0 var(--ant-colorTextQuaternary, rgba(0, 0, 0, 0.25)),
-    0 4px 0 var(--ant-colorTextQuaternary, rgba(0, 0, 0, 0.25));
+  top: 2px;
+  width: 16px;
+  height: 1px;
+  border-radius: 1px;
+  transform: translateX(-50%);
+  background: rgb(22 119 255 / 38%);
+  box-shadow: 0 3px 0 rgb(22 119 255 / 38%);
 }
 
 .workspace-resizer:hover,
 .workspace-resizer:focus-visible {
-  background: var(--ant-colorFillAlter, #fafafa);
+  background: var(--ant-colorFillSecondary, #f0f0f0);
+  border-color: var(--console-border-color);
   outline: none;
+}
+
+.workspace-resizer:hover::before,
+.workspace-resizer:focus-visible::before {
+  background: rgb(22 119 255 / 58%);
+  box-shadow: 0 3px 0 rgb(22 119 255 / 58%);
 }
 
 .result-card {
@@ -417,14 +460,16 @@ const renderExecutionMessage = (value) => {
   flex-direction: column;
   flex: 1;
   min-height: 280px;
-  border-radius: var(--console-radius);
+  border-radius: 0 0 var(--console-radius) var(--console-radius);
   border: var(--console-border);
-  box-shadow: 0 6px 16px rgb(15 23 42 / 5%);
+  border-top: 0;
+  background: var(--console-card-bg);
+  box-shadow: none;
 }
 
 .result-card :deep(.ant-card-head) {
   min-height: 42px;
-  border-bottom-color: var(--ant-colorBorderSecondary, #f0f0f0);
+  border-bottom-color: var(--console-border-color);
   background: var(--ant-colorFillAlter, #fafafa);
 }
 
@@ -432,7 +477,7 @@ const renderExecutionMessage = (value) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 12px;
   min-height: 0;
 }
 
@@ -451,7 +496,18 @@ const renderExecutionMessage = (value) => {
 }
 
 .result-tabs :deep(.ant-tabs-nav) {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.result-tab-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.result-tab-label :deep(svg) {
+  font-size: 13px;
+  color: var(--ant-colorTextSecondary, rgba(0, 0, 0, 0.45));
 }
 
 .result-tabs :deep(.ant-tabs-content-holder),
@@ -474,10 +530,10 @@ const renderExecutionMessage = (value) => {
 
 .message-pane {
   overflow: auto;
-  border: var(--console-border);
-  border-radius: 8px;
-  padding: 10px;
-  background: var(--ant-colorBgContainer, #ffffff);
+  border: 0;
+  border-radius: 0;
+  padding: 12px;
+  background: var(--console-card-bg);
 }
 
 .exec-message {
@@ -525,8 +581,17 @@ const renderExecutionMessage = (value) => {
 }
 
 @media (max-width: 1200px) {
+  .console-workspace {
+    gap: 6px;
+  }
+
   .workspace-resizer {
     display: none;
+  }
+
+  .result-card {
+    border-radius: var(--console-radius);
+    border-top: var(--console-border);
   }
 
   .console-main :deep(.split-wrapper) {
@@ -548,7 +613,8 @@ const renderExecutionMessage = (value) => {
   }
 
   .console-main :deep(.split-wrapper .right-content) {
-    padding-top: 10px;
+    padding-top: 6px;
+    padding-left: 0;
     min-height: 500px;
   }
 }
@@ -556,7 +622,7 @@ const renderExecutionMessage = (value) => {
 @media (max-width: 768px) {
   .console-main :deep(.split-wrapper) {
     padding: 6px;
-    gap: 6px;
+    gap: 8px;
   }
 
   .result-card :deep(.ant-card-head) {
@@ -564,7 +630,7 @@ const renderExecutionMessage = (value) => {
   }
 
   .result-card :deep(.ant-card-body) {
-    padding: 8px;
+    padding: 10px;
   }
 }
 </style>

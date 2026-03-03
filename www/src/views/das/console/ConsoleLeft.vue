@@ -2,7 +2,7 @@
   <div class="console-left-root" :style="{ height: leftHeight }">
     <div class="fixed-header">
       <a-form layout="vertical" class="left-filter-form">
-        <a-form-item label="数据源">
+        <a-form-item>
           <a-select class="header-select" @change="loadTablesBySchema" placeholder="选择有权限的数据库">
             <a-select-option
               v-for="(s, index) in uiData.dbList"
@@ -17,7 +17,7 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="表检索" class="search-item">
+        <a-form-item class="search-item">
           <a-input-search
             class="header-search"
             placeholder="输入要搜索的表名"
@@ -354,18 +354,18 @@ onBeforeUnmount(() => {
   background: var(--ant-colorBgContainer, #ffffff);
   border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
   border-radius: var(--ant-borderRadiusLG, 10px);
-  box-shadow: 0 4px 12px rgb(15 23 42 / 4%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
 }
 
 .fixed-header {
   flex-shrink: 0;
-  padding: 12px 12px 10px;
+  padding: 10px 10px 8px;
   border-bottom: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
   background: var(--ant-colorFillAlter, #fafafa);
 }
 
 .left-filter-form :deep(.ant-form-item) {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .left-filter-form :deep(.search-item) {
@@ -378,11 +378,11 @@ onBeforeUnmount(() => {
 }
 
 .source-summary {
-  margin-top: 10px;
-  padding: 8px 10px;
+  margin-top: 8px;
+  padding: 8px;
   border-radius: 8px;
   border: 1px solid var(--ant-colorBorderSecondary, #f0f0f0);
-  background: var(--ant-colorBgContainer, #ffffff);
+  background: var(--ant-colorFillTertiary, #fafafa);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -420,7 +420,7 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px;
+  padding: 8px;
   box-sizing: border-box;
   background: var(--ant-colorBgContainer, #ffffff);
 }

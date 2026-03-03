@@ -1,272 +1,162 @@
-Name: ant-design-vue-ui
-Purpose: Generate consistent UI using Ant Design Vue for enterprise applications
+---
+name: ant-design-vue-ui
+description: Generate and refactor Vue 3 interfaces with Ant Design Vue using consistent layout, spacing, semantic colors, and component conventions. Use when building or polishing admin pages (list, detail, edit, dashboard, settings), especially for Ant Design Vue forms, tables, navigation, and status feedback in Composition API with script setup.
+---
 
-Framework
-- Vue 3
-- Ant Design Vue
-- Composition API
-- script setup
+# Ant Design Vue UI
 
-General UI Principles
-- Follow Ant Design Design System
-- Use built-in components first
-- Avoid custom styles unless necessary
-- Keep UI simple and consistent
-- Maintain spacing and layout hierarchy
+Use this skill to produce predictable, clean Ant Design Vue screens that stay close to the design system and avoid one-off styling.
 
-Layout System
+## Required Stack
 
-Use standard admin layout:
+- Use Vue 3.
+- Use Ant Design Vue.
+- Use Composition API with `script setup`.
+- Prefer Ant Design Vue built-in components before writing custom UI.
 
+## Layout Rules
+
+Use the standard admin shell:
+
+```
 Layout
- ├── Sider (Menu)
- ├── Header
- └── Content
+ |- Sider (Menu)
+ |- Header
+ `- Content
+```
 
-Rules
-- Use Layout component
-- Sidebar width 200-240px
-- Content wrapped in Card
-- Page padding 16-24px
+- Use `Layout`, `Layout.Sider`, `Layout.Header`, and `Layout.Content`.
+- Keep sidebar width between `200px` and `240px`.
+- Wrap primary page content in `a-card`.
+- Keep page padding between `16px` and `24px`.
+- Use the 24-column grid with `a-row` and `a-col`.
+- Use `gutter={16}` or `gutter={24}` for grid spacing.
 
-Grid System
-- Use 24 grid layout
-- Use Row / Col
-- Maintain spacing (gutter 16 or 24)
+Spacing tokens:
 
-Spacing Rules
-Small: 8px
-Medium: 16px
-Large: 24px
-Section: 32px
+- Small: `8px`
+- Medium: `16px`
+- Large: `24px`
+- Section: `32px`
 
----
+## Color System
 
-Color System
+Use only these semantic tokens:
 
-Primary Color
-# 1677ff
+- Primary and Info: `#1677ff`
+- Success: `#52c41a`
+- Warning: `#faad14`
+- Error: `#ff4d4f`
+- Page background: `#f5f7fa`
+- Card background: `#ffffff`
+- Primary text: `rgba(0,0,0,0.88)`
+- Secondary text: `rgba(0,0,0,0.65)`
+- Border: `#d9d9d9`
 
-Success
-# 52c41a
+Apply these rules:
 
-Warning
-# faad14
+- Use Ant Design semantic color usage instead of inventing ad-hoc colors.
+- Use primary color for important actions.
+- Use tag/status colors for operational states.
 
-Error
-# ff4d4f
+## Component Conventions
 
-Info
-# 1677ff
+Buttons:
 
-Background
-Page: #f5f7fa
-Card: #ffffff
+- Use `a-button type="primary"` for the primary action.
+- Use default `a-button` for secondary actions.
+- Use `a-button danger` for destructive actions.
+- Keep no more than two primary buttons on a page.
 
-Text Color
-Primary text: rgba(0,0,0,0.88)
-Secondary text: rgba(0,0,0,0.65)
+Forms:
 
-Border
-# d9d9d9
+- Use `a-form` for all edit/filter data entry.
+- Always provide labels and validation rules.
+- Align labels consistently.
+- Use vertical layout for complex forms.
+- Prefer `a-input`, `a-select`, `a-date-picker`, `a-switch`, `a-radio-group`, and `a-checkbox-group`.
 
-Rules
-- Use Ant Design semantic colors
-- Do not invent new colors
-- Important action uses primary color
-- Status uses Tag colors
+Tables:
 
----
+- Use `a-table` for list data.
+- Always set `rowKey`.
+- Enable pagination by default.
+- Keep columns focused; avoid over-dense tables.
+- Keep render logic simple.
+- Add sorting only when it helps the user complete tasks faster.
 
-Component Usage Rules
+Cards and navigation:
 
-Buttons
+- Use `a-card` to group important content.
+- Add card titles for major sections.
+- Avoid nested cards unless there is no cleaner structure.
+- Use `a-menu` inside sider navigation.
+- Use `a-breadcrumb` at the top of content pages.
+- Use `a-tabs` for multi-view pages.
+- Use `a-dropdown` for contextual action groups.
 
-Primary action
-a-button type="primary"
+Feedback and status:
 
-Secondary
-a-button
+- Use `message.success()` for lightweight success feedback.
+- Use `notification.error()` for prominent failures.
+- Use `modal.confirm()` for irreversible operations.
+- Use `a-spin` to indicate loading states.
+- Use `a-tag` for status display with these colors:
+  - Success: `green`
+  - Processing: `blue`
+  - Warning: `orange`
+  - Error: `red`
+  - Default: `gray`
 
-Danger
-a-button danger
+## Page Blueprints
 
-Avoid more than 2 primary buttons on a page.
+List page:
 
----
+1. Place search form at top.
+2. Place table in the center area.
+3. Place pagination at the bottom-right.
 
-Forms
+Detail page:
 
-Use
-a-form
+1. Use `a-descriptions` for key-value details.
+2. Add `a-tabs` only when content naturally splits into sections.
 
-Rules
-- Always include label
-- Use validation rules
-- Align labels
-- Complex forms use vertical layout
+Edit page:
 
-Common Inputs
-- Input
-- Select
-- DatePicker
-- Switch
-- Radio
-- Checkbox
+1. Use form-first structure.
+2. Place submit and cancel actions in a clear action row.
 
----
+Dashboard page:
 
-Tables
+1. Use cards for modules.
+2. Use `a-statistic` for headline metrics.
+3. Add charts in separate cards.
 
-Use
-a-table
+Settings page:
 
-Rules
-- Always set rowKey
-- Use pagination
-- Avoid too many columns
-- Prefer simple render logic
-- Support sorting if needed
+1. Use tabs to separate domains.
+2. Keep each tab focused around one form set.
 
-Standard Table Layout
+## Interaction Placement
 
-Card
- ├── Search Form
- └── Table
+- Place global and primary actions at the top-right.
+- Place search/filter controls at the top.
+- Keep data table or main content in the center.
+- Group related buttons together with clear priority order.
 
----
+## Generation Decision Map
 
-Cards
+- Map "list data" requests to `a-table`.
+- Map "edit data" requests to `a-form`.
+- Map "show detailed info" requests to `a-descriptions`.
+- Map "show metrics" requests to `a-statistic`.
+- Map "group content" requests to `a-card`.
+- Map "split multiple sections" requests to `a-tabs`.
 
-Use
-a-card
+## Code Style Guardrails
 
-Rules
-- Wrap important content
-- Use title
-- Avoid nested cards
-
----
-
-Navigation
-
-Use
-
-Menu
-Breadcrumb
-Tabs
-Dropdown
-
-Rules
-- Menu in sider
-- Breadcrumb at page top
-- Tabs for multi-view pages
-
----
-
-Feedback Components
-
-Use
-
-Message
-Modal
-Notification
-Alert
-Spin
-
-Rules
-
-Success
-message.success()
-
-Error
-notification.error()
-
-Confirm
-modal.confirm()
-
-Loading
-spin
-
----
-
-Status Display
-
-Use Tag
-
-Success
-green
-
-Processing
-blue
-
-Warning
-orange
-
-Error
-red
-
-Default
-gray
-
----
-
-Page Structure Rules
-
-List Page
-
-Search Form
-Table
-Pagination
-
-Detail Page
-
-Descriptions
-Tabs if needed
-
-Edit Page
-
-Form
-Submit Button
-
-Dashboard Page
-
-Card
-Statistic
-Charts
-
-Settings Page
-
-Tabs
-Forms
-
----
-
-Interaction Rules
-
-- Actions on top-right
-- Search on top
-- Table in center
-- Pagination bottom-right
-- Buttons grouped logically
-
----
-
-Code Style
-
-- Composition API
-- script setup
-- Reactive state
-- Avoid inline styles
-- Use Ant Design icons
-
----
-
-When generating UI
-
-List data → Table
-Edit data → Form
-Show info → Descriptions
-Show metrics → Statistic
-Group content → Card
-Multi sections → Tabs
+- Use Composition API state and computed values.
+- Use `script setup` syntax.
+- Avoid inline styles; prefer Ant Design props and scoped class names only when needed.
+- Use Ant Design icons for action cues.
+- Keep UI simple, hierarchical, and consistent across pages.

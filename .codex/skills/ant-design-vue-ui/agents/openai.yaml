@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ant Design Vue UI"
+  short_description: "Generate consistent Ant Design Vue admin UIs"
+  default_prompt: "Build or refactor this Vue 3 page with Ant Design Vue using script setup, semantic colors, standardized layout, and consistent component patterns."
