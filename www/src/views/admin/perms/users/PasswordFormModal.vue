@@ -11,7 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
-      style="margin-top: 24px"
+      class="modal-form"
     >
       <a-form-item label="新密码" has-feedback name="password">
         <a-input-password v-model:value="formState.password" autocomplete="off"> </a-input-password>

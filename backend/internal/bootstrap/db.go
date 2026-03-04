@@ -2,7 +2,9 @@ package bootstrap
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/lazzyfu/goinsight/internal/global"
@@ -83,6 +85,8 @@ func initializeMySQLGorm() *gorm.DB {
 		initializeGlobalInspectParams(db)
 		// 初始化系统管理员
 		initializeAdminUser(db)
+		// 初始化通知配置
+		initializeNotifySettings(db)
 		return db
 	}
 }
@@ -99,6 +103,7 @@ func initializeTables(db *gorm.DB) {
 		&commonModels.InsightInstanceEnvironments{},
 		&commonModels.InsightInstances{},
 		&commonModels.InsightInstanceSchemas{},
+		&commonModels.InsightNotifySettings{},
 		// inspect
 		&inspectModels.InsightInspectGlobalParams{},
 		&inspectModels.InsightInspectInstanceParams{},
@@ -309,4 +314,46 @@ func initializeGlobalInspectParams(db *gorm.DB) {
 			_ = db.Create(&newParam)
 		}
 	}
+}
+
+// 初始化消息通知配置（优先使用DB，首次则写入默认配置）
+func initializeNotifySettings(db *gorm.DB) {
+	const notifyConfigKeyDefault = "default"
+
+	var record commonModels.InsightNotifySettings
+	err := db.Where("config_key = ?", notifyConfigKeyDefault).First(&record).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		record = commonModels.InsightNotifySettings{
+			ConfigKey:        notifyConfigKeyDefault,
+			NoticeURL:        defaultNoticeURL(),
+			WechatEnable:     false,
+			WechatWebhook:    "",
+			DingTalkEnable:   false,
+			DingTalkWebhook:  "",
+			DingTalkKeywords: "",
+			MailEnable:       false,
+			MailUsername:     "",
+			MailPassword:     "",
+			MailHost:         "",
+			MailPort:         465,
+		}
+		if err := db.Create(&record).Error; err != nil {
+			global.App.Log.Fatal("seed notify settings failed", err.Error())
+		}
+		return
+	}
+	if err != nil {
+		global.App.Log.Fatal("load notify settings failed", err.Error())
+	}
+}
+
+func defaultNoticeURL() string {
+	address := strings.TrimSpace(global.App.Config.App.ListenAddress)
+	if address == "" {
+		return ""
+	}
+	if strings.HasPrefix(address, "http://") || strings.HasPrefix(address, "https://") {
+		return strings.TrimRight(address, "/")
+	}
+	return "http://" + strings.TrimRight(address, "/")
 }

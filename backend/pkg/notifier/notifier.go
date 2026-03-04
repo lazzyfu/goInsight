@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/lazzyfu/goinsight/internal/global"
 
@@ -162,16 +163,27 @@ func NewEmailNotifier(config EmailNotifierConfig) Notifier {
 
 // SendMessage 通过企业微信/钉钉/邮件发送通知消息给用户
 func SendMessage(subject, orderID string, users []string, msg string) {
-	// 在通知消息中添加工单链接
-	noticeURL := fmt.Sprintf("%s/orders/%s", global.App.Config.Notify.NoticeURL, orderID)
+	runtimeCfg, err := LoadRuntimeNotifyConfig()
+	if err != nil {
+		global.App.Log.Error("load runtime notify config failed:", err)
+		return
+	}
+
+	noticeURL := fmt.Sprintf("/orders/%s", orderID)
+	if runtimeCfg.NoticeURL != "" {
+		noticeURL = fmt.Sprintf("%s/orders/%s", runtimeCfg.NoticeURL, orderID)
+	}
 	msg = fmt.Sprintf("%s\n\n工单地址：%s", msg, noticeURL)
 
 	// 去重用户列表
 	newUsers := utils.RemoveDuplicate(users)
+	if len(newUsers) == 0 {
+		return
+	}
 
 	// 发送企业微信消息
-	if global.App.Config.Notify.Wechat.Enable {
-		wechatConfig := WechatNotifierConfig{Webhook: global.App.Config.Notify.Wechat.Webhook}
+	if runtimeCfg.Wechat.Enable {
+		wechatConfig := WechatNotifierConfig{Webhook: runtimeCfg.Wechat.Webhook}
 		wechatNotifier := NewWechatNotifier(wechatConfig)
 		if err := wechatNotifier.SendMessage("", newUsers, msg); err != nil {
 			global.App.Log.Error("Error sending WeChat message:", err)
@@ -179,9 +191,12 @@ func SendMessage(subject, orderID string, users []string, msg string) {
 	}
 
 	// 发送钉钉消息
-	if global.App.Config.Notify.DingTalk.Enable {
-		dingTalkConfig := DingTalkNotifierConfig{Webhook: global.App.Config.Notify.DingTalk.Webhook}
-		withKeywordsMsg := fmt.Sprintf("%s\nKeywords：%s", msg, global.App.Config.Notify.DingTalk.Keywords)
+	if runtimeCfg.DingTalk.Enable {
+		dingTalkConfig := DingTalkNotifierConfig{Webhook: runtimeCfg.DingTalk.Webhook}
+		withKeywordsMsg := msg
+		if strings.TrimSpace(runtimeCfg.DingTalk.Keywords) != "" {
+			withKeywordsMsg = fmt.Sprintf("%s\nKeywords：%s", msg, runtimeCfg.DingTalk.Keywords)
+		}
 		dingTalkNotifier := NewDingTalkNotifier(dingTalkConfig)
 		if err := dingTalkNotifier.SendMessage("", newUsers, withKeywordsMsg); err != nil {
 			global.App.Log.Error("Error sending DingTalk message:", err)
@@ -189,22 +204,29 @@ func SendMessage(subject, orderID string, users []string, msg string) {
 	}
 
 	// 发送邮件消息
-	if global.App.Config.Notify.Mail.Enable {
+	if runtimeCfg.Mail.Enable {
 		emailConfig := EmailNotifierConfig{
-			Host:     global.App.Config.Notify.Mail.Host,
-			Port:     global.App.Config.Notify.Mail.Port,
-			Username: global.App.Config.Notify.Mail.Username,
-			Password: global.App.Config.Notify.Mail.Password,
+			Host:     runtimeCfg.Mail.Host,
+			Port:     runtimeCfg.Mail.Port,
+			Username: runtimeCfg.Mail.Username,
+			Password: runtimeCfg.Mail.Password,
 		}
 		emailNotifier := NewEmailNotifier(emailConfig)
 
 		// 从数据库中获取用户邮箱
 		var usersWithEmail []string
 		var usersFromDB []models.InsightUsers
-		global.App.DB.Table("insight_users").Where("username in ?", newUsers).Scan(&usersFromDB)
+		if err := global.App.DB.Table("insight_users").Where("username in ?", newUsers).Scan(&usersFromDB).Error; err != nil {
+			global.App.Log.Error("Error loading user emails:", err)
+			return
+		}
 
 		for _, user := range usersFromDB {
-			usersWithEmail = append(usersWithEmail, user.Email)
+			email := strings.TrimSpace(user.Email)
+			if email == "" {
+				continue
+			}
+			usersWithEmail = append(usersWithEmail, email)
 		}
 
 		// 给每个用户发送邮件

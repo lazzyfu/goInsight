@@ -4,8 +4,8 @@
       <a-button type="primary" @click="handleAdd"> <PlusOutlined />新增用户 </a-button>
     </template>
 
-    <div class="search-wrapper">
-      <a-space>
+    <PageToolbar>
+      <a-space wrap>
         <a-cascader
           v-model:value="uiData.searchOrganizationKey"
           :field-names="{ label: 'title', value: 'key', children: 'children' }"
@@ -20,14 +20,14 @@
         <a-input-search
           v-model:value="uiData.searchValue"
           placeholder="搜索用户名、昵称、手机号、邮箱..."
-          style="width: 350px"
+          class="gi-toolbar-search"
           @search="handleSearch"
         />
       </a-space>
-    </div>
+    </PageToolbar>
 
     <!-- 表格 -->
-    <div style="margin-top: 12px">
+    <PageTableSection>
       <a-table
         size="middle"
         :columns="uiData.tableColumns"
@@ -94,7 +94,7 @@
           </template>
         </template>
         <template #expandedRowRender="{ record }">
-          <div style="padding: 16px">
+          <div class="gi-expanded-row">
             <a-table
               size="small"
               :columns="expandColumns"
@@ -104,7 +104,7 @@
           </div>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </a-card>
 
   <!-- 重置密码 -->
@@ -154,6 +154,8 @@ import {
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import PasswordFormModal from './PasswordFormModal.vue'
 import UserDetailModal from './UserDetailModal.vue'
 import UserFormModal from './UserFormModal.vue'

@@ -11,7 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
-      style="margin-top: 24px"
+      class="modal-form"
     >
       <a-form-item label="标题" name="title">
         <a-input v-model:value="formData.title" placeholder="为这条SQL起个名字" allow-clear />

@@ -22,7 +22,7 @@
             :field-names="{ label: 'username', value: 'uid', children: 'children' }"
             show-search
             allow-clear
-            style="width: 100%"
+            class="modal-field-full-width"
           />
         </a-form-item>
 
@@ -34,7 +34,7 @@
             :field-names="{ label: 'name', value: 'id', children: 'children' }"
             show-search
             allow-clear
-            style="width: 100%"
+            class="modal-field-full-width"
           />
         </a-form-item>
       </a-form>

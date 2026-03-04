@@ -55,20 +55,3 @@ ghost:
             "--concurrent-rowcount=false",
             "--chunk-size=800",
         ]
-
-# 消息通知配置，用于工单消息推送
-notify:
-    notice_url: "http://localhost:8083" # 消息通知和导出工单域名前缀
-    wechat:
-        enable: true
-        webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=123.com"
-    dingtalk:
-        enable: false
-        webhook: "https://oapi.dingtalk.com/robot/send?access_token=1234"
-        keywords: "goinsight"
-    mail:
-        enable: false
-        username: "xxx@163.com"
-        password: "1234.com"
-        host: "smtp.163.com"
-        port: 465

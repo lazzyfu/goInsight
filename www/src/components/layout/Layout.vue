@@ -1,50 +1,69 @@
 <template>
-  <a-layout class="layout">
-    <!-- 左侧siderbar -->
-    <a-layout-sider breakpoint="lg" collapsed-width="0" v-model:collapsed="uiState.collapsed" :trigger="null"
-      collapsible>
-      <!-- 左上角logo -->
-      <img class="logo" src="@/assets/logo.svg" />
-      <!-- 菜单 -->
-      <a-menu theme="dark" mode="inline" :openKeys="uiData.openKeys" :selectedKeys="[route.path]" :items="menuItems"
-        @select="select" @openChange="openChange">
-      </a-menu>
+  <a-layout class="layout" :style="layoutVars">
+    <a-layout-sider
+      class="layout-sider"
+      :class="{ 'is-collapsed': uiState.collapsed }"
+      :width="layoutConfig.sidebarExpandedWidth"
+      :collapsed-width="uiState.isMobile ? 0 : layoutConfig.sidebarCollapsedWidth"
+      breakpoint="lg"
+      v-model:collapsed="uiState.collapsed"
+      :trigger="null"
+      collapsible
+      @breakpoint="handleBreakpoint"
+    >
+      <div class="logo-wrap">
+        <img class="logo" src="@/assets/logo.svg" />
+      </div>
+      <a-menu
+        class="layout-menu"
+        theme="dark"
+        mode="inline"
+        :openKeys="uiData.openKeys"
+        :selectedKeys="[route.path]"
+        :items="menuItems"
+        @select="select"
+        @openChange="openChange"
+      />
     </a-layout-sider>
 
-    <a-layout>
-      <!-- 折叠图标 -->
+    <a-layout class="layout-main">
       <a-layout-header class="layout-header">
         <div class="header-left">
           <MenuUnfoldOutlined v-if="uiState.collapsed" class="trigger" @click="toggleCollapse" />
           <MenuFoldOutlined v-else class="trigger" @click="toggleCollapse" />
-          <!-- 面包屑 -->
-          <a-breadcrumb>
+          <a-breadcrumb class="layout-breadcrumb">
             <a-breadcrumb-item v-for="(item, index) in route.matched" :key="item.name">
-              <router-link v-if="item.meta.title && index !== route.matched.length - 1"
-                :to="{ path: item.path === '' ? '/' : item.path }">{{ item.meta.title }}
+              <router-link
+                v-if="item.meta.title && index !== route.matched.length - 1"
+                :to="{ path: item.path === '' ? '/' : item.path }"
+              >
+                {{ item.meta.title }}
               </router-link>
               <span v-else>{{ item.meta.title }}</span>
             </a-breadcrumb-item>
           </a-breadcrumb>
         </div>
-        <!-- 右上角用户 -->
+
         <div class="header-right">
           <a-dropdown placement="bottomRight">
             <span class="user-info">
               <a-avatar v-if="userStore.avatar" :src="userStore.avatar" />
               <a-avatar v-else src="/avatar.png" />
-              <span class="nickname">{{ userStore.nickname }}</span>
+              <span v-if="!uiState.isMobile" class="nickname">{{ userStore.nickname }}</span>
             </span>
             <template #overlay>
               <a-menu>
                 <a-menu-item @click="userCenter">
-                  <UserOutlined /> 个人中心
+                  <UserOutlined />
+                  个人中心
                 </a-menu-item>
                 <a-menu-item @click="uiState.openPasswordModal = true">
-                  <SafetyOutlined /> 修改密码
+                  <SafetyOutlined />
+                  修改密码
                 </a-menu-item>
                 <a-menu-item @click="Logout">
-                  <LogoutOutlined /> 注销登录
+                  <LogoutOutlined />
+                  注销登录
                 </a-menu-item>
               </a-menu>
             </template>
@@ -52,22 +71,25 @@
         </div>
       </a-layout-header>
 
-      <!-- 内容区域 -->
       <a-layout-content class="layout-content">
-        <router-view></router-view>
+        <div class="layout-content-inner">
+          <router-view />
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>
 
-  <UserPassword :open="uiState.openPasswordModal" @update:open="uiState.openPasswordModal = $event"></UserPassword>
+  <UserPassword :open="uiState.openPasswordModal" @update:open="uiState.openPasswordModal = $event" />
 </template>
 
 <script setup>
 defineOptions({ name: 'GoLayout' })
 
+import { layoutConfig } from '@/components/layout/layoutConfig'
 import router from '@/router'
 import { usePermissionStore } from '@/store/permission'
 import { useUserStore } from '@/store/user'
+import UserPassword from '@/views/account/settings/UserPassword.vue'
 import {
   LogoutOutlined,
   MenuFoldOutlined,
@@ -75,16 +97,13 @@ import {
   SafetyOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
-import { computed, defineAsyncComponent, h, onMounted, reactive } from 'vue'
+import { computed, defineAsyncComponent, h, onBeforeUnmount, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
-
-import UserPassword from '@/views/account/settings/UserPassword.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
 const permissionStore = usePermissionStore()
 
-// 动态加载图标组件
 const renderIcon = (iconName) => {
   if (!iconName) return undefined
   const iconComponent = defineAsyncComponent(() =>
@@ -95,6 +114,7 @@ const renderIcon = (iconName) => {
 
 const uiState = reactive({
   collapsed: false,
+  isMobile: false,
   openPasswordModal: false,
 })
 
@@ -102,10 +122,15 @@ const uiData = reactive({
   openKeys: [],
 })
 
-// 转换路由数据为菜单项
-const transformRoutesToMenuItems = (routes) => {
-  return routes
-    .filter((route) => !route.meta?.hidden) // 过滤掉 hidden 的路由
+const layoutVars = computed(() => ({
+  '--gi-layout-header-height': `${layoutConfig.headerHeight}px`,
+  '--gi-layout-sider-width': `${layoutConfig.sidebarExpandedWidth}px`,
+  '--gi-layout-sider-width-collapsed': `${layoutConfig.sidebarCollapsedWidth}px`,
+}))
+
+const transformRoutesToMenuItems = (routes) =>
+  routes
+    .filter((route) => !route.meta?.hidden)
     .map((route) => ({
       key: route.path,
       label: route.meta?.title,
@@ -113,37 +138,47 @@ const transformRoutesToMenuItems = (routes) => {
       icon: route.meta?.icon ? renderIcon(route.meta.icon) : undefined,
       children: route.children?.length ? transformRoutesToMenuItems(route.children) : undefined,
     }))
-}
 
-// 使用 permission store 的 getter
-const menuItems = computed(() => {
-  return transformRoutesToMenuItems(permissionStore.menuRoutes)
-})
+const menuItems = computed(() => transformRoutesToMenuItems(permissionStore.menuRoutes))
 
 const initializeLayoutData = async () => {
   const storedOpenKeys = sessionStorage.getItem('openKeys')
-  if (storedOpenKeys && storedOpenKeys !== null) {
+  if (storedOpenKeys) {
     uiData.openKeys = JSON.parse(storedOpenKeys)
+  }
+}
+
+const syncViewport = () => {
+  const isMobile = window.innerWidth < layoutConfig.mobileBreakpoint
+  uiState.isMobile = isMobile
+  if (isMobile) {
+    uiState.collapsed = true
+  }
+}
+
+const handleBreakpoint = (broken) => {
+  uiState.isMobile = broken
+  if (broken) {
+    uiState.collapsed = true
   }
 }
 
 const select = (value) => {
   router.push({ path: value.key })
-}
-
-const openChange = (openKeys) => {
-  if (openKeys?.length > 0) {
-    uiData.openKeys = openKeys
-    sessionStorage.setItem('openKeys', JSON.stringify(uiData.openKeys))
+  if (uiState.isMobile) {
+    uiState.collapsed = true
   }
 }
 
-// toggle
+const openChange = (openKeys) => {
+  uiData.openKeys = openKeys || []
+  sessionStorage.setItem('openKeys', JSON.stringify(uiData.openKeys))
+}
+
 const toggleCollapse = () => {
   uiState.collapsed = !uiState.collapsed
 }
 
-// 跳转到用户中心
 const userCenter = () => {
   router.push({
     name: 'account.basic',
@@ -155,94 +190,194 @@ const userCenter = () => {
 
 const Logout = () => {
   const permissionStore = usePermissionStore()
-
-  // 清除用户信息
   userStore.clear()
-
-  // 重置权限状态
   permissionStore.reset()
-
-  // 跳转到登录页
   router.push({ name: 'Login' }).then(() => {
-    // 刷新页面以清除动态路由
     window.location.reload()
   })
 }
 
-// onMounted 仅用于初始化非响应式数据（如 openKeys）
 onMounted(async () => {
   await initializeLayoutData()
+  syncViewport()
+  window.addEventListener('resize', syncViewport)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', syncViewport)
 })
 </script>
 
 <style scoped>
-/* 根布局 */
 .layout {
   height: 100vh;
-  display: flex;
+  background: var(--gi-color-page-bg);
+  overflow: hidden;
 }
 
-/* 左侧 sider（可滚） */
-.layout :deep(.ant-layout-sider) {
+.layout-sider {
   height: 100vh;
   overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(5, 17, 25, 0.18);
 }
 
-/* logo 固定高度 */
+.layout-sider :deep(.ant-layout-sider-children) {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-wrap {
+  height: 72px;
+  padding: var(--gi-spacing-md) var(--gi-spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .logo {
-  height: 60px;
-  max-width: 182px;
-  margin: 8px auto;
-  display: block;
+  width: 100%;
+  height: 38px;
+  max-width: 170px;
   object-fit: contain;
+  transition: max-width var(--gi-duration-base) ease, height var(--gi-duration-base) ease;
 }
 
-/* 右侧整体区域 */
-.layout>.ant-layout {
+.layout-sider.is-collapsed .logo-wrap {
+  padding-inline: var(--gi-spacing-xs);
+}
+
+.layout-sider.is-collapsed .logo {
+  max-width: 32px;
+  height: 32px;
+}
+
+.layout-menu {
   flex: 1;
+  padding-top: var(--gi-spacing-sm);
+}
+
+.layout-main {
+  min-width: 0;
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* header（不滚） */
 .layout-header {
-  flex: 0 0 48px;
-  height: 48px;
-  padding: 0 16px;
+  height: var(--gi-layout-header-height);
+  line-height: var(--gi-layout-header-height);
+  padding-inline: var(--gi-spacing-md);
+  border-bottom: 1px solid color-mix(in srgb, var(--gi-color-border), #ffffff 24%);
+  background: var(--gi-color-container-bg);
+  box-shadow: var(--gi-shadow-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
+  gap: var(--gi-spacing-sm);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
-/* header 内部 */
 .header-left,
 .header-right {
   display: flex;
   align-items: center;
 }
 
+.header-left {
+  min-width: 0;
+  gap: var(--gi-spacing-sm);
+}
+
+.layout-breadcrumb {
+  min-width: 0;
+}
+
+.layout-breadcrumb :deep(.ant-breadcrumb) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .trigger {
   font-size: 18px;
-  margin-right: 16px;
   cursor: pointer;
+  color: var(--gi-color-text-secondary);
+  transition: color var(--gi-duration-fast) ease;
 }
 
 .trigger:hover {
-  color: #1890ff;
+  color: var(--gi-color-primary);
+}
+
+.user-info {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gi-spacing-sm);
+  cursor: pointer;
 }
 
 .nickname {
-  margin-left: 8px;
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--gi-color-text-primary);
 }
 
-/* 内容区域（可滚） */
 .layout-content {
   flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  background: #fff;
+  min-height: 0;
+  padding: var(--gi-spacing-md);
+  background: var(--gi-color-page-bg);
+  overflow: auto;
+}
+
+.layout-content-inner {
+  min-height: calc(
+    100vh - var(--gi-layout-header-height) - var(--gi-spacing-md) - var(--gi-spacing-md)
+  );
+}
+
+@media (min-width: 1440px) {
+  .layout-content {
+    padding: var(--gi-spacing-xl);
+  }
+
+  .layout-content-inner {
+    min-height: calc(
+      100vh - var(--gi-layout-header-height) - var(--gi-spacing-xl) - var(--gi-spacing-xl)
+    );
+  }
+}
+
+@media (max-width: 1023px) {
+  .layout-header {
+    padding-inline: var(--gi-spacing-sm);
+  }
+
+  .layout-content {
+    padding: var(--gi-spacing-sm);
+  }
+
+  .layout-content-inner {
+    min-height: calc(
+      100vh - var(--gi-layout-header-height) - var(--gi-spacing-sm) - var(--gi-spacing-sm)
+    );
+  }
+}
+
+@media (max-width: 767px) {
+  .layout-content {
+    padding: var(--gi-spacing-ssm);
+  }
+
+  .layout-content-inner {
+    min-height: calc(
+      100vh - var(--gi-layout-header-height) - var(--gi-spacing-ssm) - var(--gi-spacing-ssm)
+    );
+  }
 }
 </style>

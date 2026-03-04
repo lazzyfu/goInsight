@@ -8,17 +8,27 @@
     </template>
 
     <!-- 搜索区域 -->
-    <div class="search-wrapper">
-      <!-- 搜索 -->
-      <a-input-search v-model:value="uiData.searchValue" placeholder="搜索实例..." style="width: 350px"
-        @search="handleSearch" />
-    </div>
+    <PageToolbar>
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="搜索实例..."
+        class="gi-toolbar-search"
+        @search="handleSearch"
+      />
+    </PageToolbar>
 
     <!-- 表格 -->
-    <div style="margin-top: 12px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.id"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1100 }">
+    <PageTableSection>
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.id"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1100 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'remark' && record.use_type === '工单'">
             <a-tooltip title="点击自定义实例审核参数（优先级大于全局审核参数）">
@@ -55,24 +65,32 @@
           </template>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </a-card>
 
   <!-- 新增/编辑弹窗 -->
-  <InstanceFormModal :open="uiState.isModalOpen" v-model:modelValue="formState" :environments="uiData.environments"
-    :organizations="uiData.organizations" :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
-    @update:open="uiState.isModalOpen = $event" @submit="onSubmit" />
+  <InstanceFormModal
+    :open="uiState.isModalOpen"
+    v-model:modelValue="formState"
+    :environments="uiData.environments"
+    :organizations="uiData.organizations"
+    :title="uiState.isEditMode ? '编辑数据库实例' : '新增数据库实例'"
+    @update:open="uiState.isModalOpen = $event"
+    @submit="onSubmit"
+  />
 </template>
 
 <script setup>
 import {
-    createInstancesApi,
-    deleteInstancesApi,
-    getEnvironmentsApi,
-    getInstancesApi,
-    getOrganizationsApi,
-    updateInstancesApi,
+  createInstancesApi,
+  deleteInstancesApi,
+  getEnvironmentsApi,
+  getInstancesApi,
+  getOrganizationsApi,
+  updateInstancesApi,
 } from '@/api/admin'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'

@@ -3,27 +3,6 @@
     <div class="login-shell">
       <section class="visual-panel" :style="visualStyle">
         <div class="visual-overlay"></div>
-        <div class="visual-content">
-          <p class="visual-tag">goInsight Database Platform</p>
-          <h2>让数据库变更进入可审批、可追踪、可审计的闭环</h2>
-          <p class="visual-desc">
-            从申请、审批、执行到回溯，统一管理 DDL、DML 与导出任务，提升团队协作效率与变更安全性。
-          </p>
-          <ul class="visual-points">
-            <li>
-              <SafetyOutlined />
-              工单全流程审批与权限控制
-            </li>
-            <li>
-              <DeploymentUnitOutlined />
-              多组织多角色隔离治理
-            </li>
-            <li>
-              <AuditOutlined />
-              SQL 语法检查与操作审计
-            </li>
-          </ul>
-        </div>
       </section>
       <section class="form-panel">
         <div class="login-card">
@@ -113,16 +92,15 @@ defineOptions({ name: 'UserLogin' })
 import { Login } from '@/api/login'
 import { useUserStore } from '@/store/user'
 import loginVisual from '@/assets/original2.png'
+import { normalizeOtpCode, resolveLoginTarget } from '@/views/login/loginModel'
 import {
-  AuditOutlined,
-  DeploymentUnitOutlined,
   LockOutlined,
   SafetyOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import BindOTPModal from './OTP.vue'
 
 const appTitle = import.meta.env.VITE_APP_TITLE || '数据库工单平台'
@@ -132,6 +110,7 @@ const visualStyle = {
 
 const formRef = ref(null)
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const otpModalRef = ref(null)
 
@@ -189,7 +168,7 @@ const onSubmit = async () => {
       localStorage.setItem('onLine', '1')
       userStore.setToken(res.data.token)
       message.success('登录成功')
-      router.push('/')
+      router.push(resolveLoginTarget(route.query.redirect))
     } else if (res?.code === '4001') {
       // 需要绑定 OTP
       message.warning(res.message || '需要绑定OTP')
@@ -205,8 +184,6 @@ const onSubmit = async () => {
     uiState.loading = false
   }
 }
-
-const normalizeOtpCode = (value) => (value || '').replace(/\D/g, '').slice(0, 6)
 
 const submitOtpLogin = async () => {
   if (uiState.loading) return
@@ -240,13 +217,13 @@ const backToPasswordLogin = () => {
 
 <style scoped>
 .login-page {
-  --ink-950: #0f1720;
-  --ink-700: #243947;
-  --ink-500: #4f6470;
-  --line-200: #d8e1e8;
-  --surface-100: #f5f8fa;
-  --primary-600: #0f766e;
-  --primary-700: #0b5f58;
+  --ink-950: var(--gi-color-text-primary);
+  --ink-700: var(--gi-color-text-secondary);
+  --ink-500: var(--gi-color-text-tertiary);
+  --line-200: var(--gi-color-border);
+  --surface-100: var(--gi-color-page-bg);
+  --primary-600: var(--gi-color-primary);
+  --primary-700: var(--gi-color-primary-active);
   --primary-050: rgba(15, 118, 110, 0.12);
 
   min-height: 100vh;
@@ -268,7 +245,7 @@ const backToPasswordLogin = () => {
   grid-template-columns: 6fr 4fr;
   border-radius: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--gi-color-container-bg);
   box-shadow: none;
 }
 
@@ -351,7 +328,7 @@ const backToPasswordLogin = () => {
 
 .login-card {
   width: min(440px, 100%);
-  padding: 12px 10px;
+  padding: var(--gi-spacing-ssm) 10px;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -361,14 +338,14 @@ const backToPasswordLogin = () => {
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--gi-spacing-xl);
 }
 
 .logo-icon {
   width: 48px;
   height: 48px;
-  margin: 0 auto 16px;
-  padding: 12px;
+  margin: 0 auto var(--gi-spacing-md);
+  padding: var(--gi-spacing-ssm);
   background: linear-gradient(135deg, #e4f4f1 0%, #c9ebe4 100%);
   border-radius: 12px;
   color: var(--primary-600);
@@ -458,7 +435,7 @@ const backToPasswordLogin = () => {
 }
 
 .submit-item {
-  margin-top: 24px;
+  margin-top: var(--gi-spacing-lg);
   margin-bottom: 0;
 }
 
@@ -485,12 +462,12 @@ const backToPasswordLogin = () => {
 .login-footer {
   margin-top: 28px;
   text-align: center;
-  font-size: 12px;
-  color: #9caab5;
+  font-size: var(--gi-font-size-caption);
+  color: color-mix(in srgb, var(--gi-color-text-tertiary), #fff 12%);
 }
 
 .otp-meta {
-  margin-bottom: 12px;
+  margin-bottom: var(--gi-spacing-ssm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -510,7 +487,7 @@ const backToPasswordLogin = () => {
 .otp-auto-tip {
   margin-top: -4px;
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: var(--gi-font-size-caption);
   color: var(--ink-500);
 }
 

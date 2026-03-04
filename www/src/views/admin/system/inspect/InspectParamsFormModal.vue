@@ -11,7 +11,7 @@
       :rules="rules"
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
-      style="margin-top: 24px"
+      class="modal-form"
     >
       <a-form-item label="描述" name="title" has-feedback>
         <a-input disabled v-model:value="formData.title" placeholder="" />
@@ -25,10 +25,10 @@
         <a-input disabled v-model:value="formData.type" placeholder="" />
       </a-form-item>
 
-  <a-form-item label="值" name="value" has-feedback>
+      <a-form-item label="值" name="value" has-feedback>
         <template v-if="formData.type === 'boolean'">
           <!-- ant-design-vue 的 SelectOption 在部分版本里 value 不支持 boolean，这里统一用字符串承载 -->
-          <a-select v-model:value="formData._editValue" placeholder="请选择" style="width: 100%">
+          <a-select v-model:value="formData._editValue" placeholder="请选择" class="modal-field-full-width">
             <a-select-option value="true">true</a-select-option>
             <a-select-option value="false">false</a-select-option>
           </a-select>
@@ -37,7 +37,7 @@
         <template v-else-if="formData.type === 'number'">
           <a-input-number
             v-model:value="formData._editValue"
-            style="width: 100%"
+            class="modal-field-full-width"
             :precision="0"
             placeholder="请输入数字"
           />

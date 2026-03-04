@@ -1,13 +1,24 @@
 <template>
-  <div>
-    <div class="search-wrapper">
-      <a-input-search v-model:value="uiData.searchValue" placeholder="输入要查询的SQL内容" style="width: 350px"
-        @search="handleSearch" />
-    </div>
-    <div style="margin-top: 14px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1100 }">
+  <div class="gi-page-shell das-history-page">
+    <PageToolbar>
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="输入要查询的SQL内容"
+        class="gi-toolbar-search"
+        @search="handleSearch"
+      />
+    </PageToolbar>
+    <PageTableSection>
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.key"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1100 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'username'">
             {{ record.username }}
@@ -50,16 +61,16 @@
           </template>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
 
     <a-modal v-model:open="uiState.open" title="SQL详情" width="55%" :footer="null" @ok="handleOk">
       <a-card title="原始SQL" size="small">
         <highlightjs language="sql" :code="uiData.sqltext" />
       </a-card>
-      <a-card title="重写SQL" style="margin-top: 10px" size="small">
+      <a-card title="重写SQL" class="detail-card" size="small">
         <highlightjs language="sql" :code="uiData.rewrite_sqltext" />
       </a-card>
-      <a-card title="参数" style="margin-top: 10px" size="small">
+      <a-card title="参数" class="detail-card" size="small">
         <highlightjs language="sql" :code="uiData.params" />
       </a-card>
     </a-modal>
@@ -67,6 +78,8 @@
 </template>
 <script setup>
 import { GetHistoryApi } from '@/api/das'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import {
   CheckSquareOutlined,
   ClockCircleOutlined,
@@ -327,5 +340,9 @@ onMounted(() => {
   font-family: 'Monaco', 'Menlo', monospace;
   font-size: 0.875rem;
   color: #991b1b;
+}
+
+.detail-card {
+  margin-top: 10px;
 }
 </style>

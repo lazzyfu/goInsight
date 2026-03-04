@@ -75,5 +75,5 @@ type Configuration struct {
 	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
 	Das      Das      `mapstructure:"das" json:"das" yaml:"das"`
 	Ghost    Ghost    `mapstructure:"ghost" json:"ghost" yaml:"ghost"`
-	Notify   Notify   `mapstructure:"notify" json:"notify" yaml:"notify"`
+	Notify   Notify   `mapstructure:"-" json:"notify" yaml:"-"`
 }

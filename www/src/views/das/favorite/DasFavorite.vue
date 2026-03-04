@@ -1,13 +1,24 @@
 <template>
-  <div>
-    <div class="search-wrapper">
-      <a-input-search v-model:value="uiData.searchValue" placeholder="输入SQL内容" style="width: 350px"
-        @search="handleSearch" />
-    </div>
-    <div style="margin-top: 14px">
-      <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
-        :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
-        :scroll="{ x: 1100 }">
+  <div class="gi-page-shell das-favorite-page">
+    <PageToolbar>
+      <a-input-search
+        v-model:value="uiData.searchValue"
+        placeholder="输入SQL内容"
+        class="gi-toolbar-search"
+        @search="handleSearch"
+      />
+    </PageToolbar>
+    <PageTableSection>
+      <a-table
+        size="middle"
+        :columns="uiData.tableColumns"
+        :row-key="(record) => record.key"
+        :data-source="uiData.tableData"
+        :pagination="pagination"
+        :loading="uiState.loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1100 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'sqltext'">
             <a @click="showSqlDetail(record)" title="查看完整SQL">
@@ -43,19 +54,25 @@
           </template>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
     <!-- 查看SQL -->
     <a-modal v-model:open="uiState.open" title="SQL语句" width="55%" :footer="null" @cancel="handleCancel">
       <highlightjs language="sql" :code="uiData.sqltext" />
     </a-modal>
     <!-- 更新收藏SQL -->
-    <DasFavoriteFormModal :open="uiState.isFavoritesOpen" v-model:modelValue="formState"
-      @update:open="uiState.isFavoritesOpen = $event" @submit="onSubmit" />
+    <DasFavoriteFormModal
+      :open="uiState.isFavoritesOpen"
+      v-model:modelValue="formState"
+      @update:open="uiState.isFavoritesOpen = $event"
+      @submit="onSubmit"
+    />
   </div>
 </template>
 
 <script setup>
 import { DeleteFavoritesApi, GetFavoritesApi, UpdateFavoritesApi } from '@/api/das'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import DasFavoriteFormModal from '@/views/das/favorite/DasFavoriteFormModal.vue'
 import {
   CopyOutlined,

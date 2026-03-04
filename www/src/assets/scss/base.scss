@@ -1,0 +1,60 @@
+@use '../../components/patterns/pagePatterns';
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    'PingFang SC',
+    'Noto Sans SC',
+    'Segoe UI',
+    'Microsoft YaHei UI',
+    sans-serif;
+  font-size: var(--gi-font-size-body);
+  color: var(--gi-color-text-primary);
+  background: var(--gi-color-page-bg);
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--gi-color-info);
+  text-decoration: none;
+}
+
+.gi-page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gi-spacing-md);
+}
+
+.gi-page-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gi-spacing-sm);
+}
+
+.gi-page-section {
+  background: var(--gi-color-container-bg);
+  border: 1px solid color-mix(in srgb, var(--gi-color-border), #fff 24%);
+  border-radius: var(--gi-radius-card);
+  box-shadow: var(--gi-shadow-sm);
+}

@@ -7,12 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lazzyfu/goinsight/internal/global"
-
 	"github.com/lazzyfu/goinsight/pkg/utils"
 
 	"github.com/lazzyfu/goinsight/internal/orders/api/base"
 	"github.com/lazzyfu/goinsight/internal/orders/api/file"
+	"github.com/lazzyfu/goinsight/pkg/notifier"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -170,6 +169,12 @@ func (e *ExecuteTiDBExportToFile) Run() (data base.ReturnData, err error) {
 
 	// Prepare export file metadata
 	FileSize, _ := utils.GetFileSize(encryptFilePath)
+	downloadURL := fmt.Sprintf("/orders/download/exportfile/%s", encryptFileName)
+	if noticeURL, noticeErr := notifier.LoadNoticeURL(); noticeErr != nil {
+		log(fmt.Sprintf("加载通知地址失败，已使用相对下载地址，错误：%s", noticeErr.Error()))
+	} else if noticeURL != "" {
+		downloadURL = fmt.Sprintf("%s/orders/download/exportfile/%s", noticeURL, encryptFileName)
+	}
 	data.ExportFile = base.ExportFile{
 		EncryptionKey: string(key),
 		FileName:      encryptFileName,
@@ -177,7 +182,7 @@ func (e *ExecuteTiDBExportToFile) Run() (data base.ReturnData, err error) {
 		ContentType:   "xlsx",
 		FileSize:      FileSize,
 		ExportRows:    rowCount,
-		DownloadUrl:   fmt.Sprintf("%s/orders/download/exportfile/%s", global.App.Config.Notify.NoticeURL, encryptFileName),
+		DownloadUrl:   downloadURL,
 	}
 	data.ExecuteLog = logger.String()
 	data.ExecuteCostTime = executeCostTime

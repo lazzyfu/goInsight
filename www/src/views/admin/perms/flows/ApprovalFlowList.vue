@@ -1,11 +1,7 @@
 <template>
-  <div class="flow-page">
+  <div class="flow-page gi-page-shell">
     <div class="page-hero">
       <div class="hero-content">
-        <span class="hero-badge">
-          <DeploymentUnitOutlined />
-          审批策略治理
-        </span>
         <h2>审批流管理中心</h2>
         <p>统一配置审批流阶段、可领取人和用户绑定关系，确保审批路径清晰且可追溯。</p>
         <div class="hero-stats">
@@ -16,31 +12,31 @@
         </div>
       </div>
 
-      <div class="hero-actions">
-        <a-button class="hero-action-btn" @click="handleBind">
+      <a-space class="hero-actions" wrap>
+        <a-button @click="handleBind">
           <DeploymentUnitOutlined />
           绑定流程到用户
         </a-button>
-        <a-button type="primary" class="hero-action-btn" @click="handleAdd">
+        <a-button type="primary" @click="handleAdd">
           <PlusOutlined />
           新增审批流
         </a-button>
-      </div>
+      </a-space>
     </div>
 
-    <div class="table-shell">
-      <div class="toolbar">
+    <PageTableSection class="table-shell">
+      <PageToolbar class="toolbar">
         <a-input-search
           v-model:value="uiData.searchValue"
           placeholder="搜索审批流名称、用户名"
-          style="width: 350px"
+          class="gi-toolbar-search"
           @search="handleSearch"
         />
         <div class="toolbar-tags">
           <a-tag color="processing">共 {{ pagination.total }} 条</a-tag>
           <a-tag v-if="uiData.searchValue">检索词：{{ uiData.searchValue }}</a-tag>
         </div>
-      </div>
+      </PageToolbar>
 
       <a-table
         class="flow-table"
@@ -89,7 +85,7 @@
           </div>
         </template>
       </a-table>
-    </div>
+    </PageTableSection>
   </div>
 
   <ApprovalFlowFormModal
@@ -137,6 +133,8 @@ import {
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import ApprovalFlowFormModal from './ApprovalFlowFormModal.vue'
 import ApprovalFlowStages from './ApprovalFlowStages.vue'
 import BindToUserFormModal from './BindToUserFormModal.vue'
@@ -416,23 +414,7 @@ onMounted(() => {
   color: var(--flow-text-main);
 }
 
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.hero-action-btn {
-  min-width: 126px;
-  height: 34px;
-  padding-inline: 14px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
 .table-shell {
-  margin-top: 12px;
   border: 1px solid var(--flow-border);
   border-radius: 14px;
   background: var(--flow-bg-card);

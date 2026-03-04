@@ -38,6 +38,10 @@ export const getEnvironmentsApi = (params) => get('/api/v1/admin/environments', 
 export const createEnvironmentsApi = (data) => post('/api/v1/admin/environment', data)
 export const updateEnvironmentsApi = (data) => put(`/api/v1/admin/environment/${data.id}`, data)
 export const deleteEnvironmentsApi = (data) => del(`/api/v1/admin/environment/${data}`, data)
+// 消息通知
+export const getNotifyConfigApi = () => get('/api/v1/admin/notify')
+export const updateNotifyConfigApi = (data) => put('/api/v1/admin/notify', data)
+export const testNotifyConfigApi = (channel) => post('/api/v1/admin/notify/test', { channel })
 // inspect
 export const getInspectParamsApi = (params) => get('/api/v1/admin/inspect/params', params)
 export const updateInspectParamsApi = (data) => put(`/api/v1/admin/inspect/params/${data.id}`, data)

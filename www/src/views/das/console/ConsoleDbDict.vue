@@ -7,11 +7,11 @@
           <div
             v-for="(item, idx) in dictIndexItems"
             :key="item.tableName + idx"
-            style="margin-top: 8px; padding-left: 12px"
+            class="dict-index-item"
           >
             <a
               :href="'#' + item.tableName"
-              style="color: #1890ff; text-decoration: none; font-weight: 500"
+              class="dict-index-link"
             >
               {{ idx + 1 }}、{{ item.tableName }} ............ {{ item.tableComment }}
             </a>
@@ -23,7 +23,7 @@
         <div v-for="(section, idx) in dictSections" :key="section.tableName + idx" class="table-container">
           <a
             :id="section.tableName"
-            style="color: #262626; font-weight: 600; font-size: 14px"
+            class="dict-section-title"
           >
             {{ idx + 1 }}、表名: {{ section.tableName }} 备注: {{ section.tableComment }} 创建时间: {{ section.createTime }}
           </a>
@@ -136,6 +136,23 @@ defineExpose({
 
 
 <style scoped>
+.dict-index-item {
+  margin-top: 8px;
+  padding-left: 12px;
+}
+
+.dict-index-link {
+  color: #1890ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dict-section-title {
+  color: #262626;
+  font-weight: 600;
+  font-size: 14px;
+}
+
 :deep(.dict-title) {
   color: #262626;
   font-size: 18px;

@@ -1,64 +1,69 @@
 <template>
-  <div class="console-topbar">
-    <a-tabs
-      class="console-tabs"
-      v-model="uiData.activeKey"
-      type="editable-card"
-      size="small"
-      @edit="handleTabEdit"
-      @change="handleTabChange"
-    >
-      <a-tab-pane
-        v-for="pane in uiData.panes"
-        :key="pane.key"
-        :tab="pane.title"
-        :closable="pane.closable"
-      >
-      </a-tab-pane>
-    </a-tabs>
+  <div class="console-editor-card">
+    <div class="console-topbar">
+      <div class="topbar-row">
+        <a-tabs
+          class="console-tabs"
+          v-model="uiData.activeKey"
+          type="editable-card"
+          size="small"
+          @edit="handleTabEdit"
+          @change="handleTabChange"
+        >
+          <a-tab-pane
+            v-for="pane in uiData.panes"
+            :key="pane.key"
+            :tab="pane.title"
+            :closable="pane.closable"
+          >
+          </a-tab-pane>
+        </a-tabs>
+      </div>
 
-    <a-space class="console-toolbar" size="small" wrap>
-      <a-button type="primary" @click="executeSqlQuery()">
-        <template #icon>
-          <PlayCircleOutlined />
-        </template>
-        执行SQL
-      </a-button>
-      <a-button @click="formatSqlContent()">
-        <template #icon>
-          <CodeOutlined />
-        </template>
-        格式化
-      </a-button>
-      <a-tooltip title="先鼠标选中SQL，然后点击“收藏SQL”按钮">
-        <a-button @click="addToFavorites()">
+    <div class="toolbar-row">
+      <a-space class="console-toolbar" size="small" wrap>
+        <a-button type="primary" @click="executeSqlQuery()">
+            <template #icon>
+              <PlayCircleOutlined />
+            </template>
+            执行SQL
+          </a-button>
+          <a-button @click="formatSqlContent()">
+            <template #icon>
+              <CodeOutlined />
+            </template>
+            格式化
+          </a-button>
+          <a-tooltip title="先鼠标选中SQL，然后点击“收藏SQL”按钮">
+            <a-button @click="addToFavorites()">
+              <template #icon>
+                <StarOutlined />
+              </template>
+              收藏SQL
+            </a-button>
+          </a-tooltip>
+        <a-button @click="generatorDataDictionary()">
           <template #icon>
-            <StarOutlined />
+            <BookOutlined />
           </template>
-          收藏SQL
+          数据字典
         </a-button>
-      </a-tooltip>
-      <a-button @click="generatorDataDictionary()">
-        <template #icon>
-          <BookOutlined />
-        </template>
-        数据字典
-      </a-button>
-      <a-divider type="vertical" class="toolbar-divider" />
-      <a-select style="width: 120px" v-model:value="uiData.characterSet" @change="saveTabToCache">
-        <a-select-option v-for="item in characterSets" :key="item.key" :value="item.value">
-          {{ item.key }}
-        </a-select-option>
-      </a-select>
-    </a-space>
+        <a-select class="charset-select" v-model:value="uiData.characterSet" @change="saveTabToCache">
+          <a-select-option v-for="item in characterSets" :key="item.key" :value="item.value">
+            {{ item.key }}
+          </a-select-option>
+        </a-select>
+      </a-space>
+    </div>
   </div>
 
-  <div class="console-editor-wrap">
-    <a-spin :spinning="currentTabLoading" tip="Loading...">
-      <div class="console-editor-surface">
-        <CodeMirror ref="codemirrorRef" :height="'300px'" />
-      </div>
-    </a-spin>
+    <div class="console-editor-wrap">
+      <a-spin :spinning="currentTabLoading" tip="Loading...">
+        <div class="console-editor-surface">
+          <CodeMirror ref="codemirrorRef" :height="editorHeightPx" />
+        </div>
+      </a-spin>
+    </div>
   </div>
   <!-- 数据字典 -->
   <ConsoleDbDict
@@ -88,6 +93,13 @@ import { BookOutlined, CodeOutlined, PlayCircleOutlined, StarOutlined } from '@a
 import { message } from 'ant-design-vue'
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import ConsoleDbDict from './ConsoleDbDict.vue'
+
+const props = defineProps({
+  editorHeight: {
+    type: Number,
+    default: 280,
+  },
+})
 
 // 每个浏览器窗口(tab)独立：使用 sessionStorage 持久化 Console 状态
 const storage = sessionStorage
@@ -137,6 +149,8 @@ const uiData = reactive({
 const currentTabLoading = computed(() => {
   return !!runtime.tableLoadingByTab[uiData.activeKey]
 })
+
+const editorHeightPx = computed(() => `${Math.max(180, props.editorHeight || 280)}px`)
 
 const emitActiveExecutionMessage = () => {
   emit('renderExecutionMessage', runtime.queryResultMessageByTab[uiData.activeKey])
@@ -387,10 +401,34 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.console-editor-card {
+  border: 1px solid var(--console-border-color, #d9d9d9);
+  border-bottom: 0;
+  border-radius: 0;
+  background: var(--ant-colorBgContainer, #ffffff);
+  box-shadow: none;
+  overflow: hidden;
+}
+
 .console-topbar {
+  border-bottom: 1px solid var(--console-border-color, #d9d9d9);
+  background: var(--ant-colorFillAlter, #fafafa);
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+}
+
+.topbar-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.console-tabs {
+  flex: 1;
+  min-width: 0;
 }
 
 :deep(.ant-tabs-nav::before) {
@@ -405,24 +443,38 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
-.console-toolbar {
-  padding: 0 2px;
-  gap: 8px 6px;
+.toolbar-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
 }
 
-.toolbar-divider {
-  margin-inline: 2px;
+.console-toolbar {
+  padding: 0;
+  gap: 6px;
+}
+
+.charset-select {
+  width: 108px;
 }
 
 .console-editor-wrap {
-  margin-top: 6px;
+  padding: 10px;
+  background: var(--ant-colorBgContainer, #ffffff);
 }
 
 .console-editor-surface {
-  border: 1px solid var(--ant-colorSplit, #f0f0f0);
-  border-radius: var(--ant-borderRadiusLG, 8px);
+  border: 1px solid var(--console-border-color, #d9d9d9);
+  border-radius: 8px;
   background: var(--ant-colorBgContainer, #ffffff);
   overflow: hidden;
+}
+
+.console-editor-surface :deep(.cm-wrapper) {
+  border: 0;
+  border-radius: 0;
 }
 
 :deep(.cm-gutters) {
@@ -441,9 +493,29 @@ onBeforeUnmount(() => {
   word-break: break-all;
 }
 
-@media (max-width: 1080px) {
-  .toolbar-divider {
-    display: none;
+@media (max-width: 1200px) {
+  .console-editor-card {
+    border-bottom: 1px solid var(--console-border-color, #d9d9d9);
+    border-radius: 0;
+  }
+
+  .topbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 920px) {
+  .console-topbar {
+    padding: 8px;
+  }
+
+  .toolbar-row {
+    align-items: stretch;
+  }
+
+  .charset-select {
+    width: 120px;
   }
 }
 </style>

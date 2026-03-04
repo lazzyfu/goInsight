@@ -109,6 +109,11 @@ const startDrag = (e) => {
 .themeBgColor(@classNames);
 
 .split-wrapper {
+  --split-handle-bg: var(--ant-colorFillSecondary, #f5f7fa);
+  --split-handle-border: var(--ant-colorBorder, #d9d9d9);
+  --split-handle-accent: var(--ant-colorPrimary, #1677ff);
+  --split-panel-gap: 14px;
+  --split-separator-width: 12px;
   position: relative;
   display: flex;
   width: 100%;
@@ -126,29 +131,41 @@ const startDrag = (e) => {
       flex: 1;
       min-height: 0;
       overflow: hidden;
-      padding: 5px;
+      padding: 10px calc(var(--split-panel-gap) + var(--split-separator-width)) 10px 10px;
     }
 
     .separator {
       display: flex;
       position: absolute;
-      top: 0;
+      top: 10px;
       right: 0;
+      bottom: 10px;
       align-items: center;
       justify-content: center;
-      width: 14px;
-      height: 100%;
-      background-color: #f7f7f7;
-      box-shadow:
-        -4px -2px 4px -5px rgb(0 0 0 / 35%),
-        4px 3px 4px -5px rgb(0 0 0 / 35%);
+      width: var(--split-separator-width);
+      height: auto;
+      border: 1px solid var(--split-handle-border);
+      border-radius: 999px;
+      background-color: var(--split-handle-bg);
+      box-shadow: none;
       cursor: col-resize;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
 
       i {
         width: 2px;
-        height: 24px;
+        height: 18px;
         margin: 0 1px;
-        background-color: #c0c4cc;
+        border-radius: 1px;
+        background-color: rgb(22 119 255 / 38%);
+      }
+
+      &:hover {
+        border-color: var(--split-handle-accent);
+        background-color: rgb(22 119 255 / 12%);
+
+        i {
+          background-color: rgb(22 119 255 / 58%);
+        }
       }
     }
   }
@@ -156,7 +173,7 @@ const startDrag = (e) => {
   .right-content {
     background-color: #ffffff;
     flex: 1;
-    padding-left: 8px;
+    padding: 10px 0 10px var(--split-panel-gap);
     box-sizing: border-box;
   }
 
@@ -171,24 +188,28 @@ const startDrag = (e) => {
     height: 100%;
     box-sizing: border-box;
     padding: 0 2px;
-    border-right: 1px solid #e9e9e9;
-    background-color: #f7f7f7;
+    border-right: 1px solid var(--split-handle-border);
+    background-color: var(--split-handle-bg);
     cursor: col-resize;
     z-index: 3;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 
     i {
       width: 2px;
-      height: 24px;
+      height: 18px;
       margin: 0 1px;
-      background-color: #c0c4cc;
+      border-radius: 1px;
+      background-color: rgb(22 119 255 / 38%);
       opacity: 0.7;
     }
 
     &:hover {
-      filter: brightness(0.96);
+      border-color: var(--split-handle-accent);
+      background-color: rgb(22 119 255 / 12%);
 
       i {
         opacity: 1;
+        background-color: rgb(22 119 255 / 58%);
       }
     }
   }

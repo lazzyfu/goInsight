@@ -239,7 +239,12 @@ func BuildMessage(msgType MessageType, params MessageParams) string {
 		if err != nil {
 			return "解析导出文件信息异常"
 		}
-		downloadURL := fmt.Sprintf("%s/orders/tasks/exports/%s", global.App.Config.Notify.NoticeURL, file.FileName)
+		downloadURL := fmt.Sprintf("/orders/tasks/exports/%s", file.FileName)
+		if noticeURL, loadErr := LoadNoticeURL(); loadErr != nil {
+			global.App.Log.Error("load notice url failed:", loadErr)
+		} else if noticeURL != "" {
+			downloadURL = fmt.Sprintf("%s/orders/tasks/exports/%s", noticeURL, file.FileName)
+		}
 		return fmt.Sprintf(
 			"您好，导出文件信息如下，请查收\n"+
 				">工单标题：%s\n"+
