@@ -26,6 +26,10 @@ func AdminRoutes(v1 *gin.RouterGroup) {
 	admin.POST("/instances/inspect/params", views.AdminCreateInstanceInspectParamsView)
 	admin.PUT("/instances/inspect/params/:id", views.AdminUpdateInstanceInspectParamsView)
 	admin.DELETE("/instances/inspect/params/:id", views.AdminDeleteInstanceInspectParamsView)
+	// 消息通知配置
+	admin.GET("/notify", views.AdminGetNotifyConfigView)
+	admin.PUT("/notify", views.AdminUpdateNotifyConfigView)
+	admin.POST("/notify/test", views.AdminTestNotifyConfigView)
 }
 
 func Routers(r *gin.Engine) {

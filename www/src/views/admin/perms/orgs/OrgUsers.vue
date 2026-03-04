@@ -1,10 +1,14 @@
 <template>
   <div class="org-users" :class="{ 'compact-mode': props.compactMode }">
     <div class="users-header">
-      <div>
-        <span class="users-caption">成员管理</span>
-        <h3>{{ props.nodeName || '当前组织' }}</h3>
-        <p>管理组织内用户绑定关系，并分配角色权限。</p>
+      <div class="users-header-info">
+        <div class="users-title">
+          <TeamOutlined class="users-title-icon" />
+          成员管理
+        </div>
+        <a-tooltip :title="props.nodeName || '当前组织'">
+          <p class="users-subtitle">{{ props.nodeName || '当前组织' }}</p>
+        </a-tooltip>
       </div>
       <a-button type="primary" @click="handleAdd">
         <PlusOutlined />
@@ -71,7 +75,7 @@ import {
   getRolesApi,
   getUsersApi,
 } from '@/api/admin'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, PlusOutlined, TeamOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
@@ -261,26 +265,33 @@ const getUsers = async () => {
   padding: 2px 2px 14px;
 }
 
-.users-caption {
-  display: inline-block;
-  color: #1f6feb;
-  font-size: 12px;
-  font-weight: 700;
-  background: rgba(31, 111, 235, 0.12);
-  padding: 3px 8px;
-  border-radius: 999px;
+.users-header-info {
+  min-width: 0;
 }
 
-.users-header h3 {
-  margin: 8px 0 6px;
-  font-size: 22px;
+.users-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #16213c;
+  font-size: 16px;
+  font-weight: 700;
 }
 
-.users-header p {
-  margin: 0;
+.users-title-icon {
+  font-size: 16px;
+  color: #1f6feb;
+}
+
+.users-subtitle {
+  margin: 6px 0 0;
   color: #5f6b8a;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(48vw, 520px);
 }
 
 .toolbar {
@@ -312,18 +323,12 @@ const getUsers = async () => {
   padding-bottom: 10px;
 }
 
-.compact-mode .users-header h3 {
-  font-size: 19px;
-  margin: 6px 0 4px;
+.compact-mode .users-title {
+  font-size: 15px;
 }
 
-.compact-mode .users-header p {
+.compact-mode .users-subtitle {
   font-size: 12px;
-}
-
-.compact-mode .users-caption {
-  font-size: 11px;
-  padding: 2px 8px;
 }
 
 .compact-mode .toolbar {
@@ -360,8 +365,8 @@ const getUsers = async () => {
     align-items: flex-start;
   }
 
-  .users-header h3 {
-    font-size: 18px;
+  .users-subtitle {
+    max-width: min(86vw, 440px);
   }
 }
 </style>

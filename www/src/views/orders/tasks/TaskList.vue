@@ -1,6 +1,6 @@
 <template>
   <a-card title="任务列表">
-    <a-space size="middle" wrap>
+    <a-space class="task-toolbar" size="middle" wrap>
       <a-button type="primary" @click="executeBatchTasks">
         <PlayCircleOutlined />
         全部执行
@@ -15,7 +15,7 @@
         @search="handleSearch" />
     </a-space>
 
-    <div style="margin-top: 12px">
+    <div class="task-table-wrapper">
       <a-table size="middle" :columns="uiData.tableColumns" :row-key="(record) => record.key"
         :data-source="uiData.tableData" :pagination="pagination" :loading="uiState.loading" @change="handleTableChange"
         :scroll="{ x: 1100 }">
@@ -223,3 +223,13 @@ onMounted(() => {
 })
 
 </script>
+
+<style scoped>
+.task-toolbar {
+  margin-bottom: 0;
+}
+
+.task-table-wrapper {
+  margin-top: var(--gi-spacing-lg);
+}
+</style>

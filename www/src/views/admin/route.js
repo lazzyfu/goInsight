@@ -73,6 +73,12 @@ const route = {
           meta: { title: '审核参数', icon: 'CheckCircleOutlined', keepAlive: true },
         },
         {
+          name: `view.admin.notify`,
+          path: '/admin/notify',
+          component: () => import('./system/notify/NotifyConfig.vue'),
+          meta: { title: '消息通知', icon: 'BellOutlined', keepAlive: true },
+        },
+        {
           name: `view.admin.das`,
           path: '/admin/das',
           component: () => import('./system/das/DasSchemaList.vue'),

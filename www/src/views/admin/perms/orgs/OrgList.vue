@@ -32,93 +32,105 @@
     </div>
 
     <div class="main-content">
-      <section class="tree-panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">
-              <ApartmentOutlined class="panel-icon" />
-              组织架构
-            </div>
-            <p class="panel-desc">点击节点后可在右侧管理成员绑定与角色关系。</p>
-          </div>
-          <a-input-search
-            v-model:value="uiData.searchValue"
-            placeholder="搜索组织名称"
-            class="tree-search-input"
-          />
-        </div>
-
-        <div class="panel-meta">
-          <span>可见节点 {{ filteredNodeCount }}</span>
-          <span v-if="uiData.selectedNodeKey">当前选中：{{ uiData.selectedNode }}</span>
-        </div>
-
-        <div class="tree-container">
-          <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
-            <a-button type="primary" @click="addRootNode">创建第一个组织</a-button>
-          </a-empty>
-          <a-tree
-            v-else
-            :tree-data="filteredTreeData"
-            :selected-keys="uiData.selectedKeys"
-            :expanded-keys="uiData.expandedKeys"
-            :auto-expand-parent="uiData.autoExpandParent"
-            block-node
-            @select="handleTreeSelect"
-            @expand="handleExpand"
-          >
-            <template #title="{ key: nodeKey, title, dataRef }">
-              <div class="tree-node" :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }">
-                <span class="tree-node-title" :title="title">
-                  <FolderOutlined class="folder-icon" />
-                  {{ title }}
-                </span>
-                <div class="tree-actions">
-                  <a-tooltip title="新增子组织">
-                    <a-button type="text" @click.stop="addChildNode(dataRef)">
-                      <PlusOutlined />
-                    </a-button>
-                  </a-tooltip>
-                  <a-tooltip title="编辑">
-                    <a-button type="text" @click.stop="editCurrentNode(dataRef)">
-                      <EditOutlined />
-                    </a-button>
-                  </a-tooltip>
-                  <a-popconfirm
-                    title="确定要删除该组织吗？"
-                    description="删除后将无法恢复"
-                    @confirm="handleDelete(dataRef)"
-                    ok-text="确定"
-                    cancel-text="取消"
-                  >
-                    <a-tooltip title="删除">
-                      <a-button type="text" danger @click.stop>
-                        <DeleteOutlined />
-                      </a-button>
-                    </a-tooltip>
-                  </a-popconfirm>
+      <SplitPanel :left-width="uiState.leftPanelWidth" :min-left-width="0" :collapsible="true" :collapse-threshold="0">
+        <template #left-content>
+          <section class="tree-panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">
+                  <ApartmentOutlined class="panel-icon" />
+                  组织架构
                 </div>
+                <p class="panel-desc">点击节点后可在右侧管理成员绑定与角色关系。</p>
+              </div>
+              <a-input-search
+                v-model:value="uiData.searchValue"
+                placeholder="搜索组织名称"
+                class="tree-search-input"
+              />
+            </div>
+
+            <div class="panel-meta">
+              <span>可见节点 {{ filteredNodeCount }}</span>
+              <span v-if="uiData.selectedNodeKey" class="selected-node-field" :title="uiData.selectedNode">
+                <span class="selected-node-label">当前选中：</span>
+                <span class="selected-node-value">{{ uiData.selectedNode }}</span>
+              </span>
+            </div>
+
+            <div class="tree-container">
+              <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
+                <a-button type="primary" @click="addRootNode">创建第一个组织</a-button>
+              </a-empty>
+              <a-tree
+                v-else
+                :tree-data="filteredTreeData"
+                :selected-keys="uiData.selectedKeys"
+                :expanded-keys="uiData.expandedKeys"
+                :auto-expand-parent="uiData.autoExpandParent"
+                block-node
+                @select="handleTreeSelect"
+                @expand="handleExpand"
+              >
+                <template #title="{ key: nodeKey, title, dataRef }">
+                  <div class="tree-node" :class="{ 'is-selected': uiData.selectedKeys.includes(nodeKey) }">
+                    <span class="tree-node-title">
+                      <FolderOutlined class="folder-icon" />
+                      <span class="tree-node-name-wrap">
+                        <a-tooltip :title="title" placement="topLeft">
+                          <span class="tree-node-name">{{ title }}</span>
+                        </a-tooltip>
+                      </span>
+                    </span>
+                    <div class="tree-actions">
+                      <a-tooltip title="新增子组织">
+                        <a-button type="text" @click.stop="addChildNode(dataRef)">
+                          <PlusOutlined />
+                        </a-button>
+                      </a-tooltip>
+                      <a-tooltip title="编辑">
+                        <a-button type="text" @click.stop="editCurrentNode(dataRef)">
+                          <EditOutlined />
+                        </a-button>
+                      </a-tooltip>
+                      <a-popconfirm
+                        title="确定要删除该组织吗？"
+                        description="删除后将无法恢复"
+                        @confirm="handleDelete(dataRef)"
+                        ok-text="确定"
+                        cancel-text="取消"
+                      >
+                        <a-tooltip title="删除">
+                          <a-button type="text" danger @click.stop>
+                            <DeleteOutlined />
+                          </a-button>
+                        </a-tooltip>
+                      </a-popconfirm>
+                    </div>
+                  </div>
+                </template>
+              </a-tree>
+            </div>
+          </section>
+        </template>
+
+        <template #right-content>
+          <section class="users-panel">
+            <template v-if="uiData.selectedNodeKey">
+              <OrgUsers :node-key="uiData.selectedNodeKey" :node-name="uiData.selectedNode" compact-mode />
+            </template>
+            <template v-else>
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <TeamOutlined />
+                </div>
+                <h3>先选择一个组织</h3>
+                <p>从左侧组织树选择节点后，即可管理该组织的成员和角色。</p>
               </div>
             </template>
-          </a-tree>
-        </div>
-      </section>
-
-      <section class="users-panel">
-        <template v-if="uiData.selectedNodeKey">
-          <OrgUsers :node-key="uiData.selectedNodeKey" :node-name="uiData.selectedNode" compact-mode />
+          </section>
         </template>
-        <template v-else>
-          <div class="empty-state">
-            <div class="empty-icon">
-              <TeamOutlined />
-            </div>
-            <h3>先选择一个组织</h3>
-            <p>从左侧组织树选择节点后，即可管理该组织的成员和角色。</p>
-            <a-button type="primary" ghost @click="addRootNode">创建根组织</a-button>
-          </div>
-        </template>
-      </section>
+      </SplitPanel>
     </div>
 
     <AddRootOrg v-model:open="uiState.isAddRootNodeOpen" @refresh="fetchData" />
@@ -141,6 +153,7 @@
 
 <script setup>
 import { deleteOrganizationsApi, getOrganizationsApi } from '@/api/admin'
+import SplitPanel from '@/components/panel/index.vue'
 import {
   ApartmentOutlined,
   DeleteOutlined,
@@ -162,6 +175,7 @@ const uiState = reactive({
   isAddRootNodeOpen: false,
   isAddChildNodeOpen: false,
   isEditNodeNameOpen: false,
+  leftPanelWidth: '420px',
 })
 
 // 数据
@@ -240,6 +254,15 @@ const filterTree = (data, keyword) => {
 }
 
 const filteredNodeCount = computed(() => getAllKeys(filteredTreeData.value).length)
+
+const getAdaptiveLeftPanelWidth = () => {
+  if (typeof window === 'undefined') return '420px'
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1440
+  if (viewportWidth <= 1200) return '360px'
+  if (viewportWidth <= 1440) return '400px'
+  if (viewportWidth <= 1680) return '420px'
+  return '460px'
+}
 
 const orgStats = computed(() => {
   const metrics = {
@@ -333,6 +356,7 @@ watch(
 
 // 初始化
 onMounted(async () => {
+  uiState.leftPanelWidth = getAdaptiveLeftPanelWidth()
   await fetchData()
 })
 </script>
@@ -427,17 +451,51 @@ onMounted(async () => {
 }
 
 .main-content {
-  display: flex;
-  gap: 14px;
   margin-top: 14px;
   min-height: calc(100vh - 220px);
 }
 
+.main-content :deep(.split-wrapper) {
+  --split-panel-gap: 10px;
+  --split-handle-bg: #f5f7fa;
+  --split-handle-border: var(--org-border);
+  height: auto;
+  min-height: calc(100vh - 220px);
+  gap: 0;
+}
+
+.main-content :deep(.split-wrapper .left-content) {
+  padding: 0;
+}
+
+.main-content :deep(.split-wrapper .right-content) {
+  padding: 0;
+  overflow: hidden;
+}
+
+.main-content :deep(.split-wrapper .separator),
+.main-content :deep(.split-wrapper .collapsed-handle) {
+  border-color: var(--org-border);
+  background-color: #f5f7fa;
+}
+
+.main-content :deep(.split-wrapper .separator) {
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  border-radius: 0;
+}
+
+.main-content :deep(.split-wrapper .separator i),
+.main-content :deep(.split-wrapper .collapsed-handle i) {
+  background-color: rgb(95 107 138 / 48%);
+}
+
 .tree-panel {
-  width: 360px;
-  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
   background: var(--org-bg-card);
-  border-radius: 16px;
+  border-radius: 0;
   border: 1px solid var(--org-border);
   box-shadow: var(--org-shadow-sm);
   display: flex;
@@ -446,9 +504,11 @@ onMounted(async () => {
 }
 
 .users-panel {
-  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   background: var(--org-bg-card);
-  border-radius: 16px;
+  border-radius: 0;
   border: 1px solid var(--org-border);
   box-shadow: var(--org-shadow-lg);
   overflow: hidden;
@@ -497,6 +557,23 @@ onMounted(async () => {
   border-bottom: 1px dashed #ebf1fc;
 }
 
+.selected-node-field {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: min(60%, 320px);
+}
+
+.selected-node-label {
+  flex-shrink: 0;
+}
+
+.selected-node-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tree-container {
   flex: 1;
   overflow-y: auto;
@@ -508,6 +585,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 8px 10px;
+  min-height: 39px;
   border-radius: 10px;
   transition: all 0.2s ease;
   margin: 3px 0;
@@ -529,11 +607,34 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 14px;
   color: #22304f;
+}
+
+.tree-node-name {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-node-name-wrap {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tree-node-name-wrap :deep(.ant-tooltip-open) {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .folder-icon {
@@ -545,6 +646,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 2px;
+  flex-shrink: 0;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -597,6 +699,8 @@ onMounted(async () => {
 }
 
 :deep(.ant-tree-treenode) {
+  display: flex;
+  align-items: center;
   padding: 0;
   width: 100%;
 }
@@ -618,8 +722,12 @@ onMounted(async () => {
 
 :deep(.ant-tree-switcher) {
   width: 24px;
-  height: 39px;
-  line-height: 39px;
+  height: auto;
+  min-height: 39px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 :deep(.ant-empty) {
@@ -663,8 +771,8 @@ onMounted(async () => {
   min-height: calc(100vh - 190px);
 }
 
-.compact-mode .tree-panel {
-  width: 320px;
+.compact-mode .main-content :deep(.split-wrapper) {
+  min-height: calc(100vh - 190px);
 }
 
 .compact-mode .panel-header {
@@ -681,6 +789,11 @@ onMounted(async () => {
 
 .compact-mode .tree-node {
   padding: 6px 8px;
+  min-height: 35px;
+}
+
+.compact-mode :deep(.ant-tree-switcher) {
+  min-height: 35px;
 }
 
 .compact-mode .empty-state {
@@ -717,12 +830,26 @@ onMounted(async () => {
   }
 
   .main-content {
-    flex-direction: column;
     min-height: auto;
   }
 
-  .tree-panel {
-    width: 100%;
+  .main-content :deep(.split-wrapper) {
+    display: block;
+    min-height: 0;
+  }
+
+  .main-content :deep(.split-wrapper .scalable) {
+    width: 100% !important;
+    max-width: none;
+  }
+
+  .main-content :deep(.split-wrapper .separator),
+  .main-content :deep(.split-wrapper .collapsed-handle) {
+    display: none;
+  }
+
+  .main-content :deep(.split-wrapper .right-content) {
+    padding-top: 12px;
   }
 
   .users-panel {
