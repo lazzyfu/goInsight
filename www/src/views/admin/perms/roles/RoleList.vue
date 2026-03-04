@@ -57,12 +57,12 @@
 
 <script setup>
 import { createRolesApi, deleteRolesApi, getRolesApi, updateRolesApi } from '@/api/admin'
+import PageTableSection from '@/components/patterns/PageTableSection.vue'
+import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
-import PageTableSection from '@/components/patterns/PageTableSection.vue'
-import PageToolbar from '@/components/patterns/PageToolbar.vue'
 import RoleFormModal from './RoleFormModal.vue'
 
 // 状态

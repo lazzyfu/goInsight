@@ -2,10 +2,6 @@
   <div class="org-page compact-mode">
     <div class="page-hero">
       <div class="hero-content">
-        <span class="hero-badge">
-          <ApartmentOutlined />
-          组织与权限治理
-        </span>
         <h2>组织管理中心</h2>
         <p>统一维护组织架构，快速查看成员归属关系，并在一个界面完成增删改查操作。</p>
         <div class="hero-stats">
@@ -23,16 +19,16 @@
           </div>
         </div>
       </div>
-      <div class="hero-actions">
-        <a-button type="primary" class="hero-action-btn" @click="addRootNode">
+      <a-space class="hero-actions" wrap>
+        <a-button type="primary" @click="addRootNode">
           <PlusOutlined />
           新增根组织
         </a-button>
-        <a-button class="hero-action-btn" :disabled="!uiData.selectedNodeKey" @click="editSelectedNode">
+        <a-button :disabled="!uiData.selectedNodeKey" @click="editSelectedNode">
           <EditOutlined />
           编辑当前组织
         </a-button>
-      </div>
+      </a-space>
     </div>
 
     <div class="main-content">
@@ -59,7 +55,7 @@
 
         <div class="tree-container">
           <a-empty v-if="uiData.treeData.length === 0" description="暂无组织数据">
-            <a-button type="primary" size="small" @click="addRootNode">创建第一个组织</a-button>
+            <a-button type="primary" @click="addRootNode">创建第一个组织</a-button>
           </a-empty>
           <a-tree
             v-else
@@ -79,12 +75,12 @@
                 </span>
                 <div class="tree-actions">
                   <a-tooltip title="新增子组织">
-                    <a-button type="text" size="small" class="action-btn" @click.stop="addChildNode(dataRef)">
+                    <a-button type="text" @click.stop="addChildNode(dataRef)">
                       <PlusOutlined />
                     </a-button>
                   </a-tooltip>
                   <a-tooltip title="编辑">
-                    <a-button type="text" size="small" class="action-btn" @click.stop="editCurrentNode(dataRef)">
+                    <a-button type="text" @click.stop="editCurrentNode(dataRef)">
                       <EditOutlined />
                     </a-button>
                   </a-tooltip>
@@ -96,7 +92,7 @@
                     cancel-text="取消"
                   >
                     <a-tooltip title="删除">
-                      <a-button type="text" size="small" class="action-btn danger" @click.stop>
+                      <a-button type="text" danger @click.stop>
                         <DeleteOutlined />
                       </a-button>
                     </a-tooltip>
@@ -430,21 +426,6 @@ onMounted(async () => {
   line-height: 1;
 }
 
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.hero-action-btn {
-  min-width: 126px;
-  height: 34px;
-  padding-inline: 14px;
-  font-size: 13px;
-  border-radius: 8px;
-}
-
 .main-content {
   display: flex;
   gap: 14px;
@@ -572,27 +553,6 @@ onMounted(async () => {
   opacity: 1;
 }
 
-.action-btn {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #5f6b86;
-  border-radius: 6px;
-}
-
-.action-btn:hover {
-  color: var(--org-accent);
-  background: rgba(31, 111, 235, 0.14);
-}
-
-.action-btn.danger:hover {
-  color: #e63c4f;
-  background: #fff2f2;
-}
-
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -701,13 +661,6 @@ onMounted(async () => {
 .compact-mode .main-content {
   margin-top: 12px;
   min-height: calc(100vh - 190px);
-}
-
-.compact-mode .hero-action-btn {
-  min-width: 120px;
-  height: 32px;
-  padding-inline: 12px;
-  font-size: 13px;
 }
 
 .compact-mode .tree-panel {

@@ -1,1 +1,6 @@
-@import 'tokens', 'base', 'layout', 'form', 'flow', 'screen';
+@use 'tokens';
+@use 'base';
+@use 'layout';
+@use 'form';
+@use 'flow';
+@use 'screen';

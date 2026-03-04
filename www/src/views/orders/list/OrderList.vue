@@ -274,7 +274,7 @@ onMounted(async () => {
 .toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--gi-spacing-ssm);
   flex-wrap: wrap;
 }
@@ -296,25 +296,24 @@ onMounted(async () => {
 }
 
 .checkbox-container {
-  height: 32px;
+  height: 40px;
   padding: 0 14px;
   display: inline-flex;
   align-items: center;
-  background: #fafbfd;
-  border: 1px solid #dbe5ec;
-  border-radius: var(--gi-radius-md);
+  background: var(--ant-colorBgContainer, #ffffff);
+  border: 1px solid var(--ant-colorBorder, #d9d9d9);
+  border-radius: var(--gi-radius-lg);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .checkbox-container:hover {
-  border-color: #b5cad7;
-  background: #f3f8fb;
+  border-color: var(--ant-colorPrimaryBorderHover, #4096ff);
 }
 
 .checkbox-container:has(.ant-checkbox-checked) {
-  border-color: #8bb0c7;
-  background: #eaf3f8;
+  border-color: var(--ant-colorPrimary, #1677ff);
+  background: var(--ant-colorBgContainer, #ffffff);
 }
 
 .overview-row {

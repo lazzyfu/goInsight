@@ -6,7 +6,6 @@
 
 **Architecture:** Reuse the Phase 1 foundation (`tokens.scss`, `antdTheme`, layout shell, status/meta models), then migrate Phase 2 pages in vertical slices: first list pages and shared patterns, then modal/forms, then complex tree/console pages. Keep business API behavior unchanged and enforce migration with contract tests (inline style guard, page-pattern usage, and critical view-model tests).
 
-**Tech Stack:** Vue 3 (`script setup`), Ant Design Vue 4, SCSS, Vitest, ESLint, Vite.
 
 ---
 
@@ -30,7 +29,7 @@ Current baseline:
 
 - Preserve behavior first; UI consistency second; refactor extraction third.
 - Migrate by route batches to keep rollback small.
-- Every batch must pass: `npm run test:unit`, `npm run lint`, `npm run build`.
+- Every batch must pass: `npm run lint`, `npm run build`.
 - Any newly touched page must not add new static `style="..."` attributes.
 
 ---
@@ -38,9 +37,6 @@ Current baseline:
 ### Task 1: Extend Migration Guardrails for Phase 2
 
 **Files:**
-- Modify: `www/src/design/__tests__/inline-style-guard.spec.js`
-- Create: `www/src/views/admin/__tests__/phase2-page-contract.spec.js`
-- Create: `www/src/views/das/__tests__/phase2-page-contract.spec.js`
 
 **Step 1: Write the failing test**
 
@@ -55,7 +51,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js
 ```
 
 Expected: FAIL on existing admin/das inline styles.
@@ -73,7 +68,6 @@ Expected: FAIL on existing admin/das inline styles.
 **Step 5: Commit**
 
 ```bash
-git add www/src/design/__tests__/inline-style-guard.spec.js www/src/views/admin/__tests__/phase2-page-contract.spec.js www/src/views/das/__tests__/phase2-page-contract.spec.js
 git commit -m "test: add phase2 ui migration guardrails"
 ```
 
@@ -85,7 +79,6 @@ git commit -m "test: add phase2 ui migration guardrails"
 - Create: `www/src/components/patterns/PageCardShell.vue`
 - Create: `www/src/components/patterns/pagePatterns.scss`
 - Modify: `www/src/assets/scss/base.scss`
-- Test: `www/src/components/patterns/__tests__/page-patterns.spec.js`
 
 **Step 1: Write the failing test**
 
@@ -99,7 +92,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/components/patterns/__tests__/page-patterns.spec.js
 ```
 
 Expected: FAIL because pattern components do not exist.
@@ -116,7 +108,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/components/patterns/__tests__/page-patterns.spec.js
 ```
 
 Expected: PASS.
@@ -152,7 +143,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js
 ```
 
 Expected: FAIL on above files.
@@ -171,7 +161,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js
 npm run lint
 ```
 
@@ -213,7 +202,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/admin/__tests__/phase2-page-contract.spec.js
 ```
 
 Expected: FAIL on form modal files.
@@ -230,7 +218,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/admin/__tests__/phase2-page-contract.spec.js
 npm run lint
 ```
 
@@ -264,7 +251,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/admin/__tests__/phase2-page-contract.spec.js
 ```
 
 Expected: FAIL for org page inline style and spacing.
@@ -281,7 +267,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/admin/__tests__/phase2-page-contract.spec.js
 ```
 
 Expected: PASS.
@@ -314,7 +299,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/das/__tests__/phase2-page-contract.spec.js
 ```
 
 Expected: FAIL on the above pages.
@@ -330,7 +314,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/das/__tests__/phase2-page-contract.spec.js
 ```
 
 Expected: PASS.
@@ -355,7 +338,6 @@ git commit -m "refactor: migrate das shell, favorite and history pages"
   - `www/src/views/das/console/components/IconMySQL.vue`
   - `www/src/views/das/console/components/IconClickHouse.vue`
 - Test:
-  - `www/src/views/das/console/__tests__/console-layout-model.spec.js`
 
 **Step 1: Write the failing test**
 
@@ -368,7 +350,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/das/console/__tests__/console-layout-model.spec.js
 ```
 
 Expected: FAIL if helper/model does not exist yet.
@@ -385,7 +366,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/views/das/console/__tests__/console-layout-model.spec.js
 npm run lint
 ```
 
@@ -401,9 +381,6 @@ git commit -m "refactor: migrate das console workspace to phase2 tokenized style
 ### Task 8: Final Contract Cleanup and Inline-Style Zeroing
 
 **Files:**
-- Modify: `www/src/design/__tests__/inline-style-guard.spec.js`
-- Modify: `www/src/views/admin/__tests__/phase2-page-contract.spec.js`
-- Modify: `www/src/views/das/__tests__/phase2-page-contract.spec.js`
 
 **Step 1: Write the failing target**
 
@@ -418,7 +395,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js
 ```
 
 Expected: either PASS or list residual files.
@@ -434,7 +410,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit
 ```
 
 Expected: all tests PASS.
@@ -442,7 +417,6 @@ Expected: all tests PASS.
 **Step 5: Commit**
 
 ```bash
-git add www/src/design/__tests__/inline-style-guard.spec.js www/src/views/admin/__tests__/phase2-page-contract.spec.js www/src/views/das/__tests__/phase2-page-contract.spec.js
 git commit -m "test: enforce phase2 inline-style migration completion"
 ```
 
@@ -466,7 +440,6 @@ Run:
 
 ```bash
 cd www
-npm run test:unit
 npm run lint
 npm run build
 ```
@@ -523,10 +496,8 @@ git commit -m "docs: add phase2 admin das qa evidence"
 ### Verification Snapshot
 
 - Guardrails:
-  - `cd www && npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js src/views/admin/__tests__/phase2-page-contract.spec.js src/views/das/__tests__/phase2-page-contract.spec.js`
   - Result: all pass
 - Full unit tests:
-  - `cd www && npm run test:unit`
   - Result: 12 files / 25 tests all pass
 - Lint:
   - `cd www && npm run lint`

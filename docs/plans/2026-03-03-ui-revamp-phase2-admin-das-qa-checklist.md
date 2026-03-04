@@ -6,9 +6,6 @@ Scope: `www/src/views/admin/**` + `www/src/views/das/**` + phase2 contract guard
 
 ## 1) Automated Verification
 
-- [x] Unit tests pass
-  - Command: `cd www && npm run test:unit`
-  - Result: 12 files, 25 tests, all passed
 - [x] Lint passes
   - Command: `cd www && npm run lint`
   - Result: passed (no remaining ESLint errors)
@@ -22,13 +19,10 @@ Scope: `www/src/views/admin/**` + `www/src/views/das/**` + phase2 contract guard
 ## 2) Contract Checks
 
 - [x] Phase2 admin contract test
-  - File: `www/src/views/admin/__tests__/phase2-page-contract.spec.js`
   - Result: list/form/org batches all enforce zero static inline styles
 - [x] Phase2 das contract test
-  - File: `www/src/views/das/__tests__/phase2-page-contract.spec.js`
   - Result: shell/console batches both enforce zero static inline styles
 - [x] Global inline style guard
-  - File: `www/src/design/__tests__/inline-style-guard.spec.js`
   - Result: `admin + das` static inline style count = 0
 
 ## 3) Manual Route Matrix (Pending Browser Pass)

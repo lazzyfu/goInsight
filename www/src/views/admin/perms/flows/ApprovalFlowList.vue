@@ -2,10 +2,6 @@
   <div class="flow-page gi-page-shell">
     <div class="page-hero">
       <div class="hero-content">
-        <span class="hero-badge">
-          <DeploymentUnitOutlined />
-          审批策略治理
-        </span>
         <h2>审批流管理中心</h2>
         <p>统一配置审批流阶段、可领取人和用户绑定关系，确保审批路径清晰且可追溯。</p>
         <div class="hero-stats">
@@ -16,16 +12,16 @@
         </div>
       </div>
 
-      <div class="hero-actions">
-        <a-button class="hero-action-btn" @click="handleBind">
+      <a-space class="hero-actions" wrap>
+        <a-button @click="handleBind">
           <DeploymentUnitOutlined />
           绑定流程到用户
         </a-button>
-        <a-button type="primary" class="hero-action-btn" @click="handleAdd">
+        <a-button type="primary" @click="handleAdd">
           <PlusOutlined />
           新增审批流
         </a-button>
-      </div>
+      </a-space>
     </div>
 
     <PageTableSection class="table-shell">
@@ -416,21 +412,6 @@ onMounted(() => {
   font-size: 20px;
   line-height: 1;
   color: var(--flow-text-main);
-}
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.hero-action-btn {
-  min-width: 126px;
-  height: 34px;
-  padding-inline: 14px;
-  border-radius: 8px;
-  font-size: 13px;
 }
 
 .table-shell {

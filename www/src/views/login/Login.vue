@@ -3,27 +3,6 @@
     <div class="login-shell">
       <section class="visual-panel" :style="visualStyle">
         <div class="visual-overlay"></div>
-        <div class="visual-content">
-          <p class="visual-tag">goInsight Database Platform</p>
-          <h2>让数据库变更进入可审批、可追踪、可审计的闭环</h2>
-          <p class="visual-desc">
-            从申请、审批、执行到回溯，统一管理 DDL、DML 与导出任务，提升团队协作效率与变更安全性。
-          </p>
-          <ul class="visual-points">
-            <li>
-              <SafetyOutlined />
-              工单全流程审批与权限控制
-            </li>
-            <li>
-              <DeploymentUnitOutlined />
-              多组织多角色隔离治理
-            </li>
-            <li>
-              <AuditOutlined />
-              SQL 语法检查与操作审计
-            </li>
-          </ul>
-        </div>
       </section>
       <section class="form-panel">
         <div class="login-card">
@@ -115,8 +94,6 @@ import { useUserStore } from '@/store/user'
 import loginVisual from '@/assets/original2.png'
 import { normalizeOtpCode } from '@/views/login/loginModel'
 import {
-  AuditOutlined,
-  DeploymentUnitOutlined,
   LockOutlined,
   SafetyOutlined,
   UserOutlined,

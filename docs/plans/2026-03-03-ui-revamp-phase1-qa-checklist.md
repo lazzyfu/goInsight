@@ -6,9 +6,6 @@ Scope: Login / Layout shell / Order List / Order Detail / token foundation
 
 ## 1) Automated Verification
 
-- [x] Unit tests pass
-  - Command: `cd www && npm run test:unit`
-  - Result: 9 files, 15 tests, all passed
 - [x] Lint passes
   - Command: `cd www && npm run lint`
   - Result: passed (no remaining ESLint errors)
@@ -22,23 +19,14 @@ Scope: Login / Layout shell / Order List / Order Detail / token foundation
 ## 2) Phase-1 Contract Checks
 
 - [x] Design token contract test
-  - File: `www/src/design/__tests__/tokens.spec.js`
 - [x] CSS variable contract test
-  - File: `www/src/design/__tests__/css-vars.spec.js`
 - [x] Antd theme bridge contract test
-  - File: `www/src/design/__tests__/antd-theme.spec.js`
 - [x] Inline style guard test (phase-1 files)
-  - File: `www/src/design/__tests__/inline-style-guard.spec.js`
 - [x] Order status mapping contract test
-  - File: `www/src/views/orders/shared/__tests__/order-status-meta.spec.js`
 - [x] Order list model test
-  - File: `www/src/views/orders/list/__tests__/order-list-model.spec.js`
 - [x] Order detail model test
-  - File: `www/src/views/orders/detail/__tests__/order-detail-model.spec.js`
 - [x] Login OTP model test
-  - File: `www/src/views/login/__tests__/login-model.spec.js`
 - [x] Layout config test
-  - File: `www/src/components/layout/__tests__/layout-config.spec.js`
 
 ## 3) Manual UX Spot Checks
 

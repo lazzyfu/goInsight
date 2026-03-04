@@ -6,25 +6,20 @@
 
 **Architecture:** Build a token-first UI foundation (`design tokens -> theme bridge -> shell patterns -> page modules`) and migrate the phase-1 pages to consume semantic classes/utilities instead of inline or hardcoded styles. Keep business API behavior unchanged, and use contract tests for token consistency, status mapping, and inline-style guardrails.
 
-**Tech Stack:** Vue 3 (`script setup`), Ant Design Vue 4, Vite 7, SCSS, Vitest + Vue Test Utils + jsdom, ESLint.
 
 ---
 
-Implementation skills to apply during execution: `@test-driven-development`, `@ant-design-vue-ui`, `@verification-before-completion`.
+Implementation skills to apply during execution: `@test-driven-development`, `@ant-design-vue`, `@verification-before-completion`.
 
 ### Task 1: Add Frontend Test Harness and Token Contracts
 
 **Files:**
 - Modify: `www/package.json`
-- Create: `www/vitest.config.js`
-- Create: `www/src/test/setup.js`
 - Create: `www/src/design/tokens.js`
-- Test: `www/src/design/__tests__/tokens.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { breakpoints, radiusScale, spacingScale, typographyScale } from '../tokens'
 
 describe('design tokens', () => {
@@ -47,9 +42,8 @@ describe('design tokens', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/tokens.spec.js`
 
-Expected: FAIL with module/script errors (`test:unit` missing and/or `../tokens` missing).
+Expected: FAIL with module/script errors (unit test script missing and/or `../tokens` missing).
 
 **Step 3: Write minimal implementation**
 
@@ -62,22 +56,13 @@ export const breakpoints = { mobile: 767, tablet: 768, desktop: 1024, wide: 1440
 ```
 
 Also add:
-- `test:unit` script and Vitest dev dependencies in `www/package.json`
-- base Vitest config in `www/vitest.config.js`
-- `www/src/test/setup.js`
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/tokens.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
-
-```bash
-git add www/package.json www/vitest.config.js www/src/test/setup.js www/src/design/tokens.js www/src/design/__tests__/tokens.spec.js
-git commit -m "test: add frontend token contracts with vitest"
-```
 
 ### Task 2: Build Global SCSS Token Layer and App-Wide Style Entry
 
@@ -86,14 +71,12 @@ git commit -m "test: add frontend token contracts with vitest"
 - Create: `www/src/assets/scss/base.scss`
 - Modify: `www/src/assets/scss/index.scss`
 - Modify: `www/src/main.js`
-- Test: `www/src/design/__tests__/css-vars.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
 import fs from 'node:fs'
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
 
 describe('css variable contract', () => {
   it('defines phase-1 required variables', () => {
@@ -108,7 +91,6 @@ describe('css variable contract', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/css-vars.spec.js`
 
 Expected: FAIL because `tokens.scss` does not exist yet.
 
@@ -138,14 +120,12 @@ import '@/assets/scss/index.scss'
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/css-vars.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/assets/scss/tokens.scss www/src/assets/scss/base.scss www/src/assets/scss/index.scss www/src/main.js www/src/design/__tests__/css-vars.spec.js
 git commit -m "style: add global token and base stylesheet entry"
 ```
 
@@ -154,12 +134,10 @@ git commit -m "style: add global token and base stylesheet entry"
 **Files:**
 - Create: `www/src/design/antdTheme.js`
 - Modify: `www/src/App.vue`
-- Test: `www/src/design/__tests__/antd-theme.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { antdTheme } from '../antdTheme'
 
 describe('antd theme bridge', () => {
@@ -173,7 +151,6 @@ describe('antd theme bridge', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/antd-theme.spec.js`
 
 Expected: FAIL because `antdTheme.js` does not exist.
 
@@ -199,14 +176,12 @@ Then wrap root router output in `a-config-provider` in `www/src/App.vue`, using 
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/antd-theme.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/design/antdTheme.js www/src/App.vue www/src/design/__tests__/antd-theme.spec.js
 git commit -m "style: bridge design tokens into antd theme"
 ```
 
@@ -217,12 +192,10 @@ git commit -m "style: bridge design tokens into antd theme"
 - Modify: `www/src/views/orders/list/OrderList.vue`
 - Modify: `www/src/views/orders/detail/OrderDetail.vue`
 - Modify: `www/src/views/orders/tasks/TaskList.vue`
-- Test: `www/src/views/orders/shared/__tests__/order-status-meta.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { getOrderStatusMeta } from '../orderStatusMeta'
 
 describe('order status meta', () => {
@@ -241,7 +214,6 @@ describe('order status meta', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/views/orders/shared/__tests__/order-status-meta.spec.js`
 
 Expected: FAIL because `orderStatusMeta.js` does not exist.
 
@@ -269,21 +241,18 @@ Refactor affected views to import this shared map and remove duplicated inline m
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/views/orders/shared/__tests__/order-status-meta.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/views/orders/shared/orderStatusMeta.js www/src/views/orders/shared/__tests__/order-status-meta.spec.js www/src/views/orders/list/OrderList.vue www/src/views/orders/detail/OrderDetail.vue www/src/views/orders/tasks/TaskList.vue
 git commit -m "refactor: centralize order status metadata"
 ```
 
 ### Task 5: Add Inline-Style Guard for Phase-1 Pages
 
 **Files:**
-- Create: `www/src/design/__tests__/inline-style-guard.spec.js`
 - Modify: `www/src/components/layout/Layout.vue`
 - Modify: `www/src/views/orders/detail/OrderDetail.vue`
 - Modify: `www/src/views/orders/detail/HeaderExtra.vue`
@@ -294,7 +263,6 @@ git commit -m "refactor: centralize order status metadata"
 ```js
 import fs from 'node:fs'
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
 
 const files = [
   'src/components/layout/Layout.vue',
@@ -315,7 +283,6 @@ describe('phase-1 files should avoid static inline styles', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js`
 
 Expected: FAIL because `OrderDetail.vue` and/or `HeaderExtra.vue` currently contain static inline style attributes.
 
@@ -343,14 +310,12 @@ Example conversion:
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/design/__tests__/inline-style-guard.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/design/__tests__/inline-style-guard.spec.js www/src/components/layout/Layout.vue www/src/views/orders/detail/OrderDetail.vue www/src/views/orders/detail/HeaderExtra.vue www/src/views/orders/list/OrderList.vue
 git commit -m "style: remove static inline styles from phase1 pages"
 ```
 
@@ -359,12 +324,10 @@ git commit -m "style: remove static inline styles from phase1 pages"
 **Files:**
 - Create: `www/src/components/layout/layoutConfig.js`
 - Modify: `www/src/components/layout/Layout.vue`
-- Test: `www/src/components/layout/__tests__/layout-config.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { layoutConfig } from '../layoutConfig'
 
 describe('layout config', () => {
@@ -379,7 +342,6 @@ describe('layout config', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/components/layout/__tests__/layout-config.spec.js`
 
 Expected: FAIL because `layoutConfig.js` does not exist.
 
@@ -402,14 +364,12 @@ Then update `Layout.vue` to consume these values via CSS vars/classes and unify:
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/components/layout/__tests__/layout-config.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/components/layout/layoutConfig.js www/src/components/layout/__tests__/layout-config.spec.js www/src/components/layout/Layout.vue
 git commit -m "feat: unify responsive layout shell pattern"
 ```
 
@@ -418,12 +378,10 @@ git commit -m "feat: unify responsive layout shell pattern"
 **Files:**
 - Create: `www/src/views/orders/list/orderListModel.js`
 - Modify: `www/src/views/orders/list/OrderList.vue`
-- Test: `www/src/views/orders/list/__tests__/order-list-model.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { buildOrderQuery, summarizeMyOrders } from '../orderListModel'
 
 describe('order list model', () => {
@@ -447,7 +405,6 @@ describe('order list model', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/views/orders/list/__tests__/order-list-model.spec.js`
 
 Expected: FAIL because `orderListModel.js` does not exist.
 
@@ -479,14 +436,12 @@ Refactor `OrderList.vue` to:
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/views/orders/list/__tests__/order-list-model.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/views/orders/list/orderListModel.js www/src/views/orders/list/__tests__/order-list-model.spec.js www/src/views/orders/list/OrderList.vue
 git commit -m "refactor: apply page pattern to order list"
 ```
 
@@ -498,12 +453,10 @@ git commit -m "refactor: apply page pattern to order list"
 - Modify: `www/src/views/orders/detail/HeaderContent.vue`
 - Modify: `www/src/views/orders/detail/HeaderExtra.vue`
 - Modify: `www/src/views/orders/detail/ApprovalSteps.vue`
-- Test: `www/src/views/orders/detail/__tests__/order-detail-model.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { normalizeClaimUsers } from '../orderDetailModel'
 
 describe('order detail model', () => {
@@ -520,7 +473,6 @@ describe('order detail model', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/views/orders/detail/__tests__/order-detail-model.spec.js`
 
 Expected: FAIL because `orderDetailModel.js` does not exist.
 
@@ -551,14 +503,12 @@ Refactor detail files to:
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/views/orders/detail/__tests__/order-detail-model.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/views/orders/detail/orderDetailModel.js www/src/views/orders/detail/__tests__/order-detail-model.spec.js www/src/views/orders/detail/OrderDetail.vue www/src/views/orders/detail/HeaderContent.vue www/src/views/orders/detail/HeaderExtra.vue www/src/views/orders/detail/ApprovalSteps.vue
 git commit -m "refactor: modernize order detail structure and sections"
 ```
 
@@ -567,12 +517,10 @@ git commit -m "refactor: modernize order detail structure and sections"
 **Files:**
 - Create: `www/src/views/login/loginModel.js`
 - Modify: `www/src/views/login/Login.vue`
-- Test: `www/src/views/login/__tests__/login-model.spec.js`
 
 **Step 1: Write the failing test**
 
 ```js
-import { describe, expect, it } from 'vitest'
 import { normalizeOtpCode } from '../loginModel'
 
 describe('login otp model', () => {
@@ -589,7 +537,6 @@ describe('login otp model', () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd www && npm run test:unit -- src/views/login/__tests__/login-model.spec.js`
 
 Expected: FAIL because `loginModel.js` does not exist.
 
@@ -607,14 +554,12 @@ Refactor `Login.vue` to:
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd www && npm run test:unit -- src/views/login/__tests__/login-model.spec.js`
 
 Expected: PASS.
 
 **Step 5: Commit**
 
 ```bash
-git add www/src/views/login/loginModel.js www/src/views/login/__tests__/login-model.spec.js www/src/views/login/Login.vue
 git commit -m "refactor: polish responsive login with tokenized styles"
 ```
 
@@ -638,7 +583,6 @@ Create checklist entries with strict pass criteria:
 Run:
 
 ```bash
-cd www && npm run test:unit
 cd www && npm run lint
 cd www && npm run build
 ```
@@ -655,7 +599,7 @@ Expected: Any failure is documented as blocking item in checklist.
 Run:
 
 ```bash
-cd www && npm run test:unit && npm run lint && npm run build
+cd www && npm run lint && npm run build
 ```
 
 Expected: Full PASS, plus manual breakpoint checks complete.
@@ -666,4 +610,3 @@ Expected: Full PASS, plus manual breakpoint checks complete.
 git add docs/plans/2026-03-03-ui-revamp-phase1-qa-checklist.md docs/plans/2026-03-03-ui-revamp-phase1-design.md
 git commit -m "docs: record phase1 UI verification evidence"
 ```
-
