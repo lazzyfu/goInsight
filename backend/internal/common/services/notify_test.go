@@ -107,15 +107,15 @@ func TestValidateNotifyConfigForSave(t *testing.T) {
 		}
 	})
 
-	t.Run("mail enabled without password should fail even with existing password", func(t *testing.T) {
+	t.Run("mail enabled without new password should pass when existing password exists", func(t *testing.T) {
 		form := buildValidNotifyForm()
 		form.Mail.Enable = true
 		form.Mail.Username = "ops@example.com"
 		form.Mail.Host = "smtp.example.com"
 		form.Mail.Port = 465
 		form.Mail.Password = ""
-		if err := validateNotifyConfigForSave(form, true); err == nil {
-			t.Fatal("expected validation error")
+		if err := validateNotifyConfigForSave(form, true); err != nil {
+			t.Fatalf("unexpected validation error: %v", err)
 		}
 	})
 

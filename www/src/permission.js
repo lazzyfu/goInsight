@@ -13,7 +13,7 @@ NProgress.configure({ showSpinner: false })
 // 免登录白名单
 const WHITE_LIST = ['/login', '/403']
 // 默认路由
-const DEFAULT_ROUTE = '/das'
+const DEFAULT_ROUTE = '/account/basic'
 
 /**
  * 路由前置守卫

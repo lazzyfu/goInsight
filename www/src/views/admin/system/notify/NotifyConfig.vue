@@ -1,9 +1,5 @@
 <template>
   <a-card title="消息通知">
-    <template #extra>
-      <a-button type="primary" :loading="uiState.saving" @click="handleSave">保存配置</a-button>
-    </template>
-
     <a-form
       ref="formRef"
       :model="formState"
@@ -23,6 +19,7 @@
         <a-input
           v-model:value="formState.notice_url"
           placeholder="例如：https://goinsight.example.com"
+          @blur="handleAutoSave('notice_url')"
         />
       </a-form-item>
 
@@ -40,8 +37,7 @@
             <div class="notify-panel-extra" @click.stop>
               <a-switch
                 :checked="formState.wechat.enable"
-                :loading="uiState.toggling.wechat"
-                :disabled="uiState.toggling.wechat"
+                :loading="uiState.savingBySection.wechat"
                 @change="(checked) => onToggleChannel('wechat', checked)"
               />
               <a-button
@@ -63,6 +59,7 @@
             <a-input
               v-model:value="formState.wechat.webhook"
               :placeholder="formState.wechat.enable ? '启用后此项必填' : '可先填写，启用后生效'"
+              @blur="handleAutoSave('wechat')"
             />
           </a-form-item>
         </a-collapse-panel>
@@ -80,8 +77,7 @@
             <div class="notify-panel-extra" @click.stop>
               <a-switch
                 :checked="formState.dingtalk.enable"
-                :loading="uiState.toggling.dingtalk"
-                :disabled="uiState.toggling.dingtalk"
+                :loading="uiState.savingBySection.dingtalk"
                 @change="(checked) => onToggleChannel('dingtalk', checked)"
               />
               <a-button
@@ -103,6 +99,7 @@
             <a-input
               v-model:value="formState.dingtalk.webhook"
               :placeholder="formState.dingtalk.enable ? '启用后此项必填' : '可先填写，启用后生效'"
+              @blur="handleAutoSave('dingtalk')"
             />
           </a-form-item>
           <a-form-item
@@ -116,6 +113,7 @@
               :placeholder="
                 formState.dingtalk.enable ? '启用后此项必填（机器人关键字）' : '例如：GoInsight'
               "
+              @blur="handleAutoSave('dingtalk')"
             />
           </a-form-item>
         </a-collapse-panel>
@@ -133,8 +131,7 @@
             <div class="notify-panel-extra" @click.stop>
               <a-switch
                 :checked="formState.mail.enable"
-                :loading="uiState.toggling.mail"
-                :disabled="uiState.toggling.mail"
+                :loading="uiState.savingBySection.mail"
                 @change="(checked) => onToggleChannel('mail', checked)"
               />
               <a-button
@@ -156,6 +153,7 @@
             <a-input
               v-model:value="formState.mail.username"
               :placeholder="formState.mail.enable ? '启用后此项必填' : '例如：ops@example.com'"
+              @blur="handleAutoSave('mail')"
             />
           </a-form-item>
 
@@ -168,6 +166,7 @@
             <a-input
               v-model:value="formState.mail.host"
               :placeholder="formState.mail.enable ? '启用后此项必填' : '例如：smtp.163.com'"
+              @blur="handleAutoSave('mail')"
             />
           </a-form-item>
 
@@ -184,6 +183,7 @@
               :precision="0"
               style="width: 240px"
               placeholder="例如：465"
+              @change="handleAutoSave('mail')"
             />
           </a-form-item>
 
@@ -196,7 +196,8 @@
           >
             <a-input-password
               v-model:value="formState.mail.password"
-              :placeholder="formState.mail.enable ? '启用后此项必填' : '请输入 SMTP 密码'"
+              :placeholder="mailPasswordPlaceholder"
+              @blur="handleAutoSave('mail')"
             />
           </a-form-item>
         </a-collapse-panel>
@@ -213,18 +214,9 @@ import { computed, onMounted, reactive, ref } from 'vue'
 
 const formRef = ref()
 
-const uiState = reactive({
-  saving: false,
-  testingChannel: '',
-  activePanels: ['wechat', 'dingtalk', 'mail'],
-  toggling: {
-    wechat: false,
-    dingtalk: false,
-    mail: false,
-  },
-})
+const normalizeText = (value) => (value || '').trim()
 
-const formState = reactive({
+const createNotifyState = () => ({
   notice_url: '',
   wechat: {
     enable: false,
@@ -245,10 +237,36 @@ const formState = reactive({
   },
 })
 
-const mailPasswordExtra = computed(() => '启用邮件通知时，SMTP 密码为必填项。')
+const uiState = reactive({
+  testingChannel: '',
+  activePanels: ['wechat', 'dingtalk', 'mail'],
+  savingBySection: {
+    notice_url: false,
+    wechat: false,
+    dingtalk: false,
+    mail: false,
+  },
+})
+
+const formState = reactive(createNotifyState())
+const savedState = reactive(createNotifyState())
+
+const mailPasswordExtra = computed(() => {
+  if (formState.mail.has_password) {
+    return '已设置 SMTP 密码，留空表示保持不变。'
+  }
+  return '启用邮件通知时，SMTP 密码为必填项。'
+})
+
+const mailPasswordPlaceholder = computed(() => {
+  if (formState.mail.has_password && !formState.mail.password) {
+    return '******'
+  }
+  return formState.mail.enable ? '启用后此项必填' : '请输入 SMTP 密码'
+})
 
 const validateNoticeURL = async (_rule, value) => {
-  const raw = (value || '').trim()
+  const raw = normalizeText(value)
   if (!raw) {
     return Promise.resolve()
   }
@@ -268,7 +286,7 @@ const validateWechatWebhook = async (_rule, value) => {
   if (!formState.wechat.enable) {
     return Promise.resolve()
   }
-  if ((value || '').trim()) {
+  if (normalizeText(value)) {
     return Promise.resolve()
   }
   return Promise.reject(new Error('启用企业微信通知时，Webhook 不能为空'))
@@ -278,7 +296,7 @@ const validateDingTalkWebhook = async (_rule, value) => {
   if (!formState.dingtalk.enable) {
     return Promise.resolve()
   }
-  if ((value || '').trim()) {
+  if (normalizeText(value)) {
     return Promise.resolve()
   }
   return Promise.reject(new Error('启用钉钉通知时，Webhook 不能为空'))
@@ -288,7 +306,7 @@ const validateDingTalkKeywords = async (_rule, value) => {
   if (!formState.dingtalk.enable) {
     return Promise.resolve()
   }
-  if ((value || '').trim()) {
+  if (normalizeText(value)) {
     return Promise.resolve()
   }
   return Promise.reject(new Error('启用钉钉通知时，关键字不能为空'))
@@ -298,7 +316,7 @@ const validateMailUsername = async (_rule, value) => {
   if (!formState.mail.enable) {
     return Promise.resolve()
   }
-  if ((value || '').trim()) {
+  if (normalizeText(value)) {
     return Promise.resolve()
   }
   return Promise.reject(new Error('启用邮件通知时，发件账号不能为空'))
@@ -308,7 +326,7 @@ const validateMailHost = async (_rule, value) => {
   if (!formState.mail.enable) {
     return Promise.resolve()
   }
-  if ((value || '').trim()) {
+  if (normalizeText(value)) {
     return Promise.resolve()
   }
   return Promise.reject(new Error('启用邮件通知时，SMTP 主机不能为空'))
@@ -329,110 +347,201 @@ const validateMailPassword = async (_rule, value) => {
   if (!formState.mail.enable) {
     return Promise.resolve()
   }
-  const input = (value || '').trim()
+  const input = normalizeText(value)
   if (input) {
+    return Promise.resolve()
+  }
+  if (formState.mail.has_password) {
     return Promise.resolve()
   }
   return Promise.reject(new Error('启用邮件通知时，SMTP 密码不能为空'))
 }
 
-const buildPayload = () => ({
-  notice_url: (formState.notice_url || '').trim(),
+const buildPayloadFromState = (state) => ({
+  notice_url: normalizeText(state.notice_url),
   wechat: {
-    enable: formState.wechat.enable,
-    webhook: (formState.wechat.webhook || '').trim(),
+    enable: !!state.wechat.enable,
+    webhook: normalizeText(state.wechat.webhook),
   },
   dingtalk: {
-    enable: formState.dingtalk.enable,
-    webhook: (formState.dingtalk.webhook || '').trim(),
-    keywords: (formState.dingtalk.keywords || '').trim(),
+    enable: !!state.dingtalk.enable,
+    webhook: normalizeText(state.dingtalk.webhook),
+    keywords: normalizeText(state.dingtalk.keywords),
   },
   mail: {
-    enable: formState.mail.enable,
-    username: (formState.mail.username || '').trim(),
-    password: (formState.mail.password || '').trim(),
-    host: (formState.mail.host || '').trim(),
-    port: Number(formState.mail.port || 0),
-    has_password: !!formState.mail.has_password,
+    enable: !!state.mail.enable,
+    username: normalizeText(state.mail.username),
+    password: normalizeText(state.mail.password),
+    host: normalizeText(state.mail.host),
+    port: Number(state.mail.port || 0),
+    has_password: !!state.mail.has_password,
   },
 })
 
-const channelValidateFields = {
+const applyState = (target, data = {}, options = {}) => {
+  target.notice_url = data.notice_url || ''
+
+  target.wechat.enable = !!data?.wechat?.enable
+  target.wechat.webhook = data?.wechat?.webhook || ''
+
+  target.dingtalk.enable = !!data?.dingtalk?.enable
+  target.dingtalk.webhook = data?.dingtalk?.webhook || ''
+  target.dingtalk.keywords = data?.dingtalk?.keywords || ''
+
+  target.mail.enable = !!data?.mail?.enable
+  target.mail.username = data?.mail?.username || ''
+  target.mail.password = options.resetMailPassword ? '' : data?.mail?.password || ''
+  target.mail.host = data?.mail?.host || ''
+  target.mail.port = data?.mail?.port || 465
+  target.mail.has_password = !!data?.mail?.has_password
+}
+
+const sectionValidateFields = {
+  notice_url: ['notice_url'],
   wechat: ['notice_url', ['wechat', 'webhook']],
   dingtalk: ['notice_url', ['dingtalk', 'webhook'], ['dingtalk', 'keywords']],
   mail: ['notice_url', ['mail', 'username'], ['mail', 'host'], ['mail', 'port'], ['mail', 'password']],
 }
 
-const syncFormState = (data = {}) => {
-  formState.notice_url = data.notice_url || ''
+const buildPayloadFromSnapshot = (section) => {
+  const payload = buildPayloadFromState(savedState)
+  if (section === 'notice_url') {
+    payload.notice_url = normalizeText(formState.notice_url)
+  }
+  if (section === 'wechat') {
+    payload.wechat = buildPayloadFromState(formState).wechat
+  }
+  if (section === 'dingtalk') {
+    payload.dingtalk = buildPayloadFromState(formState).dingtalk
+  }
+  if (section === 'mail') {
+    payload.mail = buildPayloadFromState(formState).mail
+  }
+  return payload
+}
 
-  formState.wechat.enable = !!data?.wechat?.enable
-  formState.wechat.webhook = data?.wechat?.webhook || ''
-
-  formState.dingtalk.enable = !!data?.dingtalk?.enable
-  formState.dingtalk.webhook = data?.dingtalk?.webhook || ''
-  formState.dingtalk.keywords = data?.dingtalk?.keywords || ''
-
-  formState.mail.enable = !!data?.mail?.enable
-  formState.mail.username = data?.mail?.username || ''
-  formState.mail.password = ''
-  formState.mail.host = data?.mail?.host || ''
-  formState.mail.port = data?.mail?.port || 465
-  formState.mail.has_password = !!data?.mail?.has_password
+const isSectionDirty = (section) => {
+  if (section === 'notice_url') {
+    return normalizeText(formState.notice_url) !== normalizeText(savedState.notice_url)
+  }
+  if (section === 'wechat') {
+    return (
+      !!formState.wechat.enable !== !!savedState.wechat.enable ||
+      normalizeText(formState.wechat.webhook) !== normalizeText(savedState.wechat.webhook)
+    )
+  }
+  if (section === 'dingtalk') {
+    return (
+      !!formState.dingtalk.enable !== !!savedState.dingtalk.enable ||
+      normalizeText(formState.dingtalk.webhook) !== normalizeText(savedState.dingtalk.webhook) ||
+      normalizeText(formState.dingtalk.keywords) !== normalizeText(savedState.dingtalk.keywords)
+    )
+  }
+  if (section === 'mail') {
+    return (
+      !!formState.mail.enable !== !!savedState.mail.enable ||
+      normalizeText(formState.mail.username) !== normalizeText(savedState.mail.username) ||
+      normalizeText(formState.mail.host) !== normalizeText(savedState.mail.host) ||
+      Number(formState.mail.port || 0) !== Number(savedState.mail.port || 0) ||
+      normalizeText(formState.mail.password) !== ''
+    )
+  }
+  return false
 }
 
 const fetchConfig = async () => {
   const res = await getNotifyConfigApi().catch(() => {})
   if (res?.data) {
-    syncFormState(res.data)
+    applyState(savedState, res.data, { resetMailPassword: true })
+    applyState(formState, res.data, { resetMailPassword: true })
   }
 }
 
-const handleSave = useThrottleFn(async () => {
-  try {
-    await formRef.value?.validateFields()
-
-    uiState.saving = true
-    const payload = buildPayload()
-
-    const res = await updateNotifyConfigApi(payload).catch(() => {})
-    if (res) {
-      message.success('保存成功')
-      await fetchConfig()
-    }
-  } finally {
-    uiState.saving = false
+const saveSection = async (section, options = {}) => {
+  if (uiState.savingBySection[section]) {
+    return false
   }
-})
+  try {
+    if (!options.skipValidate) {
+      await formRef.value?.validateFields(sectionValidateFields[section] || [])
+    }
+  } catch {
+    return false
+  }
+  uiState.savingBySection[section] = true
+  const res = await updateNotifyConfigApi(buildPayloadFromSnapshot(section)).catch(() => {})
+  uiState.savingBySection[section] = false
+  if (!res) {
+    return false
+  }
+  if (!options.silentSuccess) {
+    message.success(options.successMessage || '保存成功')
+  }
+  await fetchConfig()
+  return true
+}
+
+const handleAutoSave = useThrottleFn(async (section) => {
+  if (!isSectionDirty(section)) {
+    return
+  }
+  await saveSection(section, { silentSuccess: true })
+}, 500)
+
+const validateChannelBeforeEnable = async (channel) => {
+  try {
+    await formRef.value?.validateFields(sectionValidateFields[channel] || [])
+    return true
+  } catch {
+    return false
+  }
+}
 
 const onToggleChannel = async (channel, checked) => {
-  const prev = formState[channel].enable
-  formState[channel].enable = checked
-
   if (checked) {
-    try {
-      await formRef.value?.validateFields(channelValidateFields[channel] || ['notice_url'])
-    } catch {
-      formState[channel].enable = prev
+    formState[channel].enable = true
+    const valid = await validateChannelBeforeEnable(channel)
+    if (!valid) {
+      formState[channel].enable = false
       message.warning('请先填写该渠道必填项后再启用')
       return
     }
-  }
-
-  uiState.toggling[channel] = true
-  const res = await updateNotifyConfigApi(buildPayload()).catch(() => {})
-  uiState.toggling[channel] = false
-
-  if (!res) {
-    formState[channel].enable = prev
+    const success = await saveSection(channel, {
+      skipValidate: true,
+      successMessage: '启用成功',
+    })
+    if (!success) {
+      formState[channel].enable = false
+      message.warning('启用保存失败，请稍后重试')
+    }
     return
   }
 
-  message.success(checked ? '已启用并自动保存' : '已关闭并自动保存')
-  await fetchConfig()
+  formState[channel].enable = false
+  const success = await saveSection(channel, {
+    skipValidate: true,
+    successMessage: '已关闭',
+  })
+  if (!success) {
+    formState[channel].enable = savedState[channel].enable
+  }
 }
 
 const handleTestSend = useThrottleFn(async (channel) => {
+  if (isSectionDirty('notice_url')) {
+    const noticeSaved = await saveSection('notice_url', { silentSuccess: true })
+    if (!noticeSaved) {
+      message.warning('通知地址未保存，请检查后重试')
+      return
+    }
+  }
+  if (isSectionDirty(channel)) {
+    const saved = await saveSection(channel, { silentSuccess: true })
+    if (!saved) {
+      message.warning('请先检查并完善当前渠道配置')
+      return
+    }
+  }
   uiState.testingChannel = channel
   const res = await testNotifyConfigApi(channel).catch(() => {})
   if (res) {

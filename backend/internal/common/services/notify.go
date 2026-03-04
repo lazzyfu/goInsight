@@ -220,7 +220,7 @@ func validateNotifyConfigForSave(form *forms.AdminUpdateNotifyConfigForm, hasSto
 		if form.Mail.Port < 1 || form.Mail.Port > 65535 {
 			return errors.New("启用邮件通知时，SMTP 端口范围必须为 1-65535")
 		}
-		if form.Mail.Password == "" {
+		if form.Mail.Password == "" && !hasStoredMailPassword {
 			return errors.New("启用邮件通知时，SMTP 密码不能为空")
 		}
 	}

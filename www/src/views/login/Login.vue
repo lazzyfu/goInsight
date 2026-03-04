@@ -92,7 +92,7 @@ defineOptions({ name: 'UserLogin' })
 import { Login } from '@/api/login'
 import { useUserStore } from '@/store/user'
 import loginVisual from '@/assets/original2.png'
-import { normalizeOtpCode } from '@/views/login/loginModel'
+import { normalizeOtpCode, resolveLoginTarget } from '@/views/login/loginModel'
 import {
   LockOutlined,
   SafetyOutlined,
@@ -100,7 +100,7 @@ import {
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import BindOTPModal from './OTP.vue'
 
 const appTitle = import.meta.env.VITE_APP_TITLE || '数据库工单平台'
@@ -110,6 +110,7 @@ const visualStyle = {
 
 const formRef = ref(null)
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const otpModalRef = ref(null)
 
@@ -167,7 +168,7 @@ const onSubmit = async () => {
       localStorage.setItem('onLine', '1')
       userStore.setToken(res.data.token)
       message.success('登录成功')
-      router.push('/')
+      router.push(resolveLoginTarget(route.query.redirect))
     } else if (res?.code === '4001') {
       // 需要绑定 OTP
       message.warning(res.message || '需要绑定OTP')
