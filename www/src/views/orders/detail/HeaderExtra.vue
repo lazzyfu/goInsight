@@ -1,41 +1,41 @@
 <template>
   <!-- 工单操作按钮 -->
-  <a-space wrap class="header-action-group">
+  <a-space class="header-action-group">
     <!-- 主操作按钮 -->
-    <a-button v-if="showMainButton" type="primary" @click="openMainModal">
+    <a-button v-if="showMainButton" type="primary" size="small" @click="openMainModal">
       {{ uiData.btnTitle }}
     </a-button>
 
     <!-- 执行任务按钮 -->
     <a-tooltip title="点击加载执行任务" placement="top">
-      <a-button v-if="showExecuteButton" @click="genOrderTasks" :loading="uiState.genOrderTasksLoading">
+      <a-button v-if="showExecuteButton" size="small" @click="genOrderTasks" :loading="uiState.genOrderTasksLoading">
         执行
       </a-button>
     </a-tooltip>
 
     <!-- 已完成按钮 -->
     <a-tooltip title="标记当前工单为完成状态" placement="top">
-      <a-button v-if="showCompleteFailButton" @click="openCompleteModal"> 已完成 </a-button>
+      <a-button v-if="showCompleteFailButton" size="small" @click="openCompleteModal"> 已完成 </a-button>
     </a-tooltip>
 
     <!-- 已失败按钮 -->
     <a-tooltip title="标记当前工单为失败状态" placement="top">
-      <a-button v-if="showCompleteFailButton" @click="openFailModal"> 已失败 </a-button>
+      <a-button v-if="showCompleteFailButton" size="small" @click="openFailModal"> 已失败 </a-button>
     </a-tooltip>
 
     <!-- 转交按钮 -->
     <a-tooltip title="转交当前工单给其他人执行" placement="top">
-      <a-button v-if="showTransferButton" @click="openTransferModal"> 转交 </a-button>
+      <a-button v-if="showTransferButton" size="small" @click="openTransferModal"> 转交 </a-button>
     </a-tooltip>
 
     <!-- 撤销按钮 -->
     <a-tooltip title="撤销当前工单" placement="top">
-      <a-button v-if="!revokeDisabled" @click="openRevokeModal"> 撤销 </a-button>
+      <a-button v-if="!revokeDisabled" size="small" @click="openRevokeModal"> 撤销 </a-button>
     </a-tooltip>
 
     <!-- 复制工单 -->
     <a-tooltip title="快速复制当前工单为一个新的工单" placement="top">
-      <a-button @click="handleCopyAsNewOrder"> 复制工单 </a-button>
+      <a-button size="small" @click="handleCopyAsNewOrder"> 复制工单 </a-button>
     </a-tooltip>
   </a-space>
 
@@ -358,6 +358,8 @@ const handleCopyAsNewOrder = () => {
 
 <style scoped>
 .header-action-group {
+  align-items: center;
+  flex-wrap: nowrap;
   gap: var(--gi-spacing-xs) var(--gi-spacing-sm);
 }
 
