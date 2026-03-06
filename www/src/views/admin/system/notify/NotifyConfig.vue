@@ -1,12 +1,5 @@
 <template>
   <div class="notify-page">
-    <div class="notify-page-header">
-      <h2 class="notify-page-title">消息通知</h2>
-      <p class="notify-page-subtitle">
-        用于配置工单相关消息通知渠道。输入框离焦自动保存，启用开关会立即生效。
-      </p>
-    </div>
-
     <a-card class="notify-card" :bordered="false">
       <a-form
         ref="formRef"
@@ -19,7 +12,7 @@
         <section class="notify-section">
           <div class="notify-section-title">基础配置</div>
           <a-form-item
-            label="通知地址前缀（notice_url）"
+            label="消息通知地址前缀"
             name="notice_url"
             extra="用于拼接通知中的工单跳转地址，例如：https://goinsight.example.com/orders/{id}"
             :rules="[
@@ -67,7 +60,6 @@
               </template>
 
               <div class="notify-channel-body">
-                <p class="notify-channel-tip">用于工单审批与执行结果通知。</p>
                 <a-form-item
                   label="Webhook"
                   :name="['wechat', 'webhook']"
@@ -116,7 +108,6 @@
               </template>
 
               <div class="notify-channel-body">
-                <p class="notify-channel-tip">适用于群机器人通知，启用前请配置关键字规则。</p>
                 <a-form-item
                   label="Webhook"
                   :name="['dingtalk', 'webhook']"
@@ -179,7 +170,6 @@
               </template>
 
               <div class="notify-channel-body">
-                <p class="notify-channel-tip">默认发送到平台用户邮箱，建议使用专用发件账号。</p>
                 <a-form-item
                   label="发件账号"
                   :name="['mail', 'username']"
@@ -258,6 +248,7 @@ import { message } from 'ant-design-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 
 const formRef = ref()
+let saveQueue = Promise.resolve()
 
 const normalizeText = (value) => (value || '').trim()
 
@@ -463,23 +454,6 @@ const sectionValidateFields = {
   mail: ['notice_url', ['mail', 'username'], ['mail', 'host'], ['mail', 'port'], ['mail', 'password']],
 }
 
-const buildPayloadFromSnapshot = (section) => {
-  const payload = buildPayloadFromState(savedState)
-  if (section === 'notice_url') {
-    payload.notice_url = normalizeText(formState.notice_url)
-  }
-  if (section === 'wechat') {
-    payload.wechat = buildPayloadFromState(formState).wechat
-  }
-  if (section === 'dingtalk') {
-    payload.dingtalk = buildPayloadFromState(formState).dingtalk
-  }
-  if (section === 'mail') {
-    payload.mail = buildPayloadFromState(formState).mail
-  }
-  return payload
-}
-
 const isSectionDirty = (section) => {
   if (section === 'notice_url') {
     return normalizeText(formState.notice_url) !== normalizeText(savedState.notice_url)
@@ -517,36 +491,54 @@ const fetchConfig = async () => {
   }
 }
 
-const saveSection = async (section, options = {}) => {
-  if (uiState.savingBySection[section]) {
-    return false
-  }
-  try {
-    if (!options.skipValidate) {
-      await formRef.value?.validateFields(sectionValidateFields[section] || [])
-    }
-  } catch {
-    return false
-  }
+const enqueueSave = (task) => {
+  const queuedTask = saveQueue.then(task, task)
+  saveQueue = queuedTask.catch(() => {})
+  return queuedTask
+}
 
-  uiState.savingBySection[section] = true
-  const res = await updateNotifyConfigApi(buildPayloadFromSnapshot(section)).catch(() => {})
-  uiState.savingBySection[section] = false
-  if (!res) {
-    return false
-  }
-  if (!options.silentSuccess) {
-    message.success(options.successMessage || '保存成功')
-  }
-  await fetchConfig()
-  return true
+const saveSection = async (section, options = {}) => {
+  return enqueueSave(async () => {
+    if (uiState.savingBySection[section]) {
+      return false
+    }
+    try {
+      if (!options.skipValidate) {
+        await formRef.value?.validateFields(sectionValidateFields[section] || [])
+      }
+    } catch {
+      if (!options.silentValidateError) {
+        message.warning(options.validateErrorMessage || '当前配置校验未通过，暂未保存')
+      }
+      return false
+    }
+
+    uiState.savingBySection[section] = true
+    const res = await updateNotifyConfigApi(buildPayloadFromState(formState)).catch(() => {})
+    uiState.savingBySection[section] = false
+    if (!res) {
+      if (!options.silentError) {
+        message.error(options.errorMessage || '保存失败，请稍后重试')
+      }
+      return false
+    }
+    if (!options.silentSuccess) {
+      message.success(options.successMessage || '保存成功')
+    }
+    await fetchConfig()
+    return true
+  })
 }
 
 const handleAutoSave = useThrottleFn(async (section) => {
   if (!isSectionDirty(section)) {
     return
   }
-  await saveSection(section, { silentSuccess: true })
+  await saveSection(section, {
+    silentSuccess: true,
+    silentValidateError: true,
+    errorMessage: '自动保存失败，请检查当前填写内容后重试',
+  })
 }, 500)
 
 const validateChannelBeforeEnable = async (channel) => {
@@ -625,25 +617,6 @@ onMounted(() => {
   max-width: 1120px;
 }
 
-.notify-page-header {
-  margin-bottom: 12px;
-}
-
-.notify-page-title {
-  margin: 0;
-  color: var(--gi-color-text-primary);
-  font-size: 20px;
-  line-height: 32px;
-  font-weight: 600;
-}
-
-.notify-page-subtitle {
-  margin: 4px 0 0;
-  color: var(--gi-color-text-secondary);
-  font-size: 14px;
-  line-height: 22px;
-}
-
 .notify-card {
   border-radius: 12px;
 }
@@ -708,27 +681,8 @@ onMounted(() => {
   padding-top: 4px;
 }
 
-.notify-channel-tip {
-  margin: 0 0 12px;
-  color: var(--gi-color-text-secondary);
-  font-size: 12px;
-  line-height: 20px;
-}
-
 .notify-port-input {
   width: 100%;
-}
-
-@media (max-width: 1023px) {
-  .notify-page-title {
-    font-size: 18px;
-    line-height: 28px;
-  }
-
-  .notify-page-subtitle {
-    font-size: 13px;
-    line-height: 20px;
-  }
 }
 
 @media (max-width: 767px) {

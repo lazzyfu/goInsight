@@ -66,13 +66,13 @@
             </div>
           </template>
 
-          <div class="avatar-upload-panel" @click="openModal()">
+          <button type="button" class="avatar-upload-panel" aria-label="更换头像" @click="openModal()">
             <img :src="option.img" alt="头像" @error="handleAvatarError" />
             <div class="avatar-mask">
               <PlusOutlined />
               <span>更换头像</span>
             </div>
-          </div>
+          </button>
         </a-card>
       </a-col>
     </a-row>
@@ -184,6 +184,7 @@ const reloadUserProfile = async () => {
       option.value.img = data.avatar_file || DEFAULT_AVATAR
     }
   } catch (error) {
+    message.error('获取个人信息失败，请稍后重试')
     console.error('获取用户信息失败', error)
   }
 }
@@ -353,8 +354,15 @@ watch(
   border-radius: 50%;
   cursor: pointer;
   overflow: hidden;
+  background: transparent;
+  padding: 0;
   border: 1px solid var(--gi-color-border);
   box-shadow: var(--gi-shadow-sm);
+}
+
+.avatar-upload-panel:focus-visible {
+  outline: 2px solid var(--gi-color-primary);
+  outline-offset: 2px;
 }
 
 .avatar-upload-panel img {
