@@ -12,7 +12,8 @@
       @breakpoint="handleBreakpoint"
     >
       <div class="logo-wrap">
-        <img class="logo" src="@/assets/logo.svg" />
+        <img v-if="uiState.collapsed" class="logo-icon" src="@/assets/logo-icon.svg" alt="GoInsight" />
+        <img v-else class="logo" src="@/assets/logo.svg" alt="GoInsight" />
       </div>
       <a-menu
         class="layout-menu"
@@ -240,16 +241,16 @@ onBeforeUnmount(() => {
   height: 38px;
   max-width: 170px;
   object-fit: contain;
-  transition: max-width var(--gi-duration-base) ease, height var(--gi-duration-base) ease;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .layout-sider.is-collapsed .logo-wrap {
   padding-inline: var(--gi-spacing-xs);
-}
-
-.layout-sider.is-collapsed .logo {
-  max-width: 32px;
-  height: 32px;
 }
 
 .layout-menu {

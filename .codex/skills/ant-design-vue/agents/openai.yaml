@@ -1,4 +1,4 @@
 interface:
-  display_name: "Ant Design Vue 统一规范"
-  short_description: "统一 Ant Design Vue 页面布局、间距、圆角与按钮规范"
-  default_prompt: "请基于 Vue3 + Ant Design Vue 4.x 先输出规范化 UI 方案（布局、组件映射、一致性检查），再给实现建议；严格遵守全局间距/圆角 token 和按钮统一 middle 规则。"
+    display_name: "Ant Design Vue 统一规范"
+    short_description: "统一 Ant Design Vue 页面布局、间距、圆角与按钮规范"
+    default_prompt: "请基于 Vue3 + Ant Design Vue 4.x 先输出规范化 UI 方案（布局、组件映射、一致性检查），再给实现建议；严格遵守全局间距/圆角 token 和按钮统一 middle 规则。"

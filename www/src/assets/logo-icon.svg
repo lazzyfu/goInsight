@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 50">
+  <rect x="0" y="5" width="20" height="40" rx="4" ry="4" fill="url(#blue-gradient)" />
+  <rect x="25" y="0" width="20" height="50" rx="4" ry="4" fill="url(#blue-gradient)" />
+  <rect x="50" y="10" width="20" height="30" rx="4" ry="4" fill="url(#blue-gradient)" />
+
+  <defs>
+    <linearGradient id="blue-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B3D91" />
+      <stop offset="100%" stop-color="#0550B3" />
+    </linearGradient>
+  </defs>
+</svg>

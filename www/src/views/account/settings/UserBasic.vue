@@ -1,69 +1,79 @@
 <template>
   <div class="account-settings-info-view">
-    <a-row :gutter="16" type="flex" justify="center">
-      <a-col :order="1" :md="24" :lg="16">
-        <a-form
-          layout="vertical"
-          :model="formState"
-          :rules="rules"
-          name="basic"
-          autocomplete="off"
-          @finish="onFinish"
-        >
-          <a-form-item label="用户名" name="username">
-            <a-input disabled v-model:value="formState.username" placeholder="用户名不可修改" />
-          </a-form-item>
-
-          <a-form-item
-            label="昵称"
-            has-feedback
-            name="nick_name"
-            :rules="[{ required: true, min: 1, max: 32, message: '昵称不能为空且长度为1-32位' }]"
-          >
-            <a-input v-model:value="formState.nick_name" placeholder="请输入昵称" />
-          </a-form-item>
-
-          <a-form-item label="邮箱" has-feedback name="email">
-            <a-input v-model:value="formState.email" placeholder="请输入邮箱" />
-          </a-form-item>
-
-          <a-form-item label="手机号" has-feedback name="mobile">
-            <a-input v-model:value="formState.mobile" placeholder="请输入手机号" />
-          </a-form-item>
-
-          <a-form-item label="组织与角色" help="请联系系统管理员配置" name="organizations">
-            <div
-              v-if="!formState.organization || formState.organization === '-/-'"
-              class="empty-value"
-            >
-              -/-
+    <a-row class="settings-row" :gutter="[24, 24]" type="flex" justify="center">
+      <a-col :order="1" :xs="24" :lg="16">
+        <a-card class="settings-card" :bordered="false">
+          <template #title>
+            <div class="card-title-wrap">
+              <div class="card-title">基本信息</div>
+              <div class="card-subtitle">用于展示在平台中的个人资料，更新后立即生效</div>
             </div>
-            <ul v-else class="org-role-list">
-              <li
-                v-for="(org, index) in formState.organization.split('; ').filter((item) => item)"
-                :key="index"
-                class="org-role-item"
-              >
-                <span class="org-name">{{ org }}</span>
-                <span class="role-name">{{ formState.role.split('; ')[index] || '-/-' }}</span>
-              </li>
-            </ul>
-          </a-form-item>
+          </template>
 
-          <a-form-item>
-            <a-button type="primary" html-type="submit" :loading="loading">更新基本信息</a-button>
-          </a-form-item>
-        </a-form>
+          <a-form
+            class="settings-form"
+            layout="vertical"
+            :model="formState"
+            :rules="rules"
+            name="basic"
+            autocomplete="off"
+            @finish="onFinish"
+          >
+            <a-form-item label="用户名" name="username">
+              <a-input disabled v-model:value="formState.username" placeholder="用户名不可修改" />
+            </a-form-item>
+
+            <a-form-item
+              label="昵称"
+              has-feedback
+              name="nick_name"
+              :rules="[{ required: true, min: 1, max: 32, message: '昵称不能为空且长度为1-32位' }]"
+            >
+              <a-input v-model:value="formState.nick_name" placeholder="请输入昵称" />
+            </a-form-item>
+
+            <a-form-item label="邮箱" has-feedback name="email">
+              <a-input v-model:value="formState.email" placeholder="请输入邮箱" />
+            </a-form-item>
+
+            <a-form-item label="手机号" has-feedback name="mobile">
+              <a-input v-model:value="formState.mobile" placeholder="请输入手机号" />
+            </a-form-item>
+
+            <a-form-item label="组织与角色" extra="由系统管理员配置，如需调整请联系管理员">
+              <div v-if="!organizationRolePairs.length" class="empty-value">-/-</div>
+              <ul v-else class="org-role-list">
+                <li v-for="item in organizationRolePairs" :key="item.key" class="org-role-item">
+                  <span class="org-name" :title="item.organization">{{ item.organization }}</span>
+                  <a-tag color="blue">{{ item.role }}</a-tag>
+                </li>
+              </ul>
+            </a-form-item>
+
+            <a-form-item class="form-actions">
+              <a-button type="primary" html-type="submit" :loading="loading">更新基本信息</a-button>
+            </a-form-item>
+          </a-form>
+        </a-card>
       </a-col>
 
-      <a-col :order="1" :md="24" :lg="8" :style="{ minHeight: '180px' }">
-        <div class="ant-upload-preview" @click="openModal()">
-          <CloudUploadOutlined class="upload-icon" />
-          <div class="mask">
-            <PlusOutlined />
+      <a-col :order="1" :xs="24" :lg="8">
+        <a-card class="avatar-card" :bordered="false">
+          <template #title>
+            <div class="card-title-wrap">
+              <div class="card-title">头像设置</div>
+              <div class="card-subtitle">点击头像可重新上传，建议使用 1:1 比例图片</div>
+            </div>
+          </template>
+
+          <div class="avatar-upload-panel" @click="openModal()">
+            <img :src="option.img" alt="头像" @error="handleAvatarError" />
+            <div class="avatar-mask">
+              <PlusOutlined />
+              <span>更换头像</span>
+            </div>
           </div>
-          <img :src="option.img" alt="头像" />
-        </div>
+        </a-card>
       </a-col>
     </a-row>
 
@@ -72,14 +82,14 @@
 </template>
 
 <script setup>
-import { GetUserProfileApi } from '@/api/login'; // 保持原引用
-import { UpdateUserInfoApi } from '@/api/profile'; // 保持原引用
+import { GetUserProfileApi } from '@/api/login'
+import { UpdateUserInfoApi } from '@/api/profile'
 import { useUserStore } from '@/store/user'
 import { regEmail, regPhone } from '@/utils/validate'
-import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
 import { useThrottleFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import AvatarModal from './AvatarModal.vue'
 
 const userStore = useUserStore()
@@ -124,18 +134,33 @@ const validateMobile = async (_rule, value) => {
 }
 
 const rules = {
-  email: [{ required: true, validator: validateEmail, trigger: 'blur' }], // 改为 blur 触发体验更好
+  email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
   mobile: [{ required: true, validator: validateMobile, trigger: 'blur' }],
 }
 
-// 核心逻辑：刷新用户信息（替代 location.reload）
+const organizationRolePairs = computed(() => {
+  const organizations = (formState.organization || '')
+    .split(';')
+    .map((item) => item.trim())
+    .filter(Boolean)
+  const roles = (formState.role || '')
+    .split(';')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  return organizations.map((organization, index) => ({
+    key: `${organization}-${index}`,
+    organization,
+    role: roles[index] || '-/-',
+  }))
+})
+
 const reloadUserProfile = async () => {
   try {
     const res = await GetUserProfileApi()
     if (res.code === '0000') {
       const data = res.data
 
-      // 使用 setUserInfo 批量更新 Store
       userStore.setUserInfo({
         uid: data.uid,
         username: data.username,
@@ -149,7 +174,6 @@ const reloadUserProfile = async () => {
         is_superuser: data.is_superuser,
       })
 
-      // 更新当前表单数据
       formState.username = data.username
       formState.nick_name = data.nick_name
       formState.email = data.email
@@ -157,7 +181,6 @@ const reloadUserProfile = async () => {
       formState.role = data.role
       formState.organization = data.organization
 
-      // 更新头像显示
       option.value.img = data.avatar_file || DEFAULT_AVATAR
     }
   } catch (error) {
@@ -165,11 +188,9 @@ const reloadUserProfile = async () => {
   }
 }
 
-// 提交表单
 const onFinish = useThrottleFn(async (values) => {
   loading.value = true
 
-  // 确保带上 uid
   const params = {
     ...values,
     uid: userStore.uid,
@@ -180,17 +201,15 @@ const onFinish = useThrottleFn(async (values) => {
     message.success('更新成功')
     await reloadUserProfile()
   } else {
-    message.error(res.message || '更新失败')
+    message.error(res?.message || '更新失败')
   }
 
   loading.value = false
 })
 
-// 头像修改回调
 const setavatar = (imgUrl) => {
   if (!imgUrl) return
 
-  // 检查是否为 Blob URL
   if (imgUrl.startsWith('blob:')) {
     option.value.img = imgUrl
     userStore.setUserAvatar(imgUrl)
@@ -203,11 +222,14 @@ const setavatar = (imgUrl) => {
   }
 }
 
+const handleAvatarError = () => {
+  option.value.img = DEFAULT_AVATAR
+}
+
 const openModal = () => {
   open.value = true
 }
 
-// 生命周期：挂载时主动拉取一次最新数据，确保表单有值
 onMounted(() => {
   reloadUserProfile()
 })
@@ -231,114 +253,171 @@ watch(
 
 <style lang="less" scoped>
 .account-settings-info-view {
-  // 增加一点内边距看起来更舒服
   padding-top: 12px;
 }
 
-.avatar-upload-wrapper {
-  height: 200px;
-  width: 100%;
+.settings-card,
+.avatar-card {
+  height: 100%;
+  border-radius: 12px;
 }
 
-.ant-upload-preview {
-  position: relative;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 180px;
-  height: 180px; // 显式定高，防止坍塌
-  border-radius: 50%;
-  box-shadow: 0 0 4px #ccc;
-  cursor: pointer; // 增加手型样式
+.settings-form {
+  padding-top: 8px;
+}
 
-  .upload-icon {
-    position: absolute;
-    top: 0;
-    right: 10px;
-    font-size: 1.4rem;
-    padding: 0.5rem;
-    background: rgba(222, 221, 221, 0.7);
-    border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    z-index: 2; // 确保在图片之上
-  }
+.settings-form :deep(.ant-form-item) {
+  margin-bottom: 16px;
+}
 
-  .mask {
-    opacity: 0;
-    position: absolute;
-    background: rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-    transition: opacity 0.4s;
-    z-index: 3;
+.settings-form :deep(.ant-form-item:last-child) {
+  margin-bottom: 0;
+}
 
-    &:hover {
-      opacity: 1;
-    }
+.settings-form :deep(.ant-input[disabled]) {
+  color: var(--gi-color-text-secondary);
+}
 
-    span {
-      // 修改 i 为 span 或者 ant-design 图标组件
-      font-size: 2rem;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%); // 更稳健的居中
-      color: #d6d6d6;
-    }
-  }
+.card-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-  img,
-  .mask {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    object-fit: cover; // 防止图片变形
-  }
+.card-title {
+  color: var(--gi-color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.card-subtitle {
+  color: var(--gi-color-text-secondary);
+  font-size: 12px;
+  line-height: 20px;
 }
 
 .org-role-list {
   margin: 0;
-  padding: 0;
+  padding: 12px;
   list-style: none;
+  border: 1px solid var(--gi-color-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--gi-color-page-bg), #ffffff 35%);
+}
+
+.org-role-list .org-role-item + .org-role-item {
+  margin-top: 8px;
 }
 
 .org-role-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  margin-bottom: 4px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateX(4px);
-  }
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .org-name {
-  font-weight: 500;
-  color: #333;
   flex: 1;
-  margin-right: 16px;
+  min-width: 0;
+  color: var(--gi-color-text-primary);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.role-name {
-  padding: 4px 12px;
-  background: #f0f9ff;
-  color: #1890ff;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
+.empty-value {
+  padding: 12px;
+  border: 1px dashed var(--gi-color-border);
+  border-radius: 8px;
+  color: var(--gi-color-text-secondary);
+  font-size: 14px;
+  line-height: 22px;
 }
 
-.empty-value {
-  color: #999;
-  font-style: italic;
-  line-height: 40px;
-  font-size: 14px;
+.avatar-card :deep(.ant-card-body) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.avatar-upload-panel {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid var(--gi-color-border);
+  box-shadow: var(--gi-shadow-sm);
+}
+
+.avatar-upload-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity var(--gi-duration-base) ease;
+}
+
+.avatar-mask .anticon {
+  font-size: 20px;
+}
+
+.avatar-mask span {
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.avatar-upload-panel:hover .avatar-mask {
+  opacity: 1;
+}
+
+.form-actions {
+  margin-top: 8px;
+}
+
+@media (max-width: 1023px) {
+  .account-settings-info-view {
+    padding-top: 8px;
+  }
+
+  .avatar-upload-panel {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+@media (max-width: 767px) {
+  .settings-row {
+    row-gap: 12px;
+  }
+
+  .settings-form :deep(.ant-form-item) {
+    margin-bottom: 12px;
+  }
+
+  .avatar-upload-panel {
+    width: 140px;
+    height: 140px;
+  }
 }
 </style>
