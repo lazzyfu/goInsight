@@ -45,10 +45,16 @@ const route = {
       children: [
         {
           name: `view.admin.environment`,
-          path: '/admin/environement',
+          path: '/admin/environment',
           icon: 'ClusterOutlined',
           component: () => import('./system/environments/EnvironmentList.vue'),
           meta: { title: '环境管理', icon: 'ClusterOutlined', keepAlive: true },
+        },
+        {
+          name: `view.admin.environment.legacy`,
+          path: '/admin/environement',
+          redirect: '/admin/environment',
+          meta: { hidden: true, keepAlive: false },
         },
         {
           name: `view.admin.instance`,

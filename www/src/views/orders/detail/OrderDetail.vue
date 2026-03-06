@@ -124,6 +124,19 @@ onMounted(async () => {
   box-shadow: var(--gi-shadow-sm);
 }
 
+.components-page-header-responsive :deep(.ant-page-header-heading) {
+  align-items: center;
+}
+
+.components-page-header-responsive :deep(.ant-page-header-heading-title) {
+  align-items: center;
+}
+
+.components-page-header-responsive :deep(.ant-page-header-heading-extra) {
+  display: flex;
+  align-items: center;
+}
+
 .detail-section-card {
   margin-top: var(--gi-spacing-ssm);
   border-radius: var(--gi-radius-card);
@@ -139,5 +152,11 @@ onMounted(async () => {
 
 .order-logs-container :deep(.ant-timeline-item-content) {
   color: var(--gi-color-text-secondary);
+}
+
+@media (min-width: 992px) {
+  .components-page-header-responsive :deep(.ant-page-header-heading) {
+    flex-wrap: nowrap;
+  }
 }
 </style>

@@ -12,7 +12,8 @@
       @breakpoint="handleBreakpoint"
     >
       <div class="logo-wrap">
-        <img class="logo" src="@/assets/logo.svg" />
+        <img v-if="uiState.collapsed" class="logo-icon" src="@/assets/logo-icon.svg" alt="GoInsight" />
+        <img v-else class="logo" src="@/assets/logo.svg" alt="GoInsight" />
       </div>
       <a-menu
         class="layout-menu"
@@ -240,16 +241,16 @@ onBeforeUnmount(() => {
   height: 38px;
   max-width: 170px;
   object-fit: contain;
-  transition: max-width var(--gi-duration-base) ease, height var(--gi-duration-base) ease;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .layout-sider.is-collapsed .logo-wrap {
   padding-inline: var(--gi-spacing-xs);
-}
-
-.layout-sider.is-collapsed .logo {
-  max-width: 32px;
-  height: 32px;
 }
 
 .layout-menu {
@@ -330,27 +331,15 @@ onBeforeUnmount(() => {
 .layout-content {
   flex: 1;
   min-height: 0;
-  padding: var(--gi-spacing-md);
+  padding: var(--gi-spacing-lg);
   background: var(--gi-color-page-bg);
   overflow: auto;
 }
 
 .layout-content-inner {
   min-height: calc(
-    100vh - var(--gi-layout-header-height) - var(--gi-spacing-md) - var(--gi-spacing-md)
+    100vh - var(--gi-layout-header-height) - var(--gi-spacing-lg) - var(--gi-spacing-lg)
   );
-}
-
-@media (min-width: 1440px) {
-  .layout-content {
-    padding: var(--gi-spacing-xl);
-  }
-
-  .layout-content-inner {
-    min-height: calc(
-      100vh - var(--gi-layout-header-height) - var(--gi-spacing-xl) - var(--gi-spacing-xl)
-    );
-  }
 }
 
 @media (max-width: 1023px) {
@@ -359,12 +348,12 @@ onBeforeUnmount(() => {
   }
 
   .layout-content {
-    padding: var(--gi-spacing-sm);
+    padding: var(--gi-spacing-md);
   }
 
   .layout-content-inner {
     min-height: calc(
-      100vh - var(--gi-layout-header-height) - var(--gi-spacing-sm) - var(--gi-spacing-sm)
+      100vh - var(--gi-layout-header-height) - var(--gi-spacing-md) - var(--gi-spacing-md)
     );
   }
 }
